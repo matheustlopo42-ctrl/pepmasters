@@ -121,26 +121,17 @@
     .btn-add:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(232,34,10,.4)}
     .btn-add.adicionado{background:linear-gradient(135deg,#15803d,#22c55e)}
     .esgotado{padding:8px 14px;background:#eee;color:#999;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:30px;cursor:pointer}
-    /* MODAL QTD */
-    .modal-qtd-overlay{display:none;position:fixed;inset:0;background:rgba(28,10,0,.6);z-index:4000;align-items:center;justify-content:center}
-    .modal-qtd-overlay.open{display:flex}
-    .modal-qtd{background:#fff;border-radius:20px;padding:28px 28px 24px;max-width:340px;width:90%;border-top:4px solid var(--amber);box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center}
-    .modal-qtd-img{width:110px;height:110px;object-fit:contain;background:linear-gradient(135deg,#FFF3D0,#FFE0A0);border-radius:14px;margin:0 auto 14px;display:block;padding:8px}
-    .modal-qtd-nome{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;color:var(--dark);margin-bottom:4px}
-    .modal-qtd-cat{font-size:.72rem;color:var(--orange);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
-    .modal-qtd-preco{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;color:var(--red);margin-bottom:20px}
-    .modal-qtd-preco span{font-size:1rem;color:var(--muted);font-weight:600}
-    .qtd-controls{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:22px}
-    .qtd-ctrl-btn{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:none;cursor:pointer;font-size:1.3rem;font-weight:700;color:var(--mid);display:flex;align-items:center;justify-content:center;transition:all .2s}
-    .qtd-ctrl-btn:hover{border-color:var(--orange);color:var(--orange)}
-    .qtd-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;color:var(--dark);min-width:40px;text-align:center}
-    .modal-qtd-total{font-size:.85rem;color:var(--muted);margin-bottom:20px}
-    .modal-qtd-total strong{color:var(--dark)}
-    .modal-qtd-actions{display:flex;gap:10px}
-    .btn-modal-cancel{flex:1;padding:11px;background:none;border:2px solid var(--border);border-radius:10px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;color:var(--muted);transition:border-color .2s}
-    .btn-modal-cancel:hover{border-color:var(--orange)}
-    .btn-modal-confirm{flex:2;padding:11px;background:linear-gradient(135deg,var(--red),var(--orange));border:none;border-radius:10px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;color:#fff;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 4px 14px rgba(232,34,10,.3);transition:transform .15s}
-    .btn-modal-confirm:hover{transform:translateY(-1px)}
+    /* SELETOR QTD NO CARD */
+    .card-qtd-selector{display:none;flex-direction:column;gap:8px;width:100%}
+    .card-qtd-selector.show{display:flex}
+    .qtd-row{display:flex;align-items:center;justify-content:center;gap:10px}
+    .qtd-btn{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:none;cursor:pointer;font-size:1rem;font-weight:700;color:var(--mid);display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+    .qtd-btn:hover{border-color:var(--orange);color:var(--orange)}
+    .qtd-display{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;color:var(--dark);min-width:24px;text-align:center}
+    .qtd-confirmar{width:100%;padding:9px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:30px;cursor:pointer;transition:transform .15s;box-shadow:0 3px 10px rgba(232,34,10,.3)}
+    .qtd-confirmar:hover{transform:translateY(-1px)}
+    .qtd-cancelar{width:100%;padding:7px;background:none;border:none;color:var(--muted);font-size:.78rem;cursor:pointer;text-decoration:underline}
+    .qtd-cancelar:hover{color:var(--red)}
     /* MODAL */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(28,10,0,.55);z-index:3000;align-items:center;justify-content:center}
     .modal-overlay.open{display:flex}
@@ -258,26 +249,6 @@
     <div class="modal-actions">
       <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
       <button class="btn-confirm" onclick="entrarListaEspera()">Quero ser avisado</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL QUANTIDADE -->
-<div class="modal-qtd-overlay" id="modalQtd">
-  <div class="modal-qtd">
-    <img id="mqImg" src="" alt="" class="modal-qtd-img" onerror="this.style.display='none'"/>
-    <div class="modal-qtd-nome" id="mqNome">—</div>
-    <div class="modal-qtd-cat" id="mqCat">—</div>
-    <div class="modal-qtd-preco"><span>R$</span><span id="mqPreco">0</span></div>
-    <div class="qtd-controls">
-      <button class="qtd-ctrl-btn" onclick="mqAlterarQtd(-1)">−</button>
-      <span class="qtd-num" id="mqQtd">1</span>
-      <button class="qtd-ctrl-btn" onclick="mqAlterarQtd(1)">+</button>
-    </div>
-    <div class="modal-qtd-total">Total: <strong id="mqTotal">R$ 0,00</strong></div>
-    <div class="modal-qtd-actions">
-      <button class="btn-modal-cancel" onclick="fecharModalQtd()">Cancelar</button>
-      <button class="btn-modal-confirm" onclick="confirmarModalQtd()">🛒 Adicionar ao Carrinho</button>
     </div>
   </div>
 </div>
@@ -420,7 +391,23 @@ function renderGrid(lista){
     const esgotado=p.estoque<=0;const baixo=p.estoque>0&&p.estoque<=3;
     const emoji=catEmoji[p.categoria]||'💊';const preco=typeof p.preco==='number'?p.preco:parseFloat(p.preco);
     const estBadge=esgotado?'<span class="estoque-badge estoque-zero">Esgotado</span>':baixo?'<span class="estoque-badge estoque-low">Últimas unidades</span>':'';
-    grid.innerHTML+='<div class="card"><div class="card-img-wrap"><span class="cat-badge cat-'+p.catClass+'">'+emoji+' '+p.categoria+'</span>'+estBadge+'<img src="'+p.img+'" alt="'+p.nome+'" onerror="this.style.display=\'none\'"/></div><div class="card-body"><div class="card-cat-label">'+emoji+' '+p.categoria+'</div><div class="card-name">'+p.nome+'</div><div class="card-desc">'+p.descricao+'</div><div class="card-footer"><div class="card-price"><span>R$</span>'+preco.toFixed(2).replace('.',',')+'</div>'+(esgotado?'<button class="esgotado" onclick="abrirEspera(\''+p.nome+'\')">Esgotado</button>':'<button class="btn-add" id="btn-add-'+p.id+'" onclick="abrirModalQtd(\''+p.id+'\')">Adicionar ao Carrinho</button>')+'</div></div></div>'
+    const cardHtml = '<div class="card"><div class="card-img-wrap"><span class="cat-badge cat-'+p.catClass+'">'+emoji+' '+p.categoria+'</span>'+estBadge+'<img src="'+p.img+'" alt="'+p.nome+'" onerror="this.style.display=\'none\'"/></div>' +
+      '<div class="card-body"><div class="card-cat-label">'+emoji+' '+p.categoria+'</div><div class="card-name">'+p.nome+'</div><div class="card-desc">'+p.descricao+'</div>' +
+      (esgotado
+        ? '<div class="card-footer"><div class="card-price"><span>R$</span>'+preco.toFixed(2).replace('.',',')+'</div><button class="esgotado" onclick="abrirEspera(\''+p.nome+'\')" >Esgotado</button></div>'
+        : '<div class="card-footer"><div class="card-price"><span>R$</span>'+preco.toFixed(2).replace('.',',')+'</div><button class="btn-add" id="btn-add-'+p.id+'" onclick="mostrarSeletor(\''+p.id+'\')" >Adicionar ao Carrinho</button></div>' +
+          '<div class="card-qtd-selector" id="sel-'+p.id+'">' +
+            '<div class="qtd-row">' +
+              '<button class="qtd-btn" onclick="cardQtd(\''+p.id+'\', -1)">−</button>' +
+              '<span class="qtd-display" id="qn-'+p.id+'">1</span>' +
+              '<button class="qtd-btn" onclick="cardQtd(\''+p.id+'\', 1)">+</button>' +
+            '</div>' +
+            '<button class="qtd-confirmar" onclick="confirmarSeletor(\''+p.id+'\', '+preco+')">🛒 Adicionar ao Carrinho</button>' +
+            '<button class="qtd-cancelar" onclick="esconderSeletor(\''+p.id+'\')">Cancelar</button>' +
+          '</div>'
+      ) +
+      '</div></div>';
+    grid.innerHTML += cardHtml
   })
 }
 
@@ -440,51 +427,48 @@ async function entrarListaEspera(){
   fecharModal();showToast('✅ Você será avisado quando voltar!')
 }
 
-// ── MODAL QUANTIDADE ──
-let mqProdutoId = null;
-let mqQtdAtual  = 1;
+// ── SELETOR QUANTIDADE NO CARD ──
+const cardQtds = {};
 
-function abrirModalQtd(id) {
-  const p = produtosData.find(x => x.id === id);
+function mostrarSeletor(id) {
+  // esconder outros seletores abertos
+  document.querySelectorAll('.card-qtd-selector.show').forEach(el => {
+    const otherId = el.id.replace('sel-','');
+    if (otherId !== id) esconderSeletor(otherId);
+  });
+  cardQtds[id] = 1;
+  const sel = document.getElementById('sel-'+id);
+  const btn = document.getElementById('btn-add-'+id);
+  if (sel) sel.classList.add('show');
+  if (btn) btn.style.display = 'none';
+  document.getElementById('qn-'+id).textContent = 1;
+}
+
+function esconderSeletor(id) {
+  const sel = document.getElementById('sel-'+id);
+  const btn = document.getElementById('btn-add-'+id);
+  if (sel) sel.classList.remove('show');
+  if (btn) btn.style.display = '';
+  cardQtds[id] = 1;
+}
+
+function cardQtd(id, delta) {
+  cardQtds[id] = Math.max(1, (cardQtds[id] || 1) + delta);
+  const el = document.getElementById('qn-'+id);
+  if (el) el.textContent = cardQtds[id];
+}
+
+function confirmarSeletor(id, preco) {
+  const p   = produtosData.find(x => x.id === id);
   if (!p) return;
-  mqProdutoId = id;
-  mqQtdAtual  = 1;
-  const catEmoji2 = {'Recuperação':'🔧','Queima de Gordura':'🔥','GH & Massa':'💪','Cognitivo':'🧠','Hormonal':'⚡','Antioxidante':'🛡️','Estético':'✨','Anti-inflamatório':'💊'};
-  document.getElementById('mqImg').src    = p.img;
-  document.getElementById('mqNome').textContent = p.nome;
-  document.getElementById('mqCat').textContent  = (catEmoji2[p.categoria]||'💊') + ' ' + p.categoria;
-  document.getElementById('mqPreco').textContent = p.preco.toFixed(2).replace('.',',');
-  document.getElementById('mqQtd').textContent   = 1;
-  document.getElementById('mqTotal').textContent = 'R$ ' + p.preco.toFixed(2).replace('.',',');
-  document.getElementById('modalQtd').classList.add('open');
-}
-
-function fecharModalQtd() {
-  document.getElementById('modalQtd').classList.remove('open');
-  mqProdutoId = null; mqQtdAtual = 1;
-}
-
-function mqAlterarQtd(delta) {
-  mqQtdAtual = Math.max(1, mqQtdAtual + delta);
-  const p = produtosData.find(x => x.id === mqProdutoId);
-  document.getElementById('mqQtd').textContent   = mqQtdAtual;
-  document.getElementById('mqTotal').textContent = 'R$ ' + (p.preco * mqQtdAtual).toFixed(2).replace('.',',');
-}
-
-function confirmarModalQtd() {
-  if (!mqProdutoId) return;
-  const p = produtosData.find(x => x.id === mqProdutoId);
-  if (!p) return;
+  const qtd = cardQtds[id] || 1;
   const c   = getCarrinho();
-  const idx = c.findIndex(i => i.id === mqProdutoId);
-  if (idx >= 0) c[idx].quantidade += mqQtdAtual;
-  else c.push({ id: p.id, nome: p.nome, img: p.img, categoria: p.categoria, preco: p.preco, quantidade: mqQtdAtual });
+  const idx = c.findIndex(i => i.id === id);
+  if (idx >= 0) c[idx].quantidade += qtd;
+  else c.push({ id: p.id, nome: p.nome, img: p.img, categoria: p.categoria, preco: p.preco, quantidade: qtd });
   setCarrinho(c);
-  fecharModalQtd();
-  showToast('✅ ' + p.nome + ' × ' + mqQtdAtual + ' adicionado!');
-  // feedback visual
-  const btn = document.getElementById('btn-add-' + p.id);
-  if (btn) { btn.textContent='✓ Adicionado'; btn.classList.add('adicionado'); setTimeout(()=>{btn.textContent='Adicionar ao Carrinho';btn.classList.remove('adicionado')},1500); }
+  esconderSeletor(id);
+  showToast('✅ ' + p.nome + ' × ' + qtd + ' adicionado!');
 }
 
 // ── TOAST ──
