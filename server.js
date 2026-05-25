@@ -811,6 +811,43 @@ app.get('/api/seed-pep-159357', async (req, res) => {
   }
 });
 
+
+// GET /api/admin/usuarios
+app.get('/api/admin/usuarios', adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id,nome,email,cpf,telefone,criado_em FROM pep_usuarios ORDER BY criado_em DESC'
+    );
+    res.json(rows);
+  } catch { res.status(500).json({ erro: 'Erro ao buscar usuários.' }); }
+});
+
+// DELETE /api/admin/usuarios/:id
+app.delete('/api/admin/usuarios/:id', adminMiddleware, async (req, res) => {
+  try {
+    await pool.query('DELETE FROM pep_usuarios WHERE id=$1', [req.params.id]);
+    res.json({ ok: true });
+  } catch { res.status(500).json({ erro: 'Erro ao deletar usuário.' }); }
+});
+
+// POST /api/admin/usuarios/:id/reset-senha
+app.post('/api/admin/usuarios/:id/reset-senha', adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT nome,email FROM pep_usuarios WHERE id=$1', [req.params.id]);
+    if (!rows.length) return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    const u     = rows[0];
+    const token = crypto.randomBytes(32).toString('hex');
+    const exp   = Date.now() + 3600000;
+    await pool.query('UPDATE pep_usuarios SET reset_token=$1, reset_exp=$2 WHERE id=$3', [token, exp, req.params.id]);
+    const link = BASE_URL + '/redefinir-senha.html?token=' + token;
+    await enviarEmail(u.email,
+      'Redefinição de senha — PEPMASTERS',
+      '<p>Olá, ' + u.nome + '!</p><p>Um administrador solicitou a redefinição da sua senha.</p><p><a href="' + link + '">Clique aqui para redefinir</a> (válido por 1 hora)</p>'
+    );
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
 // ─────────────────────────────────────────────
 //  404 FALLBACK (SPA)
 // ─────────────────────────────────────────────
