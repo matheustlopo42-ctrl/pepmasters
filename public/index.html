@@ -5,294 +5,201 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PEPMASTERS — Performance Peptídeos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --amber: #FFB300; --red: #E8220A; --orange: #FF6B00;
-      --cream: #FFF8F0; --warm-white: #FFFDF9; --dark: #1C0A00;
-      --mid: #3D1A00; --muted: #7A4A2A; --border: #FFD580;
-      --card-bg: #FFFFFF; --shadow: rgba(232,34,10,0.12);
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Barlow', sans-serif; background: var(--cream); color: var(--dark); min-height: 100vh; }
-
-    /* ── HEADER ── */
-    header {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      background: var(--warm-white); border-bottom: 3px solid var(--amber);
-      box-shadow: 0 2px 20px rgba(255,179,0,0.25);
-    }
-    .header-inner {
-      max-width: 1200px; margin: 0 auto; padding: 0 24px;
-      height: 68px; display: flex; align-items: center; gap: 28px;
-    }
-    .logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .logo-wrap img { height: 44px; width: 44px; object-fit: contain; }
-    .logo-text {
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.7rem; letter-spacing: 0.04em;
-      background: linear-gradient(135deg, var(--red) 0%, var(--orange) 50%, var(--amber) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1;
-    }
-    nav { display: flex; align-items: center; gap: 4px; flex: 1; }
-    nav a {
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 0.95rem;
-      letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid); text-decoration: none;
-      padding: 6px 11px; border-radius: 6px; transition: all 0.2s;
-    }
-    nav a:hover { background: var(--amber); color: var(--dark); }
-
-    /* Dropdown */
-    .dropdown { position: relative; }
-    .dropdown > a::after { content: " ▾"; font-size: 0.75em; }
-    .dropdown-menu {
-      display: none; position: absolute; top: calc(100% + 8px); left: 0;
-      background: var(--warm-white); border: 2px solid var(--amber); border-radius: 10px;
-      min-width: 220px; box-shadow: 0 8px 30px var(--shadow); overflow: hidden; z-index: 200;
-    }
-    .dropdown:hover .dropdown-menu { display: block; }
-    .dropdown-menu a { display: block; padding: 9px 16px; font-size: 0.88rem; color: var(--text); border-radius: 0; }
-    .dropdown-menu a:hover { background: #FFF3D0; }
-    .dropdown-menu .cat-label {
-      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--orange); padding: 10px 16px 4px; pointer-events: none; background: none;
-    }
-
-    #authArea { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-    .btn-login {
-      padding: 7px 18px; border: 2px solid var(--red); border-radius: 8px;
-      color: var(--red); text-decoration: none; font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 600; font-size: 0.9rem; letter-spacing: 0.04em; text-transform: uppercase; transition: all 0.2s;
-    }
-    .btn-login:hover { background: var(--red); color: #fff; }
-    .btn-cadastro {
-      padding: 7px 18px; background: linear-gradient(135deg, var(--red), var(--orange));
-      border-radius: 8px; color: #fff; text-decoration: none;
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
-      font-size: 0.9rem; letter-spacing: 0.04em; text-transform: uppercase; transition: transform 0.15s;
-    }
-    .btn-cadastro:hover { transform: translateY(-1px); }
-
-    /* ── HERO ── */
-    .hero {
-      margin-top: 68px;
-      background: linear-gradient(135deg, #FFF8F0 0%, #FFEDD0 40%, #FFD580 100%);
-      padding: 72px 24px 56px; text-align: center; position: relative; overflow: hidden;
-    }
-    .hero::before {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 70% 50%, rgba(255,107,0,0.18) 0%, transparent 60%),
-                  radial-gradient(ellipse at 20% 80%, rgba(232,34,10,0.10) 0%, transparent 50%);
-    }
-    .hero-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
-    .hero-eyebrow {
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.85rem;
-      letter-spacing: 0.2em; text-transform: uppercase; color: var(--orange); margin-bottom: 14px;
-    }
-    .hero h1 {
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
-      font-size: clamp(2.6rem, 6vw, 4.2rem); line-height: 1.0; letter-spacing: 0.02em;
-      text-transform: uppercase; color: var(--dark); margin-bottom: 16px;
-    }
-    .hero h1 span {
-      background: linear-gradient(135deg, var(--red), var(--orange));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    .hero p { font-size: 1.05rem; color: var(--mid); max-width: 500px; margin: 0 auto 28px; line-height: 1.6; }
-    .hero-cta {
-      display: inline-block; padding: 14px 40px;
-      background: linear-gradient(135deg, var(--red), var(--orange)); color: #fff;
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem;
-      letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;
-      border-radius: 50px; box-shadow: 0 6px 24px rgba(232,34,10,0.35); transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(232,34,10,0.45); }
-
-    /* ── BANNER STRIP ── */
-    .banner-strip {
-      background: linear-gradient(135deg, var(--red), var(--orange), var(--amber));
-      color: #fff; text-align: center; padding: 14px 24px;
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
-      font-size: 0.95rem; letter-spacing: 0.1em; text-transform: uppercase;
-    }
-    .banner-strip span { opacity: 0.7; margin: 0 16px; }
-
-    /* ── FILTROS ── */
-    .produtos-section { max-width: 1200px; margin: 0 auto; padding: 52px 24px; }
-    .section-label { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
-    .section-label h2 {
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2rem;
-      text-transform: uppercase; letter-spacing: 0.04em; color: var(--dark);
-    }
-    .section-label::after { content: ''; flex: 1; height: 3px; background: linear-gradient(90deg, var(--amber), transparent); border-radius: 2px; }
-
-    .filtros {
-      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; align-items: center;
-    }
-    .filtro-btn {
-      padding: 7px 16px; border: 2px solid var(--border); border-radius: 20px;
-      background: none; cursor: pointer; font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase;
-      color: var(--muted); transition: all 0.2s;
-    }
-    .filtro-btn:hover { border-color: var(--orange); color: var(--orange); }
-    .filtro-btn.active { background: linear-gradient(135deg, var(--red), var(--orange)); border-color: transparent; color: #fff; }
-
-    .busca-wrap { margin-left: auto; }
-    .busca-wrap input {
-      padding: 8px 16px; border: 2px solid var(--border); border-radius: 20px;
-      font-family: 'Barlow', sans-serif; font-size: 0.88rem; color: var(--dark);
-      background: #fff; outline: none; width: 200px; transition: border-color 0.2s;
-    }
-    .busca-wrap input:focus { border-color: var(--orange); }
-
-    /* ── GRID ── */
-    .produtos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 22px; }
-
-    .card {
-      background: var(--card-bg); border-radius: 16px; overflow: hidden;
-      border: 1px solid #FFE5B0; box-shadow: 0 4px 20px rgba(255,179,0,0.10);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(232,34,10,0.15); }
-    .card[style*="display: none"] { display: none !important; }
-
-    .card-img-wrap {
-      background: linear-gradient(135deg, #FFF8EC, #FFE8B0);
-      height: 190px; display: flex; align-items: center; justify-content: center;
-      position: relative; overflow: hidden;
-    }
-    .card-img-wrap img { height: 150px; width: 150px; object-fit: contain; transition: transform 0.3s; }
-    .card:hover .card-img-wrap img { transform: scale(1.05); }
-
-    .cat-badge {
-      position: absolute; top: 10px; left: 10px;
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.68rem;
-      letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px;
-    }
-    .cat-recuperacao  { background: #DCFCE7; color: #15803d; }
-    .cat-gordura      { background: #FEE2E2; color: #b91c1c; }
-    .cat-gh           { background: #DBEAFE; color: #1d4ed8; }
-    .cat-cognitivo    { background: #F3E8FF; color: #7c3aed; }
-    .cat-hormonal     { background: #FEF3C7; color: #92400e; }
-    .cat-antioxidante { background: #CCFBF1; color: #0f766e; }
-    .cat-estetico     { background: #FCE7F3; color: #9d174d; }
-    .cat-antiinfla    { background: #E0F2FE; color: #075985; }
-
-    .estoque-badge {
-      position: absolute; top: 10px; right: 10px;
-      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
-      padding: 2px 8px; border-radius: 20px;
-    }
-    .estoque-ok   { background: rgba(34,197,94,0.15); color: #16a34a; }
-    .estoque-low  { background: rgba(234,179,8,0.15); color: #a16207; }
-    .estoque-zero { background: rgba(239,68,68,0.15); color: #b91c1c; }
-
-    .card-body { padding: 16px 18px 18px; }
-    .card-cat-label {
-      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--orange); margin-bottom: 4px;
-    }
-    .card-name {
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.25rem;
-      color: var(--dark); margin-bottom: 5px; letter-spacing: 0.02em;
-    }
-    .card-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin-bottom: 14px; min-height: 36px; }
-    .card-footer { display: flex; align-items: center; justify-content: space-between; }
-    .card-price { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--red); }
-    .card-price span { font-size: 0.88rem; font-weight: 600; color: var(--muted); }
-
-    .btn-comprar {
-      padding: 8px 18px; background: linear-gradient(135deg, var(--red), var(--orange));
-      color: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.9rem;
-      letter-spacing: 0.06em; text-transform: uppercase; border: none; border-radius: 30px;
-      cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; text-decoration: none;
-    }
-    .btn-comprar:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(232,34,10,0.4); }
-    .esgotado {
-      padding: 8px 16px; background: #eee; color: #999; font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700; font-size: 0.88rem; letter-spacing: 0.06em; text-transform: uppercase;
-      border: none; border-radius: 30px; cursor: pointer;
-    }
-
-    /* ── MODAL ── */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(28,10,0,0.55); z-index: 2000; align-items: center; justify-content: center; }
-    .modal-overlay.open { display: flex; }
-    .modal-box { background: var(--warm-white); border-radius: 16px; padding: 32px; max-width: 400px; width: 90%; border-top: 4px solid var(--amber); box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
-    .modal-box h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--dark); margin-bottom: 8px; }
-    .modal-box p { font-size: 0.9rem; color: var(--muted); margin-bottom: 20px; }
-    .modal-box input { width: 100%; padding: 11px 14px; border: 2px solid var(--border); border-radius: 8px; font-size: 0.95rem; font-family: 'Barlow', sans-serif; margin-bottom: 12px; outline: none; transition: border-color 0.2s; }
-    .modal-box input:focus { border-color: var(--orange); }
-    .modal-actions { display: flex; gap: 10px; }
-    .btn-cancel { flex: 1; padding: 10px; background: none; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 0.95rem; color: var(--muted); }
-    .btn-confirm { flex: 2; padding: 10px; background: linear-gradient(135deg, var(--red), var(--orange)); border: none; border-radius: 8px; cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.95rem; color: #fff; letter-spacing: 0.06em; }
-
-    /* ── FOOTER ── */
-    footer { background: var(--dark); color: #fff; padding: 52px 24px 0; margin-top: 60px; }
-    .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px; padding-bottom: 44px; border-bottom: 1px solid rgba(255,179,0,0.2); }
-    .footer-brand p { font-size: 0.84rem; color: rgba(255,255,255,0.5); line-height: 1.7; margin-top: 12px; max-width: 260px; }
-    .footer-col h4 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--amber); margin-bottom: 14px; }
-    .footer-col a { display: block; font-size: 0.86rem; color: rgba(255,255,255,0.6); text-decoration: none; margin-bottom: 8px; transition: color 0.2s; }
-    .footer-col a:hover { color: var(--amber); }
-    .footer-bottom { max-width: 1200px; margin: 0 auto; padding: 18px 0; text-align: center; font-size: 0.78rem; color: rgba(255,255,255,0.3); }
-    .admin-link { display: block; text-align: center; padding: 8px; font-size: 0.75rem; color: rgba(255,255,255,0.15); text-decoration: none; }
-    .admin-link:hover { color: var(--amber); }
-
-    /* ── TOAST ── */
-    #toast { position: fixed; bottom: 28px; right: 28px; background: var(--dark); color: #fff; padding: 13px 20px; border-radius: 10px; font-size: 0.88rem; border-left: 4px solid var(--amber); box-shadow: 0 8px 30px rgba(0,0,0,0.3); transform: translateY(20px); opacity: 0; transition: all 0.3s; z-index: 5000; pointer-events: none; }
-    #toast.show { transform: translateY(0); opacity: 1; }
-
-    /* ── EMPTY STATE ── */
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); grid-column: 1/-1; }
-    .empty-state h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.4rem; margin-bottom: 8px; }
-
-    @media (max-width: 768px) {
-      .footer-grid { grid-template-columns: 1fr 1fr; }
-      nav { display: none; }
-      .busca-wrap { margin-left: 0; }
-      .busca-wrap input { width: 100%; }
-    }
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh}
+    header{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--warm-white);border-bottom:3px solid var(--amber);box-shadow:0 2px 20px rgba(255,179,0,.25)}
+    .header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;gap:24px}
+    .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo-wrap img{height:44px;width:44px;object-fit:contain}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.7rem;letter-spacing:.04em;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+    nav{display:flex;align-items:center;gap:4px;flex:1}
+    nav a{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mid);text-decoration:none;padding:6px 10px;border-radius:6px;transition:all .2s}
+    nav a:hover{background:var(--amber);color:var(--dark)}
+    .dropdown{position:relative}
+    .dropdown>a::after{content:" ▾";font-size:.75em}
+    .dropdown-menu{display:none;position:absolute;top:calc(100% + 8px);left:0;background:var(--warm-white);border:2px solid var(--amber);border-radius:10px;min-width:220px;box-shadow:0 8px 30px rgba(232,34,10,.12);overflow:hidden;z-index:200}
+    .dropdown:hover .dropdown-menu{display:block}
+    .dropdown-menu a{display:block;padding:9px 16px;font-size:.88rem;color:var(--dark);text-decoration:none}
+    .dropdown-menu a:hover{background:#FFF3D0}
+    .cat-label{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);padding:10px 16px 4px;pointer-events:none}
+    #authArea{display:flex;align-items:center;gap:8px}
+    .btn-login{padding:7px 16px;border:2px solid var(--red);border-radius:8px;color:var(--red);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.88rem;letter-spacing:.04em;text-transform:uppercase;transition:all .2s}
+    .btn-login:hover{background:var(--red);color:#fff}
+    .btn-cadastro{padding:7px 16px;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:8px;color:#fff;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.04em;text-transform:uppercase;transition:transform .15s}
+    .btn-cadastro:hover{transform:translateY(-1px)}
+    /* CARRINHO BTN */
+    .cart-btn{position:relative;background:none;border:2px solid var(--border);border-radius:10px;padding:7px 14px;cursor:pointer;display:flex;align-items:center;gap:7px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.92rem;letter-spacing:.04em;text-transform:uppercase;color:var(--mid);transition:all .2s;white-space:nowrap}
+    .cart-btn:hover{border-color:var(--orange);color:var(--orange)}
+    .cart-count{background:var(--red);color:#fff;border-radius:50%;width:20px;height:20px;font-size:.65rem;font-weight:800;display:none;align-items:center;justify-content:center;margin-left:2px}
+    .cart-count.show{display:flex}
+    /* DRAWER */
+    .cart-overlay{position:fixed;inset:0;background:rgba(28,10,0,.5);z-index:2000;opacity:0;pointer-events:none;transition:opacity .3s}
+    .cart-overlay.open{opacity:1;pointer-events:all}
+    .cart-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:95vw;background:var(--warm-white);z-index:2001;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,.2)}
+    .cart-drawer.open{transform:translateX(0)}
+    .cart-head{padding:20px 24px;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .cart-head h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;text-transform:uppercase;color:var(--dark)}
+    .cart-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted);line-height:1;padding:4px}
+    .cart-close:hover{color:var(--red)}
+    .cart-items{flex:1;overflow-y:auto;padding:16px 24px}
+    .cart-empty{text-align:center;padding:60px 20px;color:var(--muted)}
+    .cart-empty .icon{font-size:3rem;margin-bottom:12px}
+    .cart-empty p{font-size:.9rem;line-height:1.6}
+    .cart-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #FFE5B0;align-items:center}
+    .cart-item:last-child{border:none}
+    .cart-item-img{width:58px;height:58px;background:linear-gradient(135deg,#FFF3D0,#FFE0A0);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+    .cart-item-img img{width:48px;height:48px;object-fit:contain}
+    .cart-item-info{flex:1;min-width:0}
+    .cart-item-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.98rem;color:var(--dark);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cart-item-cat{font-size:.7rem;color:var(--orange);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+    .cart-item-controls{display:flex;align-items:center;gap:7px}
+    .qty-btn{width:25px;height:25px;border-radius:6px;border:2px solid var(--border);background:none;cursor:pointer;font-size:.95rem;font-weight:700;color:var(--mid);display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+    .qty-btn:hover{border-color:var(--orange);color:var(--orange)}
+    .qty-val{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.98rem;color:var(--dark);min-width:18px;text-align:center}
+    .unit-price{font-size:.75rem;color:var(--muted)}
+    .cart-item-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+    .cart-item-price{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.05rem;color:var(--red);white-space:nowrap}
+    .cart-item-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:1rem;padding:2px;transition:color .2s}
+    .cart-item-del:hover{color:var(--red)}
+    .cart-foot{padding:20px 24px;border-top:2px solid var(--border);background:#fff}
+    .cart-subtotal{display:flex;justify-content:space-between;font-size:.88rem;color:var(--muted);margin-bottom:6px}
+    .cart-total-row{display:flex;justify-content:space-between;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;color:var(--dark);margin-bottom:16px}
+    .cart-total-row span:last-child{color:var(--red)}
+    .btn-checkout{display:block;width:100%;padding:14px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:12px;cursor:pointer;box-shadow:0 4px 20px rgba(232,34,10,.3);transition:transform .15s;text-align:center;text-decoration:none}
+    .btn-checkout:hover{transform:translateY(-1px)}
+    .btn-limpar{display:block;text-align:center;margin-top:10px;font-size:.82rem;color:var(--muted);cursor:pointer;background:none;border:none;text-decoration:underline}
+    .btn-limpar:hover{color:var(--red)}
+    /* HERO */
+    .hero{margin-top:68px;background:linear-gradient(135deg,#FFF8F0 0%,#FFEDD0 40%,#FFD580 100%);padding:72px 24px 56px;text-align:center;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(255,107,0,.18) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(232,34,10,.10) 0%,transparent 50%)}
+    .hero-content{position:relative;z-index:1;max-width:700px;margin:0 auto}
+    .hero-eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:14px}
+    .hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(2.6rem,6vw,4.2rem);line-height:1;letter-spacing:.02em;text-transform:uppercase;color:var(--dark);margin-bottom:16px}
+    .hero h1 span{background:linear-gradient(135deg,var(--red),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero p{font-size:1.05rem;color:var(--mid);max-width:500px;margin:0 auto 28px;line-height:1.6}
+    .hero-cta{display:inline-block;padding:14px 40px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;border-radius:50px;box-shadow:0 6px 24px rgba(232,34,10,.35);transition:transform .15s,box-shadow .15s}
+    .hero-cta:hover{transform:translateY(-2px)}
+    .banner-strip{background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));color:#fff;text-align:center;padding:14px 24px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.1em;text-transform:uppercase}
+    .banner-strip span{opacity:.7;margin:0 16px}
+    /* PRODUTOS */
+    .produtos-section{max-width:1200px;margin:0 auto;padding:52px 24px}
+    .section-label{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+    .section-label h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dark)}
+    .section-label::after{content:'';flex:1;height:3px;background:linear-gradient(90deg,var(--amber),transparent);border-radius:2px}
+    .filtros{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;align-items:center}
+    .filtro-btn{padding:7px 16px;border:2px solid var(--border);border-radius:20px;background:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);transition:all .2s}
+    .filtro-btn:hover{border-color:var(--orange);color:var(--orange)}
+    .filtro-btn.active{background:linear-gradient(135deg,var(--red),var(--orange));border-color:transparent;color:#fff}
+    .busca-wrap{margin-left:auto}
+    .busca-wrap input{padding:8px 16px;border:2px solid var(--border);border-radius:20px;font-family:'Barlow',sans-serif;font-size:.88rem;color:var(--dark);background:#fff;outline:none;width:200px;transition:border-color .2s}
+    .busca-wrap input:focus{border-color:var(--orange)}
+    .produtos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:22px}
+    .card{background:#fff;border-radius:16px;overflow:hidden;border:1px solid #FFE5B0;box-shadow:0 4px 20px rgba(255,179,0,.10);transition:transform .2s,box-shadow .2s}
+    .card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(232,34,10,.15)}
+    .card-img-wrap{background:linear-gradient(135deg,#FFF8EC,#FFE8B0);height:190px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+    .card-img-wrap img{height:150px;width:150px;object-fit:contain;transition:transform .3s}
+    .card:hover .card-img-wrap img{transform:scale(1.05)}
+    .cat-badge{position:absolute;top:10px;left:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:20px}
+    .cat-recuperacao{background:#DCFCE7;color:#15803d}.cat-gordura{background:#FEE2E2;color:#b91c1c}
+    .cat-gh{background:#DBEAFE;color:#1d4ed8}.cat-cognitivo{background:#F3E8FF;color:#7c3aed}
+    .cat-hormonal{background:#FEF3C7;color:#92400e}.cat-antioxidante{background:#CCFBF1;color:#0f766e}
+    .cat-estetico{background:#FCE7F3;color:#9d174d}.cat-antiinfla{background:#E0F2FE;color:#075985}
+    .estoque-badge{position:absolute;top:10px;right:10px;font-size:.65rem;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:20px}
+    .estoque-low{background:rgba(234,179,8,.15);color:#a16207}.estoque-zero{background:rgba(239,68,68,.15);color:#b91c1c}
+    .card-body{padding:16px 18px 18px}
+    .card-cat-label{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:4px}
+    .card-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.25rem;color:var(--dark);margin-bottom:5px}
+    .card-desc{font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:14px;min-height:36px}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .card-price{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;color:var(--red)}
+    .card-price span{font-size:.88rem;font-weight:600;color:var(--muted)}
+    .btn-add{padding:8px 16px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:30px;cursor:pointer;transition:transform .15s,background .2s;white-space:nowrap}
+    .btn-add:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(232,34,10,.4)}
+    .btn-add.adicionado{background:linear-gradient(135deg,#15803d,#22c55e)}
+    .esgotado{padding:8px 14px;background:#eee;color:#999;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:30px;cursor:pointer}
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(28,10,0,.55);z-index:3000;align-items:center;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:var(--warm-white);border-radius:16px;padding:32px;max-width:400px;width:90%;border-top:4px solid var(--amber);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+    .modal-box h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.4rem;color:var(--dark);margin-bottom:8px}
+    .modal-box p{font-size:.9rem;color:var(--muted);margin-bottom:20px}
+    .modal-box input{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:8px;font-size:.95rem;font-family:'Barlow',sans-serif;margin-bottom:12px;outline:none;transition:border-color .2s}
+    .modal-box input:focus{border-color:var(--orange)}
+    .modal-actions{display:flex;gap:10px}
+    .btn-cancel{flex:1;padding:10px;background:none;border:2px solid var(--border);border-radius:8px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.95rem;color:var(--muted)}
+    .btn-confirm{flex:2;padding:10px;background:linear-gradient(135deg,var(--red),var(--orange));border:none;border-radius:8px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;color:#fff;letter-spacing:.06em}
+    /* FOOTER */
+    footer{background:var(--dark);color:#fff;padding:52px 24px 0;margin-top:60px}
+    .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;padding-bottom:44px;border-bottom:1px solid rgba(255,179,0,.2)}
+    .footer-brand p{font-size:.84rem;color:rgba(255,255,255,.5);line-height:1.7;margin-top:12px;max-width:260px}
+    .footer-col h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+    .footer-col a{display:block;font-size:.86rem;color:rgba(255,255,255,.6);text-decoration:none;margin-bottom:8px;transition:color .2s}
+    .footer-col a:hover{color:var(--amber)}
+    .footer-bottom{max-width:1200px;margin:0 auto;padding:18px 0;text-align:center;font-size:.78rem;color:rgba(255,255,255,.3)}
+    .admin-link{display:block;text-align:center;padding:8px;font-size:.75rem;color:rgba(255,255,255,.15);text-decoration:none}
+    .admin-link:hover{color:var(--amber)}
+    #toast{position:fixed;bottom:28px;right:28px;background:var(--dark);color:#fff;padding:13px 20px;border-radius:10px;font-size:.88rem;border-left:4px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.3);transform:translateY(20px);opacity:0;transition:all .3s;z-index:5000;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    .empty-state{text-align:center;padding:60px 20px;color:var(--muted);grid-column:1/-1}
+    .empty-state h3{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;margin-bottom:8px}
+    @media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr};nav{display:none};.busca-wrap{margin-left:0};.busca-wrap input{width:100%};.cart-drawer{width:100%}}
   </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="header-inner">
     <a href="index.html" class="logo-wrap">
-      <img src="Capturar.PNG" alt="Pepmasters logo" />
+      <img src="Capturar.PNG" alt="Logo"/>
       <span class="logo-text">PEPMASTERS</span>
     </a>
     <nav>
       <a href="index.html">Início</a>
       <div class="dropdown">
         <a href="#">Produtos</a>
-        <div class="dropdown-menu" id="dropdownProdutos">
+        <div class="dropdown-menu">
           <div class="cat-label">🔧 Recuperação</div>
-          <a href="#cat-recuperacao">BPC-157</a>
-          <a href="#cat-recuperacao">TB-500</a>
+          <a href="#produtos" onclick="filtrarLink('Recuperação')">BPC-157 · TB-500</a>
           <div class="cat-label">🔥 Queima de Gordura</div>
-          <a href="#cat-gordura">HGH Frag 176-191</a>
-          <a href="#cat-gordura">SLU-PP-32</a>
+          <a href="#produtos" onclick="filtrarLink('Queima de Gordura')">HGH Frag · SLU-PP-32</a>
           <div class="cat-label">💪 GH & Massa</div>
-          <a href="#cat-gh">Ipamorelin</a>
-          <a href="#cat-gh">Sermorelin</a>
-          <a href="#cat-gh">CJC-1295</a>
+          <a href="#produtos" onclick="filtrarLink('GH & Massa')">Ipamorelin · CJC-1295 · IGF</a>
           <div class="cat-label">🧠 Cognitivo</div>
-          <a href="#cat-cognitivo">Semax</a>
-          <a href="#cat-cognitivo">Selank</a>
+          <a href="#produtos" onclick="filtrarLink('Cognitivo')">Semax · Selank</a>
         </div>
       </div>
       <a href="quem-somos.html">Quem Somos</a>
       <a href="duvidas-frequentes.html">Dúvidas</a>
       <a href="rastrear-pedido.html">Rastrear</a>
     </nav>
+    <button class="cart-btn" onclick="abrirCarrinho()">
+      🛒 <span id="cartLabel">Carrinho</span>
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
     <div id="authArea"></div>
   </div>
 </header>
 
-<!-- HERO -->
+<!-- DRAWER -->
+<div class="cart-overlay" id="cartOverlay" onclick="fecharCarrinho()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-head">
+    <h2>🛒 Carrinho</h2>
+    <button class="cart-close" onclick="fecharCarrinho()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot" id="cartFoot" style="display:none">
+    <div class="cart-subtotal"><span>Subtotal</span><span id="cartSubtotal">R$ 0,00</span></div>
+    <div class="cart-total-row"><span>Total</span><span id="cartTotal">R$ 0,00</span></div>
+    <a href="checkout.html" class="btn-checkout" onclick="fecharCarrinho()">Finalizar Pedido →</a>
+    <button class="btn-limpar" onclick="limparCarrinho()">Limpar carrinho</button>
+  </div>
+</div>
+
 <section class="hero">
   <div class="hero-content">
     <p class="hero-eyebrow">⚡ Peptídeos de alta performance</p>
@@ -302,41 +209,32 @@
   </div>
 </section>
 
-<!-- BANNER -->
-<div class="banner-strip">
-  🚀 Entrega para todo o Brasil <span>|</span> 🔒 Pagamento Seguro <span>|</span> 🧬 Qualidade Garantida
-</div>
+<div class="banner-strip">🚀 Entrega para todo o Brasil <span>|</span> 🔒 Pagamento Seguro <span>|</span> 🧬 Qualidade Garantida</div>
 
-<!-- PRODUTOS -->
 <section class="produtos-section" id="produtos">
   <div class="section-label"><h2>Nossos Produtos</h2></div>
-
-  <div class="filtros" id="filtros">
-    <button class="filtro-btn active" onclick="filtrar('', this)">Todos</button>
-    <button class="filtro-btn" onclick="filtrar('Recuperação', this)">🔧 Recuperação</button>
-    <button class="filtro-btn" onclick="filtrar('Queima de Gordura', this)">🔥 Queima de Gordura</button>
-    <button class="filtro-btn" onclick="filtrar('GH & Massa', this)">💪 GH & Massa</button>
-    <button class="filtro-btn" onclick="filtrar('Cognitivo', this)">🧠 Cognitivo</button>
-    <button class="filtro-btn" onclick="filtrar('Hormonal', this)">⚡ Hormonal</button>
-    <button class="filtro-btn" onclick="filtrar('Antioxidante', this)">🛡️ Antioxidante</button>
-    <button class="filtro-btn" onclick="filtrar('Estético', this)">✨ Estético</button>
-    <button class="filtro-btn" onclick="filtrar('Anti-inflamatório', this)">💊 Anti-inflamatório</button>
-    <div class="busca-wrap">
-      <input type="text" id="buscaInput" placeholder="🔍 Buscar peptídeo..." oninput="buscar()" />
-    </div>
+  <div class="filtros">
+    <button class="filtro-btn active" onclick="filtrar('',this)">Todos</button>
+    <button class="filtro-btn" onclick="filtrar('Recuperação',this)">🔧 Recuperação</button>
+    <button class="filtro-btn" onclick="filtrar('Queima de Gordura',this)">🔥 Queima de Gordura</button>
+    <button class="filtro-btn" onclick="filtrar('GH & Massa',this)">💪 GH & Massa</button>
+    <button class="filtro-btn" onclick="filtrar('Cognitivo',this)">🧠 Cognitivo</button>
+    <button class="filtro-btn" onclick="filtrar('Hormonal',this)">⚡ Hormonal</button>
+    <button class="filtro-btn" onclick="filtrar('Antioxidante',this)">🛡️ Antioxidante</button>
+    <button class="filtro-btn" onclick="filtrar('Estético',this)">✨ Estético</button>
+    <button class="filtro-btn" onclick="filtrar('Anti-inflamatório',this)">💊 Anti-inflamatório</button>
+    <div class="busca-wrap"><input type="text" id="buscaInput" placeholder="🔍 Buscar peptídeo..." oninput="buscar()"/></div>
   </div>
-
   <div class="produtos-grid" id="produtosGrid"></div>
 </section>
 
-<!-- MODAL LISTA DE ESPERA -->
 <div class="modal-overlay" id="modalEspera">
   <div class="modal-box">
     <h3>⏳ Avise-me quando voltar</h3>
     <p>Deixe seu email e te avisamos quando o produto estiver disponível.</p>
-    <input type="text" id="espera-nome" placeholder="Seu nome" />
-    <input type="email" id="espera-email" placeholder="Seu email" />
-    <input type="hidden" id="espera-produto" />
+    <input type="text" id="espera-nome" placeholder="Seu nome"/>
+    <input type="email" id="espera-email" placeholder="Seu email"/>
+    <input type="hidden" id="espera-produto"/>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
       <button class="btn-confirm" onclick="entrarListaEspera()">Quero ser avisado</button>
@@ -346,12 +244,11 @@
 
 <div id="toast"></div>
 
-<!-- FOOTER -->
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
       <a href="index.html" class="logo-wrap" style="margin-bottom:0">
-        <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain" />
+        <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain"/>
         <span class="logo-text">PEPMASTERS</span>
       </a>
       <p>Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</p>
@@ -382,178 +279,131 @@
 </footer>
 
 <script>
-  // ── CATÁLOGO ESTÁTICO (fallback + enriquecimento) ──
-  const CATALOGO = [
-    { id:'1',  nome:'BPC-157',          img:'img/bpc-157.png',     categoria:'Recuperação',       catClass:'recuperacao', preco:150, descricao:'Recuperação muscular e articular acelerada. Excelente para lesões.' },
-    { id:'2',  nome:'TB-500',           img:'img/tb-500.png',      categoria:'Recuperação',       catClass:'recuperacao', preco:180, descricao:'Regeneração tecidual profunda e efeito anti-inflamatório potente.' },
-    { id:'3',  nome:'HGH Frag 176-191', img:'img/hgh-frag.png',    categoria:'Queima de Gordura', catClass:'gordura',     preco:160, descricao:'Fragmento do GH com ação direta na queima de gordura localizada.' },
-    { id:'4',  nome:'Ipamorelin',       img:'img/ipamorelin.png',  categoria:'GH & Massa',        catClass:'gh',          preco:140, descricao:'Estimulante seletivo do GH sem efeitos colaterais indesejados.' },
-    { id:'5',  nome:'Sermorelin',       img:'img/semorelin.png',   categoria:'GH & Massa',        catClass:'gh',          preco:170, descricao:'Anti-aging, melhora do sono e estímulo natural do GH.' },
-    { id:'6',  nome:'CJC-1295',         img:'img/cjc-1295.png',    categoria:'GH & Massa',        catClass:'gh',          preco:180, descricao:'Estimulante de GH de longa duração. Ideal para massa muscular.' },
-    { id:'7',  nome:'IGF-1 LR3',        img:'img/igf-lr3.png',     categoria:'GH & Massa',        catClass:'gh',          preco:220, descricao:'Fator de crescimento insulínico de alta potência para hipertrofia.' },
-    { id:'8',  nome:'IGF-1 DES',        img:'img/igf-des.png',     categoria:'GH & Massa',        catClass:'gh',          preco:200, descricao:'Variante do IGF-1 com ação local intensa nos tecidos musculares.' },
-    { id:'9',  nome:'ACE-031',          img:'img/ace-031.png',     categoria:'GH & Massa',        catClass:'gh',          preco:250, descricao:'Inibidor da miostatina. Potencializa ganho de massa e força.' },
-    { id:'10', nome:'Semax',            img:'img/semax.png',       categoria:'Cognitivo',         catClass:'cognitivo',   preco:160, descricao:'Neuropeptídeo que melhora foco, memória e função cerebral.' },
-    { id:'11', nome:'Selank',           img:'img/selank.png',      categoria:'Cognitivo',         catClass:'cognitivo',   preco:150, descricao:'Ansiolítico natural com efeito nootrópico e neuroprotetor.' },
-    { id:'12', nome:'Kisspeptin',       img:'img/kisspeptin.png',  categoria:'Hormonal',          catClass:'hormonal',    preco:190, descricao:'Regulador hormonal que estimula a produção de LH e testosterona.' },
-    { id:'13', nome:'SS-31',            img:'img/ss-31.png',       categoria:'Antioxidante',      catClass:'antioxidante',preco:210, descricao:'Peptídeo mitocondrial com ação antioxidante e cardioprotetora.' },
-    { id:'14', nome:'SLU-PP-32',        img:'img/slu-pp-32.png',   categoria:'Queima de Gordura', catClass:'gordura',     preco:230, descricao:'Ativa receptores ERR. Simula os efeitos metabólicos do exercício.' },
-    { id:'15', nome:'AHK-CU',           img:'img/ahk-cu.png',      categoria:'Estético',          catClass:'estetico',    preco:140, descricao:'Peptídeo de cobre para cabelo, pele e regeneração capilar.' },
-    { id:'16', nome:'VIP',              img:'img/vip.png',         categoria:'Anti-inflamatório', catClass:'antiinfla',   preco:200, descricao:'Peptídeo vasoativo intestinal. Potente anti-inflamatório sistêmico.' },
-  ];
+const CATALOGO=[
+  {id:'1',nome:'BPC-157',img:'img/bpc-157.png',categoria:'Recuperação',catClass:'recuperacao',preco:150,descricao:'Recuperação muscular e articular acelerada. Excelente para lesões.'},
+  {id:'2',nome:'TB-500',img:'img/tb-500.png',categoria:'Recuperação',catClass:'recuperacao',preco:180,descricao:'Regeneração tecidual profunda e efeito anti-inflamatório potente.'},
+  {id:'3',nome:'HGH Frag 176-191',img:'img/hgh-frag.png',categoria:'Queima de Gordura',catClass:'gordura',preco:160,descricao:'Fragmento do GH com ação direta na queima de gordura localizada.'},
+  {id:'4',nome:'Ipamorelin',img:'img/ipamorelin.png',categoria:'GH & Massa',catClass:'gh',preco:140,descricao:'Estimulante seletivo do GH sem efeitos colaterais indesejados.'},
+  {id:'5',nome:'Sermorelin',img:'img/semorelin.png',categoria:'GH & Massa',catClass:'gh',preco:170,descricao:'Anti-aging, melhora do sono e estímulo natural do GH.'},
+  {id:'6',nome:'CJC-1295',img:'img/cjc-1295.png',categoria:'GH & Massa',catClass:'gh',preco:180,descricao:'Estimulante de GH de longa duração. Ideal para massa muscular.'},
+  {id:'7',nome:'IGF-1 LR3',img:'img/igf-lr3.png',categoria:'GH & Massa',catClass:'gh',preco:220,descricao:'Fator de crescimento insulínico de alta potência para hipertrofia.'},
+  {id:'8',nome:'IGF-1 DES',img:'img/igf-des.png',categoria:'GH & Massa',catClass:'gh',preco:200,descricao:'Variante do IGF-1 com ação local intensa nos tecidos musculares.'},
+  {id:'9',nome:'ACE-031',img:'img/ace-031.png',categoria:'GH & Massa',catClass:'gh',preco:250,descricao:'Inibidor da miostatina. Potencializa ganho de massa e força.'},
+  {id:'10',nome:'Semax',img:'img/semax.png',categoria:'Cognitivo',catClass:'cognitivo',preco:160,descricao:'Neuropeptídeo que melhora foco, memória e função cerebral.'},
+  {id:'11',nome:'Selank',img:'img/selank.png',categoria:'Cognitivo',catClass:'cognitivo',preco:150,descricao:'Ansiolítico natural com efeito nootrópico e neuroprotetor.'},
+  {id:'12',nome:'Kisspeptin',img:'img/kisspeptin.png',categoria:'Hormonal',catClass:'hormonal',preco:190,descricao:'Regulador hormonal que estimula a produção de LH e testosterona.'},
+  {id:'13',nome:'SS-31',img:'img/ss-31.png',categoria:'Antioxidante',catClass:'antioxidante',preco:210,descricao:'Peptídeo mitocondrial com ação antioxidante e cardioprotetora.'},
+  {id:'14',nome:'SLU-PP-32',img:'img/slu-pp-32.png',categoria:'Queima de Gordura',catClass:'gordura',preco:230,descricao:'Ativa receptores ERR. Simula os efeitos metabólicos do exercício.'},
+  {id:'15',nome:'AHK-CU',img:'img/ahk-cu.png',categoria:'Estético',catClass:'estetico',preco:140,descricao:'Peptídeo de cobre para cabelo, pele e regeneração capilar.'},
+  {id:'16',nome:'VIP',img:'img/vip.png',categoria:'Anti-inflamatório',catClass:'antiinfla',preco:200,descricao:'Peptídeo vasoativo intestinal. Potente anti-inflamatório sistêmico.'},
+];
+const catEmoji={'Recuperação':'🔧','Queima de Gordura':'🔥','GH & Massa':'💪','Cognitivo':'🧠','Hormonal':'⚡','Antioxidante':'🛡️','Estético':'✨','Anti-inflamatório':'💊'};
+let produtosData=[];let filtroAtivo='';
 
-  const catEmoji = {
-    'Recuperação':'🔧', 'Queima de Gordura':'🔥', 'GH & Massa':'💪',
-    'Cognitivo':'🧠', 'Hormonal':'⚡', 'Antioxidante':'🛡️',
-    'Estético':'✨', 'Anti-inflamatório':'💊'
-  };
+// ── CARRINHO ──
+function getCarrinho(){try{return JSON.parse(localStorage.getItem('pep_carrinho')||'[]')}catch{return[]}}
+function setCarrinho(c){localStorage.setItem('pep_carrinho',JSON.stringify(c));atualizarBadge()}
 
-  let produtosData = [];
-  let filtroAtivo  = '';
+function adicionarAoCarrinho(id){
+  const p=produtosData.find(x=>x.id===id);if(!p)return;
+  const c=getCarrinho();const idx=c.findIndex(i=>i.id===id);
+  if(idx>=0)c[idx].quantidade++;
+  else c.push({id:p.id,nome:p.nome,img:p.img,categoria:p.categoria,preco:p.preco,quantidade:1});
+  setCarrinho(c);showToast('✅ '+p.nome+' adicionado!');
+  const btn=document.getElementById('btn-add-'+id);
+  if(btn){btn.textContent='✓ Adicionado';btn.classList.add('adicionado');setTimeout(()=>{btn.textContent='+ Carrinho';btn.classList.remove('adicionado')},1500)}
+}
+function removerDoCarrinho(id){setCarrinho(getCarrinho().filter(i=>i.id!==id));renderCarrinho()}
+function alterarQtd(id,delta){
+  const c=getCarrinho();const idx=c.findIndex(i=>i.id===id);if(idx<0)return;
+  c[idx].quantidade=Math.max(1,c[idx].quantidade+delta);setCarrinho(c);renderCarrinho()
+}
+function limparCarrinho(){setCarrinho([]);renderCarrinho()}
 
-  // ── AUTH ──
-  function renderAuth() {
-    const area  = document.getElementById('authArea');
-    const token = localStorage.getItem('pep_token');
-    const nome  = localStorage.getItem('pep_nome');
-    if (token && nome) {
-      area.innerHTML =
-        '<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.9rem;color:var(--mid)">Olá, ' + nome.split(' ')[0] + '</span>' +
-        '<a href="meus-pedidos.html" class="btn-login">Pedidos</a>' +
-        '<a href="perfil.html" class="btn-login">Perfil</a>' +
-        '<a href="#" class="btn-login" onclick="logout(event)">Sair</a>';
-    } else {
-      area.innerHTML =
-        '<a href="login.html" class="btn-login">Entrar</a>' +
-        '<a href="cadastro.html" class="btn-cadastro">Cadastrar</a>';
-    }
-  }
+function atualizarBadge(){
+  const c=getCarrinho();const t=c.reduce((s,i)=>s+i.quantidade,0);
+  const badge=document.getElementById('cartCount');const label=document.getElementById('cartLabel');
+  if(t>0){badge.textContent=t;badge.classList.add('show');label.textContent='Carrinho ('+t+')'}
+  else{badge.classList.remove('show');label.textContent='Carrinho'}
+}
 
-  function logout(e) {
-    e.preventDefault();
-    localStorage.removeItem('pep_token');
-    localStorage.removeItem('pep_nome');
-    location.reload();
-  }
+function abrirCarrinho(){renderCarrinho();document.getElementById('cartDrawer').classList.add('open');document.getElementById('cartOverlay').classList.add('open');document.body.style.overflow='hidden'}
+function fecharCarrinho(){document.getElementById('cartDrawer').classList.remove('open');document.getElementById('cartOverlay').classList.remove('open');document.body.style.overflow=''}
 
-  // ── CARREGAR PRODUTOS ──
-  async function carregarProdutos() {
-    try {
-      const res   = await fetch('/api/produtos');
-      const lista = await res.json();
-      // mesclar preços/estoque da API com metadados do catálogo
-      produtosData = CATALOGO.map(c => {
-        const api = lista.find(p => String(p.id) === String(c.id) || p.nome === c.nome);
-        return {
-          ...c,
-          preco:   api ? parseFloat(api.preco)   : c.preco,
-          estoque: api ? parseInt(api.estoque)    : 10,
-          descricao: api && api.descricao ? api.descricao : c.descricao,
-        };
-      });
-    } catch {
-      // fallback estático
-      produtosData = CATALOGO.map(c => ({ ...c, estoque: c.id === '5' ? 0 : 10 }));
-    }
-    renderGrid(produtosData);
-  }
+function renderCarrinho(){
+  const c=getCarrinho();const itemsEl=document.getElementById('cartItems');const footEl=document.getElementById('cartFoot');
+  if(!c.length){itemsEl.innerHTML='<div class="cart-empty"><div class="icon">🛒</div><p>Seu carrinho está vazio.<br>Adicione peptídeos para começar!</p></div>';footEl.style.display='none';return}
+  footEl.style.display='block';
+  const subtotal=c.reduce((s,i)=>s+i.preco*i.quantidade,0);
+  itemsEl.innerHTML=c.map(item=>`
+    <div class="cart-item">
+      <div class="cart-item-img"><img src="${item.img}" alt="${item.nome}" onerror="this.style.display='none'"/></div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.nome}</div>
+        <div class="cart-item-cat">${catEmoji[item.categoria]||'💊'} ${item.categoria}</div>
+        <div class="cart-item-controls">
+          <button class="qty-btn" onclick="alterarQtd('${item.id}',-1)">−</button>
+          <span class="qty-val">${item.quantidade}</span>
+          <button class="qty-btn" onclick="alterarQtd('${item.id}',1)">+</button>
+          <span class="unit-price">× R$ ${item.preco.toFixed(2).replace('.',',')}</span>
+        </div>
+      </div>
+      <div class="cart-item-right">
+        <div class="cart-item-price">R$ ${(item.preco*item.quantidade).toFixed(2).replace('.',',')}</div>
+        <button class="cart-item-del" onclick="removerDoCarrinho('${item.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+  document.getElementById('cartSubtotal').textContent='R$ '+subtotal.toFixed(2).replace('.',',');
+  document.getElementById('cartTotal').textContent='R$ '+subtotal.toFixed(2).replace('.',',');
+}
 
-  // ── RENDER GRID ──
-  function renderGrid(lista) {
-    const grid = document.getElementById('produtosGrid');
-    grid.innerHTML = '';
+// ── AUTH ──
+function renderAuth(){
+  const area=document.getElementById('authArea');const token=localStorage.getItem('pep_token');const nome=localStorage.getItem('pep_nome');
+  if(token&&nome){area.innerHTML='<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.88rem;color:var(--mid)">Olá, '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" class="btn-login">Pedidos</a><a href="#" class="btn-login" onclick="logout(event)">Sair</a>'}
+  else{area.innerHTML='<a href="login.html" class="btn-login">Entrar</a><a href="cadastro.html" class="btn-cadastro">Cadastrar</a>'}
+}
+function logout(e){e.preventDefault();localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');location.reload()}
 
-    if (!lista.length) {
-      grid.innerHTML = '<div class="empty-state"><h3>Nenhum produto encontrado</h3><p>Tente outro filtro ou busca.</p></div>';
-      return;
-    }
+// ── PRODUTOS ──
+async function carregarProdutos(){
+  try{const res=await fetch('/api/produtos');const lista=await res.json();
+    produtosData=CATALOGO.map(c=>{const api=lista.find(p=>String(p.id)===String(c.id)||p.nome===c.nome);return{...c,preco:api?parseFloat(api.preco):c.preco,estoque:api?parseInt(api.estoque):10,descricao:(api&&api.descricao)?api.descricao:c.descricao}})
+  }catch{produtosData=CATALOGO.map(c=>({...c,estoque:c.id==='5'?0:10}))}
+  renderGrid(produtosData)
+}
 
-    lista.forEach(p => {
-      const esgotado = p.estoque <= 0;
-      const baixo    = p.estoque > 0 && p.estoque <= 3;
-      const estBadge = esgotado ? '<span class="estoque-badge estoque-zero">Esgotado</span>'
-                     : baixo    ? '<span class="estoque-badge estoque-low">Últimas unidades</span>'
-                                : '';
-      const emoji = catEmoji[p.categoria] || '💊';
-      const preco = typeof p.preco === 'number' ? p.preco : parseFloat(p.preco);
+function renderGrid(lista){
+  const grid=document.getElementById('produtosGrid');grid.innerHTML='';
+  if(!lista.length){grid.innerHTML='<div class="empty-state"><h3>Nenhum produto encontrado</h3><p>Tente outro filtro ou busca.</p></div>';return}
+  lista.forEach(p=>{
+    const esgotado=p.estoque<=0;const baixo=p.estoque>0&&p.estoque<=3;
+    const emoji=catEmoji[p.categoria]||'💊';const preco=typeof p.preco==='number'?p.preco:parseFloat(p.preco);
+    const estBadge=esgotado?'<span class="estoque-badge estoque-zero">Esgotado</span>':baixo?'<span class="estoque-badge estoque-low">Últimas unidades</span>':'';
+    grid.innerHTML+='<div class="card"><div class="card-img-wrap"><span class="cat-badge cat-'+p.catClass+'">'+emoji+' '+p.categoria+'</span>'+estBadge+'<img src="'+p.img+'" alt="'+p.nome+'" onerror="this.style.display=\'none\'"/></div><div class="card-body"><div class="card-cat-label">'+emoji+' '+p.categoria+'</div><div class="card-name">'+p.nome+'</div><div class="card-desc">'+p.descricao+'</div><div class="card-footer"><div class="card-price"><span>R$</span>'+preco.toFixed(2).replace('.',',')+'</div>'+(esgotado?'<button class="esgotado" onclick="abrirEspera(\''+p.nome+'\')">Esgotado</button>':'<button class="btn-add" id="btn-add-'+p.id+'" onclick="adicionarAoCarrinho(\''+p.id+'\')">+ Carrinho</button>')+'</div></div></div>'
+  })
+}
 
-      grid.innerHTML +=
-        '<div class="card" data-categoria="' + p.categoria + '" data-nome="' + p.nome.toLowerCase() + '">' +
-          '<div class="card-img-wrap">' +
-            '<span class="cat-badge cat-' + p.catClass + '">' + emoji + ' ' + p.categoria + '</span>' +
-            estBadge +
-            '<img src="' + p.img + '" alt="' + p.nome + '" onerror="this.style.display=\'none\'" />' +
-          '</div>' +
-          '<div class="card-body">' +
-            '<div class="card-cat-label">' + emoji + ' ' + p.categoria + '</div>' +
-            '<div class="card-name">' + p.nome + '</div>' +
-            '<div class="card-desc">' + p.descricao + '</div>' +
-            '<div class="card-footer">' +
-              '<div class="card-price"><span>R$</span>' + preco.toFixed(2).replace('.', ',') + '</div>' +
-              (esgotado
-                ? '<button class="esgotado" onclick="abrirEspera(\'' + p.nome + '\')">Esgotado</button>'
-                : '<a href="checkout.html?produto=' + p.id + '" class="btn-comprar">Comprar</a>'
-              ) +
-            '</div>' +
-          '</div>' +
-        '</div>';
-    });
-  }
+// ── FILTROS ──
+function filtrar(cat,btn){filtroAtivo=cat;document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('buscaInput').value='';aplicarFiltros()}
+function filtrarLink(cat){filtroAtivo=cat;document.querySelectorAll('.filtro-btn').forEach(b=>{if(b.textContent.includes(cat))b.classList.add('active');else b.classList.remove('active')});aplicarFiltros();setTimeout(()=>document.getElementById('produtos').scrollIntoView({behavior:'smooth'}),100)}
+function buscar(){filtroAtivo='';document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('active'));document.querySelector('.filtro-btn').classList.add('active');aplicarFiltros()}
+function aplicarFiltros(){const q=document.getElementById('buscaInput').value.toLowerCase();renderGrid(produtosData.filter(p=>(!filtroAtivo||p.categoria===filtroAtivo)&&(!q||p.nome.toLowerCase().includes(q)||p.descricao.toLowerCase().includes(q))))}
 
-  // ── FILTROS ──
-  function filtrar(cat, btn) {
-    filtroAtivo = cat;
-    document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('buscaInput').value = '';
-    aplicarFiltros();
-  }
+// ── LISTA ESPERA ──
+function abrirEspera(nome){document.getElementById('espera-produto').value=nome;document.getElementById('modalEspera').classList.add('open')}
+function fecharModal(){document.getElementById('modalEspera').classList.remove('open')}
+async function entrarListaEspera(){
+  const nome=document.getElementById('espera-nome').value.trim();const email=document.getElementById('espera-email').value.trim();const produto=document.getElementById('espera-produto').value;
+  if(!nome||!email){showToast('Preencha nome e email.');return}
+  try{await fetch('/api/lista-espera',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,email,produto})})}catch{}
+  fecharModal();showToast('✅ Você será avisado quando voltar!')
+}
 
-  function buscar() {
-    filtroAtivo = '';
-    document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector('.filtro-btn').classList.add('active');
-    aplicarFiltros();
-  }
+// ── TOAST ──
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
 
-  function aplicarFiltros() {
-    const q = document.getElementById('buscaInput').value.toLowerCase();
-    const filtrado = produtosData.filter(p => {
-      const catOk  = !filtroAtivo || p.categoria === filtroAtivo;
-      const nomeOk = !q || p.nome.toLowerCase().includes(q) || p.descricao.toLowerCase().includes(q);
-      return catOk && nomeOk;
-    });
-    renderGrid(filtrado);
-  }
-
-  // ── LISTA DE ESPERA ──
-  function abrirEspera(nome) {
-    document.getElementById('espera-produto').value = nome;
-    document.getElementById('modalEspera').classList.add('open');
-  }
-  function fecharModal() { document.getElementById('modalEspera').classList.remove('open'); }
-  async function entrarListaEspera() {
-    const nome    = document.getElementById('espera-nome').value.trim();
-    const email   = document.getElementById('espera-email').value.trim();
-    const produto = document.getElementById('espera-produto').value;
-    if (!nome || !email) { showToast('Preencha nome e email.'); return; }
-    try {
-      await fetch('/api/lista-espera', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({nome,email,produto}) });
-    } catch {}
-    fecharModal();
-    showToast('✅ Você será avisado quando voltar!');
-  }
-
-  // ── TOAST ──
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3500);
-  }
-
-  // ── INIT ──
-  renderAuth();
-  carregarProdutos();
+renderAuth();atualizarBadge();carregarProdutos();
 </script>
 </body>
 </html>
