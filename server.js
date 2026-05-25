@@ -6,13 +6,14 @@
 //  Pagamento: PixGo  |  Email: Resend  |  WhatsApp: WA_APIKEY
 // ─────────────────────────────────────────────
 
-const express    = require('express');
-const { Pool }   = require('pg');
-const bcrypt     = require('bcryptjs');
-const jwt        = require('jsonwebtoken');
-const crypto     = require('crypto');
-const path       = require('path');
-const fetch      = require('node-fetch');
+const express      = require('express');
+const { Pool }     = require('pg');
+const bcrypt       = require('bcryptjs');
+const jwt          = require('jsonwebtoken');
+const crypto       = require('crypto');
+const path         = require('path');
+const fetch        = require('node-fetch');
+const nodemailer   = require('nodemailer');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,8 @@ const PIXGO_WEBHOOK_SECRET= process.env.PIXGO_WEBHOOK_SECRET|| '';
 const RESEND_API_KEY      = process.env.RESEND_API_KEY      || '';
 const BASE_URL            = process.env.BASE_URL            || 'https://pepmasters.onrender.com';
 const EMAIL_DESTINO       = process.env.EMAIL_DESTINO       || '';   // preencher no Render
+const EMAIL_USER          = process.env.EMAIL_USER          || 'matheustlopo42@gmail.com';
+const EMAIL_PASS          = process.env.EMAIL_PASS          || 'pplezzjcvzyakzdc';
 const WA_PHONE            = process.env.WA_PHONE            || '';   // preencher no Render
 const WA_APIKEY           = process.env.WA_APIKEY           || '';   // preencher no Render
 
@@ -178,15 +181,22 @@ function adminMiddleware(req, res, next) {
   }
 }
 
-// ── EMAIL (Resend) ────────────────────────────
+// ── EMAIL (Gmail SMTP via Nodemailer) ────────
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: { user: EMAIL_USER, pass: EMAIL_PASS }
+});
+
 async function enviarEmail(para, assunto, html) {
-  if (!RESEND_API_KEY || !para) return;
+  if (!para) return;
   try {
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + RESEND_API_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: 'PEPMASTERS <noreply@pepmasters.onrender.com>', to: para, subject: assunto, html })
+    await transporter.sendMail({
+      from: 'PEPMASTERS <' + EMAIL_USER + '>',
+      to: para,
+      subject: assunto,
+      html
     });
+    console.log('[Email] Enviado para ' + para);
   } catch (err) {
     console.error('[Email] Erro:', err.message);
   }
