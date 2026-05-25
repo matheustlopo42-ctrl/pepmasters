@@ -327,7 +327,9 @@ function adicionarAoCarrinho(id){
 function removerDoCarrinho(id){setCarrinho(getCarrinho().filter(i=>i.id!==id));renderCarrinho()}
 function alterarQtd(id,delta){
   const c=getCarrinho();const idx=c.findIndex(i=>i.id===id);if(idx<0)return;
-  c[idx].quantidade=Math.max(1,c[idx].quantidade+delta);setCarrinho(c);renderCarrinho()
+  const nova=c[idx].quantidade+delta;
+  if(nova<=0){c.splice(idx,1)}else{c[idx].quantidade=nova}
+  setCarrinho(c);renderCarrinho()
 }
 function limparCarrinho(){setCarrinho([]);renderCarrinho()}
 
@@ -453,7 +455,9 @@ function esconderSeletor(id) {
 }
 
 function cardQtd(id, delta) {
-  cardQtds[id] = Math.max(1, (cardQtds[id] || 1) + delta);
+  const nova = (cardQtds[id] || 1) + delta;
+  if (nova <= 0) { esconderSeletor(id); return; }
+  cardQtds[id] = nova;
   const el = document.getElementById('qn-'+id);
   if (el) el.textContent = cardQtds[id];
 }
