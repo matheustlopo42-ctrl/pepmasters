@@ -27,6 +27,18 @@
     .step p{margin:0;font-size:.9rem;color:var(--mid);line-height:1.65;padding-top:4px}
     footer{background:var(--dark);color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:.8rem}
     footer a{color:rgba(255,179,0,.5);text-decoration:none}
+
+    /* FOOTER */
+    footer{background:var(--dark);color:#fff;padding:52px 24px 0;margin-top:60px}
+    .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;padding-bottom:44px;border-bottom:1px solid rgba(255,179,0,.2)}
+    .footer-brand p{font-size:.84rem;color:rgba(255,255,255,.5);line-height:1.7;margin-top:12px;max-width:260px}
+    .footer-col h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+    .footer-col a{display:block;font-size:.86rem;color:rgba(255,255,255,.6);text-decoration:none;margin-bottom:8px;transition:color .2s}
+    .footer-col a:hover{color:var(--amber)}
+    .footer-bottom{max-width:1200px;margin:0 auto;padding:18px 0;text-align:center;font-size:.78rem;color:rgba(255,255,255,.3)}
+    .admin-link{display:block;text-align:center;padding:8px;font-size:.75rem;color:rgba(255,255,255,.15);text-decoration:none}
+    .admin-link:hover{color:var(--amber)}
+    @media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}}
   </style>
 </head>
 <body>
@@ -59,6 +71,38 @@
     <p>O frete de devolução em casos de defeito ou erro nosso é por nossa conta. Em arrependimento de compra, o frete é de responsabilidade do cliente.</p>
   </div>
 </main>
-<footer>© 2025 PEPMASTERS — <a href="index.html">Voltar à loja</a></footer>
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="logo-wrap" style="margin-bottom:0">
+        <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain"/>
+        <span class="logo-text">PEPMASTERS</span>
+      </a>
+      <p>Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Institucional</h4>
+      <a href="quem-somos.html">Quem Somos</a>
+      <a href="termos-de-uso.html">Termos de Uso</a>
+      <a href="politica-privacidade.html">Política de Privacidade</a>
+    </div>
+    <div class="footer-col">
+      <h4>Suporte</h4>
+      <a href="duvidas-frequentes.html">Dúvidas Frequentes</a>
+      <a href="envio-e-prazos.html">Envio e Prazos</a>
+      <a href="trocas-e-devolucoes.html">Trocas e Devoluções</a>
+    </div>
+    <div class="footer-col">
+      <h4>Minha Conta</h4>
+      <a href="meus-pedidos.html">Meus Pedidos</a>
+      <a href="perfil.html">Meu Perfil</a>
+      <a href="rastrear-pedido.html">Rastrear Pedido</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 PEPMASTERS. Todos os direitos reservados.</p>
+    <a href="admin-login.html" class="admin-link">Área do Administrador</a>
+  </div>
+</footer>
 </body>
 </html>
