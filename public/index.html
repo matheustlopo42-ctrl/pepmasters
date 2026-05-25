@@ -391,31 +391,67 @@ async function carregarProdutos(){
 }
 
 function renderGrid(lista){
-  const grid=document.getElementById('produtosGrid');grid.innerHTML='';
-  if(!lista.length){grid.innerHTML='<div class="empty-state"><h3>Nenhum produto encontrado</h3><p>Tente outro filtro ou busca.</p></div>';return}
-  lista.forEach(p=>{
-    const esgotado=p.estoque<=0;const baixo=p.estoque>0&&p.estoque<=3;
-    const emoji=catEmoji[p.categoria]||'';const preco=typeof p.preco==='number'?p.preco:parseFloat(p.preco);
-    const estBadge=esgotado?'<span class="estoque-badge estoque-zero">Esgotado</span>':baixo?'<span class="estoque-badge estoque-low">Últimas unidades</span>':'';
-    const cardHtml = '<div class="card"><div class="card-img-wrap"><span class="cat-badge cat-'+p.catClass+'">'+emoji+' '+p.categoria+'</span>'+estBadge+'<img src="'+p.img+'" alt="'+p.nome+'" onerror="this.style.display=\'none\'"/></div>' +
-      '<div class="card-body"><div class="card-cat-label">'+emoji+' '+p.categoria+'</div><div class="card-name">'+p.nome+'</div><div class="card-desc">'+p.descricao+'</div>' +
-      (esgotado
-        ? '<div class="card-footer"><div class="card-price"><span>R$</span>'+preco.toFixed(2).replace('.',',')+'</div><button class="esgotado" onclick="abrirEspera(\''+p.nome+'\')" >Esgotado</button></div>'
-        : '<div class="card-footer"><div class="card-price"><span>R$</span>'+preco.toFixed(2).replace('.',',')+'</div><button class="btn-add" id="btn-add-'+p.id+'" onclick="mostrarSeletor(\''+p.id+'\')" >Adicionar ao Carrinho</button></div>' +
-          '<div class="card-qtd-selector" id="sel-'+p.id+'">' +
-            '<div class="qtd-row">' +
-              '<button class="qtd-btn" onclick="cardQtd(\''+p.id+'\', -1)">−</button>' +
-              '<span class="qtd-display" id="qn-'+p.id+'">1</span>' +
-              '<button class="qtd-btn" onclick="cardQtd(\''+p.id+'\', 1)">+</button>' +
-            '</div>' +
-            '<button class="qtd-confirmar" onclick="confirmarSeletor(\''+p.id+'\', '+preco+')">Adicionar ao Carrinho</button>' +
-            '<button class="qtd-cancelar" onclick="esconderSeletor(\''+p.id+'\')">Cancelar</button>' +
-          '</div>'
-      ) +
-      '</div></div>';
-    grid.innerHTML += cardHtml
-  })
+  const container=document.getElementById('produtosGrid');
+  container.innerHTML='';
+  if(!lista.length){container.innerHTML='<div class="empty-state"><h3>Nenhum produto encontrado</h3><p>Tente outro filtro ou busca.</p></div>';return}
+
+  // Agrupar por categoria
+  const grupos={};
+  lista.forEach(p=>{if(!grupos[p.categoria])grupos[p.categoria]=[];grupos[p.categoria].push(p)});
+
+  // Ordem alfabética
+  const cats=Object.keys(grupos).sort((a,b)=>a.localeCompare(b,'pt-BR'));
+
+  cats.forEach(cat=>{
+    const prods=grupos[cat];
+
+    // Título da seção
+    const sec=document.createElement('div');
+    sec.className='section-cat-label';
+    sec.innerHTML='<h3>'+cat+'</h3><span class="sec-count">'+prods.length+' produto'+(prods.length>1?'s':'')+'</span>';
+    container.appendChild(sec);
+
+    // Grid da seção
+    const grid=document.createElement('div');
+    grid.className='cat-grid';
+    prods.forEach(p=>{
+      const esgotado=p.estoque<=0;
+      const baixo=p.estoque>0&&p.estoque<=3;
+      const preco=typeof p.preco==='number'?p.preco:parseFloat(p.preco);
+      const estBadge=esgotado?'<span class="estoque-badge estoque-zero">Esgotado</span>':baixo?'<span class="estoque-badge estoque-low">Últimas unidades</span>':'';
+      const div=document.createElement('div');
+      div.className='card';
+      div.innerHTML=
+        '<div class="card-img-wrap"><span class="cat-badge cat-'+p.catClass+'">'+cat+'</span>'+estBadge+'<img src="'+p.img+'" alt="'+p.nome+'" onerror="this.style.display='none'"/></div>'+
+        '<div class="card-body">'+
+          '<div class="card-cat-label">'+cat+'</div>'+
+          '<div class="card-name">'+p.nome+'</div>'+
+          '<div class="card-desc">'+p.descricao+'</div>'+
+          '<div class="card-footer">'+
+            '<div class="card-price"><span>R$</span>'+preco.toFixed(2).replace('.',',')+'</div>'+
+            (esgotado
+              ? '<button class="esgotado" onclick="abrirEspera(''+p.nome+'')">Esgotado</button>'
+              : '<button class="btn-add" id="btn-add-'+p.id+'" onclick="mostrarSeletor(''+p.id+'')">Adicionar ao Carrinho</button>'
+            )+
+          '</div>'+
+          (esgotado?'':
+            '<div class="card-qtd-selector" id="sel-'+p.id+'">'+
+              '<div class="qtd-row">'+
+                '<button class="qtd-btn" onclick="cardQtd(''+p.id+'',-1)">−</button>'+
+                '<span class="qtd-display" id="qn-'+p.id+'">1</span>'+
+                '<button class="qtd-btn" onclick="cardQtd(''+p.id+'',1)">+</button>'+
+              '</div>'+
+              '<button class="qtd-confirmar" onclick="confirmarSeletor(''+p.id+'','+preco+')">Adicionar ao Carrinho</button>'+
+              '<button class="qtd-cancelar" onclick="esconderSeletor(''+p.id+'')">Cancelar</button>'+
+            '</div>'
+          )+
+        '</div>';
+      grid.appendChild(div);
+    });
+    container.appendChild(grid);
+  });
 }
+
 
 // ── FILTROS ──
 function filtrar(cat,btn){filtroAtivo=cat;document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('buscaInput').value='';aplicarFiltros()}
