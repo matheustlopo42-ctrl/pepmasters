@@ -45,76 +45,69 @@ async function initDB() {
   try {
     await client.query('BEGIN');
 
-    // Usuários
+    // Usuários — garantir colunas necessárias
     await client.query(`
       CREATE TABLE IF NOT EXISTS pep_usuarios (
-        id          SERIAL PRIMARY KEY,
-        nome        TEXT NOT NULL,
-        email       TEXT UNIQUE NOT NULL,
-        cpf         TEXT,
-        telefone    TEXT,
-        senha_hash  TEXT NOT NULL,
-        reset_token TEXT,
-        reset_exp   BIGINT,
-        criado_em   TIMESTAMPTZ DEFAULT NOW()
+        id         SERIAL PRIMARY KEY,
+        nome       TEXT NOT NULL,
+        email      TEXT UNIQUE NOT NULL,
+        senha_hash TEXT,
+        criado_em  TIMESTAMPTZ DEFAULT NOW()
       )
     `);
+    await client.query(`ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS cpf TEXT`);
+    await client.query(`ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS telefone TEXT`);
+    await client.query(`ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS senha_hash TEXT`);
+    await client.query(`ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS reset_token TEXT`);
+    await client.query(`ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS reset_exp BIGINT`);
 
-    // Pedidos
+    // Pedidos — garantir colunas necessárias
     await client.query(`
       CREATE TABLE IF NOT EXISTS pep_pedidos (
-        id              SERIAL PRIMARY KEY,
-        usuario_id      INT,
-        nome            TEXT NOT NULL,
-        email           TEXT NOT NULL,
-        cpf             TEXT,
-        telefone        TEXT,
-        cep             TEXT,
-        rua             TEXT,
-        numero          TEXT,
-        bairro          TEXT,
-        cidade          TEXT,
-        complemento     TEXT,
-        produto_id      INT NOT NULL,
-        produto_nome    TEXT NOT NULL,
-        preco_unitario  NUMERIC(10,2),
-        desconto        NUMERIC(10,2) DEFAULT 0,
-        total           NUMERIC(10,2),
-        pagamento       TEXT NOT NULL,
-        cupom           TEXT,
-        status          TEXT DEFAULT 'pix_pending',
-        pixgo_id        TEXT,
-        codigo_rastreio TEXT,
-        criado_em       TIMESTAMPTZ DEFAULT NOW()
+        id        SERIAL PRIMARY KEY,
+        criado_em TIMESTAMPTZ DEFAULT NOW()
       )
     `);
+    const pedidosCols = [
+      'usuario_id INT', 'nome TEXT', 'email TEXT', 'cpf TEXT', 'telefone TEXT',
+      'cep TEXT', 'rua TEXT', 'numero TEXT', 'bairro TEXT', 'cidade TEXT', 'complemento TEXT',
+      'produto_id INT', 'produto_nome TEXT', 'preco_unitario NUMERIC(10,2)',
+      'desconto NUMERIC(10,2) DEFAULT 0', 'total NUMERIC(10,2)',
+      'pagamento TEXT', 'cupom TEXT', 'status TEXT DEFAULT \'pix_pending\'',
+      'pixgo_id TEXT', 'codigo_rastreio TEXT'
+    ];
+    for (const col of pedidosCols) {
+      const colName = col.split(' ')[0];
+      await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS ${col}`).catch(() => {});
+    }
 
-    // Cupons
+    // Cupons — garantir colunas necessárias
     await client.query(`
       CREATE TABLE IF NOT EXISTS pep_cupons (
-        id               SERIAL PRIMARY KEY,
-        codigo           TEXT UNIQUE NOT NULL,
-        desconto_pix     INT DEFAULT 0,
-        desconto_cartao  INT DEFAULT 0,
-        usos             INT DEFAULT 0,
-        usos_max         INT DEFAULT 0,
-        ativo            BOOLEAN DEFAULT TRUE,
-        criado_em        TIMESTAMPTZ DEFAULT NOW()
+        id        SERIAL PRIMARY KEY,
+        codigo    TEXT UNIQUE NOT NULL,
+        ativo     BOOLEAN DEFAULT TRUE,
+        criado_em TIMESTAMPTZ DEFAULT NOW()
       )
     `);
+    await client.query(`ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS desconto_pix INT DEFAULT 0`);
+    await client.query(`ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS desconto_cartao INT DEFAULT 0`);
+    await client.query(`ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS usos INT DEFAULT 0`);
+    await client.query(`ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS usos_max INT DEFAULT 0`);
 
-    // Estoque
+    // Estoque — garantir colunas necessárias
     await client.query(`
       CREATE TABLE IF NOT EXISTS pep_estoque (
-        id             SERIAL PRIMARY KEY,
-        produto_id     INT UNIQUE NOT NULL,
-        nome           TEXT NOT NULL,
-        preco          NUMERIC(10,2),
-        descricao      TEXT,
-        estoque        INT DEFAULT 0,
-        alerta_minimo  INT DEFAULT 3
+        id        SERIAL PRIMARY KEY,
+        produto_id VARCHAR(100),
+        criado_em TIMESTAMPTZ DEFAULT NOW()
       )
     `);
+    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS nome TEXT`);
+    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS preco NUMERIC(10,2)`);
+    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS descricao TEXT`);
+    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS estoque INT DEFAULT 0`);
+    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS alerta_minimo INT DEFAULT 3`);
 
     // Lista de espera
     await client.query(`
@@ -141,8 +134,8 @@ async function initDB() {
       ];
       for (const p of produtos) {
         await client.query(
-          'INSERT INTO pep_estoque (produto_id,nome,preco,descricao,estoque) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (produto_id) DO NOTHING',
-          [p.id, p.nome, p.preco, p.descricao, p.estoque]
+          'INSERT INTO pep_estoque (produto_id,nome,preco,descricao,estoque) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (produto_id,variacao) DO UPDATE SET nome=EXCLUDED.nome,preco=EXCLUDED.preco,descricao=EXCLUDED.descricao',
+          [String(p.id), p.nome, p.preco, p.descricao, p.estoque]
         );
       }
       console.log('[DB] Produtos inseridos no estoque.');
@@ -217,7 +210,7 @@ async function enviarWhatsApp(mensagem) {
 app.get('/api/produtos', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT produto_id AS id, nome, preco, descricao, estoque FROM pep_estoque ORDER BY produto_id'
+      'SELECT produto_id AS id, nome, preco, descricao, estoque FROM pep_estoque WHERE nome IS NOT NULL ORDER BY produto_id'
     );
     res.json(rows);
   } catch (err) {
@@ -336,7 +329,7 @@ app.post('/api/pedido', async (req, res) => {
 
     // buscar produto e estoque
     const { rows: estoqueRows } = await client.query(
-      'SELECT preco, estoque FROM pep_estoque WHERE produto_id=$1 FOR UPDATE',
+      'SELECT preco, estoque FROM pep_estoque WHERE produto_id=$1::text FOR UPDATE',
       [produto_id]
     );
     if (!estoqueRows.length) { await client.query('ROLLBACK'); return res.status(404).json({ erro: 'Produto não encontrado.' }); }
@@ -389,7 +382,7 @@ app.post('/api/pedido', async (req, res) => {
     const pedidoId = pedRows[0].id;
 
     // baixar estoque
-    await client.query('UPDATE pep_estoque SET estoque=estoque-1 WHERE produto_id=$1', [produto_id]);
+    await client.query('UPDATE pep_estoque SET estoque=estoque-1 WHERE produto_id=$1::text', [produto_id]);
 
     await client.query('COMMIT');
 
@@ -686,7 +679,7 @@ app.put('/api/admin/estoque/:id', adminMiddleware, async (req, res) => {
   const { estoque, alerta_minimo } = req.body;
   try {
     await pool.query(
-      'UPDATE pep_estoque SET estoque=$1,alerta_minimo=$2 WHERE produto_id=$3',
+      'UPDATE pep_estoque SET estoque=$1,alerta_minimo=$2 WHERE produto_id=$3::text',
       [estoque, alerta_minimo, req.params.id]
     );
     res.json({ ok: true });
