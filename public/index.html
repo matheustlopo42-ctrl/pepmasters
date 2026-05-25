@@ -262,6 +262,26 @@
   </div>
 </div>
 
+<!-- MODAL QUANTIDADE -->
+<div class="modal-qtd-overlay" id="modalQtd">
+  <div class="modal-qtd">
+    <img id="mqImg" src="" alt="" class="modal-qtd-img" onerror="this.style.display='none'"/>
+    <div class="modal-qtd-nome" id="mqNome">—</div>
+    <div class="modal-qtd-cat" id="mqCat">—</div>
+    <div class="modal-qtd-preco"><span>R$</span><span id="mqPreco">0</span></div>
+    <div class="qtd-controls">
+      <button class="qtd-ctrl-btn" onclick="mqAlterarQtd(-1)">−</button>
+      <span class="qtd-num" id="mqQtd">1</span>
+      <button class="qtd-ctrl-btn" onclick="mqAlterarQtd(1)">+</button>
+    </div>
+    <div class="modal-qtd-total">Total: <strong id="mqTotal">R$ 0,00</strong></div>
+    <div class="modal-qtd-actions">
+      <button class="btn-modal-cancel" onclick="fecharModalQtd()">Cancelar</button>
+      <button class="btn-modal-confirm" onclick="confirmarModalQtd()">🛒 Adicionar ao Carrinho</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <footer>
@@ -400,7 +420,7 @@ function renderGrid(lista){
     const esgotado=p.estoque<=0;const baixo=p.estoque>0&&p.estoque<=3;
     const emoji=catEmoji[p.categoria]||'💊';const preco=typeof p.preco==='number'?p.preco:parseFloat(p.preco);
     const estBadge=esgotado?'<span class="estoque-badge estoque-zero">Esgotado</span>':baixo?'<span class="estoque-badge estoque-low">Últimas unidades</span>':'';
-    grid.innerHTML+='<div class="card"><div class="card-img-wrap"><span class="cat-badge cat-'+p.catClass+'">'+emoji+' '+p.categoria+'</span>'+estBadge+'<img src="'+p.img+'" alt="'+p.nome+'" onerror="this.style.display=\'none\'"/></div><div class="card-body"><div class="card-cat-label">'+emoji+' '+p.categoria+'</div><div class="card-name">'+p.nome+'</div><div class="card-desc">'+p.descricao+'</div><div class="card-footer"><div class="card-price"><span>R$</span>'+preco.toFixed(2).replace('.',',')+'</div>'+(esgotado?'<button class="esgotado" onclick="abrirEspera(\''+p.nome+'\')">Esgotado</button>':'<button class="btn-add" id="btn-add-'+p.id+'" onclick="adicionarAoCarrinho(\''+p.id+'\')">+ Carrinho</button>')+'</div></div></div>'
+    grid.innerHTML+='<div class="card"><div class="card-img-wrap"><span class="cat-badge cat-'+p.catClass+'">'+emoji+' '+p.categoria+'</span>'+estBadge+'<img src="'+p.img+'" alt="'+p.nome+'" onerror="this.style.display=\'none\'"/></div><div class="card-body"><div class="card-cat-label">'+emoji+' '+p.categoria+'</div><div class="card-name">'+p.nome+'</div><div class="card-desc">'+p.descricao+'</div><div class="card-footer"><div class="card-price"><span>R$</span>'+preco.toFixed(2).replace('.',',')+'</div>'+(esgotado?'<button class="esgotado" onclick="abrirEspera(\''+p.nome+'\')">Esgotado</button>':'<button class="btn-add" id="btn-add-'+p.id+'" onclick="abrirModalQtd(\''+p.id+'\')">Adicionar ao Carrinho</button>')+'</div></div></div>'
   })
 }
 
