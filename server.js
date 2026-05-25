@@ -228,8 +228,8 @@ app.post('/api/cadastro', async (req, res) => {
 
     const hash = await bcrypt.hash(senha, 10);
     const { rows } = await pool.query(
-      'INSERT INTO pep_usuarios (nome,email,cpf,telefone,senha_hash) VALUES ($1,$2,$3,$4,$5) RETURNING id,nome,email',
-      [nome, email.toLowerCase(), cpf || null, telefone || null, hash]
+      'INSERT INTO pep_usuarios (nome,email,cpf,telefone,senha,senha_hash) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id,nome,email',
+      [nome, email.toLowerCase(), cpf || null, telefone || null, hash, hash]
     );
     const u = rows[0];
     res.json({ token: gerarToken(u.id), nome: u.nome, email: u.email });
