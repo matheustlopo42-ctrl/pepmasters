@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quem Somos — PEPMASTERS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:var(--cream);min-height:100vh;display:flex;flex-direction:column}
+    header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0 24px;height:68px;display:flex;align-items:center;gap:20px;box-shadow:0 2px 20px rgba(255,179,0,.2)}
+    .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo-wrap img{height:40px;width:40px;object-fit:contain}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .back-link{margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none}
+    .back-link:hover{color:var(--orange)}
+    main{flex:1;max-width:800px;margin:0 auto;padding:52px 24px;width:100%}
+    .page-hero{background:linear-gradient(135deg,#FFF3D0,#FFE0A0);border-radius:20px;padding:44px 40px;margin-bottom:40px;border-left:6px solid var(--orange)}
+    .page-hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.4rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dark);margin-bottom:8px}
+    .page-hero p{font-size:1rem;color:var(--mid);line-height:1.6}
+    .content-card{background:#fff;border-radius:16px;padding:32px;border:1px solid #FFE5B0;box-shadow:0 4px 20px rgba(255,179,0,.08);margin-bottom:20px}
+    .content-card h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dark);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+    .content-card p{font-size:.93rem;color:var(--mid);line-height:1.75;margin-bottom:12px}
+    .content-card p:last-child{margin-bottom:0}
+    .values-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:14px}
+    .value-item{background:var(--cream);border-radius:12px;padding:18px;border:1px solid var(--border);text-align:center}
+    .value-item .icon{font-size:2rem;margin-bottom:8px}
+    .value-item h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;text-transform:uppercase;letter-spacing:.06em;color:var(--dark);margin-bottom:4px}
+    .value-item p{font-size:.82rem;color:var(--muted);margin:0}
+    footer{background:var(--dark);color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:.8rem}
+    footer a{color:rgba(255,179,0,.5);text-decoration:none}
+  </style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo-wrap"><img src="Capturar.PNG" alt="Logo"/><span class="logo-text">PEPMASTERS</span></a>
+  <a href="index.html" class="back-link">← Loja</a>
+</header>
+<main>
+  <div class="page-hero">
+    <h1>Quem Somos</h1>
+    <p>Conheça a história e os valores por trás da PEPMASTERS.</p>
+  </div>
+
+  <div class="content-card">
+    <h2>Nossa Missão</h2>
+    <p>A PEPMASTERS nasceu da paixão pela ciência e pela performance humana. Somos uma empresa dedicada a oferecer peptídeos bioativos de alta qualidade para atletas, praticantes de esportes e entusiastas do bem-estar.</p>
+    <p>Acreditamos que o acesso a compostos avançados deve vir acompanhado de informação, transparência e responsabilidade. Por isso, cada produto que comercializamos passa por rigoroso controle de qualidade.</p>
+  </div>
+
+  <div class="content-card">
+    <h2>Nossos Valores</h2>
+    <div class="values-grid">
+      <div class="value-item"><div class="icon">🧬</div><h3>Ciência</h3><p>Baseados em evidências e pesquisa científica atualizada.</p></div>
+      <div class="value-item"><div class="icon">🔒</div><h3>Qualidade</h3><p>Produtos com pureza e procedência garantidas.</p></div>
+      <div class="value-item"><div class="icon">💬</div><h3>Transparência</h3><p>Informações claras sobre cada composto que vendemos.</p></div>
+      <div class="value-item"><div class="icon">🚀</div><h3>Performance</h3><p>Foco em resultados reais para quem busca evolução.</p></div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <h2>Compromisso com o Cliente</h2>
+    <p>Nossa equipe está sempre disponível para tirar dúvidas, orientar sobre os produtos e garantir que sua experiência de compra seja a melhor possível. Desde o primeiro contato até a entrega, cuidamos de cada detalhe.</p>
+  </div>
+</main>
+<footer>© 2025 PEPMASTERS — <a href="index.html">Voltar à loja</a></footer>
+</body>
+</html>

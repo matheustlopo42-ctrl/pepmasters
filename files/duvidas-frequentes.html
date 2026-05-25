@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Dúvidas Frequentes — PEPMASTERS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:var(--cream);min-height:100vh;display:flex;flex-direction:column}
+    header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0 24px;height:68px;display:flex;align-items:center;gap:20px;box-shadow:0 2px 20px rgba(255,179,0,.2)}
+    .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo-wrap img{height:40px;width:40px;object-fit:contain}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .back-link{margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none}
+    .back-link:hover{color:var(--orange)}
+    main{flex:1;max-width:760px;margin:0 auto;padding:52px 24px;width:100%}
+    .page-hero{background:linear-gradient(135deg,#FFF3D0,#FFE0A0);border-radius:20px;padding:44px 40px;margin-bottom:40px;border-left:6px solid var(--orange)}
+    .page-hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.4rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dark);margin-bottom:8px}
+    .page-hero p{font-size:1rem;color:var(--mid);line-height:1.6}
+    .faq-item{background:#fff;border-radius:14px;border:1px solid #FFE5B0;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 10px rgba(255,179,0,.06)}
+    .faq-q{width:100%;background:none;border:none;padding:20px 22px;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dark);transition:background .15s}
+    .faq-q:hover{background:#FFF8EC}
+    .faq-q .arrow{transition:transform .25s;color:var(--orange);font-size:1.1rem}
+    .faq-q.open .arrow{transform:rotate(180deg)}
+    .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s}
+    .faq-a.open{max-height:400px;padding:0 22px 18px}
+    .faq-a p{font-size:.9rem;color:var(--mid);line-height:1.7}
+    footer{background:var(--dark);color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:.8rem}
+    footer a{color:rgba(255,179,0,.5);text-decoration:none}
+  </style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo-wrap"><img src="Capturar.PNG" alt="Logo"/><span class="logo-text">PEPMASTERS</span></a>
+  <a href="index.html" class="back-link">← Loja</a>
+</header>
+<main>
+  <div class="page-hero">
+    <h1>Dúvidas Frequentes</h1>
+    <p>Respostas para as principais perguntas sobre produtos, pedidos e entrega.</p>
+  </div>
+
+  <div id="faqList"></div>
+</main>
+<footer>© 2025 PEPMASTERS — <a href="index.html">Voltar à loja</a></footer>
+<script>
+  const faqs = [
+    { q:'O que são peptídeos?', a:'Peptídeos são cadeias curtas de aminoácidos que atuam como sinalizadores no organismo. Eles podem estimular processos como recuperação muscular, queima de gordura, regeneração tecidual e produção de hormônios de forma mais seletiva do que compostos tradicionais.' },
+    { q:'Os produtos são seguros?', a:'Todos os nossos peptídeos são fornecidos com laudos de pureza. Recomendamos sempre a consulta com um profissional de saúde antes de iniciar qualquer protocolo com peptídeos.' },
+    { q:'Como é feito o pagamento?', a:'Aceitamos PIX (confirmação instantânea) e cartão de crédito via Mercado Pago. O pedido é processado automaticamente após a confirmação do pagamento.' },
+    { q:'Qual o prazo de entrega?', a:'Enviamos via Correios (PAC ou SEDEX). O prazo varia de 5 a 15 dias úteis dependendo da região. Após o envio, você recebe o código de rastreio por email.' },
+    { q:'Como rastrear meu pedido?', a:'Assim que o pedido for enviado, você receberá um email com o código de rastreio. Também é possível rastrear diretamente em nosso site na página "Rastrear Pedido".' },
+    { q:'Posso cancelar meu pedido?', a:'Pedidos podem ser cancelados antes do envio. Após o envio, segue nossa política de trocas e devoluções. Entre em contato o quanto antes para agilizarmos.' },
+    { q:'Os produtos precisam de receita?', a:'Nossos peptídeos são comercializados para fins de pesquisa. Para uso em humanos, recomendamos acompanhamento profissional. Consulte a legislação vigente no seu estado.' },
+    { q:'Vocês emitem nota fiscal?', a:'Sim, emitimos nota fiscal para todas as compras. A NF é enviada por email junto com a confirmação do pedido.' },
+    { q:'Posso usar cupom de desconto?', a:'Sim! Se você possui um cupom válido, basta inserir o código no campo correspondente durante o checkout. O desconto é aplicado automaticamente no total.' },
+  ];
+
+  const list = document.getElementById('faqList');
+  faqs.forEach((f, i) => {
+    list.innerHTML += `
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggle(${i}, this)">
+          <span>${f.q}</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="faq-a" id="faq-${i}">
+          <p>${f.a}</p>
+        </div>
+      </div>
+    `;
+  });
+
+  function toggle(i, btn) {
+    const ans = document.getElementById('faq-' + i);
+    ans.classList.toggle('open');
+    btn.classList.toggle('open');
+  }
+</script>
+</body>
+</html>

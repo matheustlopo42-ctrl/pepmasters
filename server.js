@@ -1,0 +1,767 @@
+'use strict';
+
+// ─────────────────────────────────────────────
+//  PEPMASTERS — server.js
+//  Node.js + Express + PostgreSQL (Render)
+//  Pagamento: PixGo  |  Email: Resend  |  WhatsApp: WA_APIKEY
+// ─────────────────────────────────────────────
+
+const express    = require('express');
+const { Pool }   = require('pg');
+const bcrypt     = require('bcryptjs');
+const jwt        = require('jsonwebtoken');
+const crypto     = require('crypto');
+const path       = require('path');
+const fetch      = require('node-fetch');
+
+const app  = express();
+const PORT = process.env.PORT || 3000;
+
+// ── ENV ──────────────────────────────────────
+const DATABASE_URL        = process.env.DATABASE_URL;
+const JWT_SECRET          = process.env.JWT_SECRET          || 'pep_jwt_secret_2025';
+const ADMIN_PASSWORD      = process.env.ADMIN_PASSWORD      || '159357456258';
+const PIXGO_API_KEY       = process.env.PIXGO_API_KEY       || '';
+const PIXGO_WEBHOOK_SECRET= process.env.PIXGO_WEBHOOK_SECRET|| '';
+const RESEND_API_KEY      = process.env.RESEND_API_KEY      || '';
+const BASE_URL            = process.env.BASE_URL            || 'https://pepmasters.onrender.com';
+const EMAIL_DESTINO       = process.env.EMAIL_DESTINO       || '';   // preencher no Render
+const WA_PHONE            = process.env.WA_PHONE            || '';   // preencher no Render
+const WA_APIKEY           = process.env.WA_APIKEY           || '';   // preencher no Render
+
+// ── BANCO ─────────────────────────────────────
+const pool = new Pool({
+  connectionString: DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
+// ── MIDDLEWARES ───────────────────────────────
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ── INIT TABELAS ─────────────────────────────
+async function initDB() {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // Usuários
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_usuarios (
+        id          SERIAL PRIMARY KEY,
+        nome        TEXT NOT NULL,
+        email       TEXT UNIQUE NOT NULL,
+        cpf         TEXT,
+        telefone    TEXT,
+        senha_hash  TEXT NOT NULL,
+        reset_token TEXT,
+        reset_exp   BIGINT,
+        criado_em   TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+
+    // Pedidos
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_pedidos (
+        id              SERIAL PRIMARY KEY,
+        usuario_id      INT,
+        nome            TEXT NOT NULL,
+        email           TEXT NOT NULL,
+        cpf             TEXT,
+        telefone        TEXT,
+        cep             TEXT,
+        rua             TEXT,
+        numero          TEXT,
+        bairro          TEXT,
+        cidade          TEXT,
+        complemento     TEXT,
+        produto_id      INT NOT NULL,
+        produto_nome    TEXT NOT NULL,
+        preco_unitario  NUMERIC(10,2),
+        desconto        NUMERIC(10,2) DEFAULT 0,
+        total           NUMERIC(10,2),
+        pagamento       TEXT NOT NULL,
+        cupom           TEXT,
+        status          TEXT DEFAULT 'pix_pending',
+        pixgo_id        TEXT,
+        codigo_rastreio TEXT,
+        criado_em       TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+
+    // Cupons
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_cupons (
+        id               SERIAL PRIMARY KEY,
+        codigo           TEXT UNIQUE NOT NULL,
+        desconto_pix     INT DEFAULT 0,
+        desconto_cartao  INT DEFAULT 0,
+        usos             INT DEFAULT 0,
+        usos_max         INT DEFAULT 0,
+        ativo            BOOLEAN DEFAULT TRUE,
+        criado_em        TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+
+    // Estoque
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_estoque (
+        id             SERIAL PRIMARY KEY,
+        produto_id     INT UNIQUE NOT NULL,
+        nome           TEXT NOT NULL,
+        preco          NUMERIC(10,2),
+        descricao      TEXT,
+        estoque        INT DEFAULT 0,
+        alerta_minimo  INT DEFAULT 3
+      )
+    `);
+
+    // Lista de espera
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_lista_espera (
+        id         SERIAL PRIMARY KEY,
+        nome       TEXT,
+        email      TEXT NOT NULL,
+        produto    TEXT NOT NULL,
+        criado_em  TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+
+    await client.query('COMMIT');
+
+    // Seed produtos se estoque vazio
+    const { rows } = await client.query('SELECT COUNT(*) FROM pep_estoque');
+    if (parseInt(rows[0].count) === 0) {
+      const produtos = [
+        { id:1, nome:'BPC-157',          preco:150.00, descricao:'Recuperacao muscular e articular acelerada.', estoque:10 },
+        { id:2, nome:'TB-500',           preco:180.00, descricao:'Regeneracao tecidual e anti-inflamatorio.',  estoque:10 },
+        { id:3, nome:'HGH Frag 176-191', preco:160.00, descricao:'Queima de gordura sem efeitos do GH completo.', estoque:10 },
+        { id:4, nome:'Ipamorelin',       preco:140.00, descricao:'Estimulante seletivo do hormonio do crescimento.', estoque:10 },
+        { id:5, nome:'Sermorelin',       preco:170.00, descricao:'Anti-aging, sono e estimulo natural do GH.', estoque:0  },
+      ];
+      for (const p of produtos) {
+        await client.query(
+          'INSERT INTO pep_estoque (produto_id,nome,preco,descricao,estoque) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (produto_id) DO NOTHING',
+          [p.id, p.nome, p.preco, p.descricao, p.estoque]
+        );
+      }
+      console.log('[DB] Produtos inseridos no estoque.');
+    }
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error('[DB] Erro no init:', err.message);
+  } finally {
+    client.release();
+  }
+}
+
+// ── AUTH HELPERS ─────────────────────────────
+function gerarToken(id) {
+  return jwt.sign({ id }, JWT_SECRET, { expiresIn: '30d' });
+}
+
+function authMiddleware(req, res, next) {
+  const header = req.headers['authorization'] || '';
+  const token  = header.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ erro: 'Não autenticado.' });
+  try {
+    req.usuario = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch {
+    res.status(401).json({ erro: 'Token inválido.' });
+  }
+}
+
+function adminMiddleware(req, res, next) {
+  const header = req.headers['authorization'] || '';
+  if (!header.startsWith('Basic ')) return res.status(401).json({ erro: 'Não autorizado.' });
+  try {
+    const decoded = Buffer.from(header.replace('Basic ', ''), 'base64').toString();
+    const [, senha] = decoded.split(':');
+    if (senha !== ADMIN_PASSWORD) return res.status(401).json({ erro: 'Senha incorreta.' });
+    next();
+  } catch {
+    res.status(401).json({ erro: 'Não autorizado.' });
+  }
+}
+
+// ── EMAIL (Resend) ────────────────────────────
+async function enviarEmail(para, assunto, html) {
+  if (!RESEND_API_KEY || !para) return;
+  try {
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + RESEND_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: 'PEPMASTERS <noreply@pepmasters.onrender.com>', to: para, subject: assunto, html })
+    });
+  } catch (err) {
+    console.error('[Email] Erro:', err.message);
+  }
+}
+
+// ── WHATSAPP ──────────────────────────────────
+async function enviarWhatsApp(mensagem) {
+  if (!WA_PHONE || !WA_APIKEY) return;
+  try {
+    await fetch('https://api.callmebot.com/whatsapp.php?phone=' + WA_PHONE + '&text=' + encodeURIComponent(mensagem) + '&apikey=' + WA_APIKEY);
+  } catch (err) {
+    console.error('[WhatsApp] Erro:', err.message);
+  }
+}
+
+// ─────────────────────────────────────────────
+//  ROTAS PÚBLICAS
+// ─────────────────────────────────────────────
+
+// GET /api/produtos
+app.get('/api/produtos', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT produto_id AS id, nome, preco, descricao, estoque FROM pep_estoque ORDER BY produto_id'
+    );
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao buscar produtos.' });
+  }
+});
+
+// POST /api/cadastro
+app.post('/api/cadastro', async (req, res) => {
+  const { nome, email, cpf, telefone, senha } = req.body;
+  if (!nome || !email || !senha) return res.status(400).json({ erro: 'Campos obrigatórios ausentes.' });
+  try {
+    const existe = await pool.query('SELECT id FROM pep_usuarios WHERE email = $1', [email.toLowerCase()]);
+    if (existe.rows.length) return res.status(400).json({ erro: 'Email já cadastrado.' });
+
+    const hash = await bcrypt.hash(senha, 10);
+    const { rows } = await pool.query(
+      'INSERT INTO pep_usuarios (nome,email,cpf,telefone,senha_hash) VALUES ($1,$2,$3,$4,$5) RETURNING id,nome,email',
+      [nome, email.toLowerCase(), cpf || null, telefone || null, hash]
+    );
+    const u = rows[0];
+    res.json({ token: gerarToken(u.id), nome: u.nome, email: u.email });
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao cadastrar.' });
+  }
+});
+
+// POST /api/login
+app.post('/api/login', async (req, res) => {
+  const { email, senha } = req.body;
+  if (!email || !senha) return res.status(400).json({ erro: 'Preencha todos os campos.' });
+  try {
+    const { rows } = await pool.query('SELECT * FROM pep_usuarios WHERE email = $1', [email.toLowerCase()]);
+    if (!rows.length) return res.status(401).json({ erro: 'Email ou senha incorretos.' });
+    const u = rows[0];
+    const ok = await bcrypt.compare(senha, u.senha_hash);
+    if (!ok) return res.status(401).json({ erro: 'Email ou senha incorretos.' });
+    res.json({ token: gerarToken(u.id), nome: u.nome, email: u.email });
+  } catch {
+    res.status(500).json({ erro: 'Erro ao fazer login.' });
+  }
+});
+
+// POST /api/esqueci-senha
+app.post('/api/esqueci-senha', async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ erro: 'Informe o email.' });
+  try {
+    const { rows } = await pool.query('SELECT id,nome FROM pep_usuarios WHERE email = $1', [email.toLowerCase()]);
+    if (!rows.length) return res.json({ ok: true }); // não revelar se existe
+    const u     = rows[0];
+    const token = crypto.randomBytes(32).toString('hex');
+    const exp   = Date.now() + 3600000; // 1h
+    await pool.query('UPDATE pep_usuarios SET reset_token=$1, reset_exp=$2 WHERE id=$3', [token, exp, u.id]);
+    const link = BASE_URL + '/redefinir-senha.html?token=' + token;
+    await enviarEmail(
+      email,
+      'Redefinição de senha — PEPMASTERS',
+      '<p>Olá, ' + u.nome + '!</p><p>Clique no link abaixo para redefinir sua senha (válido por 1 hora):</p><p><a href="' + link + '">' + link + '</a></p>'
+    );
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ erro: 'Erro ao processar solicitação.' });
+  }
+});
+
+// POST /api/redefinir-senha
+app.post('/api/redefinir-senha', async (req, res) => {
+  const { token, novaSenha } = req.body;
+  if (!token || !novaSenha) return res.status(400).json({ erro: 'Dados incompletos.' });
+  try {
+    const { rows } = await pool.query('SELECT id,reset_exp FROM pep_usuarios WHERE reset_token=$1', [token]);
+    if (!rows.length) return res.status(400).json({ erro: 'Token inválido.' });
+    const u = rows[0];
+    if (Date.now() > u.reset_exp) return res.status(400).json({ erro: 'Token expirado.' });
+    const hash = await bcrypt.hash(novaSenha, 10);
+    await pool.query('UPDATE pep_usuarios SET senha_hash=$1, reset_token=NULL, reset_exp=NULL WHERE id=$2', [hash, u.id]);
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ erro: 'Erro ao redefinir senha.' });
+  }
+});
+
+// GET /api/cupom/:codigo
+app.get('/api/cupom/:codigo', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id,codigo,desconto_pix,desconto_cartao,usos,usos_max,ativo FROM pep_cupons WHERE codigo=$1',
+      [req.params.codigo.toUpperCase()]
+    );
+    if (!rows.length) return res.status(404).json({ erro: 'Cupom não encontrado.' });
+    const c = rows[0];
+    if (!c.ativo) return res.status(400).json({ erro: 'Cupom inativo.' });
+    if (c.usos_max > 0 && c.usos >= c.usos_max) return res.status(400).json({ erro: 'Cupom esgotado.' });
+    res.json(c);
+  } catch {
+    res.status(500).json({ erro: 'Erro ao verificar cupom.' });
+  }
+});
+
+// POST /api/pedido
+app.post('/api/pedido', async (req, res) => {
+  const {
+    nome, email, cpf, telefone,
+    endereco, produto_id, produto_nome,
+    pagamento, cupom, token: userToken
+  } = req.body;
+
+  if (!nome || !email || !produto_id || !pagamento) {
+    return res.status(400).json({ erro: 'Dados incompletos.' });
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // buscar produto e estoque
+    const { rows: estoqueRows } = await client.query(
+      'SELECT preco, estoque FROM pep_estoque WHERE produto_id=$1 FOR UPDATE',
+      [produto_id]
+    );
+    if (!estoqueRows.length) { await client.query('ROLLBACK'); return res.status(404).json({ erro: 'Produto não encontrado.' }); }
+    const { preco, estoque } = estoqueRows[0];
+    if (estoque <= 0) { await client.query('ROLLBACK'); return res.status(400).json({ erro: 'Produto esgotado.' }); }
+
+    // calcular desconto de cupom
+    let desconto = 0;
+    let cupomId  = null;
+    if (cupom) {
+      const { rows: cupRows } = await client.query(
+        'SELECT id,desconto_pix,desconto_cartao,usos,usos_max,ativo FROM pep_cupons WHERE codigo=$1',
+        [cupom.toUpperCase()]
+      );
+      if (cupRows.length && cupRows[0].ativo) {
+        const c   = cupRows[0];
+        const pct = pagamento === 'pix' ? c.desconto_pix : c.desconto_cartao;
+        desconto  = parseFloat(preco) * (pct / 100);
+        cupomId   = c.id;
+        if (!(c.usos_max > 0 && c.usos >= c.usos_max)) {
+          await client.query('UPDATE pep_cupons SET usos=usos+1 WHERE id=$1', [c.id]);
+        }
+      }
+    }
+
+    const total = parseFloat(preco) - desconto;
+
+    // descobrir usuario_id se logado
+    let usuarioId = null;
+    if (userToken) {
+      try { usuarioId = jwt.verify(userToken, JWT_SECRET).id; } catch {}
+    }
+
+    // criar pedido
+    const statusInicial = pagamento === 'pix' ? 'pix_pending' : 'pago';
+    const { rows: pedRows } = await client.query(
+      `INSERT INTO pep_pedidos
+         (usuario_id,nome,email,cpf,telefone,cep,rua,numero,bairro,cidade,complemento,
+          produto_id,produto_nome,preco_unitario,desconto,total,pagamento,cupom,status)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
+       RETURNING id`,
+      [
+        usuarioId, nome, email.toLowerCase(), cpf || null, telefone || null,
+        endereco?.cep || null, endereco?.rua || null, endereco?.numero || null,
+        endereco?.bairro || null, endereco?.cidade || null, endereco?.complemento || null,
+        produto_id, produto_nome, preco, desconto.toFixed(2), total.toFixed(2),
+        pagamento, cupomId ? cupom.toUpperCase() : null, statusInicial
+      ]
+    );
+    const pedidoId = pedRows[0].id;
+
+    // baixar estoque
+    await client.query('UPDATE pep_estoque SET estoque=estoque-1 WHERE produto_id=$1', [produto_id]);
+
+    await client.query('COMMIT');
+
+    // ── PIX: criar cobrança no PixGo ──
+    let qrcode_url     = null;
+    let pix_copia_cola = null;
+
+    if (pagamento === 'pix' && PIXGO_API_KEY) {
+      try {
+        const pixRes  = await fetch('https://api.pixgo.com.br/v1/charges', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + PIXGO_API_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount:       Math.round(total * 100),
+            description:  'PEPMASTERS - ' + produto_nome,
+            externalId:   'pep-' + pedidoId,
+            customer:     { name: nome, email: email.toLowerCase(), taxId: (cpf || '').replace(/\D/g,'') },
+            webhookUrl:   BASE_URL + '/webhook/pixgo'
+          })
+        });
+        const pixData = await pixRes.json();
+        if (pixData.qrcode)     qrcode_url     = pixData.qrcode;
+        if (pixData.qrcodeText) pix_copia_cola = pixData.qrcodeText;
+        // salvar pixgo_id para reconciliação
+        if (pixData.id) {
+          await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixData.id, pedidoId]);
+        }
+      } catch (err) {
+        console.error('[PixGo] Erro ao criar cobrança:', err.message);
+      }
+    }
+
+    // ── Notificações ──
+    const msgAdmin = 'Novo pedido PEPMASTERS #' + pedidoId + '\nCliente: ' + nome + '\nProduto: ' + produto_nome + '\nTotal: R$ ' + total.toFixed(2).replace('.',',') + '\nPag: ' + pagamento.toUpperCase();
+    enviarWhatsApp(msgAdmin);
+
+    if (EMAIL_DESTINO) {
+      enviarEmail(EMAIL_DESTINO, 'Novo pedido #' + pedidoId + ' — PEPMASTERS',
+        '<b>Pedido #' + pedidoId + '</b><br>Cliente: ' + nome + '<br>Email: ' + email + '<br>Produto: ' + produto_nome + '<br>Total: R$ ' + total.toFixed(2).replace('.',',') + '<br>Pagamento: ' + pagamento
+      );
+    }
+
+    // email de confirmação para o cliente
+    enviarEmail(email, 'Pedido #' + pedidoId + ' recebido — PEPMASTERS',
+      '<h2>Obrigado, ' + nome.split(' ')[0] + '!</h2><p>Seu pedido <b>#' + pedidoId + '</b> foi recebido e está sendo processado.</p>' +
+      '<p>Produto: <b>' + produto_nome + '</b><br>Total: <b>R$ ' + total.toFixed(2).replace('.',',') + '</b></p>' +
+      '<p>Acompanhe em: <a href="' + BASE_URL + '/meus-pedidos.html">' + BASE_URL + '/meus-pedidos.html</a></p>'
+    );
+
+    res.json({ pedido_id: pedidoId, qrcode_url, pix_copia_cola });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    console.error('[Pedido] Erro:', err.message);
+    res.status(500).json({ erro: 'Erro ao criar pedido.' });
+  } finally {
+    client.release();
+  }
+});
+
+// GET /api/pedido/:id/status
+app.get('/api/pedido/:id/status', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id,status,produto_nome,pagamento,codigo_rastreio,criado_em FROM pep_pedidos WHERE id=$1',
+      [req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+    res.json(rows[0]);
+  } catch {
+    res.status(500).json({ erro: 'Erro ao buscar status.' });
+  }
+});
+
+// GET /api/meus-pedidos
+app.get('/api/meus-pedidos', authMiddleware, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id,produto_nome,total,pagamento,status,codigo_rastreio,criado_em FROM pep_pedidos WHERE usuario_id=$1 ORDER BY criado_em DESC',
+      [req.usuario.id]
+    );
+    res.json(rows);
+  } catch {
+    res.status(500).json({ erro: 'Erro ao buscar pedidos.' });
+  }
+});
+
+// GET /api/rastrear?codigo=XX
+app.get('/api/rastrear', async (req, res) => {
+  const { codigo } = req.query;
+  if (!codigo) return res.status(400).json({ erro: 'Informe o código.' });
+  try {
+    // aceita ID numérico (#42) ou código de rastreio
+    const idNumerico = parseInt(codigo.replace('#',''));
+    let rows;
+    if (!isNaN(idNumerico) && idNumerico > 0) {
+      ({ rows } = await pool.query(
+        'SELECT id,produto_nome,status,codigo_rastreio,criado_em FROM pep_pedidos WHERE id=$1',
+        [idNumerico]
+      ));
+    } else {
+      ({ rows } = await pool.query(
+        'SELECT id,produto_nome,status,codigo_rastreio,criado_em FROM pep_pedidos WHERE codigo_rastreio=$1',
+        [codigo]
+      ));
+    }
+    if (!rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+    res.json(rows[0]);
+  } catch {
+    res.status(500).json({ erro: 'Erro ao rastrear.' });
+  }
+});
+
+// GET /api/lista-espera  POST
+app.post('/api/lista-espera', async (req, res) => {
+  const { nome, email, produto } = req.body;
+  if (!email || !produto) return res.status(400).json({ erro: 'Dados incompletos.' });
+  try {
+    await pool.query(
+      'INSERT INTO pep_lista_espera (nome,email,produto) VALUES ($1,$2,$3)',
+      [nome || null, email.toLowerCase(), produto]
+    );
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ erro: 'Erro ao registrar.' });
+  }
+});
+
+// ── PERFIL ────────────────────────────────────
+app.get('/api/perfil', authMiddleware, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id,nome,email,cpf,telefone FROM pep_usuarios WHERE id=$1',
+      [req.usuario.id]
+    );
+    if (!rows.length) return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    res.json(rows[0]);
+  } catch {
+    res.status(500).json({ erro: 'Erro.' });
+  }
+});
+
+app.put('/api/perfil', authMiddleware, async (req, res) => {
+  const { nome, cpf, telefone } = req.body;
+  if (!nome) return res.status(400).json({ erro: 'Nome obrigatório.' });
+  try {
+    await pool.query(
+      'UPDATE pep_usuarios SET nome=$1,cpf=$2,telefone=$3 WHERE id=$4',
+      [nome, cpf || null, telefone || null, req.usuario.id]
+    );
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ erro: 'Erro ao atualizar.' });
+  }
+});
+
+app.put('/api/perfil/senha', authMiddleware, async (req, res) => {
+  const { senhaAtual, novaSenha } = req.body;
+  if (!senhaAtual || !novaSenha) return res.status(400).json({ erro: 'Campos obrigatórios.' });
+  try {
+    const { rows } = await pool.query('SELECT senha_hash FROM pep_usuarios WHERE id=$1', [req.usuario.id]);
+    const ok = await bcrypt.compare(senhaAtual, rows[0].senha_hash);
+    if (!ok) return res.status(400).json({ erro: 'Senha atual incorreta.' });
+    const hash = await bcrypt.hash(novaSenha, 10);
+    await pool.query('UPDATE pep_usuarios SET senha_hash=$1 WHERE id=$2', [hash, req.usuario.id]);
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ erro: 'Erro ao alterar senha.' });
+  }
+});
+
+// ─────────────────────────────────────────────
+//  ROTAS ADMIN
+// ─────────────────────────────────────────────
+
+// GET /api/admin/verificar
+app.get('/api/admin/verificar', adminMiddleware, (req, res) => {
+  res.json({ ok: true });
+});
+
+// GET /api/admin/pedidos
+app.get('/api/admin/pedidos', adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM pep_pedidos ORDER BY criado_em DESC'
+    );
+    res.json(rows);
+  } catch {
+    res.status(500).json({ erro: 'Erro ao buscar pedidos.' });
+  }
+});
+
+// PUT /api/admin/pedido/:id/status
+app.put('/api/admin/pedido/:id/status', adminMiddleware, async (req, res) => {
+  const { status } = req.body;
+  const validos = ['pago','pix_pending','enviado','entregue','cancelado'];
+  if (!validos.includes(status)) return res.status(400).json({ erro: 'Status inválido.' });
+  try {
+    const { rows } = await pool.query(
+      'UPDATE pep_pedidos SET status=$1 WHERE id=$2 RETURNING email,nome,produto_nome,status',
+      [status, req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+    const p = rows[0];
+
+    // notificar cliente por email se enviado ou entregue
+    if (status === 'enviado' || status === 'entregue') {
+      const msg = status === 'enviado'
+        ? 'Seu pedido de <b>' + p.produto_nome + '</b> foi enviado! Em breve você receberá o código de rastreio.'
+        : 'Seu pedido de <b>' + p.produto_nome + '</b> foi entregue! Esperamos que goste. 🎉';
+      enviarEmail(p.email, 'Atualização do pedido — PEPMASTERS', '<p>Olá, ' + p.nome.split(' ')[0] + '!</p><p>' + msg + '</p>');
+    }
+
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ erro: 'Erro ao atualizar status.' });
+  }
+});
+
+// PUT /api/admin/pedido/:id/rastreio
+app.put('/api/admin/pedido/:id/rastreio', adminMiddleware, async (req, res) => {
+  const { codigo_rastreio } = req.body;
+  try {
+    const { rows } = await pool.query(
+      'UPDATE pep_pedidos SET codigo_rastreio=$1 WHERE id=$2 RETURNING email,nome,produto_nome',
+      [codigo_rastreio, req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+    const p = rows[0];
+
+    if (codigo_rastreio) {
+      enviarEmail(p.email,
+        'Código de rastreio — PEPMASTERS',
+        '<p>Olá, ' + p.nome.split(' ')[0] + '!</p><p>Seu pedido de <b>' + p.produto_nome + '</b> foi enviado!</p>' +
+        '<p>Código de rastreio: <b>' + codigo_rastreio + '</b></p>' +
+        '<p>Rastreie em: <a href="https://rastreamento.correios.com.br/app/index.php?objetos=' + codigo_rastreio + '">Correios</a></p>'
+      );
+    }
+
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ erro: 'Erro ao salvar rastreio.' });
+  }
+});
+
+// GET /api/admin/cupons
+app.get('/api/admin/cupons', adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM pep_cupons ORDER BY criado_em DESC');
+    res.json(rows);
+  } catch {
+    res.status(500).json({ erro: 'Erro.' });
+  }
+});
+
+// POST /api/admin/cupons
+app.post('/api/admin/cupons', adminMiddleware, async (req, res) => {
+  const { codigo, desconto_pix, desconto_cartao, usos_max } = req.body;
+  if (!codigo) return res.status(400).json({ erro: 'Código obrigatório.' });
+  try {
+    await pool.query(
+      'INSERT INTO pep_cupons (codigo,desconto_pix,desconto_cartao,usos_max) VALUES ($1,$2,$3,$4)',
+      [codigo.toUpperCase(), desconto_pix || 0, desconto_cartao || 0, usos_max || 0]
+    );
+    res.json({ ok: true });
+  } catch (err) {
+    if (err.code === '23505') return res.status(400).json({ erro: 'Código já existe.' });
+    res.status(500).json({ erro: 'Erro ao criar cupom.' });
+  }
+});
+
+// PUT /api/admin/cupons/:id
+app.put('/api/admin/cupons/:id', adminMiddleware, async (req, res) => {
+  const { ativo } = req.body;
+  try {
+    await pool.query('UPDATE pep_cupons SET ativo=$1 WHERE id=$2', [ativo, req.params.id]);
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ erro: 'Erro.' });
+  }
+});
+
+// GET /api/admin/estoque
+app.get('/api/admin/estoque', adminMiddleware, async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM pep_estoque ORDER BY produto_id');
+    res.json(rows);
+  } catch {
+    res.status(500).json({ erro: 'Erro.' });
+  }
+});
+
+// PUT /api/admin/estoque/:id
+app.put('/api/admin/estoque/:id', adminMiddleware, async (req, res) => {
+  const { estoque, alerta_minimo } = req.body;
+  try {
+    await pool.query(
+      'UPDATE pep_estoque SET estoque=$1,alerta_minimo=$2 WHERE produto_id=$3',
+      [estoque, alerta_minimo, req.params.id]
+    );
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ erro: 'Erro ao atualizar estoque.' });
+  }
+});
+
+// ─────────────────────────────────────────────
+//  WEBHOOK PIXGO
+// ─────────────────────────────────────────────
+app.post('/webhook/pixgo', express.raw({ type: 'application/json' }), async (req, res) => {
+  // Verificar assinatura
+  if (PIXGO_WEBHOOK_SECRET) {
+    const sig  = req.headers['x-pixgo-signature'] || '';
+    const hmac = crypto.createHmac('sha256', PIXGO_WEBHOOK_SECRET).update(req.body).digest('hex');
+    if (sig !== hmac) {
+      console.warn('[Webhook] Assinatura inválida.');
+      return res.status(400).send('Invalid signature');
+    }
+  }
+
+  let evento;
+  try {
+    evento = JSON.parse(req.body.toString());
+  } catch {
+    return res.status(400).send('Invalid JSON');
+  }
+
+  if (evento.event === 'charge.paid' || evento.status === 'paid') {
+    const externalId = evento.externalId || evento.external_id || '';
+    const match      = externalId.match(/pep-(\d+)/);
+    if (match) {
+      const pedidoId = parseInt(match[1]);
+      try {
+        const { rows } = await pool.query(
+          'UPDATE pep_pedidos SET status=$1 WHERE id=$2 AND status=$3 RETURNING nome,email,produto_nome',
+          ['pago', pedidoId, 'pix_pending']
+        );
+        if (rows.length) {
+          const p = rows[0];
+          console.log('[Webhook] Pedido #' + pedidoId + ' marcado como PAGO.');
+          enviarWhatsApp('PIX CONFIRMADO! Pedido #' + pedidoId + ' - ' + p.nome + ' - ' + p.produto_nome);
+          enviarEmail(p.email, 'Pagamento confirmado — PEPMASTERS',
+            '<h2>Pagamento confirmado! ✅</h2><p>Olá, ' + p.nome.split(' ')[0] + '! Seu pagamento PIX do pedido <b>#' + pedidoId + '</b> foi confirmado.</p>' +
+            '<p>Produto: <b>' + p.produto_nome + '</b></p><p>Em breve enviaremos o código de rastreio.</p>'
+          );
+        }
+      } catch (err) {
+        console.error('[Webhook] Erro ao atualizar pedido:', err.message);
+      }
+    }
+  }
+
+  res.status(200).send('OK');
+});
+
+// ─────────────────────────────────────────────
+//  404 FALLBACK (SPA)
+// ─────────────────────────────────────────────
+app.use((req, res) => {
+  if (req.path.startsWith('/api/') || req.path.startsWith('/webhook/')) {
+    return res.status(404).json({ erro: 'Rota não encontrada.' });
+  }
+  res.sendFile(path.join(__dirname, 'public', '404.html'));
+});
+
+// ─────────────────────────────────────────────
+//  START
+// ─────────────────────────────────────────────
+initDB().then(() => {
+  app.listen(PORT, () => {
+    console.log('[PEPMASTERS] Servidor rodando na porta ' + PORT);
+  });
+}).catch(err => {
+  console.error('[PEPMASTERS] Falha ao iniciar:', err.message);
+  process.exit(1);
+});

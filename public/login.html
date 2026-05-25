@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — PEPMASTERS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --amber: #FFB300; --red: #E8220A; --orange: #FF6B00;
+      --cream: #FFF8F0; --warm-white: #FFFDF9; --dark: #1C0A00;
+      --mid: #3D1A00; --muted: #7A4A2A; --border: #FFD580;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--cream);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--warm-white);
+      border-bottom: 3px solid var(--amber);
+      box-shadow: 0 2px 20px rgba(255,179,0,0.2);
+      padding: 0 24px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+    }
+    .logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-wrap img { height: 40px; width: 40px; object-fit: contain; }
+    .logo-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900; font-size: 1.5rem; letter-spacing: 0.04em;
+      background: linear-gradient(135deg, var(--red), var(--orange), var(--amber));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    /* MAIN */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+    }
+
+    .auth-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 420px;
+      border: 1px solid #FFE5B0;
+      box-shadow: 0 8px 40px rgba(255,107,0,0.10);
+    }
+
+    .auth-card h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+
+    .auth-card .subtitle {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .form-group { margin-bottom: 18px; }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-family: 'Barlow', sans-serif;
+      color: var(--dark);
+      background: var(--warm-white);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus { border-color: var(--orange); }
+
+    .forgot-link {
+      display: block;
+      text-align: right;
+      font-size: 0.82rem;
+      color: var(--orange);
+      text-decoration: none;
+      margin-top: -10px;
+      margin-bottom: 22px;
+    }
+
+    .forgot-link:hover { color: var(--red); }
+
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, var(--red), var(--orange));
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(232,34,10,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(232,34,10,0.4); }
+
+    .auth-footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .auth-footer a { color: var(--orange); text-decoration: none; font-weight: 600; }
+    .auth-footer a:hover { color: var(--red); }
+
+    #msgErro {
+      background: #FFF0EE;
+      border-left: 4px solid var(--red);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      color: var(--red);
+      margin-bottom: 18px;
+      display: none;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--dark);
+      color: rgba(255,255,255,0.4);
+      text-align: center;
+      padding: 16px;
+      font-size: 0.8rem;
+    }
+    footer a { color: rgba(255,179,0,0.5); text-decoration: none; }
+    footer a:hover { color: var(--amber); }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo-wrap">
+    <img src="Capturar.PNG" alt="Logo" />
+    <span class="logo-text">PEPMASTERS</span>
+  </a>
+</header>
+
+<main>
+  <div class="auth-card">
+    <h1>Entrar</h1>
+    <p class="subtitle">Acesse sua conta para ver seus pedidos</p>
+
+    <div id="msgErro"></div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="seu@email.com" />
+    </div>
+
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="senha" placeholder="••••••••" />
+    </div>
+
+    <a href="redefinir-senha.html" class="forgot-link">Esqueci minha senha</a>
+
+    <button class="btn-primary" onclick="fazerLogin()">Entrar</button>
+
+    <div class="auth-footer">
+      Não tem conta? <a href="cadastro.html">Cadastre-se</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  © 2025 PEPMASTERS — <a href="index.html">Voltar à loja</a>
+</footer>
+
+<script>
+  async function fazerLogin() {
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value;
+    const erro  = document.getElementById('msgErro');
+    erro.style.display = 'none';
+
+    if (!email || !senha) { mostrarErro('Preencha todos os campos.'); return; }
+
+    try {
+      const res  = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha })
+      });
+      const data = await res.json();
+
+      if (!res.ok) { mostrarErro(data.erro || 'Email ou senha incorretos.'); return; }
+
+      localStorage.setItem('pep_token', data.token);
+      localStorage.setItem('pep_nome',  data.nome);
+      const redir = new URLSearchParams(location.search).get('redirect') || 'index.html';
+      location.href = redir;
+    } catch {
+      mostrarErro('Erro de conexão. Tente novamente.');
+    }
+  }
+
+  function mostrarErro(msg) {
+    const el = document.getElementById('msgErro');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') fazerLogin(); });
+</script>
+</body>
+</html>

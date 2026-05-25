@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rastrear Pedido — PEPMASTERS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --amber: #FFB300; --red: #E8220A; --orange: #FF6B00; --cream: #FFF8F0; --warm-white: #FFFDF9; --dark: #1C0A00; --mid: #3D1A00; --muted: #7A4A2A; --border: #FFD580; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Barlow', sans-serif; background: var(--cream); min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: var(--warm-white); border-bottom: 3px solid var(--amber); padding: 0 24px; height: 68px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 20px rgba(255,179,0,0.2); }
+    .logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-wrap img { height: 40px; width: 40px; object-fit: contain; }
+    .logo-text { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.5rem; background: linear-gradient(135deg, var(--red), var(--orange), var(--amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    main { flex: 1; max-width: 640px; margin: 0 auto; padding: 40px 24px; width: 100%; }
+    h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2rem; text-transform: uppercase; color: var(--dark); margin-bottom: 28px; }
+    .search-box { background: #fff; border-radius: 16px; padding: 28px; border: 1px solid #FFE5B0; box-shadow: 0 4px 20px rgba(255,179,0,0.08); margin-bottom: 24px; }
+    label { display: block; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+    .input-row { display: flex; gap: 10px; }
+    input { flex: 1; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 0.95rem; font-family: 'Barlow', sans-serif; color: var(--dark); background: var(--warm-white); outline: none; transition: border-color 0.2s; }
+    input:focus { border-color: var(--orange); }
+    .btn-buscar { padding: 12px 22px; background: linear-gradient(135deg, var(--red), var(--orange)); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.06em; text-transform: uppercase; border: none; border-radius: 10px; cursor: pointer; white-space: nowrap; transition: transform 0.15s; }
+    .btn-buscar:hover { transform: translateY(-1px); }
+    .result-card { background: #fff; border-radius: 16px; padding: 28px; border: 1px solid #FFE5B0; box-shadow: 0 4px 20px rgba(255,179,0,0.08); display: none; }
+    .result-card h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.3rem; color: var(--dark); margin-bottom: 18px; }
+    .info-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #FFE5B0; font-size: 0.9rem; }
+    .info-row:last-child { border: none; }
+    .info-row strong { color: var(--dark); }
+    .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+    .badge-enviado  { background: #DBEAFE; color: #1d4ed8; }
+    .badge-entregue { background: #F3E8FF; color: #7c3aed; }
+    .badge-pago     { background: #DCFCE7; color: #16a34a; }
+    .badge-pendente { background: #FEF9C3; color: #854d0e; }
+    .correios-link { display: inline-block; margin-top: 18px; padding: 10px 22px; background: linear-gradient(135deg, var(--red), var(--orange)); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; border-radius: 10px; transition: transform 0.15s; }
+    .correios-link:hover { transform: translateY(-1px); }
+    #msgErro { background: #FFF0EE; border-left: 4px solid var(--red); padding: 10px 14px; border-radius: 8px; font-size: 0.88rem; color: var(--red); margin-top: 12px; display: none; }
+    footer { background: var(--dark); color: rgba(255,255,255,0.4); text-align: center; padding: 16px; font-size: 0.8rem; }
+    footer a { color: rgba(255,179,0,0.5); text-decoration: none; }
+  </style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo-wrap">
+    <img src="Capturar.PNG" alt="Logo" />
+    <span class="logo-text">PEPMASTERS</span>
+  </a>
+</header>
+<main>
+  <h1>📍 Rastrear Pedido</h1>
+
+  <div class="search-box">
+    <label>Código de rastreio ou número do pedido</label>
+    <div class="input-row">
+      <input type="text" id="codigo" placeholder="Ex: BR123456789BR ou #42" />
+      <button class="btn-buscar" onclick="rastrear()">Buscar</button>
+    </div>
+    <div id="msgErro"></div>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <h2>📦 Status do Pedido</h2>
+    <div class="info-row"><span>Pedido</span><strong id="rPedidoId">—</strong></div>
+    <div class="info-row"><span>Produto</span><strong id="rProduto">—</strong></div>
+    <div class="info-row"><span>Status</span><strong id="rStatus">—</strong></div>
+    <div class="info-row" id="rRastreioRow" style="display:none"><span>Código Rastreio</span><strong id="rRastreio">—</strong></div>
+    <div class="info-row"><span>Data do Pedido</span><strong id="rData">—</strong></div>
+    <a id="correiosLink" href="#" target="_blank" class="correios-link" style="display:none">🔎 Rastrear nos Correios</a>
+  </div>
+</main>
+<footer>© 2025 PEPMASTERS — <a href="index.html">Voltar à loja</a></footer>
+<script>
+  const statusLabels = { pago:'Pago', pix_pending:'Aguardando PIX', enviado:'Enviado', entregue:'Entregue', cancelado:'Cancelado' };
+  const statusBadge  = { pago:'badge-pago', pix_pending:'badge-pendente', enviado:'badge-enviado', entregue:'badge-entregue' };
+
+  const params = new URLSearchParams(location.search);
+  if (params.get('codigo')) {
+    document.getElementById('codigo').value = params.get('codigo');
+    rastrear();
+  }
+
+  async function rastrear() {
+    const codigo = document.getElementById('codigo').value.trim();
+    const erro   = document.getElementById('msgErro');
+    erro.style.display = 'none';
+    if (!codigo) { erro.textContent = 'Informe o código ou número do pedido.'; erro.style.display = 'block'; return; }
+
+    try {
+      const res  = await fetch('/api/rastrear?codigo=' + encodeURIComponent(codigo));
+      const data = await res.json();
+      if (!res.ok || !data) { erro.textContent = 'Pedido não encontrado.'; erro.style.display = 'block'; return; }
+
+      const card = document.getElementById('resultCard');
+      card.style.display = 'block';
+      document.getElementById('rPedidoId').textContent = '#' + data.id;
+      document.getElementById('rProduto').textContent  = data.produto_nome || '—';
+
+      const sl = statusLabels[data.status] || data.status;
+      const sc = statusBadge[data.status] || 'badge-pendente';
+      document.getElementById('rStatus').innerHTML = '<span class="badge ' + sc + '">' + sl + '</span>';
+      document.getElementById('rData').textContent = new Date(data.criado_em).toLocaleDateString('pt-BR');
+
+      if (data.codigo_rastreio) {
+        document.getElementById('rRastreioRow').style.display = 'flex';
+        document.getElementById('rRastreio').textContent = data.codigo_rastreio;
+        const link = document.getElementById('correiosLink');
+        link.style.display = 'inline-block';
+        link.href = 'https://rastreamento.correios.com.br/app/index.php?objetos=' + data.codigo_rastreio;
+      }
+    } catch { erro.textContent = 'Erro de conexão.'; erro.style.display = 'block'; }
+  }
+</script>
+</body>
+</html>

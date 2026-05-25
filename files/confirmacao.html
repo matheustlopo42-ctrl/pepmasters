@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pedido Confirmado — PEPMASTERS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --amber: #FFB300; --red: #E8220A; --orange: #FF6B00; --cream: #FFF8F0; --warm-white: #FFFDF9; --dark: #1C0A00; --mid: #3D1A00; --muted: #7A4A2A; --border: #FFD580; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Barlow', sans-serif; background: var(--cream); min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: var(--warm-white); border-bottom: 3px solid var(--amber); padding: 0 24px; height: 68px; display: flex; align-items: center; }
+    .logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-wrap img { height: 40px; width: 40px; object-fit: contain; }
+    .logo-text { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.5rem; background: linear-gradient(135deg, var(--red), var(--orange), var(--amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 24px; }
+    .confirm-card { background: #fff; border-radius: 24px; padding: 52px 40px; max-width: 520px; width: 100%; text-align: center; border: 1px solid #FFE5B0; box-shadow: 0 12px 50px rgba(255,107,0,0.12); }
+    .icon-circle { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--red), var(--orange)); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 24px; box-shadow: 0 6px 24px rgba(232,34,10,0.3); }
+    h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2.2rem; text-transform: uppercase; color: var(--dark); margin-bottom: 10px; }
+    .subtitle { font-size: 0.95rem; color: var(--muted); line-height: 1.6; margin-bottom: 28px; }
+    .info-box { background: var(--cream); border-radius: 12px; padding: 20px; margin-bottom: 28px; border: 1px solid var(--border); }
+    .info-row { display: flex; justify-content: space-between; font-size: 0.9rem; padding: 6px 0; border-bottom: 1px solid #FFE5B0; }
+    .info-row:last-child { border: none; }
+    .info-row strong { color: var(--dark); }
+    .btn-primary { display: inline-block; padding: 13px 36px; background: linear-gradient(135deg, var(--red), var(--orange)); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.05rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; border-radius: 50px; box-shadow: 0 4px 16px rgba(232,34,10,0.3); transition: transform 0.15s; margin: 4px; }
+    .btn-primary:hover { transform: translateY(-1px); }
+    .btn-secondary { display: inline-block; padding: 13px 36px; border: 2px solid var(--border); color: var(--mid); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.05rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; border-radius: 50px; transition: border-color 0.15s; margin: 4px; }
+    .btn-secondary:hover { border-color: var(--orange); }
+    footer { background: var(--dark); color: rgba(255,255,255,0.4); text-align: center; padding: 16px; font-size: 0.8rem; }
+    footer a { color: rgba(255,179,0,0.5); text-decoration: none; }
+  </style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo-wrap">
+    <img src="Capturar.PNG" alt="Logo" />
+    <span class="logo-text">PEPMASTERS</span>
+  </a>
+</header>
+<main>
+  <div class="confirm-card">
+    <div class="icon-circle">✅</div>
+    <h1>Pedido Confirmado!</h1>
+    <p class="subtitle">Seu pedido foi recebido e está sendo processado. Você receberá atualizações por email.</p>
+
+    <div class="info-box" id="infoBox">
+      <div class="info-row"><span>Pedido</span><strong id="pedidoId">—</strong></div>
+      <div class="info-row"><span>Produto</span><strong id="pedidoProduto">—</strong></div>
+      <div class="info-row"><span>Pagamento</span><strong id="pedidoPag">—</strong></div>
+      <div class="info-row"><span>Status</span><strong style="color:var(--orange)">Em processamento</strong></div>
+    </div>
+
+    <a href="meus-pedidos.html" class="btn-primary">Ver meus pedidos</a>
+    <a href="index.html" class="btn-secondary">Continuar comprando</a>
+  </div>
+</main>
+<footer>© 2025 PEPMASTERS — <a href="index.html">Voltar à loja</a></footer>
+<script>
+  async function init() {
+    const id = new URLSearchParams(location.search).get('id');
+    if (!id) return;
+    document.getElementById('pedidoId').textContent = '#' + id;
+    try {
+      const res  = await fetch('/api/pedido/' + id + '/status');
+      const data = await res.json();
+      if (data) {
+        document.getElementById('pedidoProduto').textContent = data.produto_nome || '—';
+        document.getElementById('pedidoPag').textContent     = data.pagamento === 'pix' ? 'PIX' : 'Cartão';
+      }
+    } catch {}
+  }
+  init();
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Trocas e Devoluções — PEPMASTERS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:var(--cream);min-height:100vh;display:flex;flex-direction:column}
+    header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0 24px;height:68px;display:flex;align-items:center;gap:20px;box-shadow:0 2px 20px rgba(255,179,0,.2)}
+    .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo-wrap img{height:40px;width:40px;object-fit:contain}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .back-link{margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none}
+    .back-link:hover{color:var(--orange)}
+    main{flex:1;max-width:800px;margin:0 auto;padding:52px 24px;width:100%}
+    .page-hero{background:linear-gradient(135deg,#FFF3D0,#FFE0A0);border-radius:20px;padding:44px 40px;margin-bottom:40px;border-left:6px solid var(--orange)}
+    .page-hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.4rem;text-transform:uppercase;color:var(--dark);margin-bottom:8px}
+    .page-hero p{font-size:1rem;color:var(--mid);line-height:1.6}
+    .card{background:#fff;border-radius:16px;padding:28px 32px;border:1px solid #FFE5B0;box-shadow:0 4px 20px rgba(255,179,0,.08);margin-bottom:20px}
+    .card h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;text-transform:uppercase;color:var(--dark);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+    .card p{font-size:.93rem;color:var(--mid);line-height:1.75;margin-bottom:10px}
+    .card p:last-child{margin-bottom:0}
+    .step{display:flex;gap:14px;margin-bottom:16px;align-items:flex-start}
+    .step-num{min-width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;display:flex;align-items:center;justify-content:center}
+    .step p{margin:0;font-size:.9rem;color:var(--mid);line-height:1.65;padding-top:4px}
+    footer{background:var(--dark);color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:.8rem}
+    footer a{color:rgba(255,179,0,.5);text-decoration:none}
+  </style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo-wrap"><img src="Capturar.PNG" alt="Logo"/><span class="logo-text">PEPMASTERS</span></a>
+  <a href="index.html" class="back-link">← Loja</a>
+</header>
+<main>
+  <div class="page-hero">
+    <h1>Trocas e Devoluções</h1>
+    <p>Sua satisfação é nossa prioridade. Veja como funciona nosso processo.</p>
+  </div>
+
+  <div class="card">
+    <h2>Política de Trocas</h2>
+    <p>Aceitamos trocas em casos de produto com defeito, avaria no transporte ou envio incorreto. O prazo para solicitar a troca é de 7 dias corridos após o recebimento do produto.</p>
+    <p>Produtos abertos ou com lacre violado não são elegíveis para troca, exceto em caso de defeito comprovado de fabricação.</p>
+  </div>
+
+  <div class="card">
+    <h2>Como Solicitar</h2>
+    <div class="step"><div class="step-num">1</div><p>Entre em contato com nosso suporte pelo email informando o número do pedido e o motivo da solicitação.</p></div>
+    <div class="step"><div class="step-num">2</div><p>Nossa equipe avaliará o caso e retornará em até 2 dias úteis com as instruções para devolução.</p></div>
+    <div class="step"><div class="step-num">3</div><p>Após recebermos o produto devolvido, processamos a troca ou o reembolso em até 5 dias úteis.</p></div>
+  </div>
+
+  <div class="card">
+    <h2>Reembolso</h2>
+    <p>Reembolsos para pagamentos via PIX são feitos via transferência bancária. Para cartão de crédito, o estorno é processado diretamente pela operadora e pode levar até 2 faturas para aparecer.</p>
+    <p>O frete de devolução em casos de defeito ou erro nosso é por nossa conta. Em arrependimento de compra, o frete é de responsabilidade do cliente.</p>
+  </div>
+</main>
+<footer>© 2025 PEPMASTERS — <a href="index.html">Voltar à loja</a></footer>
+</body>
+</html>
