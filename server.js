@@ -737,6 +737,70 @@ app.post('/webhook/pixgo', express.raw({ type: 'application/json' }), async (req
   res.status(200).send('OK');
 });
 
+
+// ─────────────────────────────────────────────
+//  SEED TEMPORARIO — acessar 1x e remover depois
+//  URL: https://pepmasters.onrender.com/api/seed-pep-159357
+// ─────────────────────────────────────────────
+app.get('/api/seed-pep-159357', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS cpf TEXT');
+    await client.query('ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS telefone TEXT');
+    await client.query('ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS senha_hash TEXT');
+    await client.query('ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS reset_token TEXT');
+    await client.query('ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS reset_exp BIGINT');
+    await client.query("UPDATE pep_usuarios SET senha_hash = senha WHERE senha_hash IS NULL AND senha IS NOT NULL");
+    const pedCols = [
+      'usuario_id INT','nome TEXT','email TEXT','cpf TEXT','telefone TEXT',
+      'cep TEXT','rua TEXT','numero TEXT','bairro TEXT','cidade TEXT','complemento TEXT',
+      'produto_id INT','produto_nome TEXT','preco_unitario NUMERIC(10,2)',
+      'desconto NUMERIC(10,2) DEFAULT 0','total NUMERIC(10,2)',
+      'pagamento TEXT','cupom TEXT','pixgo_id TEXT','codigo_rastreio TEXT'
+    ];
+    for (const col of pedCols) {
+      await client.query('ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS ' + col).catch(() => {});
+    }
+    await client.query("ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pix_pending'").catch(() => {});
+    await client.query('ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS usos INT DEFAULT 0').catch(() => {});
+    await client.query('ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS usos_max INT DEFAULT 0').catch(() => {});
+    await client.query('ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS nome TEXT').catch(() => {});
+    await client.query('ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS preco NUMERIC(10,2)').catch(() => {});
+    await client.query('ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS descricao TEXT').catch(() => {});
+    await client.query('ALTER TABLE pep_estoque RENAME COLUMN quantidade TO estoque').catch(() => {});
+    await client.query('ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS estoque INT DEFAULT 0').catch(() => {});
+    const produtos = [
+      ['1','BPC-157',150,'Recuperacao muscular e articular acelerada.',10],
+      ['2','TB-500',180,'Regeneracao tecidual profunda e anti-inflamatorio.',10],
+      ['3','HGH Frag 176-191',160,'Fragmento do GH para queima de gordura localizada.',10],
+      ['4','Ipamorelin',140,'Estimulante seletivo do GH sem efeitos colaterais.',10],
+      ['5','Sermorelin',170,'Anti-aging, melhora do sono e estimulo do GH.',0],
+      ['6','CJC-1295',180,'Estimulante de GH de longa duracao para massa.',10],
+      ['7','IGF-1 LR3',220,'Fator de crescimento insulinico para hipertrofia.',10],
+      ['8','IGF-1 DES',200,'Variante do IGF-1 com acao local nos musculos.',10],
+      ['9','ACE-031',250,'Inibidor da miostatina. Potencializa massa e forca.',10],
+      ['10','Semax',160,'Neuropeptideo para foco, memoria e funcao cerebral.',10],
+      ['11','Selank',150,'Ansiolitico natural com efeito nootropico.',10],
+      ['12','Kisspeptin',190,'Estimula producao de LH e testosterona.',10],
+      ['13','SS-31',210,'Acao antioxidante mitocondrial e cardioprotetora.',10],
+      ['14','SLU-PP-32',230,'Simula efeitos metabolicos do exercicio.',10],
+      ['15','AHK-CU',140,'Peptideo de cobre para cabelo, pele e cabelos.',10],
+      ['16','VIP',200,'Potente anti-inflamatorio e vasoativo intestinal.',10],
+    ];
+    for (const [pid,nome,preco,desc,estoque] of produtos) {
+      await client.query(
+        "INSERT INTO pep_estoque (produto_id,nome,preco,descricao,estoque,alerta_minimo) VALUES ($1,$2,$3,$4,$5,3) ON CONFLICT (produto_id,variacao) DO UPDATE SET nome=EXCLUDED.nome,preco=EXCLUDED.preco,descricao=EXCLUDED.descricao",
+        [pid,nome,preco,desc,estoque]
+      );
+    }
+    res.json({ ok: true, msg: '16 produtos inseridos! Remova esta rota do server.js em seguida.' });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  } finally {
+    client.release();
+  }
+});
+
 // ─────────────────────────────────────────────
 //  404 FALLBACK (SPA)
 // ─────────────────────────────────────────────
