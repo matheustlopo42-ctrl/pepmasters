@@ -390,68 +390,117 @@ async function carregarProdutos(){
   renderGrid(produtosData)
 }
 
+function mkCard(p) {
+  var esgotado = p.estoque <= 0;
+  var baixo = p.estoque > 0 && p.estoque <= 3;
+  var preco = typeof p.preco === 'number' ? p.preco : parseFloat(p.preco);
+  var div = document.createElement('div');
+  div.className = 'card';
+
+  var imgWrap = document.createElement('div');
+  imgWrap.className = 'card-img-wrap';
+  var badge = document.createElement('span');
+  badge.className = 'cat-badge cat-' + p.catClass;
+  badge.textContent = p.categoria;
+  imgWrap.appendChild(badge);
+  if (esgotado) {
+    var eb = document.createElement('span');
+    eb.className = 'estoque-badge estoque-zero';
+    eb.textContent = 'Esgotado';
+    imgWrap.appendChild(eb);
+  } else if (baixo) {
+    var eb2 = document.createElement('span');
+    eb2.className = 'estoque-badge estoque-low';
+    eb2.textContent = 'Últimas unidades';
+    imgWrap.appendChild(eb2);
+  }
+  var img = document.createElement('img');
+  img.src = p.img; img.alt = p.nome;
+  img.onerror = function(){ this.style.display='none'; };
+  imgWrap.appendChild(img);
+  div.appendChild(imgWrap);
+
+  var body = document.createElement('div');
+  body.className = 'card-body';
+  body.innerHTML =
+    '<div class="card-cat-label">' + p.categoria + '</div>' +
+    '<div class="card-name">' + p.nome + '</div>' +
+    '<div class="card-desc">' + p.descricao + '</div>';
+
+  var footer = document.createElement('div');
+  footer.className = 'card-footer';
+  var priceEl = document.createElement('div');
+  priceEl.className = 'card-price';
+  priceEl.innerHTML = '<span>R$</span>' + preco.toFixed(2).replace('.', ',');
+  footer.appendChild(priceEl);
+
+  if (esgotado) {
+    var btnEsg = document.createElement('button');
+    btnEsg.className = 'esgotado';
+    btnEsg.textContent = 'Esgotado';
+    btnEsg.onclick = function(){ abrirEspera(p.nome); };
+    footer.appendChild(btnEsg);
+  } else {
+    var btnAdd = document.createElement('button');
+    btnAdd.className = 'btn-add';
+    btnAdd.id = 'btn-add-' + p.id;
+    btnAdd.textContent = 'Adicionar ao Carrinho';
+    btnAdd.onclick = function(){ mostrarSeletor(p.id); };
+    footer.appendChild(btnAdd);
+
+    var sel = document.createElement('div');
+    sel.className = 'card-qtd-selector';
+    sel.id = 'sel-' + p.id;
+    var qtdRow = document.createElement('div');
+    qtdRow.className = 'qtd-row';
+    var btnM = document.createElement('button');
+    btnM.className = 'qtd-btn'; btnM.textContent = '−';
+    btnM.onclick = function(){ cardQtd(p.id, -1); };
+    var qtdNum = document.createElement('span');
+    qtdNum.className = 'qtd-display'; qtdNum.id = 'qn-' + p.id; qtdNum.textContent = '1';
+    var btnP = document.createElement('button');
+    btnP.className = 'qtd-btn'; btnP.textContent = '+';
+    btnP.onclick = function(){ cardQtd(p.id, 1); };
+    qtdRow.appendChild(btnM); qtdRow.appendChild(qtdNum); qtdRow.appendChild(btnP);
+    var btnConf = document.createElement('button');
+    btnConf.className = 'qtd-confirmar'; btnConf.textContent = 'Adicionar ao Carrinho';
+    btnConf.onclick = function(){ confirmarSeletor(p.id, preco); };
+    var btnCanc = document.createElement('button');
+    btnCanc.className = 'qtd-cancelar'; btnCanc.textContent = 'Cancelar';
+    btnCanc.onclick = function(){ esconderSeletor(p.id); };
+    sel.appendChild(qtdRow); sel.appendChild(btnConf); sel.appendChild(btnCanc);
+    body.appendChild(footer);
+    body.appendChild(sel);
+    div.appendChild(body);
+    return div;
+  }
+  body.appendChild(footer);
+  div.appendChild(body);
+  return div;
+}
+
 function renderGrid(lista){
-  const container=document.getElementById('produtosGrid');
-  container.innerHTML='';
-  if(!lista.length){container.innerHTML='<div class="empty-state"><h3>Nenhum produto encontrado</h3><p>Tente outro filtro ou busca.</p></div>';return}
-
-  // Agrupar por categoria
-  const grupos={};
-  lista.forEach(p=>{if(!grupos[p.categoria])grupos[p.categoria]=[];grupos[p.categoria].push(p)});
-
-  // Ordem alfabética
-  const cats=Object.keys(grupos).sort((a,b)=>a.localeCompare(b,'pt-BR'));
-
-  cats.forEach(cat=>{
-    const prods=grupos[cat];
-
-    // Título da seção
-    const sec=document.createElement('div');
-    sec.className='section-cat-label';
-    sec.innerHTML='<h3>'+cat+'</h3><span class="sec-count">'+prods.length+' produto'+(prods.length>1?'s':'')+'</span>';
+  var container = document.getElementById('produtosGrid');
+  container.innerHTML = '';
+  if (!lista.length) {
+    container.innerHTML = '<div class="empty-state"><h3>Nenhum produto encontrado</h3><p>Tente outro filtro ou busca.</p></div>';
+    return;
+  }
+  var grupos = {};
+  lista.forEach(function(p){ if (!grupos[p.categoria]) grupos[p.categoria] = []; grupos[p.categoria].push(p); });
+  var cats = Object.keys(grupos).sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
+  cats.forEach(function(cat){
+    var prods = grupos[cat];
+    var sec = document.createElement('div');
+    sec.className = 'section-cat-label';
+    sec.innerHTML = '<h3>' + cat + '</h3><span class="sec-count">' + prods.length + ' produto' + (prods.length > 1 ? 's' : '') + '</span>';
     container.appendChild(sec);
-
-    // Grid da seção
-    const grid=document.createElement('div');
-    grid.className='cat-grid';
-    prods.forEach(p=>{
-      const esgotado=p.estoque<=0;
-      const baixo=p.estoque>0&&p.estoque<=3;
-      const preco=typeof p.preco==='number'?p.preco:parseFloat(p.preco);
-      const estBadge=esgotado?'<span class="estoque-badge estoque-zero">Esgotado</span>':baixo?'<span class="estoque-badge estoque-low">Últimas unidades</span>':'';
-      const div=document.createElement('div');
-      div.className='card';
-      div.innerHTML=
-        '<div class="card-img-wrap"><span class="cat-badge cat-'+p.catClass+'">'+cat+'</span>'+estBadge+'<img src="'+p.img+'" alt="'+p.nome+'" onerror="this.style.display='none'"/></div>'+
-        '<div class="card-body">'+
-          '<div class="card-cat-label">'+cat+'</div>'+
-          '<div class="card-name">'+p.nome+'</div>'+
-          '<div class="card-desc">'+p.descricao+'</div>'+
-          '<div class="card-footer">'+
-            '<div class="card-price"><span>R$</span>'+preco.toFixed(2).replace('.',',')+'</div>'+
-            (esgotado
-              ? '<button class="esgotado" onclick="abrirEspera(''+p.nome+'')">Esgotado</button>'
-              : '<button class="btn-add" id="btn-add-'+p.id+'" onclick="mostrarSeletor(''+p.id+'')">Adicionar ao Carrinho</button>'
-            )+
-          '</div>'+
-          (esgotado?'':
-            '<div class="card-qtd-selector" id="sel-'+p.id+'">'+
-              '<div class="qtd-row">'+
-                '<button class="qtd-btn" onclick="cardQtd(''+p.id+'',-1)">−</button>'+
-                '<span class="qtd-display" id="qn-'+p.id+'">1</span>'+
-                '<button class="qtd-btn" onclick="cardQtd(''+p.id+'',1)">+</button>'+
-              '</div>'+
-              '<button class="qtd-confirmar" onclick="confirmarSeletor(''+p.id+'','+preco+')">Adicionar ao Carrinho</button>'+
-              '<button class="qtd-cancelar" onclick="esconderSeletor(''+p.id+'')">Cancelar</button>'+
-            '</div>'
-          )+
-        '</div>';
-      grid.appendChild(div);
-    });
+    var grid = document.createElement('div');
+    grid.className = 'cat-grid';
+    prods.forEach(function(p){ grid.appendChild(mkCard(p)); });
     container.appendChild(grid);
   });
 }
-
 
 // ── FILTROS ──
 function filtrar(cat,btn){filtroAtivo=cat;document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('buscaInput').value='';aplicarFiltros()}
