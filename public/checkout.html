@@ -1,118 +1,105 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Checkout — PEPMASTERS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
   <style>
-    :root { --amber: #FFB300; --red: #E8220A; --orange: #FF6B00; --cream: #FFF8F0; --warm-white: #FFFDF9; --dark: #1C0A00; --mid: #3D1A00; --muted: #7A4A2A; --border: #FFD580; }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Barlow', sans-serif; background: var(--cream); min-height: 100vh; display: flex; flex-direction: column; }
-
-    header { background: var(--warm-white); border-bottom: 3px solid var(--amber); padding: 0 24px; height: 68px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(255,179,0,0.2); }
-    .logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .logo-wrap img { height: 40px; width: 40px; object-fit: contain; }
-    .logo-text { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.5rem; letter-spacing: 0.04em; background: linear-gradient(135deg, var(--red), var(--orange), var(--amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-
-    main { flex: 1; max-width: 1000px; margin: 0 auto; padding: 40px 24px; width: 100%; }
-
-    h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2.2rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--dark); margin-bottom: 32px; }
-
-    .checkout-grid { display: grid; grid-template-columns: 1fr 360px; gap: 28px; }
-
-    .panel { background: #fff; border-radius: 16px; padding: 28px; border: 1px solid #FFE5B0; box-shadow: 0 4px 20px rgba(255,179,0,0.08); margin-bottom: 20px; }
-
-    .panel h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dark); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .form-group { margin-bottom: 14px; }
-    label { display: block; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mid); margin-bottom: 5px; }
-    input, select { width: 100%; padding: 11px 13px; border: 2px solid var(--border); border-radius: 8px; font-size: 0.93rem; font-family: 'Barlow', sans-serif; color: var(--dark); background: var(--warm-white); outline: none; transition: border-color 0.2s; }
-    input:focus, select:focus { border-color: var(--orange); }
-    input[readonly] { background: #FFF8EC; color: var(--muted); }
-
-    /* Pagamento tabs */
-    .pay-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-    .pay-tab { flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: 10px; background: none; cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); transition: all 0.2s; }
-    .pay-tab.active { border-color: var(--orange); color: var(--orange); background: #FFF3E0; }
-
-    .pay-panel { display: none; }
-    .pay-panel.active { display: block; }
-
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:var(--cream);min-height:100vh;display:flex;flex-direction:column}
+    header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(255,179,0,.2)}
+    .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo-wrap img{height:40px;width:40px;object-fit:contain}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .back-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none}
+    .back-link:hover{color:var(--orange)}
+    main{flex:1;max-width:1000px;margin:0 auto;padding:36px 24px;width:100%}
+    h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dark);margin-bottom:28px}
+    .checkout-grid{display:grid;grid-template-columns:1fr 360px;gap:24px}
+    .panel{background:#fff;border-radius:16px;padding:24px 28px;border:1px solid #FFE5B0;box-shadow:0 4px 20px rgba(255,179,0,.08);margin-bottom:18px}
+    .panel h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.15rem;text-transform:uppercase;letter-spacing:.06em;color:var(--dark);margin-bottom:18px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .form-group{margin-bottom:14px}
+    label{display:block;font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);margin-bottom:5px}
+    input,select{width:100%;padding:11px 13px;border:2px solid var(--border);border-radius:8px;font-size:.93rem;font-family:'Barlow',sans-serif;color:var(--dark);background:var(--warm-white);outline:none;transition:border-color .2s}
+    input:focus,select:focus{border-color:var(--orange)}
+    input[readonly]{background:#FFF8EC;color:var(--muted)}
+    /* PAGAMENTO TABS */
+    .pay-tabs{display:flex;gap:10px;margin-bottom:18px}
+    .pay-tab{flex:1;padding:10px;border:2px solid var(--border);border-radius:10px;background:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);transition:all .2s}
+    .pay-tab.active{border-color:var(--orange);color:var(--orange);background:#FFF3E0}
+    .pay-panel{display:none}
+    .pay-panel.active{display:block}
     /* PIX */
-    .pix-area { text-align: center; padding: 20px 0; }
-    #qrcodeImg { max-width: 200px; border-radius: 12px; border: 3px solid var(--amber); margin: 16px auto; display: block; }
-    .pix-copy { width: 100%; padding: 10px; background: var(--warm-white); border: 2px dashed var(--amber); border-radius: 8px; font-family: 'Barlow', monospace; font-size: 0.78rem; color: var(--mid); word-break: break-all; cursor: pointer; margin-top: 10px; }
-    .pix-status { margin-top: 12px; font-size: 0.88rem; color: var(--muted); }
-
-    /* Cupom */
-    .cupom-row { display: flex; gap: 10px; }
-    .cupom-row input { flex: 1; }
-    .btn-cupom { padding: 11px 18px; background: linear-gradient(135deg, var(--red), var(--orange)); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.06em; text-transform: uppercase; border: none; border-radius: 8px; cursor: pointer; white-space: nowrap; }
-
-    /* Resumo */
-    .resumo-item { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--mid); padding: 8px 0; border-bottom: 1px solid #FFE5B0; }
-    .resumo-item:last-child { border: none; }
-    .resumo-total { display: flex; justify-content: space-between; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--dark); padding: 14px 0 0; }
-    .resumo-total .valor { color: var(--red); }
-
-    .btn-finalizar { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--red), var(--orange)); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.1em; text-transform: uppercase; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 20px rgba(232,34,10,0.35); transition: transform 0.15s, box-shadow 0.15s; margin-top: 16px; }
-    .btn-finalizar:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(232,34,10,0.45); }
-    .btn-finalizar:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-    .desconto-tag { font-size: 0.8rem; color: #22c55e; font-weight: 600; }
-    .seguro { text-align: center; font-size: 0.78rem; color: var(--muted); margin-top: 12px; }
-
-    #msgErro { background: #FFF0EE; border-left: 4px solid var(--red); padding: 10px 14px; border-radius: 8px; font-size: 0.88rem; color: var(--red); margin-bottom: 16px; display: none; }
-
-    footer { background: var(--dark); color: rgba(255,255,255,0.4); text-align: center; padding: 16px; font-size: 0.8rem; }
-    footer a { color: rgba(255,179,0,0.5); text-decoration: none; }
-
-    @media (max-width: 768px) {
-      .checkout-grid { grid-template-columns: 1fr; }
-      .form-row { grid-template-columns: 1fr; }
-    }
+    .pix-area{text-align:center;padding:16px 0}
+    #qrcodeImg{max-width:190px;border-radius:12px;border:3px solid var(--amber);margin:14px auto;display:block}
+    .pix-copy{width:100%;padding:10px;background:var(--warm-white);border:2px dashed var(--amber);border-radius:8px;font-family:'Barlow',monospace;font-size:.75rem;color:var(--mid);word-break:break-all;cursor:pointer;margin-top:10px;text-align:left}
+    .pix-status{margin-top:10px;font-size:.88rem;color:var(--muted)}
+    /* CUPOM */
+    .cupom-row{display:flex;gap:10px}
+    .cupom-row input{flex:1}
+    .btn-cupom{padding:11px 18px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:8px;cursor:pointer;white-space:nowrap}
+    /* RESUMO */
+    .resumo-items{margin-bottom:12px}
+    .resumo-item-linha{display:flex;justify-content:space-between;align-items:center;font-size:.88rem;color:var(--mid);padding:8px 0;border-bottom:1px solid #FFE5B0}
+    .resumo-item-linha:last-child{border:none}
+    .resumo-item-nome{display:flex;align-items:center;gap:8px}
+    .resumo-item-nome img{width:32px;height:32px;object-fit:contain;background:#FFF3D0;border-radius:6px}
+    .resumo-qty{font-size:.75rem;background:var(--amber);color:var(--dark);border-radius:4px;padding:1px 6px;font-weight:700;margin-left:4px}
+    .resumo-subtotais{margin-top:12px;padding-top:12px;border-top:2px solid #FFE5B0}
+    .resumo-linha{display:flex;justify-content:space-between;font-size:.88rem;color:var(--mid);margin-bottom:6px}
+    .resumo-total{display:flex;justify-content:space-between;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;color:var(--dark);padding-top:10px;margin-top:6px;border-top:2px solid var(--border)}
+    .resumo-total .valor{color:var(--red)}
+    .desconto-tag{font-size:.78rem;color:#22c55e;font-weight:600}
+    .btn-finalizar{width:100%;padding:14px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:12px;cursor:pointer;box-shadow:0 4px 20px rgba(232,34,10,.35);transition:transform .15s,box-shadow .15s;margin-top:14px}
+    .btn-finalizar:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(232,34,10,.45)}
+    .btn-finalizar:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .seguro{text-align:center;font-size:.76rem;color:var(--muted);margin-top:10px}
+    .carrinho-vazio{text-align:center;padding:48px 20px;color:var(--muted)}
+    .carrinho-vazio h2{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;margin-bottom:10px}
+    .carrinho-vazio a{display:inline-block;margin-top:16px;padding:12px 28px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;border-radius:10px}
+    #msgErro{background:#FFF0EE;border-left:4px solid var(--red);padding:10px 14px;border-radius:8px;font-size:.88rem;color:var(--red);margin-bottom:16px;display:none}
+    footer{background:var(--dark);color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:.8rem}
+    footer a{color:rgba(255,179,0,.5);text-decoration:none}
+    @media(max-width:768px){.checkout-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
 
 <header>
   <a href="index.html" class="logo-wrap">
-    <img src="Capturar.PNG" alt="Logo" />
+    <img src="Capturar.PNG" alt="Logo"/>
     <span class="logo-text">PEPMASTERS</span>
   </a>
+  <a href="index.html" class="back-link">← Continuar comprando</a>
 </header>
 
 <main>
   <h1>🛒 Finalizar Pedido</h1>
-
   <div id="msgErro"></div>
 
-  <div class="checkout-grid">
+  <!-- Carrinho vazio -->
+  <div id="carrinhoVazio" class="carrinho-vazio" style="display:none">
+    <h2>Seu carrinho está vazio</h2>
+    <p>Adicione peptídeos antes de finalizar o pedido.</p>
+    <a href="index.html">Ver produtos</a>
+  </div>
+
+  <!-- Checkout -->
+  <div class="checkout-grid" id="checkoutGrid">
     <div>
       <!-- DADOS PESSOAIS -->
       <div class="panel">
         <h2>👤 Seus Dados</h2>
         <div class="form-row">
-          <div class="form-group">
-            <label>Nome completo</label>
-            <input type="text" id="nome" placeholder="Seu nome" />
-          </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="email" placeholder="seu@email.com" />
-          </div>
+          <div class="form-group"><label>Nome completo</label><input type="text" id="nome" placeholder="Seu nome"/></div>
+          <div class="form-group"><label>Email</label><input type="email" id="email" placeholder="seu@email.com"/></div>
         </div>
         <div class="form-row">
-          <div class="form-group">
-            <label>CPF</label>
-            <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14" />
-          </div>
-          <div class="form-group">
-            <label>Telefone</label>
-            <input type="text" id="telefone" placeholder="(00) 00000-0000" maxlength="15" />
-          </div>
+          <div class="form-group"><label>CPF</label><input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14"/></div>
+          <div class="form-group"><label>Telefone</label><input type="text" id="telefone" placeholder="(00) 00000-0000" maxlength="15"/></div>
         </div>
       </div>
 
@@ -120,80 +107,43 @@
       <div class="panel">
         <h2>📦 Endereço de Entrega</h2>
         <div class="form-row">
-          <div class="form-group">
-            <label>CEP</label>
-            <input type="text" id="cep" placeholder="00000-000" maxlength="9" oninput="buscarCep(this)" />
-          </div>
-          <div class="form-group">
-            <label>Número</label>
-            <input type="text" id="numero" placeholder="Nº" />
-          </div>
+          <div class="form-group"><label>CEP</label><input type="text" id="cep" placeholder="00000-000" maxlength="9" oninput="buscarCep(this)"/></div>
+          <div class="form-group"><label>Número</label><input type="text" id="numero" placeholder="Nº"/></div>
         </div>
-        <div class="form-group">
-          <label>Rua</label>
-          <input type="text" id="rua" placeholder="Logradouro" readonly />
-        </div>
+        <div class="form-group"><label>Rua</label><input type="text" id="rua" placeholder="Logradouro" readonly/></div>
         <div class="form-row">
-          <div class="form-group">
-            <label>Bairro</label>
-            <input type="text" id="bairro" readonly />
-          </div>
-          <div class="form-group">
-            <label>Cidade / UF</label>
-            <input type="text" id="cidade" readonly />
-          </div>
+          <div class="form-group"><label>Bairro</label><input type="text" id="bairro" readonly/></div>
+          <div class="form-group"><label>Cidade / UF</label><input type="text" id="cidade" readonly/></div>
         </div>
-        <div class="form-group">
-          <label>Complemento</label>
-          <input type="text" id="complemento" placeholder="Apto, bloco..." />
-        </div>
+        <div class="form-group"><label>Complemento</label><input type="text" id="complemento" placeholder="Apto, bloco..."/></div>
       </div>
 
       <!-- PAGAMENTO -->
       <div class="panel">
         <h2>💳 Pagamento</h2>
         <div class="pay-tabs">
-          <button class="pay-tab active" onclick="trocarPag('pix', this)">PIX</button>
-          <button class="pay-tab" onclick="trocarPag('cartao', this)">Cartão</button>
+          <button class="pay-tab active" onclick="trocarPag('pix',this)">PIX</button>
+          <button class="pay-tab" onclick="trocarPag('cartao',this)">Cartão</button>
         </div>
-
         <!-- PIX -->
         <div class="pay-panel active" id="pag-pix">
-          <p style="font-size:.88rem;color:var(--muted);margin-bottom:16px">Clique em "Finalizar" para gerar o QR Code PIX. Pagamento confirmado automaticamente.</p>
+          <p style="font-size:.88rem;color:var(--muted)">Clique em "Finalizar" para gerar o QR Code PIX. Confirmação automática.</p>
           <div class="pix-area" id="pixArea" style="display:none">
-            <img id="qrcodeImg" src="" alt="QR Code PIX" />
+            <img id="qrcodeImg" src="" alt="QR Code PIX"/>
             <div class="pix-copy" id="pixCopia" onclick="copiarPix()">Clique para copiar o código PIX</div>
             <p class="pix-status" id="pixStatus">⏳ Aguardando pagamento...</p>
           </div>
         </div>
-
         <!-- CARTÃO -->
         <div class="pay-panel" id="pag-cartao">
-          <div class="form-group">
-            <label>Número do cartão</label>
-            <input type="text" id="cc-num" placeholder="0000 0000 0000 0000" maxlength="19" oninput="mascaraCartao(this)" />
-          </div>
-          <div class="form-group">
-            <label>Nome no cartão</label>
-            <input type="text" id="cc-nome" placeholder="NOME COMO NO CARTÃO" />
-          </div>
+          <div class="form-group"><label>Número do cartão</label><input type="text" id="cc-num" placeholder="0000 0000 0000 0000" maxlength="19" oninput="mascaraCartao(this)"/></div>
+          <div class="form-group"><label>Nome no cartão</label><input type="text" id="cc-nome" placeholder="NOME COMO NO CARTÃO"/></div>
           <div class="form-row">
-            <div class="form-group">
-              <label>Validade</label>
-              <input type="text" id="cc-val" placeholder="MM/AA" maxlength="5" oninput="mascaraValidade(this)" />
-            </div>
-            <div class="form-group">
-              <label>CVV</label>
-              <input type="text" id="cc-cvv" placeholder="000" maxlength="4" />
-            </div>
+            <div class="form-group"><label>Validade</label><input type="text" id="cc-val" placeholder="MM/AA" maxlength="5" oninput="mascaraValidade(this)"/></div>
+            <div class="form-group"><label>CVV</label><input type="text" id="cc-cvv" placeholder="000" maxlength="4"/></div>
           </div>
-          <div class="form-group">
-            <label>Parcelas</label>
-            <select id="parcelas">
-              <option value="1">1x sem juros</option>
-              <option value="2">2x sem juros</option>
-              <option value="3">3x sem juros</option>
-            </select>
+          <div class="form-group"><label>Parcelas</label>
+            <select id="parcelas"><option value="1">1x sem juros</option><option value="2">2x sem juros</option><option value="3">3x sem juros</option></select>
           </div>
         </div>
       </div>
@@ -202,30 +152,25 @@
     <!-- RESUMO -->
     <div>
       <div class="panel" style="position:sticky;top:88px">
-        <h2>🧾 Resumo</h2>
+        <h2>🧾 Resumo do Pedido</h2>
 
-        <div id="resumoProduto" class="resumo-item">
-          <span>Produto</span><span id="resumoNome">—</span>
-        </div>
-        <div class="resumo-item">
-          <span>Subtotal</span><span id="resumoSubtotal">R$ 0,00</span>
-        </div>
-        <div class="resumo-item" id="descontoRow" style="display:none">
-          <span>Desconto <span class="desconto-tag" id="descontoTag"></span></span>
-          <span id="descontoValor" style="color:#22c55e">— R$ 0,00</span>
-        </div>
-        <div class="resumo-item">
-          <span>Frete</span><span>A calcular</span>
-        </div>
-        <div class="resumo-total">
-          <span>Total</span><span class="valor" id="resumoTotal">R$ 0,00</span>
+        <div class="resumo-items" id="resumoItems"></div>
+
+        <div class="resumo-subtotais">
+          <div class="resumo-linha"><span>Subtotal</span><span id="resumoSubtotal">R$ 0,00</span></div>
+          <div class="resumo-linha" id="descontoRow" style="display:none">
+            <span>Desconto <span class="desconto-tag" id="descontoTag"></span></span>
+            <span id="descontoValor" style="color:#22c55e">— R$ 0,00</span>
+          </div>
+          <div class="resumo-linha"><span>Frete</span><span>A calcular</span></div>
+          <div class="resumo-total"><span>Total</span><span class="valor" id="resumoTotal">R$ 0,00</span></div>
         </div>
 
         <!-- Cupom -->
-        <div style="margin-top:18px">
+        <div style="margin-top:16px">
           <label>Cupom de desconto</label>
           <div class="cupom-row">
-            <input type="text" id="cupom" placeholder="CÓDIGO" style="text-transform:uppercase" />
+            <input type="text" id="cupom" placeholder="CÓDIGO" style="text-transform:uppercase"/>
             <button class="btn-cupom" onclick="aplicarCupom()">Aplicar</button>
           </div>
           <p id="cupomMsg" style="font-size:.82rem;margin-top:6px;color:var(--muted)"></p>
@@ -241,72 +186,74 @@
 <footer>© 2025 PEPMASTERS — <a href="index.html">Voltar à loja</a></footer>
 
 <script>
-  let pagAtual = 'pix';
-  let produto   = null;
+  let pagAtual   = 'pix';
   let cupomDados = null;
+  let carrinho   = [];
 
-  // ─── INIT ───
-  async function init() {
-    const params = new URLSearchParams(location.search);
-    const pid    = params.get('produto');
+  // ── INIT ──
+  function init() {
+    try { carrinho = JSON.parse(localStorage.getItem('pep_carrinho') || '[]'); } catch { carrinho = []; }
 
-    // preencher dados do usuário logado
-    const token = localStorage.getItem('pep_token');
-    const nome  = localStorage.getItem('pep_nome');
-    if (nome) document.getElementById('nome').value = nome;
-
-    // buscar produto
-    if (pid) {
-      try {
-        const res = await fetch('/api/produtos');
-        const list = await res.json();
-        produto = list.find(p => p.id == pid);
-      } catch {
-        produto = [
-          { id:1, nome:'BPC-157', preco:150 },
-          { id:2, nome:'TB-500', preco:180 },
-          { id:3, nome:'HGH Frag 176-191', preco:160 },
-          { id:4, nome:'Ipamorelin', preco:140 },
-          { id:5, nome:'Sermorelin', preco:170 },
-        ].find(p => p.id == pid);
-      }
+    if (!carrinho.length) {
+      document.getElementById('checkoutGrid').style.display = 'none';
+      document.getElementById('carrinhoVazio').style.display = 'block';
+      return;
     }
 
-    atualizarResumo();
+    // preencher dados do usuário logado
+    const nome = localStorage.getItem('pep_nome');
+    if (nome) document.getElementById('nome').value = nome;
+
+    renderResumo();
   }
 
-  function atualizarResumo() {
-    const preco = produto ? parseFloat(produto.preco) : 0;
-    let total = preco;
-    let desc  = 0;
+  // ── RESUMO ──
+  function renderResumo() {
+    const itemsEl = document.getElementById('resumoItems');
+    itemsEl.innerHTML = carrinho.map(item =>
+      '<div class="resumo-item-linha">' +
+        '<div class="resumo-item-nome">' +
+          '<img src="' + item.img + '" onerror="this.style.display=\'none\'"/>' +
+          '<span>' + item.nome + '</span>' +
+          '<span class="resumo-qty">×' + item.quantidade + '</span>' +
+        '</div>' +
+        '<span>R$ ' + (item.preco * item.quantidade).toFixed(2).replace('.',',') + '</span>' +
+      '</div>'
+    ).join('');
 
-    document.getElementById('resumoNome').textContent = produto ? produto.nome : '—';
-    document.getElementById('resumoSubtotal').textContent = 'R$ ' + preco.toFixed(2).replace('.',',');
+    atualizarTotais();
+  }
+
+  function atualizarTotais() {
+    const subtotal = carrinho.reduce((s, i) => s + i.preco * i.quantidade, 0);
+    let desconto = 0;
 
     if (cupomDados) {
       const pct = pagAtual === 'pix' ? cupomDados.desconto_pix : cupomDados.desconto_cartao;
-      desc = preco * (pct / 100);
-      total = preco - desc;
+      desconto = subtotal * (pct / 100);
       document.getElementById('descontoRow').style.display = 'flex';
       document.getElementById('descontoTag').textContent   = '(' + cupomDados.codigo + ' −' + pct + '%)';
-      document.getElementById('descontoValor').textContent = '— R$ ' + desc.toFixed(2).replace('.',',');
+      document.getElementById('descontoValor').textContent = '— R$ ' + desconto.toFixed(2).replace('.',',');
     } else {
       document.getElementById('descontoRow').style.display = 'none';
     }
 
-    document.getElementById('resumoTotal').textContent = 'R$ ' + total.toFixed(2).replace('.',',');
+    const total = subtotal - desconto;
+    document.getElementById('resumoSubtotal').textContent = 'R$ ' + subtotal.toFixed(2).replace('.',',');
+    document.getElementById('resumoTotal').textContent    = 'R$ ' + total.toFixed(2).replace('.',',');
   }
 
+  // ── PAGAMENTO ──
   function trocarPag(tipo, btn) {
     pagAtual = tipo;
     document.querySelectorAll('.pay-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.pay-panel').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('pag-' + tipo).classList.add('active');
-    atualizarResumo();
+    atualizarTotais();
   }
 
-  // ─── CEP ───
+  // ── CEP ──
   async function buscarCep(el) {
     let v = el.value.replace(/\D/g,'');
     if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5,8);
@@ -323,7 +270,7 @@
     } catch {}
   }
 
-  // ─── CUPOM ───
+  // ── CUPOM ──
   async function aplicarCupom() {
     const codigo = document.getElementById('cupom').value.trim().toUpperCase();
     const msg    = document.getElementById('cupomMsg');
@@ -331,51 +278,62 @@
     try {
       const res  = await fetch('/api/cupom/' + codigo);
       const data = await res.json();
-      if (!res.ok || !data.ativo) { msg.style.color = 'var(--red)'; msg.textContent = '❌ Cupom inválido ou inativo.'; cupomDados = null; }
-      else { msg.style.color = '#22c55e'; msg.textContent = '✅ Cupom aplicado!'; cupomDados = data; }
-    } catch { msg.style.color = 'var(--muted)'; msg.textContent = 'Erro ao verificar cupom.'; }
-    atualizarResumo();
+      if (!res.ok || !data.ativo) { msg.style.color='var(--red)'; msg.textContent='❌ Cupom inválido ou inativo.'; cupomDados=null; }
+      else { msg.style.color='#22c55e'; msg.textContent='✅ Cupom aplicado!'; cupomDados=data; }
+    } catch { msg.style.color='var(--muted)'; msg.textContent='Erro ao verificar cupom.'; }
+    atualizarTotais();
   }
 
-  // ─── FINALIZAR ───
+  // ── FINALIZAR ──
   async function finalizar() {
-    const nome       = document.getElementById('nome').value.trim();
-    const email      = document.getElementById('email').value.trim();
-    const cpf        = document.getElementById('cpf').value.trim();
-    const telefone   = document.getElementById('telefone').value.trim();
-    const cep        = document.getElementById('cep').value.trim();
-    const rua        = document.getElementById('rua').value.trim();
-    const numero     = document.getElementById('numero').value.trim();
-    const bairro     = document.getElementById('bairro').value.trim();
-    const cidade     = document.getElementById('cidade').value.trim();
-    const complemento= document.getElementById('complemento').value.trim();
+    const nome      = document.getElementById('nome').value.trim();
+    const email     = document.getElementById('email').value.trim();
+    const cpf       = document.getElementById('cpf').value.trim();
+    const telefone  = document.getElementById('telefone').value.trim();
+    const cep       = document.getElementById('cep').value.trim();
+    const rua       = document.getElementById('rua').value.trim();
+    const numero    = document.getElementById('numero').value.trim();
+    const bairro    = document.getElementById('bairro').value.trim();
+    const cidade    = document.getElementById('cidade').value.trim();
+    const complemento = document.getElementById('complemento').value.trim();
 
     if (!nome || !email || !cpf || !cep || !rua || !numero) { mostrarErro('Preencha todos os campos obrigatórios.'); return; }
-    if (!produto) { mostrarErro('Produto não encontrado.'); return; }
+    if (!carrinho.length) { mostrarErro('Carrinho vazio.'); return; }
 
     const btn = document.getElementById('btnFinalizar');
     btn.disabled = true; btn.textContent = 'Processando...';
 
+    const subtotal = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
+    let desconto = 0;
+    if (cupomDados) {
+      const pct = pagAtual === 'pix' ? cupomDados.desconto_pix : cupomDados.desconto_cartao;
+      desconto = subtotal * (pct / 100);
+    }
+    const total = subtotal - desconto;
+
     const pedido = {
       nome, email, cpf, telefone,
       endereco: { cep, rua, numero, bairro, cidade, complemento },
-      produto_id: produto.id,
-      produto_nome: produto.nome,
-      pagamento: pagAtual,
-      cupom: cupomDados ? cupomDados.codigo : null,
-      token: localStorage.getItem('pep_token')
+      carrinho,
+      pagamento:    pagAtual,
+      cupom:        cupomDados ? cupomDados.codigo : null,
+      total:        total.toFixed(2),
+      token:        localStorage.getItem('pep_token')
     };
 
     try {
-      const res  = await fetch('/api/pedido', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(pedido) });
+      const res  = await fetch('/api/pedido', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(pedido) });
       const data = await res.json();
 
-      if (!res.ok) { mostrarErro(data.erro || 'Erro ao criar pedido.'); btn.disabled = false; btn.textContent = 'Finalizar Pedido'; return; }
+      if (!res.ok) { mostrarErro(data.erro || 'Erro ao criar pedido.'); btn.disabled=false; btn.textContent='Finalizar Pedido'; return; }
+
+      // limpar carrinho após pedido criado
+      localStorage.removeItem('pep_carrinho');
 
       if (pagAtual === 'pix') {
         document.getElementById('pixArea').style.display = 'block';
-        document.getElementById('qrcodeImg').src = data.qrcode_url || '';
-        document.getElementById('pixCopia').textContent = data.pix_copia_cola || '';
+        document.getElementById('qrcodeImg').src         = data.qrcode_url || '';
+        document.getElementById('pixCopia').textContent  = data.pix_copia_cola || 'Código PIX indisponível';
         btn.textContent = '⏳ Aguardando PIX...';
         verificarPagamento(data.pedido_id);
       } else {
@@ -383,51 +341,46 @@
       }
     } catch {
       mostrarErro('Erro de conexão. Tente novamente.');
-      btn.disabled = false; btn.textContent = 'Finalizar Pedido';
+      btn.disabled=false; btn.textContent='Finalizar Pedido';
     }
   }
 
   function verificarPagamento(pedidoId) {
-    const interval = setInterval(async () => {
+    const iv = setInterval(async () => {
       try {
         const res  = await fetch('/api/pedido/' + pedidoId + '/status');
         const data = await res.json();
-        if (data.status === 'PAGO' || data.status === 'pago') {
-          clearInterval(interval);
-          location.href = 'confirmacao.html?id=' + pedidoId;
-        }
+        if (data.status === 'pago') { clearInterval(iv); location.href = 'confirmacao.html?id=' + pedidoId; }
       } catch {}
     }, 4000);
-    setTimeout(() => clearInterval(interval), 600000);
+    setTimeout(() => clearInterval(iv), 600000);
   }
 
   function copiarPix() {
-    const texto = document.getElementById('pixCopia').textContent;
-    navigator.clipboard.writeText(texto).then(() => {
-      document.getElementById('pixStatus').textContent = '✅ Código copiado!';
-    });
+    navigator.clipboard.writeText(document.getElementById('pixCopia').textContent)
+      .then(() => { document.getElementById('pixStatus').textContent = '✅ Código copiado!'; });
   }
 
   function mostrarErro(msg) {
     const el = document.getElementById('msgErro');
     el.textContent = msg; el.style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({top:0,behavior:'smooth'});
   }
 
-  // ─── MÁSCARAS ───
+  // ── MÁSCARAS ──
   document.getElementById('cpf').addEventListener('input', function() {
-    let v = this.value.replace(/\D/g,'').slice(0,11);
-    v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-    this.value = v;
+    let v=this.value.replace(/\D/g,'').slice(0,11);
+    v=v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+    this.value=v;
   });
   document.getElementById('telefone').addEventListener('input', function() {
-    let v = this.value.replace(/\D/g,'').slice(0,11);
-    if (v.length > 6) v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-    else if (v.length > 2) v = v.replace(/^(\d{2})(\d*)/, '($1) $2');
-    this.value = v;
+    let v=this.value.replace(/\D/g,'').slice(0,11);
+    if(v.length>6) v=v.replace(/^(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
+    else if(v.length>2) v=v.replace(/^(\d{2})(\d*)/,'($1) $2');
+    this.value=v;
   });
-  function mascaraCartao(el) { el.value = el.value.replace(/\D/g,'').slice(0,16).replace(/(\d{4})/g,'$1 ').trim(); }
-  function mascaraValidade(el) { el.value = el.value.replace(/\D/g,'').slice(0,4).replace(/(\d{2})(\d)/, '$1/$2'); }
+  function mascaraCartao(el){el.value=el.value.replace(/\D/g,'').slice(0,16).replace(/(\d{4})/g,'$1 ').trim()}
+  function mascaraValidade(el){el.value=el.value.replace(/\D/g,'').slice(0,4).replace(/(\d{2})(\d)/,'$1/$2')}
 
   init();
 </script>

@@ -325,11 +325,11 @@ app.get('/api/cupom/:codigo', async (req, res) => {
 app.post('/api/pedido', async (req, res) => {
   const {
     nome, email, cpf, telefone,
-    endereco, produto_id, produto_nome,
-    pagamento, cupom, token: userToken
+    endereco, carrinho, pagamento, cupom, total: totalFront,
+    token: userToken
   } = req.body;
 
-  if (!nome || !email || !produto_id || !pagamento) {
+  if (!nome || !email || !pagamento || !carrinho || !carrinho.length) {
     return res.status(400).json({ erro: 'Dados incompletos.' });
   }
 
@@ -337,14 +337,8 @@ app.post('/api/pedido', async (req, res) => {
   try {
     await client.query('BEGIN');
 
-    // buscar produto e estoque
-    const { rows: estoqueRows } = await client.query(
-      'SELECT preco, estoque FROM pep_estoque WHERE produto_id=$1::text FOR UPDATE',
-      [produto_id]
-    );
-    if (!estoqueRows.length) { await client.query('ROLLBACK'); return res.status(404).json({ erro: 'Produto não encontrado.' }); }
-    const { preco, estoque } = estoqueRows[0];
-    if (estoque <= 0) { await client.query('ROLLBACK'); return res.status(400).json({ erro: 'Produto esgotado.' }); }
+    // calcular subtotal a partir do carrinho
+    const subtotal = carrinho.reduce((s, i) => s + parseFloat(i.preco) * parseInt(i.quantidade), 0);
 
     // calcular desconto de cupom
     let desconto = 0;
@@ -357,7 +351,7 @@ app.post('/api/pedido', async (req, res) => {
       if (cupRows.length && cupRows[0].ativo) {
         const c   = cupRows[0];
         const pct = pagamento === 'pix' ? c.desconto_pix : c.desconto_cartao;
-        desconto  = parseFloat(preco) * (pct / 100);
+        desconto  = subtotal * (pct / 100);
         cupomId   = c.id;
         if (!(c.usos_max > 0 && c.usos >= c.usos_max)) {
           await client.query('UPDATE pep_cupons SET usos=usos+1 WHERE id=$1', [c.id]);
@@ -365,7 +359,11 @@ app.post('/api/pedido', async (req, res) => {
       }
     }
 
-    const total = parseFloat(preco) - desconto;
+    const total = subtotal - desconto;
+
+    // montar nomes dos produtos para exibição
+    const produto_nome = carrinho.map(i => i.nome + (i.quantidade > 1 ? ' x' + i.quantidade : '')).join(', ');
+    const produto_id   = carrinho[0].id;
 
     // descobrir usuario_id se logado
     let usuarioId = null;
@@ -385,14 +383,19 @@ app.post('/api/pedido', async (req, res) => {
         usuarioId, nome, email.toLowerCase(), cpf || null, telefone || null,
         endereco?.cep || null, endereco?.rua || null, endereco?.numero || null,
         endereco?.bairro || null, endereco?.cidade || null, endereco?.complemento || null,
-        produto_id, produto_nome, preco, desconto.toFixed(2), total.toFixed(2),
+        produto_id, produto_nome, subtotal.toFixed(2), desconto.toFixed(2), total.toFixed(2),
         pagamento, cupomId ? cupom.toUpperCase() : null, statusInicial
       ]
     );
     const pedidoId = pedRows[0].id;
 
-    // baixar estoque
-    await client.query('UPDATE pep_estoque SET estoque=estoque-1 WHERE produto_id=$1::text', [produto_id]);
+    // baixar estoque de cada item do carrinho
+    for (const item of carrinho) {
+      await client.query(
+        'UPDATE pep_estoque SET estoque=estoque-$1 WHERE produto_id=$2::text',
+        [parseInt(item.quantidade), String(item.id)]
+      );
+    }
 
     await client.query('COMMIT');
 
@@ -406,17 +409,16 @@ app.post('/api/pedido', async (req, res) => {
           method: 'POST',
           headers: { 'Authorization': 'Bearer ' + PIXGO_API_KEY, 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            amount:       Math.round(total * 100),
-            description:  'PEPMASTERS - ' + produto_nome,
-            externalId:   'pep-' + pedidoId,
-            customer:     { name: nome, email: email.toLowerCase(), taxId: (cpf || '').replace(/\D/g,'') },
-            webhookUrl:   BASE_URL + '/webhook/pixgo'
+            amount:      Math.round(total * 100),
+            description: 'PEPMASTERS #' + pedidoId,
+            externalId:  'pep-' + pedidoId,
+            customer:    { name: nome, email: email.toLowerCase(), taxId: (cpf || '').replace(/\D/g,'') },
+            webhookUrl:  BASE_URL + '/webhook/pixgo'
           })
         });
         const pixData = await pixRes.json();
         if (pixData.qrcode)     qrcode_url     = pixData.qrcode;
         if (pixData.qrcodeText) pix_copia_cola = pixData.qrcodeText;
-        // salvar pixgo_id para reconciliação
         if (pixData.id) {
           await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixData.id, pedidoId]);
         }
@@ -426,20 +428,24 @@ app.post('/api/pedido', async (req, res) => {
     }
 
     // ── Notificações ──
-    const msgAdmin = 'Novo pedido PEPMASTERS #' + pedidoId + '\nCliente: ' + nome + '\nProduto: ' + produto_nome + '\nTotal: R$ ' + total.toFixed(2).replace('.',',') + '\nPag: ' + pagamento.toUpperCase();
-    enviarWhatsApp(msgAdmin);
+    const itensTexto = carrinho.map(i => i.nome + ' x' + i.quantidade).join(', ');
+    enviarWhatsApp('Novo pedido PEPMASTERS #' + pedidoId + '\nCliente: ' + nome + '\nItens: ' + itensTexto + '\nTotal: R$ ' + total.toFixed(2).replace('.',',') + '\nPag: ' + pagamento.toUpperCase());
 
     if (EMAIL_DESTINO) {
       enviarEmail(EMAIL_DESTINO, 'Novo pedido #' + pedidoId + ' — PEPMASTERS',
-        '<b>Pedido #' + pedidoId + '</b><br>Cliente: ' + nome + '<br>Email: ' + email + '<br>Produto: ' + produto_nome + '<br>Total: R$ ' + total.toFixed(2).replace('.',',') + '<br>Pagamento: ' + pagamento
+        '<b>Pedido #' + pedidoId + '</b><br>Cliente: ' + nome + '<br>Email: ' + email +
+        '<br>Itens: ' + itensTexto + '<br>Total: R$ ' + total.toFixed(2).replace('.',',') + '<br>Pagamento: ' + pagamento
       );
     }
 
-    // email de confirmação para o cliente
+    // email confirmação para o cliente
+    const itensHtml = carrinho.map(i => '<li>' + i.nome + ' × ' + i.quantidade + ' — R$ ' + (i.preco * i.quantidade).toFixed(2).replace('.',',') + '</li>').join('');
     enviarEmail(email, 'Pedido #' + pedidoId + ' recebido — PEPMASTERS',
-      '<h2>Obrigado, ' + nome.split(' ')[0] + '!</h2><p>Seu pedido <b>#' + pedidoId + '</b> foi recebido e está sendo processado.</p>' +
-      '<p>Produto: <b>' + produto_nome + '</b><br>Total: <b>R$ ' + total.toFixed(2).replace('.',',') + '</b></p>' +
-      '<p>Acompanhe em: <a href="' + BASE_URL + '/meus-pedidos.html">' + BASE_URL + '/meus-pedidos.html</a></p>'
+      '<h2>Obrigado, ' + nome.split(' ')[0] + '!</h2>' +
+      '<p>Seu pedido <b>#' + pedidoId + '</b> foi recebido!</p>' +
+      '<ul>' + itensHtml + '</ul>' +
+      '<p><b>Total: R$ ' + total.toFixed(2).replace('.',',') + '</b></p>' +
+      '<p>Acompanhe em: <a href="' + BASE_URL + '/meus-pedidos.html">Meus Pedidos</a></p>'
     );
 
     res.json({ pedido_id: pedidoId, qrcode_url, pix_copia_cola });
