@@ -405,22 +405,31 @@ app.post('/api/pedido', async (req, res) => {
 
     if (pagamento === 'pix' && PIXGO_API_KEY) {
       try {
-        const pixRes  = await fetch('https://api.pixgo.com.br/v1/charges', {
+        const externalId = 'pep-' + pedidoId;
+        const pixPayload = JSON.stringify({
+          amount:      total,
+          description: 'PEPMASTERS #' + pedidoId,
+          external_id: externalId,
+          webhook_url: BASE_URL + '/webhook/pixgo'
+        });
+        const pixRes = await fetch('https://pixgo.org/api/v1/payment/create', {
           method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + PIXGO_API_KEY, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount:      Math.round(total * 100),
-            description: 'PEPMASTERS #' + pedidoId,
-            externalId:  'pep-' + pedidoId,
-            customer:    { name: nome, email: email.toLowerCase(), taxId: (cpf || '').replace(/\D/g,'') },
-            webhookUrl:  BASE_URL + '/webhook/pixgo'
-          })
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': PIXGO_API_KEY
+          },
+          body: pixPayload
         });
         const pixData = await pixRes.json();
-        if (pixData.qrcode)     qrcode_url     = pixData.qrcode;
-        if (pixData.qrcodeText) pix_copia_cola = pixData.qrcodeText;
-        if (pixData.id) {
-          await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixData.id, pedidoId]);
+        console.log('[PixGo] Resposta:', JSON.stringify(pixData));
+        if (pixData.success && pixData.data) {
+          qrcode_url     = pixData.data.qr_image_url || null;
+          pix_copia_cola = pixData.data.qr_code      || null;
+          if (pixData.data.id) {
+            await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixData.data.id, pedidoId]);
+          }
+        } else {
+          console.error('[PixGo] Erro:', pixData.message || pixData.error || JSON.stringify(pixData));
         }
       } catch (err) {
         console.error('[PixGo] Erro ao criar cobrança:', err.message);
