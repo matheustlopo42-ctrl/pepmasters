@@ -83,7 +83,8 @@ async function initDB() {
       'produto_id INT', 'produto_nome TEXT', 'preco_unitario NUMERIC(10,2)',
       'desconto NUMERIC(10,2) DEFAULT 0', 'total NUMERIC(10,2)',
       'pagamento TEXT', 'cupom TEXT', 'status TEXT DEFAULT \'pix_pending\'',
-      'pixgo_id TEXT', 'codigo_rastreio TEXT'
+      'pixgo_id TEXT', 'codigo_rastreio TEXT',
+      'crypto_valor NUMERIC(18,6) DEFAULT 0', 'crypto_token TEXT'
     ];
     for (const col of pedidosCols) {
       const colName = col.split(' ')[0];
