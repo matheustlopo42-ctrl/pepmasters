@@ -4,7 +4,7 @@
 
   var LANGS = {
     en: { label: 'EN', flag: '<svg viewBox="0 0 20 15" width="18" height="14"><rect width="20" height="15" fill="#012169"/><path d="M0,0 L20,15 M20,0 L0,15" stroke="#fff" stroke-width="3"/><path d="M0,0 L20,15 M20,0 L0,15" stroke="#C8102E" stroke-width="2"/><path d="M10,0 V15 M0,7.5 H20" stroke="#fff" stroke-width="5"/><path d="M10,0 V15 M0,7.5 H20" stroke="#C8102E" stroke-width="3"/></svg>' },
-    pt: { label: 'PT', flag: '<svg viewBox="0 0 20 15" width="18" height="14"><rect width="20" height="15" fill="#009C3B"/><rect x="7" width="13" height="15" fill="#FFDF00"/><circle cx="10" cy="7.5" r="3" fill="#002776"/></svg>' },
+    pt: { label: 'PT', flag: '<svg viewBox="0 0 20 15" width="18" height="14"><rect width="20" height="15" fill="#009C3B"/><polygon points="10,2 18,7.5 10,13 2,7.5" fill="#FFDF00"/><circle cx="10" cy="7.5" r="2.8" fill="#002776"/><path d="M7.5,7.5 a2.5,2.5 0 0,0 5,0" stroke="#fff" stroke-width="0.6" fill="none"/></svg>' },
     es: { label: 'ES', flag: '<svg viewBox="0 0 20 15" width="18" height="14"><rect width="20" height="15" fill="#c60b1e"/><rect y="3.75" width="20" height="7.5" fill="#ffc400"/></svg>' },
     de: { label: 'DE', flag: '<svg viewBox="0 0 20 15" width="18" height="14"><rect width="20" height="5" fill="#000"/><rect y="5" width="20" height="5" fill="#D00"/><rect y="10" width="20" height="5" fill="#FFCE00"/></svg>' },
     fr: { label: 'FR', flag: '<svg viewBox="0 0 20 15" width="18" height="14"><rect width="7" height="15" fill="#002395"/><rect x="7" width="6" height="15" fill="#fff"/><rect x="13" width="7" height="15" fill="#ED2939"/></svg>' },
