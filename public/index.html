@@ -175,7 +175,7 @@
     <nav>
       <a href="index.html" data-i18n="nav.home">Início</a>
       <div class="dropdown">
-        <a href="#">Produtos</a>
+        <a href="#" data-i18n="nav.products">Produtos</a>
         <div class="dropdown-menu">
           <div class="cat-label">Recuperação</div>
           <a href="#produtos" onclick="filtrarLink('Recuperação')">BPC-157 · TB-500</a>
@@ -499,6 +499,7 @@ function logout(e){e.preventDefault();localStorage.removeItem('pep_token');local
 // ── PRODUTOS ──
 async function carregarProdutos(){
   const lang=window.PEP_LANG?window.PEP_LANG.get():'en';
+  console.log('[PEPMASTERS] carregarProdutos lang='+lang);
   function getProdI18n(c){const l=c.i18n&&c.i18n[lang]?c.i18n[lang]:c.i18n&&c.i18n['pt']?c.i18n['pt']:{categoria:c.categoria||'',descricao:c.descricao||''};return l;}
   try{const res=await fetch('/api/produtos');const lista=await res.json();
     produtosData=CATALOGO.map(c=>{const api=lista.find(p=>String(p.id)===String(c.id)||p.nome===c.nome);const i=getProdI18n(c);return{...c,categoria:i.categoria,descricao:i.descricao,preco:api?parseFloat(api.preco):c.preco,estoque:api?parseInt(api.estoque):10}})
@@ -695,6 +696,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var orig = window.PEP_LANG.set;
       window.PEP_LANG.set = function(lang) {
         orig(lang);
+        filtroAtivo='';
         if (typeof carregarProdutos === 'function') carregarProdutos();
         if (typeof renderAuth === 'function') renderAuth();
         if (typeof atualizarBadge === 'function') atualizarBadge();
