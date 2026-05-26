@@ -179,13 +179,23 @@
               <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:8px">
                 <div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">Endereço da carteira</div>
                 <div id="cryptoAddr" style="font-family:monospace;font-size:.78rem;word-break:break-all;color:var(--dark)"></div>
-                <button onclick="copiarEndereco()" style="margin-top:6px;padding:4px 10px;background:var(--amber);border:none;border-radius:6px;font-size:.75rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer;color:var(--dark)">Copiar endereço</button>
+                <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+                <button onclick="copiarEndereco()" style="padding:5px 12px;background:var(--amber);border:none;border-radius:6px;font-size:.75rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer;color:var(--dark)">Copy address</button>
+                <button onclick="copiarValor()" style="padding:5px 12px;background:linear-gradient(135deg,var(--red),var(--orange));border:none;border-radius:6px;font-size:.75rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer;color:#fff">Copy exact amount</button>
+              </div>
               </div>
               <div style="text-align:center;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border-radius:8px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem">
                 Envie exatamente: <span id="cryptoValor">0</span> <span id="cryptoToken">USDT</span>
               </div>
+              <div style="margin-top:10px;padding:10px 14px;background:#FFF8E1;border:1px solid #FFD580;border-radius:8px;font-size:.78rem;color:#7c4d00;line-height:1.5">
+                ⚠️ Send the <strong>exact amount</strong> shown above. Network fees are the buyer's responsibility. Incorrect amounts will not be confirmed automatically.
+              </div>
             </div>
-            <div id="cryptoStatus" style="text-align:center;font-size:.88rem;color:var(--muted)">Aguardando transação na Polygon...</div>
+            <div style="margin-top:10px;padding:10px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;font-size:.76rem;color:#0369a1;line-height:1.6">
+                <strong>📱 Mobile:</strong> Scan the QR Code with MetaMask, Trust Wallet or Coinbase Wallet — amount is pre-filled automatically.<br>
+                <strong>💻 PC:</strong> Copy the address and exact amount using the buttons above, then send from your wallet.
+              </div>
+              <div id="cryptoStatus" style="text-align:center;font-size:.88rem;color:var(--muted);margin-top:10px">Monitoring transaction on Polygon...</div>
           </div>
         </div>
       </div>
@@ -370,8 +380,20 @@
     document.getElementById('cryptoValor').textContent = cryptoValor;
     document.getElementById('cryptoToken').textContent = cryptoToken;
     document.getElementById('cryptoAddr').textContent  = WALLET;
-    // QR Code usando API gratuita
-    document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(WALLET);
+
+    // Contratos USDT e USDC na Polygon
+    const contratos = {
+      USDT: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      USDC: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359'
+    };
+    const contrato = contratos[cryptoToken] || contratos.USDT;
+    // Valor em unidades do token (6 decimais para USDT/USDC)
+    const valorWei = Math.round(parseFloat(cryptoValor) * 1000000);
+    // EIP-681: formato padrão lido por MetaMask, Trust Wallet, etc
+    const eip681 = 'ethereum:' + contrato + '/transfer?address=' + WALLET + '&uint256=' + valorWei;
+    document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(eip681);
+    // Guardar para o botão de copiar
+    window._cryptoEip681 = eip681;
   }
 
   function selecionarToken(token) {
@@ -383,13 +405,25 @@
 
   function copiarEndereco() {
     navigator.clipboard.writeText(WALLET).then(() => {
-      document.getElementById('cryptoStatus').textContent = 'Endereço copiado!';
-      setTimeout(() => { document.getElementById('cryptoStatus').textContent = 'Aguardando transação na Polygon...'; }, 2000);
+      showCryptoMsg('Address copied!');
     });
   }
 
+  function copiarValor() {
+    navigator.clipboard.writeText(cryptoValor).then(() => {
+      showCryptoMsg('Amount copied: ' + cryptoValor + ' ' + cryptoToken);
+    });
+  }
+
+  function showCryptoMsg(msg) {
+    const el = document.getElementById('cryptoStatus');
+    const prev = el.innerHTML;
+    el.textContent = msg;
+    setTimeout(() => { el.innerHTML = prev; }, 2500);
+  }
+
   function verificarCripto(pedidoId) {
-    document.getElementById('cryptoStatus').textContent = 'Monitorando transações na Polygon...';
+    document.getElementById('cryptoStatus').textContent = 'Monitoring transaction on Polygon...';
     const iv = setInterval(async () => {
       try {
         const r    = await fetch('/api/pedido/' + pedidoId + '/crypto-status');
@@ -397,10 +431,22 @@
         if (data.pago) {
           clearInterval(iv);
           location.href = 'confirmacao.html?id=' + pedidoId;
+        } else if (data.status === 'wrong_amount') {
+          clearInterval(iv);
+          const sent = parseFloat(data.sent).toFixed(4);
+          const exp  = parseFloat(data.expected).toFixed(4);
+          document.getElementById('cryptoStatus').innerHTML =
+            '<div style="color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:12px;font-size:.85rem;text-align:left">' +
+            '<strong>❌ Incorrect amount received.</strong><br>' +
+            'Expected: <strong>' + exp + '</strong> — Received: <strong>' + sent + '</strong><br><br>' +
+            'Please contact support to resolve. Network fees are non-refundable.' +
+            '</div>';
+          const btn = document.getElementById('btnFinalizar');
+          if (btn) { btn.disabled = false; btn.textContent = 'Place Order'; }
         }
       } catch {}
     }, 10000);
-    setTimeout(() => clearInterval(iv), 3600000); // 1h timeout
+    setTimeout(() => clearInterval(iv), 3600000);
   }
 
   // ── CEP ──
