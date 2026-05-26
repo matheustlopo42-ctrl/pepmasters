@@ -450,10 +450,11 @@ function alterarQtd(id,delta){
 function limparCarrinho(){setCarrinho([]);renderCarrinho()}
 
 function atualizarBadge(){
-  const c=getCarrinho();const t=c.reduce((s,i)=>s+i.quantidade,0);
+  const c=getCarrinho();const tot=c.reduce((s,i)=>s+i.quantidade,0);
   const badge=document.getElementById('cartCount');const label=document.getElementById('cartLabel');
-  if(t>0){badge.textContent=t;badge.classList.add('show');label.textContent='Carrinho ('+t+')'}
-  else{badge.classList.remove('show');label.textContent='Carrinho'}
+  const cartWord=window.PEP_LANG?window.PEP_LANG.t('nav.cart'):'Carrinho';
+  if(tot>0){badge.textContent=tot;badge.classList.add('show');label.textContent=cartWord+' ('+tot+')'}
+  else{badge.classList.remove('show');label.textContent=cartWord}
 }
 
 function abrirCarrinho(){renderCarrinho();document.getElementById('cartDrawer').classList.add('open');document.getElementById('cartOverlay').classList.add('open');document.body.style.overflow='hidden'}
@@ -489,7 +490,9 @@ function renderCarrinho(){
 // ── AUTH ──
 function renderAuth(){
   const area=document.getElementById('authArea');const token=localStorage.getItem('pep_token');const nome=localStorage.getItem('pep_nome');
-  if(token&&nome){area.innerHTML='<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.88rem;color:var(--mid)">Olá, '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" class="btn-login">Pedidos</a><a href="#" class="btn-login" onclick="logout(event)">Sair</a>'}
+  const t=window.PEP_LANG?window.PEP_LANG.t.bind(window.PEP_LANG):function(k){return k;};
+  if(token&&nome){area.innerHTML='<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.88rem;color:var(--mid)">'+t('nav.hello')+', '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" class="btn-login">'+t('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+t('nav.logout')+'</a>'}
+  else{area.innerHTML='<a href="login.html" class="btn-login">'+t('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+t('nav.register')+'</a>'}
   else{area.innerHTML='<a href="login.html" class="btn-login">Entrar</a><a href="cadastro.html" class="btn-cadastro">Cadastrar</a>'}
 }
 function logout(e){e.preventDefault();localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');location.reload()}
@@ -607,7 +610,10 @@ function renderGrid(lista){
     var prods = grupos[cat];
     var sec = document.createElement('div');
     sec.className = 'section-cat-label';
-    sec.innerHTML = '<h3>' + cat + '</h3><span class="sec-count">' + prods.length + ' produto' + (prods.length > 1 ? 's' : '') + '</span>';
+    var ll=window.PEP_LANG?window.PEP_LANG.get():'en';
+    var pw={en:{s:'product',p:'products'},pt:{s:'produto',p:'produtos'},es:{s:'producto',p:'productos'},de:{s:'Produkt',p:'Produkte'},fr:{s:'produit',p:'produits'}};
+    var pw2=pw[ll]||pw['en'];
+    sec.innerHTML = '<h3>' + cat + '</h3><span class="sec-count">' + prods.length + ' ' + (prods.length > 1 ? pw2.p : pw2.s) + '</span>';
     container.appendChild(sec);
     var grid = document.createElement('div');
     grid.className = 'cat-grid';
@@ -681,6 +687,22 @@ function confirmarSeletor(id, preco) {
 
 // ── TOAST ──
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// Hook: recarregar ao trocar idioma
+document.addEventListener('DOMContentLoaded', function() {
+  var iv = setInterval(function() {
+    if (window.PEP_LANG && window.PEP_LANG.set) {
+      clearInterval(iv);
+      var orig = window.PEP_LANG.set;
+      window.PEP_LANG.set = function(lang) {
+        orig(lang);
+        if (typeof carregarProdutos === 'function') carregarProdutos();
+        if (typeof renderAuth === 'function') renderAuth();
+        if (typeof atualizarBadge === 'function') atualizarBadge();
+      };
+    }
+  }, 100);
+});
 
 renderAuth();atualizarBadge();carregarProdutos();
 </script>
