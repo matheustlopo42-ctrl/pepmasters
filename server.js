@@ -716,12 +716,24 @@ app.put('/api/admin/estoque/:id', adminMiddleware, async (req, res) => {
 // ─────────────────────────────────────────────
 //  WEBHOOK PIXGO
 // ─────────────────────────────────────────────
-app.post('/webhook/pixgo', express.raw({ type: 'application/json' }), async (req, res) => {
+app.post('/webhook/pixgo', express.raw({ type: '*/*' }), async (req, res) => {
+  // Obter body como string/buffer
+  let rawBody;
+  if (Buffer.isBuffer(req.body)) {
+    rawBody = req.body;
+  } else if (typeof req.body === 'string') {
+    rawBody = Buffer.from(req.body);
+  } else if (req.body && typeof req.body === 'object') {
+    rawBody = Buffer.from(JSON.stringify(req.body));
+  } else {
+    rawBody = Buffer.from('');
+  }
+
   // Verificar assinatura
-  if (PIXGO_WEBHOOK_SECRET) {
-    const sig  = req.headers['x-pixgo-signature'] || '';
-    const hmac = crypto.createHmac('sha256', PIXGO_WEBHOOK_SECRET).update(req.body).digest('hex');
-    if (sig !== hmac) {
+  if (PIXGO_WEBHOOK_SECRET && rawBody.length > 0) {
+    const sig  = req.headers['x-pixgo-signature'] || req.headers['x-signature'] || '';
+    const hmac = crypto.createHmac('sha256', PIXGO_WEBHOOK_SECRET).update(rawBody).digest('hex');
+    if (sig && sig !== hmac) {
       console.warn('[Webhook] Assinatura inválida.');
       return res.status(400).send('Invalid signature');
     }
@@ -729,10 +741,14 @@ app.post('/webhook/pixgo', express.raw({ type: 'application/json' }), async (req
 
   let evento;
   try {
-    evento = JSON.parse(req.body.toString());
+    evento = typeof req.body === 'object' && !Buffer.isBuffer(req.body)
+      ? req.body
+      : JSON.parse(rawBody.toString());
   } catch {
     return res.status(400).send('Invalid JSON');
   }
+
+  console.log('[Webhook PixGo] Evento recebido:', JSON.stringify(evento));
 
   if (evento.event === 'charge.paid' || evento.status === 'paid') {
     const externalId = evento.externalId || evento.external_id || '';
