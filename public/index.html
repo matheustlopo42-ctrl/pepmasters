@@ -696,16 +696,6 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 // Init após i18n carregar
 (function waitInit() {
   if (window.PEPMASTERS_I18N && window.PEP_LANG) {
-    // Instalar hook de troca de idioma
-    var orig = window.PEP_LANG.set;
-    window.PEP_LANG.set = function(lang) {
-      orig(lang);
-      filtroAtivo = '';
-      if (typeof carregarProdutos === 'function') carregarProdutos();
-      if (typeof renderAuth === 'function') renderAuth();
-      if (typeof atualizarBadge === 'function') atualizarBadge();
-    };
-    // Init inicial
     renderAuth();
     atualizarBadge();
     carregarProdutos();

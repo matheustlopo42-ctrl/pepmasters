@@ -16,7 +16,12 @@
     localStorage.setItem('pep_lang', lang);
     apply(lang);
     updateBtn(lang);
+    // Callbacks da página
     if (typeof window.renderFaq === 'function') window.renderFaq();
+    if (typeof window.filtroAtivo !== 'undefined') window.filtroAtivo = '';
+    if (typeof window.carregarProdutos === 'function') window.carregarProdutos();
+    if (typeof window.renderAuth === 'function') window.renderAuth();
+    if (typeof window.atualizarBadge === 'function') window.atualizarBadge();
   }
 
   function apply(lang) {
