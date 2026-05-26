@@ -44,6 +44,10 @@ const pool = new Pool({
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Servir arquivos JS da raiz (i18n, etc)
+app.get('/i18n.js', (req, res) => res.sendFile(path.join(__dirname, 'i18n.js')));
+app.get('/i18n-init.js', (req, res) => res.sendFile(path.join(__dirname, 'i18n-init.js')));
+
 // ── INIT TABELAS ─────────────────────────────
 async function initDB() {
   const client = await pool.connect();
