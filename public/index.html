@@ -438,7 +438,7 @@ function adicionarAoCarrinho(id){
   else c.push({id:p.id,nome:p.nome,img:p.img,categoria:p.categoria,preco:p.preco,quantidade:1});
   setCarrinho(c);showToast(p.nome+' adicionado ao carrinho');
   const btn=document.getElementById('btn-add-'+id);
-  if(btn){btn.textContent='Adicionado';btn.classList.add('adicionado');setTimeout(()=>{btn.textContent='Adicionar ao Carrinho';btn.classList.remove('adicionado')},1500)}
+  if(btn){btn.textContent=(function(){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d['btn.added']&&(d['btn.added'][l]||d['btn.added']['en']))||'Added';})();btn.classList.add('adicionado');setTimeout(()=>{btn.textContent=(function(){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d['btn.add']&&(d['btn.add'][l]||d['btn.add']['en']))||'Add to Cart';})();btn.classList.remove('adicionado')},1500)}
 }
 function removerDoCarrinho(id){setCarrinho(getCarrinho().filter(i=>i.id!==id));renderCarrinho()}
 function alterarQtd(id,delta){
@@ -508,6 +508,7 @@ async function carregarProdutos(){
 }
 
 function mkCard(p) {
+  var tr=function(k){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d[k]&&(d[k][l]||d[k]['en']))||k;};
   var esgotado = p.estoque <= 0;
   var baixo = p.estoque > 0 && p.estoque <= 3;
   var preco = typeof p.preco === 'number' ? p.preco : parseFloat(p.preco);
@@ -523,12 +524,12 @@ function mkCard(p) {
   if (esgotado) {
     var eb = document.createElement('span');
     eb.className = 'estoque-badge estoque-zero';
-    eb.textContent = 'Esgotado';
+    eb.textContent = tr('btn.soldout');
     imgWrap.appendChild(eb);
   } else if (baixo) {
     var eb2 = document.createElement('span');
     eb2.className = 'estoque-badge estoque-low';
-    eb2.textContent = 'Últimas unidades';
+    eb2.textContent = tr('btn.lastunits');
     imgWrap.appendChild(eb2);
   }
   var img = document.createElement('img');
@@ -554,14 +555,14 @@ function mkCard(p) {
   if (esgotado) {
     var btnEsg = document.createElement('button');
     btnEsg.className = 'esgotado';
-    btnEsg.textContent = 'Esgotado';
+    btnEsg.textContent = tr('btn.soldout');
     btnEsg.onclick = function(){ abrirEspera(p.nome); };
     footer.appendChild(btnEsg);
   } else {
     var btnAdd = document.createElement('button');
     btnAdd.className = 'btn-add';
     btnAdd.id = 'btn-add-' + p.id;
-    btnAdd.textContent = 'Adicionar ao Carrinho';
+    btnAdd.textContent = tr('btn.add');
     btnAdd.onclick = function(){ mostrarSeletor(p.id); };
     footer.appendChild(btnAdd);
 
@@ -580,10 +581,10 @@ function mkCard(p) {
     btnP.onclick = function(){ cardQtd(p.id, 1); };
     qtdRow.appendChild(btnM); qtdRow.appendChild(qtdNum); qtdRow.appendChild(btnP);
     var btnConf = document.createElement('button');
-    btnConf.className = 'qtd-confirmar'; btnConf.textContent = 'Adicionar ao Carrinho';
+    btnConf.className = 'qtd-confirmar'; btnConf.textContent = tr('btn.confirm');
     btnConf.onclick = function(){ confirmarSeletor(p.id, preco); };
     var btnCanc = document.createElement('button');
-    btnCanc.className = 'qtd-cancelar'; btnCanc.textContent = 'Cancelar';
+    btnCanc.className = 'qtd-cancelar'; btnCanc.textContent = tr('btn.cancel');
     btnCanc.onclick = function(){ esconderSeletor(p.id); };
     sel.appendChild(qtdRow); sel.appendChild(btnConf); sel.appendChild(btnCanc);
     body.appendChild(footer);
