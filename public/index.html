@@ -493,7 +493,6 @@ function renderAuth(){
   const t=window.PEP_LANG?window.PEP_LANG.t.bind(window.PEP_LANG):function(k){return k;};
   if(token&&nome){area.innerHTML='<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.88rem;color:var(--mid)">'+t('nav.hello')+', '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" class="btn-login">'+t('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+t('nav.logout')+'</a>'}
   else{area.innerHTML='<a href="login.html" class="btn-login">'+t('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+t('nav.register')+'</a>'}
-  else{area.innerHTML='<a href="login.html" class="btn-login">Entrar</a><a href="cadastro.html" class="btn-cadastro">Cadastrar</a>'}
 }
 function logout(e){e.preventDefault();localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');location.reload()}
 
