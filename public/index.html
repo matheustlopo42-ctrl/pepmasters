@@ -452,7 +452,7 @@ function limparCarrinho(){setCarrinho([]);renderCarrinho()}
 function atualizarBadge(){
   const c=getCarrinho();const tot=c.reduce((s,i)=>s+i.quantidade,0);
   const badge=document.getElementById('cartCount');const label=document.getElementById('cartLabel');
-  const cartWord=window.PEP_LANG?window.PEP_LANG.t('nav.cart'):'Carrinho';
+  var _l=localStorage.getItem('pep_lang')||'en';var _d=window.PEPMASTERS_I18N;var cartWord=(_d&&_d['nav.cart']&&(_d['nav.cart'][_l]||_d['nav.cart']['en']))||'Cart';
   if(tot>0){badge.textContent=tot;badge.classList.add('show');label.textContent=cartWord+' ('+tot+')'}
   else{badge.classList.remove('show');label.textContent=cartWord}
 }
@@ -490,9 +490,9 @@ function renderCarrinho(){
 // ── AUTH ──
 function renderAuth(){
   const area=document.getElementById('authArea');const token=localStorage.getItem('pep_token');const nome=localStorage.getItem('pep_nome');
-  const t=window.PEP_LANG?window.PEP_LANG.t.bind(window.PEP_LANG):function(k){return k;};
-  if(token&&nome){area.innerHTML='<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.88rem;color:var(--mid)">'+t('nav.hello')+', '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" class="btn-login">'+t('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+t('nav.logout')+'</a>'}
-  else{area.innerHTML='<a href="login.html" class="btn-login">'+t('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+t('nav.register')+'</a>'}
+  function tr(k){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d[k]&&(d[k][l]||d[k]['en']))||k;}
+  if(token&&nome){area.innerHTML='<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.88rem;color:var(--mid)">'+tr('nav.hello')+', '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>'}
+  else{area.innerHTML='<a href="login.html" class="btn-login">'+tr('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+tr('nav.register')+'</a>'}
 }
 function logout(e){e.preventDefault();localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');location.reload()}
 
@@ -688,22 +688,6 @@ function confirmarSeletor(id, preco) {
 // ── TOAST ──
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
 
-// Hook: recarregar ao trocar idioma
-document.addEventListener('DOMContentLoaded', function() {
-  var iv = setInterval(function() {
-    if (window.PEP_LANG && window.PEP_LANG.set) {
-      clearInterval(iv);
-      var orig = window.PEP_LANG.set;
-      window.PEP_LANG.set = function(lang) {
-        orig(lang);
-        filtroAtivo='';
-        if (typeof carregarProdutos === 'function') carregarProdutos();
-        if (typeof renderAuth === 'function') renderAuth();
-        if (typeof atualizarBadge === 'function') atualizarBadge();
-      };
-    }
-  }, 100);
-});
 
 </script>
 <script src="i18n.js"></script>
@@ -712,6 +696,16 @@ document.addEventListener('DOMContentLoaded', function() {
 // Init após i18n carregar
 (function waitInit() {
   if (window.PEPMASTERS_I18N && window.PEP_LANG) {
+    // Instalar hook de troca de idioma
+    var orig = window.PEP_LANG.set;
+    window.PEP_LANG.set = function(lang) {
+      orig(lang);
+      filtroAtivo = '';
+      if (typeof carregarProdutos === 'function') carregarProdutos();
+      if (typeof renderAuth === 'function') renderAuth();
+      if (typeof atualizarBadge === 'function') atualizarBadge();
+    };
+    // Init inicial
     renderAuth();
     atualizarBadge();
     carregarProdutos();
