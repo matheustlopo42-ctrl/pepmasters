@@ -306,7 +306,9 @@
     let desconto = 0;
 
     if (cupomDados) {
-      const pct = pagAtual === 'pix' ? cupomDados.desconto_pix : cupomDados.desconto_cartao;
+      const pct = pagAtual === 'pix' ? cupomDados.desconto_pix
+                : pagAtual === 'cripto' ? (cupomDados.desconto_pix || cupomDados.desconto_cartao || 0)
+                : cupomDados.desconto_cartao;
       desconto = subtotal * (pct / 100);
       document.getElementById('descontoRow').style.display = 'flex';
       document.getElementById('descontoTag').textContent   = '(' + cupomDados.codigo + ' −' + pct + '%)';
@@ -337,17 +339,27 @@
     try {
       const r    = await fetch('/api/crypto/cotacao');
       const data = await r.json();
+      // Usar o total já calculado com desconto
       const subtotal = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
       let desconto = 0;
       if (cupomDados) {
-        const pct = data.desconto_pix || 0;
+        const pct = pagAtual === 'cripto'
+          ? (cupomDados.desconto_pix || cupomDados.desconto_cartao || 0)
+          : 0;
         desconto = subtotal * (pct / 100);
       }
       const totalBRL = subtotal - desconto;
       cryptoValor = (totalBRL * data.usdt_per_brl).toFixed(2);
       atualizarCriptoUI();
     } catch {
-      cryptoValor = (carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0) / 5.5).toFixed(2);
+      const subtotal = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
+      let desconto = 0;
+      if (cupomDados) {
+        const pct = cupomDados.desconto_pix || cupomDados.desconto_cartao || 0;
+        desconto = subtotal * (pct / 100);
+      }
+      const totalBRL = subtotal - desconto;
+      cryptoValor = (totalBRL / 5.5).toFixed(2);
       atualizarCriptoUI();
     }
   }
@@ -417,7 +429,7 @@
       const res  = await fetch('/api/cupom/' + codigo);
       const data = await res.json();
       if (!res.ok || !data.ativo) { msg.style.color='var(--red)'; msg.textContent='❌ Cupom inválido ou inativo.'; cupomDados=null; }
-      else { msg.style.color='#22c55e'; msg.textContent='✅ Cupom aplicado!'; cupomDados=data; }
+      else { msg.style.color='#22c55e'; msg.textContent='Cupom aplicado!'; cupomDados=data; if(pagAtual==='cripto') carregarCotacao(); }
     } catch { msg.style.color='var(--muted)'; msg.textContent='Erro ao verificar cupom.'; }
     atualizarTotais();
   }
