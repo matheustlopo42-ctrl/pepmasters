@@ -29,6 +29,8 @@ const BASE_URL            = process.env.BASE_URL            || 'https://pepmaste
 const EMAIL_DESTINO       = process.env.EMAIL_DESTINO       || '';   // preencher no Render
 const EMAIL_USER          = process.env.EMAIL_USER          || 'matheustlopo42@gmail.com';
 const EMAIL_PASS          = process.env.EMAIL_PASS          || 'pplezzjcvzyakzdc';
+const CRYPTO_WALLET       = process.env.CRYPTO_WALLET       || '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
+const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || '';  // opcional, aumenta rate limit
 const WA_PHONE            = process.env.WA_PHONE            || '';   // preencher no Render
 const WA_APIKEY           = process.env.WA_APIKEY           || '';   // preencher no Render
 
@@ -326,6 +328,7 @@ app.post('/api/pedido', async (req, res) => {
   const {
     nome, email, cpf, telefone,
     endereco, carrinho, pagamento, cupom, total: totalFront,
+    crypto_valor, crypto_token,
     token: userToken
   } = req.body;
 
@@ -372,19 +375,21 @@ app.post('/api/pedido', async (req, res) => {
     }
 
     // criar pedido
-    const statusInicial = pagamento === 'pix' ? 'pix_pending' : 'pago';
+    const statusInicial = (pagamento === 'pix' || pagamento === 'cripto') ? 'pix_pending' : 'pago';
     const { rows: pedRows } = await client.query(
       `INSERT INTO pep_pedidos
          (usuario_id,nome,email,cpf,telefone,cep,rua,numero,bairro,cidade,complemento,
-          produto_id,produto_nome,preco_unitario,desconto,total,pagamento,cupom,status)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
+          produto_id,produto_nome,preco_unitario,desconto,total,pagamento,cupom,status,
+          crypto_valor,crypto_token)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
        RETURNING id`,
       [
         usuarioId, nome, email.toLowerCase(), cpf || null, telefone || null,
         endereco?.cep || null, endereco?.rua || null, endereco?.numero || null,
         endereco?.bairro || null, endereco?.cidade || null, endereco?.complemento || null,
         produto_id, produto_nome, subtotal.toFixed(2), desconto.toFixed(2), total.toFixed(2),
-        pagamento, cupomId ? cupom.toUpperCase() : null, statusInicial
+        pagamento, cupomId ? cupom.toUpperCase() : null, statusInicial,
+        crypto_valor || null, crypto_token || null
       ]
     );
     const pedidoId = pedRows[0].id;
@@ -797,7 +802,8 @@ app.get('/api/seed-pep-159357', async (req, res) => {
       'cep TEXT','rua TEXT','numero TEXT','bairro TEXT','cidade TEXT','complemento TEXT',
       'produto_id INT','produto_nome TEXT','preco_unitario NUMERIC(10,2)',
       'desconto NUMERIC(10,2) DEFAULT 0','total NUMERIC(10,2)',
-      'pagamento TEXT','cupom TEXT','pixgo_id TEXT','codigo_rastreio TEXT'
+      'pagamento TEXT','cupom TEXT','pixgo_id TEXT','codigo_rastreio TEXT',
+      'crypto_valor NUMERIC(18,6) DEFAULT 0','crypto_token TEXT'
     ];
     for (const col of pedCols) {
       await client.query('ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS ' + col).catch(() => {});
@@ -877,6 +883,83 @@ app.post('/api/admin/usuarios/:id/reset-senha', adminMiddleware, async (req, res
     );
     res.json({ ok: true });
   } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+
+// ── CRIPTO: cotação BRL → USD ──────────────────
+app.get('/api/crypto/cotacao', async (req, res) => {
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=brl');
+    const d = await r.json();
+    const brlPerUsdt = d.tether?.brl || 5.5;
+    res.json({ brl_per_usdt: brlPerUsdt, usdt_per_brl: 1 / brlPerUsdt });
+  } catch {
+    res.json({ brl_per_usdt: 5.5, usdt_per_brl: 0.1818 });
+  }
+});
+
+// ── CRIPTO: verificar pagamento na Polygon ──────
+app.get('/api/pedido/:id/crypto-status', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, status, total, crypto_valor, crypto_token, criado_em FROM pep_pedidos WHERE id=$1',
+      [req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+    const pedido = rows[0];
+
+    // Se já pago, retorna
+    if (pedido.status === 'pago') return res.json({ pago: true, status: 'pago' });
+
+    // Verificar transações recentes na carteira via Polygonscan
+    const wallet   = CRYPTO_WALLET.toLowerCase();
+    const apiKey   = POLYGONSCAN_API_KEY ? '&apikey=' + POLYGONSCAN_API_KEY : '';
+    const valorEsperado = parseFloat(pedido.crypto_valor || 0);
+    const token    = pedido.crypto_token || 'USDT';
+    const pedidoTs = Math.floor(new Date(pedido.criado_em).getTime() / 1000);
+
+    // Endereços dos contratos na Polygon
+    const contratos = {
+      USDT: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      USDC: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359'
+    };
+    const contrato = contratos[token] || contratos.USDT;
+
+    const url = 'https://api.polygonscan.com/api?module=account&action=tokentx' +
+      '&contractaddress=' + contrato +
+      '&address=' + wallet +
+      '&startblock=0&endblock=99999999&sort=desc&page=1&offset=20' + apiKey;
+
+    const r    = await fetch(url);
+    const data = await r.json();
+
+    if (data.status === '1' && data.result) {
+      for (const tx of data.result) {
+        const txTs    = parseInt(tx.timeStamp);
+        const txValor = parseFloat(tx.value) / Math.pow(10, parseInt(tx.tokenDecimal));
+        const txTo    = tx.to.toLowerCase();
+
+        // Verificar: destino correto, após criação do pedido, valor correto (±2% tolerância)
+        if (txTo === wallet && txTs >= pedidoTs - 300) {
+          const diff = Math.abs(txValor - valorEsperado) / valorEsperado;
+          if (diff <= 0.02) {
+            // Marcar pedido como pago
+            await pool.query(
+              "UPDATE pep_pedidos SET status='pago', pixgo_id=$1 WHERE id=$2 AND status!='pago'",
+              ['crypto:' + tx.hash, req.params.id]
+            );
+            enviarWhatsApp('CRIPTO CONFIRMADO! Pedido #' + req.params.id + ' — ' + txValor + ' ' + token);
+            return res.json({ pago: true, status: 'pago', tx: tx.hash });
+          }
+        }
+      }
+    }
+
+    res.json({ pago: false, status: pedido.status });
+  } catch (err) {
+    console.error('[Crypto] Erro ao verificar:', err.message);
+    res.json({ pago: false, status: 'pix_pending' });
+  }
 });
 
 // ─────────────────────────────────────────────

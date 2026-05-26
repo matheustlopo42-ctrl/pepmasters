@@ -30,6 +30,7 @@
     .pay-tabs{display:flex;gap:10px;margin-bottom:18px}
     .pay-tab{flex:1;padding:10px;border:2px solid var(--border);border-radius:10px;background:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);transition:all .2s}
     .pay-tab.active{border-color:var(--orange);color:var(--orange);background:#FFF3E0}
+    .pay-tab:disabled{opacity:.4;cursor:not-allowed}
     .pay-panel{display:none}
     .pay-panel.active{display:block}
     /* PIX */
@@ -136,6 +137,7 @@
         <div class="pay-tabs">
           <button class="pay-tab active" onclick="trocarPag('pix',this)">PIX</button>
           <button class="pay-tab" onclick="trocarPag('cartao',this)">Cartão</button>
+          <button class="pay-tab" onclick="trocarPag('cripto',this)">Cripto</button>
         </div>
         <!-- PIX -->
         <div class="pay-panel active" id="pag-pix">
@@ -156,6 +158,34 @@
           </div>
           <div class="form-group"><label>Parcelas</label>
             <select id="parcelas"><option value="1">1x sem juros</option><option value="2">2x sem juros</option><option value="3">3x sem juros</option></select>
+          </div>
+        </div>
+
+        <!-- CRIPTO -->
+        <div class="pay-panel" id="pag-cripto">
+          <div id="cripto-loading" style="text-align:center;padding:16px 0;font-size:.9rem;color:var(--muted)">
+            Calculando valor em cripto...
+          </div>
+          <div id="cripto-info" style="display:none">
+            <div style="background:var(--cream);border-radius:12px;padding:18px;border:1px solid var(--border);margin-bottom:14px">
+              <div style="display:flex;gap:10px;margin-bottom:14px">
+                <button id="btn-usdt" class="pay-tab active" style="flex:1;font-size:.85rem;padding:8px" onclick="selecionarToken('USDT')">USDT</button>
+                <button id="btn-usdc" class="pay-tab" style="flex:1;font-size:.85rem;padding:8px" onclick="selecionarToken('USDC')">USDC</button>
+              </div>
+              <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px">Rede: <strong>Polygon (MATIC)</strong> — taxas quase zero</p>
+              <div style="text-align:center;margin-bottom:14px">
+                <img id="cryptoQR" src="" alt="QR Code Cripto" style="width:180px;height:180px;border-radius:10px;border:3px solid var(--amber);display:block;margin:0 auto 10px"/>
+              </div>
+              <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:8px">
+                <div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">Endereço da carteira</div>
+                <div id="cryptoAddr" style="font-family:monospace;font-size:.78rem;word-break:break-all;color:var(--dark)"></div>
+                <button onclick="copiarEndereco()" style="margin-top:6px;padding:4px 10px;background:var(--amber);border:none;border-radius:6px;font-size:.75rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer;color:var(--dark)">Copiar endereço</button>
+              </div>
+              <div style="text-align:center;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border-radius:8px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem">
+                Envie exatamente: <span id="cryptoValor">0</span> <span id="cryptoToken">USDT</span>
+              </div>
+            </div>
+            <div id="cryptoStatus" style="text-align:center;font-size:.88rem;color:var(--muted)">Aguardando transação na Polygon...</div>
           </div>
         </div>
       </div>
@@ -230,7 +260,10 @@
 </footer>
 
 <script>
-  let pagAtual   = 'pix';
+  let pagAtual    = 'pix';
+  let cryptoToken = 'USDT';
+  let cryptoValor = 0;
+  const WALLET    = '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
   let cupomDados = null;
   let carrinho   = [];
 
@@ -290,11 +323,72 @@
   // ── PAGAMENTO ──
   function trocarPag(tipo, btn) {
     pagAtual = tipo;
-    document.querySelectorAll('.pay-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.pay-tabs .pay-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.pay-panel').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('pag-' + tipo).classList.add('active');
     atualizarTotais();
+    if (tipo === 'cripto') carregarCotacao();
+  }
+
+  async function carregarCotacao() {
+    document.getElementById('cripto-loading').style.display = 'block';
+    document.getElementById('cripto-info').style.display   = 'none';
+    try {
+      const r    = await fetch('/api/crypto/cotacao');
+      const data = await r.json();
+      const subtotal = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
+      let desconto = 0;
+      if (cupomDados) {
+        const pct = data.desconto_pix || 0;
+        desconto = subtotal * (pct / 100);
+      }
+      const totalBRL = subtotal - desconto;
+      cryptoValor = (totalBRL * data.usdt_per_brl).toFixed(2);
+      atualizarCriptoUI();
+    } catch {
+      cryptoValor = (carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0) / 5.5).toFixed(2);
+      atualizarCriptoUI();
+    }
+  }
+
+  function atualizarCriptoUI() {
+    document.getElementById('cripto-loading').style.display = 'none';
+    document.getElementById('cripto-info').style.display   = 'block';
+    document.getElementById('cryptoValor').textContent = cryptoValor;
+    document.getElementById('cryptoToken').textContent = cryptoToken;
+    document.getElementById('cryptoAddr').textContent  = WALLET;
+    // QR Code usando API gratuita
+    document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(WALLET);
+  }
+
+  function selecionarToken(token) {
+    cryptoToken = token;
+    document.getElementById('btn-usdt').classList.toggle('active', token === 'USDT');
+    document.getElementById('btn-usdc').classList.toggle('active', token === 'USDC');
+    atualizarCriptoUI();
+  }
+
+  function copiarEndereco() {
+    navigator.clipboard.writeText(WALLET).then(() => {
+      document.getElementById('cryptoStatus').textContent = 'Endereço copiado!';
+      setTimeout(() => { document.getElementById('cryptoStatus').textContent = 'Aguardando transação na Polygon...'; }, 2000);
+    });
+  }
+
+  function verificarCripto(pedidoId) {
+    document.getElementById('cryptoStatus').textContent = 'Monitorando transações na Polygon...';
+    const iv = setInterval(async () => {
+      try {
+        const r    = await fetch('/api/pedido/' + pedidoId + '/crypto-status');
+        const data = await r.json();
+        if (data.pago) {
+          clearInterval(iv);
+          location.href = 'confirmacao.html?id=' + pedidoId;
+        }
+      } catch {}
+    }, 10000);
+    setTimeout(() => clearInterval(iv), 3600000); // 1h timeout
   }
 
   // ── CEP ──
@@ -359,10 +453,12 @@
       nome, email, cpf, telefone,
       endereco: { cep, rua, numero, bairro, cidade, complemento },
       carrinho,
-      pagamento:    pagAtual,
-      cupom:        cupomDados ? cupomDados.codigo : null,
-      total:        total.toFixed(2),
-      token:        localStorage.getItem('pep_token')
+      pagamento:     pagAtual,
+      cupom:         cupomDados ? cupomDados.codigo : null,
+      total:         total.toFixed(2),
+      crypto_valor:  pagAtual === 'cripto' ? cryptoValor : null,
+      crypto_token:  pagAtual === 'cripto' ? cryptoToken : null,
+      token:         localStorage.getItem('pep_token')
     };
 
     try {
@@ -378,8 +474,11 @@
         document.getElementById('pixArea').style.display = 'block';
         document.getElementById('qrcodeImg').src         = data.qrcode_url || '';
         document.getElementById('pixCopia').textContent  = data.pix_copia_cola || 'Código PIX indisponível';
-        btn.textContent = '⏳ Aguardando PIX...';
+        btn.textContent = 'Aguardando PIX...';
         verificarPagamento(data.pedido_id);
+      } else if (pagAtual === 'cripto') {
+        btn.textContent = 'Aguardando pagamento cripto...';
+        verificarCripto(data.pedido_id);
       } else {
         location.href = 'confirmacao.html?id=' + data.pedido_id;
       }
