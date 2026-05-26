@@ -50,7 +50,7 @@
 </header>
 <main>
   <div class="page-hero">
-    <h1>Dúvidas Frequentes</h1>
+    <h1 data-i18n="faq.title">Dúvidas Frequentes</h1>
     <p>Respostas para as principais perguntas sobre produtos, pedidos e entrega.</p>
   </div>
 
@@ -66,19 +66,19 @@
       <p>Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</p>
     </div>
     <div class="footer-col">
-      <h4>Institucional</h4>
+      <h4 data-i18n="footer.institutional">Institucional</h4>
       <a href="quem-somos.html">Quem Somos</a>
       <a href="termos-de-uso.html">Termos de Uso</a>
       <a href="politica-privacidade.html">Política de Privacidade</a>
     </div>
     <div class="footer-col">
-      <h4>Suporte</h4>
+      <h4 data-i18n="footer.support">Suporte</h4>
       <a href="duvidas-frequentes.html">Dúvidas Frequentes</a>
       <a href="envio-e-prazos.html">Envio e Prazos</a>
       <a href="trocas-e-devolucoes.html">Trocas e Devoluções</a>
     </div>
     <div class="footer-col">
-      <h4>Minha Conta</h4>
+      <h4 data-i18n="footer.account">Minha Conta</h4>
       <a href="meus-pedidos.html">Meus Pedidos</a>
       <a href="perfil.html">Meu Perfil</a>
       <a href="rastrear-pedido.html">Rastrear Pedido</a>
@@ -86,21 +86,23 @@
   </div>
   <div class="footer-bottom">
     <p>© 2025 PEPMASTERS. Todos os direitos reservados.</p>
-    <a href="admin-login.html" class="admin-link">Área do Administrador</a>
+    <a href="admin-login.html" class="admin-link" data-i18n="footer.admin">Área do Administrador</a>
   </div>
 </footer>
 <script>
+  const lang = (window.PEP_LANG && window.PEP_LANG.get) ? window.PEP_LANG.get() : 'en';
+  const t = (key) => (window.PEPMASTERS_I18N && window.PEPMASTERS_I18N[key] && window.PEPMASTERS_I18N[key][lang]) || (window.PEPMASTERS_I18N && window.PEPMASTERS_I18N[key] && window.PEPMASTERS_I18N[key]['pt']) || key;
   const faqs = [
-    { q:'O que são peptídeos?', a:'Peptídeos são cadeias curtas de aminoácidos que atuam como sinalizadores no organismo. Eles podem estimular processos como recuperação muscular, queima de gordura, regeneração tecidual e produção de hormônios de forma mais seletiva do que compostos tradicionais.' },
-    { q:'Os produtos são seguros?', a:'Todos os nossos peptídeos são fornecidos com laudos de pureza. Recomendamos sempre a consulta com um profissional de saúde antes de iniciar qualquer protocolo com peptídeos.' },
-    { q:'Como é feito o pagamento?', a:'Aceitamos PIX (confirmação instantânea) e cartão de crédito via Mercado Pago. O pedido é processado automaticamente após a confirmação do pagamento.' },
-    { q:'Qual o prazo de entrega?', a:'Enviamos via Correios (PAC ou SEDEX). O prazo varia de 5 a 15 dias úteis dependendo da região. Após o envio, você recebe o código de rastreio por email.' },
-    { q:'Como rastrear meu pedido?', a:'Assim que o pedido for enviado, você receberá um email com o código de rastreio. Também é possível rastrear diretamente em nosso site na página "Rastrear Pedido".' },
-    { q:'Posso cancelar meu pedido?', a:'Pedidos podem ser cancelados antes do envio. Após o envio, segue nossa política de trocas e devoluções. Entre em contato o quanto antes para agilizarmos.' },
-    { q:'Os produtos precisam de receita?', a:'Nossos peptídeos são comercializados para fins de pesquisa. Para uso em humanos, recomendamos acompanhamento profissional. Consulte a legislação vigente no seu estado.' },
-    { q:'Vocês emitem nota fiscal?', a:'Sim, emitimos nota fiscal para todas as compras. A NF é enviada por email junto com a confirmação do pedido.' },
-    { q:'Posso usar cupom de desconto?', a:'Sim! Se você possui um cupom válido, basta inserir o código no campo correspondente durante o checkout. O desconto é aplicado automaticamente no total.' },
-  ];
+    { q: t('faq.q1'), a: t('faq.a1') },
+    { q: t('faq.q2'), a: t('faq.a2') },
+    { q: t('faq.q3'), a: t('faq.a3') },
+    { q: t('faq.q4'), a: t('faq.a4') },
+    { q: t('faq.q5'), a: t('faq.a5') },
+    { q: t('faq.q6'), a: t('faq.a6') },
+    { q: t('faq.q7'), a: t('faq.a7') },
+    { q: t('faq.q8'), a: t('faq.a8') },
+    { q: t('faq.q9'), a: t('faq.a9') },
+  ]
 
   const list = document.getElementById('faqList');
   faqs.forEach((f, i) => {
@@ -123,5 +125,7 @@
     btn.classList.toggle('open');
   }
 </script>
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
 </body>
 </html>

@@ -188,8 +188,8 @@
 
 <main>
   <div class="auth-card">
-    <h1>Entrar</h1>
-    <p class="subtitle">Acesse sua conta para ver seus pedidos</p>
+    <h1 data-i18n="login.title">Entrar</h1>
+    <p class="subtitle" data-i18n="login.subtitle">Acesse sua conta para ver seus pedidos</p>
 
     <div id="msgErro"></div>
 
@@ -203,9 +203,9 @@
       <input type="password" id="senha" placeholder="••••••••" />
     </div>
 
-    <a href="redefinir-senha.html" class="forgot-link">Esqueci minha senha</a>
+    <a href="redefinir-senha.html" class="forgot-link" data-i18n="login.forgot">Esqueci minha senha</a>
 
-    <button class="btn-primary" onclick="fazerLogin()">Entrar</button>
+    <button class="btn-primary" onclick="fazerLogin()" data-i18n="login.btn">Entrar</button>
 
     <div class="auth-footer">
       Não tem conta? <a href="cadastro.html">Cadastre-se</a>
@@ -253,5 +253,7 @@
 
   document.addEventListener('keydown', e => { if (e.key === 'Enter') fazerLogin(); });
 </script>
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
 </body>
 </html>

@@ -173,7 +173,7 @@
       <span class="logo-text">PEPMASTERS</span>
     </a>
     <nav>
-      <a href="index.html">Início</a>
+      <a href="index.html" data-i18n="nav.home">Início</a>
       <div class="dropdown">
         <a href="#">Produtos</a>
         <div class="dropdown-menu">
@@ -187,12 +187,12 @@
           <a href="#produtos" onclick="filtrarLink('Cognitivo')">Semax · Selank</a>
         </div>
       </div>
-      <a href="quem-somos.html">Quem Somos</a>
-      <a href="duvidas-frequentes.html">Dúvidas</a>
-      <a href="rastrear-pedido.html">Rastrear</a>
+      <a href="quem-somos.html" data-i18n="footer.about" data-i18n="nav.about">Quem Somos</a>
+      <a href="duvidas-frequentes.html" data-i18n="nav.faq">Dúvidas</a>
+      <a href="rastrear-pedido.html" data-i18n="nav.track">Rastrear</a>
     </nav>
     <button class="cart-btn" onclick="abrirCarrinho()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.98-1.61L23 6H6"/></svg><span id="cartLabel">Carrinho</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.98-1.61L23 6H6"/></svg><span id="cartLabel" data-i18n="nav.cart">Carrinho</span>
       <span class="cart-count" id="cartCount">0</span>
     </button>
     <div id="authArea"></div>
@@ -217,19 +217,19 @@
 
 <section class="hero">
   <div class="hero-content">
-    <p class="hero-eyebrow">Peptídeos de alta performance</p>
+    <p class="hero-eyebrow" data-i18n="hero.eyebrow">Peptídeos de alta performance</p>
     <h1>Eleve seu<br><span>potencial</span><br>ao máximo</h1>
     <p>Peptídeos bioativos para recuperação, composição corporal e performance. Qualidade que você pode confiar.</p>
-    <a href="#produtos" class="hero-cta">Ver Produtos</a>
+    <a href="#produtos" class="hero-cta" data-i18n="hero.cta">Ver Produtos</a>
   </div>
 </section>
 
-<div class="banner-strip">Entrega para todo o Brasil <span>|</span> Pagamento Seguro <span>|</span> Qualidade Garantida</div>
+<div class="banner-strip"><span data-i18n="banner.shipping">Entrega para todo o Brasil</span> <span style="opacity:.7;margin:0 16px">|</span> <span data-i18n="banner.payment">Pagamento Seguro</span> <span style="opacity:.7;margin:0 16px">|</span> <span data-i18n="banner.quality">Qualidade Garantida</span></div>
 
 <section class="produtos-section" id="produtos">
-  <div class="section-label"><h2>Nossos Produtos</h2></div>
+  <div class="section-label"><h2 data-i18n="products.title">Nossos Produtos</h2></div>
   <div class="filtros">
-    <button class="filtro-btn active" onclick="filtrar('',this)">Todos</button>
+    <button class="filtro-btn active" onclick="filtrar('',this)" data-i18n="products.all">Todos</button>
     <button class="filtro-btn" onclick="filtrar('Recuperação',this)">Recuperação</button>
     <button class="filtro-btn" onclick="filtrar('Queima de Gordura',this)">Queima de Gordura</button>
     <button class="filtro-btn" onclick="filtrar('GH & Massa',this)">GH & Massa</button>
@@ -238,15 +238,15 @@
     <button class="filtro-btn" onclick="filtrar('Antioxidante',this)">Antioxidante</button>
     <button class="filtro-btn" onclick="filtrar('Estético',this)">Estético</button>
     <button class="filtro-btn" onclick="filtrar('Anti-inflamatório',this)">Anti-inflamatório</button>
-    <div class="busca-wrap"><input type="text" id="buscaInput" placeholder="Buscar peptídeo..." oninput="buscar()"/></div>
+    <div class="busca-wrap"><input type="text" id="buscaInput" placeholder="Buscar peptídeo..." data-i18n-placeholder="products.search" oninput="buscar()"/></div>
   </div>
   <div id="produtosGrid"></div>
 </section>
 
 <div class="modal-overlay" id="modalEspera">
   <div class="modal-box">
-    <h3>Avise-me quando voltar</h3>
-    <p>Deixe seu email e te avisamos quando o produto estiver disponível.</p>
+    <h3 data-i18n="waitlist.title">Avise-me quando voltar</h3>
+    <p data-i18n="waitlist.subtitle">Deixe seu email e te avisamos quando o produto estiver disponível.</p>
     <input type="text" id="espera-nome" placeholder="Seu nome"/>
     <input type="email" id="espera-email" placeholder="Seu email"/>
     <input type="hidden" id="espera-produto"/>
@@ -266,30 +266,30 @@
         <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain"/>
         <span class="logo-text">PEPMASTERS</span>
       </a>
-      <p>Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</p>
+      <p data-i18n="footer.desc">Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</p>
     </div>
     <div class="footer-col">
-      <h4>Institucional</h4>
-      <a href="quem-somos.html">Quem Somos</a>
-      <a href="termos-de-uso.html">Termos de Uso</a>
-      <a href="politica-privacidade.html">Política de Privacidade</a>
+      <h4 data-i18n="footer.institutional">Institucional</h4>
+      <a href="quem-somos.html" data-i18n="footer.about">Quem Somos</a>
+      <a href="termos-de-uso.html" data-i18n="footer.terms">Termos de Uso</a>
+      <a href="politica-privacidade.html" data-i18n="footer.privacy">Política de Privacidade</a>
     </div>
     <div class="footer-col">
-      <h4>Suporte</h4>
-      <a href="duvidas-frequentes.html">Dúvidas Frequentes</a>
-      <a href="envio-e-prazos.html">Envio e Prazos</a>
-      <a href="trocas-e-devolucoes.html">Trocas e Devoluções</a>
+      <h4 data-i18n="footer.support">Suporte</h4>
+      <a href="duvidas-frequentes.html" data-i18n="footer.faq">Dúvidas Frequentes</a>
+      <a href="envio-e-prazos.html" data-i18n="footer.shipping">Envio e Prazos</a>
+      <a href="trocas-e-devolucoes.html" data-i18n="footer.returns">Trocas e Devoluções</a>
     </div>
     <div class="footer-col">
-      <h4>Minha Conta</h4>
-      <a href="meus-pedidos.html">Meus Pedidos</a>
-      <a href="perfil.html">Meu Perfil</a>
-      <a href="rastrear-pedido.html">Rastrear Pedido</a>
+      <h4 data-i18n="footer.account">Minha Conta</h4>
+      <a href="meus-pedidos.html" data-i18n="footer.myorders">Meus Pedidos</a>
+      <a href="perfil.html" data-i18n="footer.profile">Meu Perfil</a>
+      <a href="rastrear-pedido.html" data-i18n="footer.trackorder">Rastrear Pedido</a>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2025 PEPMASTERS. Todos os direitos reservados.</p>
-    <a href="admin-login.html" class="admin-link">Área do Administrador</a>
+    <p>© 2025 PEPMASTERS. <span data-i18n="footer.rights">Todos os direitos reservados.</span></p>
+    <a href="admin-login.html" class="admin-link" data-i18n="footer.admin">Área do Administrador</a>
   </div>
 </footer>
 
@@ -569,5 +569,7 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 
 renderAuth();atualizarBadge();carregarProdutos();
 </script>
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
 </body>
 </html>
