@@ -161,12 +161,49 @@
     .sec-count{font-size:.8rem;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
     .empty-state{text-align:center;padding:60px 20px;color:var(--muted);grid-column:1/-1}
     .empty-state h3{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;margin-bottom:8px}
-    @media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr};nav{display:none};.busca-wrap{margin-left:0};.busca-wrap input{width:100%};.cart-drawer{width:100%}}
+    @media(max-width:768px){
+      .footer-grid{grid-template-columns:1fr 1fr}
+      .busca-wrap{margin-left:0}
+      .busca-wrap input{width:100%}
+      .cart-drawer{width:100%}
+      nav{display:none}
+      .hamburger{display:flex!important}
+      .header-inner{padding:0 16px;gap:12px}
+      .logo-text{font-size:1.1rem}
+      #authArea{display:none}
+      #langSelector{margin-left:auto}
+      .mobile-menu{display:block!important}
+    }
+    @media(min-width:769px){
+      .hamburger{display:none!important}
+      .mobile-menu{display:none!important}
+    }
+    .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;margin-left:8px}
+    .hamburger span{display:block;width:22px;height:2px;background:var(--dark);border-radius:2px;transition:all .3s}
+    .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .hamburger.open span:nth-child(2){opacity:0}
+    .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    .mobile-menu{display:none;position:fixed;top:68px;left:0;right:0;background:#fff;border-top:2px solid var(--amber);z-index:999;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.1)}
+    .mobile-menu a{display:block;padding:12px 8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;color:var(--dark);text-decoration:none;border-bottom:1px solid var(--border);letter-spacing:.04em;text-transform:uppercase}
+    .mobile-menu a:last-child{border-bottom:none}
+    .mobile-menu .mob-auth{display:flex;gap:8px;margin-top:12px}
+    .mobile-menu .mob-auth a{border:none;padding:10px 16px;border-radius:30px;text-align:center;flex:1}
+    .mobile-menu .mob-auth .btn-login{background:none;border:2px solid var(--border)!important;color:var(--dark)!important}
+    .mobile-menu .mob-auth .btn-cadastro{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff!important}
   </style>
 </head>
 <body>
 
 <header>
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" data-i18n="nav.home">Início</a>
+    <a href="#produtos" onclick="fecharMobileMenu()">Produtos</a>
+    <a href="quem-somos.html" data-i18n="nav.about">Quem Somos</a>
+    <a href="duvidas-frequentes.html" data-i18n="nav.faq">Dúvidas</a>
+    <a href="rastrear-pedido.html" data-i18n="nav.track">Rastrear</a>
+    <div class="mob-auth" id="mobileAuth"></div>
+  </div>
   <div class="header-inner">
     <a href="index.html" class="logo-wrap">
       <img src="Capturar.PNG" alt="Logo"/>
@@ -488,6 +525,38 @@ function renderCarrinho(){
 }
 
 // ── AUTH ──
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const btn  = document.getElementById('hamburger');
+  const open = menu.style.display === 'block';
+  menu.style.display = open ? 'none' : 'block';
+  btn.classList.toggle('open', !open);
+}
+function fecharMobileMenu() {
+  document.getElementById('mobileMenu').style.display = 'none';
+  document.getElementById('hamburger').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('mobileMenu');
+  const btn  = document.getElementById('hamburger');
+  if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+    menu.style.display = 'none';
+    btn.classList.remove('open');
+  }
+});
+function renderMobileAuth() {
+  const area  = document.getElementById('mobileAuth');
+  if (!area) return;
+  const token = localStorage.getItem('pep_token');
+  const nome  = localStorage.getItem('pep_nome');
+  const tr    = function(k){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d[k]&&(d[k][l]||d[k]['en']))||k;};
+  if (token && nome) {
+    area.innerHTML = '<a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>';
+  } else {
+    area.innerHTML = '<a href="login.html" class="btn-login">'+tr('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+tr('nav.register')+'</a>';
+  }
+}
+
 function renderAuth(){
   const area=document.getElementById('authArea');const token=localStorage.getItem('pep_token');const nome=localStorage.getItem('pep_nome');
   function tr(k){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d[k]&&(d[k][l]||d[k]['en']))||k;}
