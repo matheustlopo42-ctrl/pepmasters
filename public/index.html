@@ -198,8 +198,13 @@
   <!-- MOBILE MENU -->
   <div class="mobile-menu" id="mobileMenu">
     <a href="index.html" data-i18n="nav.home">Início</a>
-    <a href="#produtos" onclick="fecharMobileMenu()" data-i18n="nav.products" style="font-weight:900">Produtos</a>
-    <div id="mobCatList" style="padding:4px 0 8px 16px;display:flex;flex-direction:column;gap:2px"></div>
+    <div style="border-bottom:1px solid var(--border)">
+      <button onclick="toggleMobProd()" style="width:100%;text-align:left;background:none;border:none;padding:12px 8px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase;color:var(--dark);cursor:pointer;display:flex;justify-content:space-between;align-items:center">
+        <span data-i18n="nav.products">Produtos</span>
+        <svg id="mobProdArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div id="mobCatList" style="display:none;padding:0 0 8px 0"></div>
+    </div>
     <a href="quem-somos.html" data-i18n="nav.about">Quem Somos</a>
     <a href="duvidas-frequentes.html" data-i18n="nav.faq">Dúvidas</a>
     <a href="rastrear-pedido.html" data-i18n="nav.track">Rastrear</a>
@@ -526,6 +531,14 @@ function renderCarrinho(){
 }
 
 // ── AUTH ──
+function toggleMobProd() {
+  const list  = document.getElementById('mobCatList');
+  const arrow = document.getElementById('mobProdArrow');
+  const open  = list.style.display === 'block';
+  list.style.display  = open ? 'none' : 'block';
+  arrow.style.transform = open ? '' : 'rotate(180deg)';
+}
+
 function filtrarMobile(cat) {
   fecharMobileMenu();
   // Scroll para produtos
@@ -562,9 +575,12 @@ function renderMobileAuth() {
   if (catList && produtosData && produtosData.length) {
     const cats = [...new Set(produtosData.map(p => p.categoria))].sort((a,b) => a.localeCompare(b,'pt-BR'));
     catList.innerHTML = cats.map(cat => {
-      const count = produtosData.filter(p => p.categoria === cat).length;
-      return '<a href="#produtos" onclick="filtrarMobile(\'' + cat + '\')" style="font-size:.85rem;color:var(--muted);padding:6px 8px;display:flex;justify-content:space-between;align-items:center;border-bottom:none">'+
-        '<span>'+cat+'</span><span style="background:var(--cream);border-radius:20px;padding:2px 8px;font-size:.75rem;color:var(--orange);font-weight:700">'+count+'</span></a>';
+      const prods = produtosData.filter(p => p.categoria === cat);
+      const nomes = prods.map(p => p.nome).join(' · ');
+      return '<div style="padding:10px 16px;border-top:1px solid var(--border)">' +
+        '<div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:4px">'+cat+'</div>' +
+        '<a href="#produtos" onclick="filtrarMobile(''+cat+'')" style="font-size:.88rem;color:var(--dark);text-decoration:none;line-height:1.5">'+nomes+'</a>' +
+        '</div>';
     }).join('');
   }
 
