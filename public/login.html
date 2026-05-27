@@ -3,7 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login — PEPMASTERS</title>
+  <title>PEPMASTERS — High Performance Peptides</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Bioactive peptides for recovery, muscle mass, fat loss and cognitive performance."/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://pepmasters.onrender.com/login.html"/>
+  <!-- Open Graph (WhatsApp, Facebook, LinkedIn) -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="PEPMASTERS — High Performance Peptides"/>
+  <meta property="og:description" content="Bioactive peptides for recovery, muscle mass, fat loss and cognitive performance."/>
+  <meta property="og:image" content="https://pepmasters.onrender.com/Capturar.PNG"/>
+  <meta property="og:url" content="https://pepmasters.onrender.com/login.html"/>
+  <meta property="og:site_name" content="PEPMASTERS"/>
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="PEPMASTERS — High Performance Peptides"/>
+  <meta name="twitter:description" content="Bioactive peptides for recovery, muscle mass, fat loss and cognitive performance."/>
+  <meta name="twitter:image" content="https://pepmasters.onrender.com/Capturar.PNG"/>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -176,6 +192,14 @@
     .admin-link:hover{color:var(--amber)}
     @media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}}
   </style>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
 </head>
 <body>
 
@@ -255,5 +279,24 @@
 </script>
 <script src="i18n.js"></script>
 <script src="i18n-init.js"></script>
+
+<script>
+(function waitI18n() {
+  if (window.PEPMASTERS_I18N && window.PEP_LANG) {
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var d = window.PEPMASTERS_I18N;
+      var l = window.PEP_LANG.get();
+      var key = el.getAttribute('data-i18n');
+      var val = d[key] && (d[key][l] || d[key]['en']);
+      if (val) {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = val;
+        else el.textContent = val;
+      }
+    });
+  } else {
+    setTimeout(waitI18n, 50);
+  }
+})();
+</script>
 </body>
 </html>

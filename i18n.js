@@ -130,6 +130,10 @@ window.PEPMASTERS_I18N = {
 
   "track.title":        { en:"Track Order",    pt:"Rastrear Pedido",  es:"Rastrear Pedido", de:"Bestellung verfolgen", fr:"Suivre la commande" },
   "track.placeholder":  { en:"Tracking code or order number", pt:"Código de rastreio ou número do pedido", es:"Código de seguimiento", de:"Tracking-Code oder Bestellnummer", fr:"Code de suivi ou numéro de commande" },
+  
+  "orders.order":  { en:"Order", pt:"Pedido", es:"Pedido", de:"Bestellung", fr:"Commande" },
+  "orders.status": { en:"Status", pt:"Status", es:"Estado", de:"Status", fr:"Statut" },
+  "track.label":   { en:"TRACKING CODE OR ORDER NUMBER", pt:"CÓDIGO DE RASTREIO OU NÚMERO DO PEDIDO", es:"CÓDIGO DE SEGUIMIENTO", de:"TRACKING-CODE ODER BESTELLNUMMER", fr:"CODE DE SUIVI OU NUMÉRO" },
   "track.btn":          { en:"Search",         pt:"Buscar",           es:"Buscar",        de:"Suchen",         fr:"Rechercher" },
   "track.correios":     { en:"Track on Correios", pt:"Rastrear nos Correios", es:"Rastrear en Correios", de:"Bei Correios verfolgen", fr:"Suivre sur Correios" },
 
