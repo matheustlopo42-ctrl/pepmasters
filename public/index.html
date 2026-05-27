@@ -613,6 +613,7 @@ async function carregarProdutos(){
     produtosData=CATALOGO.map(c=>{const api=lista.find(p=>String(p.id)===String(c.id)||p.nome===c.nome);const i=getProdI18n(c);return{...c,categoria:i.categoria,descricao:i.descricao,preco:api?parseFloat(api.preco):c.preco,estoque:api?parseInt(api.estoque):10}})
   }catch{produtosData=CATALOGO.map(c=>{const i=getProdI18n(c);return{...c,categoria:i.categoria,descricao:i.descricao,estoque:c.id==='5'?0:10}})}
   renderGrid(produtosData)
+  renderMobileAuth();
 }
 
 function mkCard(p) {
@@ -806,7 +807,7 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 (function waitInit() {
   if (window.PEPMASTERS_I18N && window.PEP_LANG) {
     renderAuth();
-    renderMobileAuth();
+    // renderMobileAuth chamado após carregarProdutos
     atualizarBadge();
     carregarProdutos();
   } else {
