@@ -170,26 +170,12 @@
     }
   }
 
-  // MutationObserver para reaplicar quando DOM mudar
-  var observer = new MutationObserver(function() {
-    if (window.PEPMASTERS_I18N) apply(getLang());
-  });
-
-  function startObserver() {
-    observer.observe(document.body, { childList: true, subtree: true });
-  }
-
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      waitAndInit();
-      startObserver();
-    });
+    document.addEventListener('DOMContentLoaded', waitAndInit);
   } else {
     waitAndInit();
-    startObserver();
-    setTimeout(function() { if(window.PEPMASTERS_I18N) apply(getLang()); }, 100);
-    setTimeout(function() { if(window.PEPMASTERS_I18N) apply(getLang()); }, 500);
-    setTimeout(function() { if(window.PEPMASTERS_I18N) apply(getLang()); }, 1500);
+    setTimeout(function() { if(window.PEPMASTERS_I18N) apply(getLang()); }, 300);
+    setTimeout(function() { if(window.PEPMASTERS_I18N) apply(getLang()); }, 1000);
   }
 
 })();
