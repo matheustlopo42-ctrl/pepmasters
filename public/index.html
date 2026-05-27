@@ -540,20 +540,15 @@ function toggleMobProd() {
 }
 
 function filtrarMobile(cat) {
-  // Fechar menu primeiro
   fecharMobileMenu();
-  // Filtrar
   filtroAtivo = cat;
   document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
   aplicarFiltros();
-  // Scroll após fechar menu com offset do header
+  // Usar location.hash para forçar scroll nativo do browser
   setTimeout(function() {
-    const el = document.getElementById('produtos');
-    if (el) {
-      const y = el.getBoundingClientRect().top + window.pageYOffset - 80;
-      window.scrollTo({top: y, behavior: 'smooth'});
-    }
-  }, 200);
+    location.hash = '';
+    setTimeout(function() { location.hash = 'produtos'; }, 50);
+  }, 250);
 }
 
 function toggleMobileMenu() {
