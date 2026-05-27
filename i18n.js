@@ -189,6 +189,13 @@ window.PEPMASTERS_I18N = {
   "faq.q9": { en:"Can I use a discount coupon?", pt:"Posso usar cupom de desconto?", es:"¿Puedo usar un cupón?", de:"Kann ich einen Rabattcode verwenden?", fr:"Puis-je utiliser un coupon?" },
   "faq.a9": { en:"Yes! Enter the code in the coupon field during checkout. The discount is applied automatically.", pt:"Sim! Insira o código no campo de cupom durante o checkout. O desconto é aplicado automaticamente.", es:"Sí, ingresa el código en el campo de cupón durante el checkout.", de:"Ja! Geben Sie den Code während des Checkouts ein.", fr:"Oui! Entrez le code dans le champ coupon lors du paiement." },
 
+  
+  "shipping.table.method":   { en:"Method", pt:"Modalidade", es:"Modalidad", de:"Methode", fr:"Méthode" },
+  "shipping.table.deadline": { en:"Estimated Time", pt:"Prazo Estimado", es:"Plazo Estimado", de:"Geschätzte Zeit", fr:"Délai estimé" },
+  "shipping.table.tracking": { en:"Tracking", pt:"Rastreamento", es:"Seguimiento", de:"Tracking", fr:"Suivi" },
+  "shipping.pac.time":       { en:"8 to 15 business days", pt:"8 a 15 dias úteis", es:"8 a 15 días hábiles", de:"8 bis 15 Werktage", fr:"8 à 15 jours ouvrables" },
+  "shipping.sedex.time":     { en:"2 to 5 business days", pt:"2 a 5 dias úteis", es:"2 a 5 días hábiles", de:"2 bis 5 Werktage", fr:"2 à 5 jours ouvrables" },
+  "shipping.yes":            { en:"Yes", pt:"Sim", es:"Sí", de:"Ja", fr:"Oui" },
   "shipping.title":     { en:"Shipping & Deadlines", pt:"Envio e Prazos", es:"Envíos y Plazos", de:"Versand & Fristen", fr:"Expédition et délais" },
   "shipping.methods.title":{ en:"Shipping Methods", pt:"Modalidades de Envio", es:"Modalidades de Envío", de:"Versandmethoden", fr:"Méthodes d'expédition" },
   "shipping.methods.text":{ en:"We work with postal services. Shipping is automatically calculated based on the destination ZIP code during checkout.", pt:"Trabalhamos com os Correios nas modalidades PAC e SEDEX. O frete é calculado automaticamente durante o checkout.", es:"Trabajamos con servicios postales. El envío se calcula automáticamente durante el checkout.", de:"Wir arbeiten mit Postdiensten. Der Versand wird beim Checkout automatisch berechnet.", fr:"Nous travaillons avec les services postaux. L'expédition est calculée automatiquement lors du paiement." },
