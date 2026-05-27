@@ -116,7 +116,7 @@
     .produtos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:22px}
     .card{background:#fff;border-radius:16px;overflow:hidden;border:1px solid #FFE5B0;box-shadow:0 4px 20px rgba(255,179,0,.10);transition:transform .2s,box-shadow .2s}
     .card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(232,34,10,.15)}
-    .card-img-wrap{background:linear-gradient(135deg,#FFF8EC,#FFE8B0);height:190px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+    .card-img-wrap{background:linear-gradient(135deg,#FFF8EC,#FFE8B0);height:190px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;cursor:pointer}
     .card-img-wrap img{height:150px;width:150px;object-fit:contain;transition:transform .3s}
     .card:hover .card-img-wrap img{transform:scale(1.05)}
     .cat-badge{position:absolute;top:10px;left:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:20px}
@@ -694,6 +694,8 @@ function mkCard(p) {
   var imgLink = document.createElement('a');
   imgLink.href = 'produto.html?id=' + p.id;
   imgLink.style.textDecoration = 'none';
+  imgLink.style.display = 'block';
+  imgLink.style.cursor = 'pointer';
   imgLink.appendChild(imgWrap);
   div.appendChild(imgLink);
 
@@ -702,7 +704,7 @@ function mkCard(p) {
   body.innerHTML =
     '<div class="card-cat-label">' + p.categoria + '</div>' +
     '<div class="card-cat-label">' + p.categoria + '</div>' +
-    '<a href="produto.html?id=' + p.id + '" style="text-decoration:none;color:inherit"><div class="card-name">' + p.nome + '</div></a>' +
+    '<a href="produto.html?id=' + p.id + '" style="text-decoration:none;color:inherit;cursor:pointer"><div class="card-name">' + p.nome + '</div></a>' +
     '<div class="card-desc">' + p.descricao + '</div>';
     '<div class="card-desc">' + p.descricao + '</div>';
 
