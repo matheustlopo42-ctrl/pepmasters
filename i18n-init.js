@@ -151,15 +151,19 @@
     updateBtn(lang);
     if (window.PEPMASTERS_I18N) {
       apply(lang);
+      // Reaplicar após página carregar completamente
+      window.addEventListener('load', function() { apply(getLang()); updateBtn(getLang()); });
     } else {
-      // Retry até 20x com 50ms de intervalo
       var tries = 0;
       var iv = setInterval(function() {
         tries++;
         if (window.PEPMASTERS_I18N) {
           apply(getLang());
+          updateBtn(getLang());
           clearInterval(iv);
-        } else if (tries >= 20) {
+          // Reaplicar após load
+          window.addEventListener('load', function() { apply(getLang()); updateBtn(getLang()); });
+        } else if (tries >= 40) {
           clearInterval(iv);
         }
       }, 50);
@@ -170,6 +174,9 @@
     document.addEventListener('DOMContentLoaded', waitAndInit);
   } else {
     waitAndInit();
+    // Se DOM já pronto, reaplicar após pequeno delay para pegar elementos dinâmicos
+    setTimeout(function() { if(window.PEPMASTERS_I18N) apply(getLang()); }, 300);
+    setTimeout(function() { if(window.PEPMASTERS_I18N) apply(getLang()); }, 800);
   }
 
 })();
