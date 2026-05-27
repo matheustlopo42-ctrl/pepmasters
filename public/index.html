@@ -546,11 +546,14 @@ function filtrarMobile(cat) {
   filtroAtivo = cat;
   document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
   aplicarFiltros();
-  // Scroll após fechar menu (pequeno delay para o menu fechar)
+  // Scroll após fechar menu com offset do header
   setTimeout(function() {
     const el = document.getElementById('produtos');
-    if (el) el.scrollIntoView({behavior:'smooth'});
-  }, 150);
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.pageYOffset - 80;
+      window.scrollTo({top: y, behavior: 'smooth'});
+    }
+  }, 200);
 }
 
 function toggleMobileMenu() {
