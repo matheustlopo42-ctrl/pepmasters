@@ -578,8 +578,8 @@ function renderMobileAuth() {
       const prods = produtosData.filter(p => p.categoria === cat);
       const nomes = prods.map(p => p.nome).join(' · ');
       return '<div style="padding:10px 16px;border-top:1px solid var(--border)">' +
-        '<div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:4px">'+cat+'</div>' +
-        '<a href="#produtos" onclick="filtrarMobile(''+cat+'')" style="font-size:.88rem;color:var(--dark);text-decoration:none;line-height:1.5">'+nomes+'</a>' +
+        '<div style="font-family:sans-serif;font-weight:800;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:4px">'+cat+'</div>' +
+        '<a href="#produtos" onclick="filtrarMobile(\''+cat+'\')" style="font-size:.88rem;color:var(--dark);text-decoration:none;line-height:1.5">'+nomes+'</a>' +
         '</div>';
     }).join('');
   }
