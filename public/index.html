@@ -540,21 +540,25 @@ function toggleMobProd() {
 }
 
 function filtrarMobile(cat) {
-  fecharMobileMenu();
+  // 1. Filtrar primeiro
   filtroAtivo = cat;
   document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
   aplicarFiltros();
-  // Guardar filtro e scroll no sessionStorage
-  sessionStorage.setItem('scrollToProdutos', '1');
+  // 2. Fechar menu (esconder imediatamente sem animação)
+  var menu = document.getElementById('mobileMenu');
+  var btn  = document.getElementById('hamburger');
+  if (menu) menu.style.display = 'none';
+  if (btn)  btn.classList.remove('open');
+  // 3. Scroll com delay para garantir que menu fechou
   setTimeout(function() {
     var el = document.getElementById('produtos');
     if (!el) return;
-    // Calcular posição absoluta
-    var rect = el.getBoundingClientRect();
-    var absTop = rect.top + window.scrollY - 80;
-    document.documentElement.scrollTop = absTop;
-    document.body.scrollTop = absTop;
-  }, 300);
+    var top = 0;
+    var obj = el;
+    while (obj) { top += obj.offsetTop; obj = obj.offsetParent; }
+    top -= 80;
+    window.scrollTo(0, top);
+  }, 100);
 }
 
 function toggleMobileMenu() {
