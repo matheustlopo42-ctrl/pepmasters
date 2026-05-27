@@ -540,7 +540,12 @@ function toggleMobProd() {
 }
 
 function filtrarMobile(cat) {
-  // 1. Filtrar primeiro
+  // 1. Fechar dropdown de produtos
+  var catList = document.getElementById('mobCatList');
+  var arrow   = document.getElementById('mobProdArrow');
+  if (catList) catList.style.display = 'none';
+  if (arrow)   arrow.style.transform = '';
+  // 2. Filtrar
   filtroAtivo = cat;
   document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
   aplicarFiltros();
@@ -571,6 +576,11 @@ function toggleMobileMenu() {
 function fecharMobileMenu() {
   document.getElementById('mobileMenu').style.display = 'none';
   document.getElementById('hamburger').classList.remove('open');
+  // Resetar dropdown de categorias
+  var catList = document.getElementById('mobCatList');
+  var arrow   = document.getElementById('mobProdArrow');
+  if (catList) catList.style.display = 'none';
+  if (arrow)   arrow.style.transform = '';
 }
 document.addEventListener('click', function(e) {
   const menu = document.getElementById('mobileMenu');
