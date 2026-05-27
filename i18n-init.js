@@ -170,13 +170,26 @@
     }
   }
 
+  // MutationObserver para reaplicar quando DOM mudar
+  var observer = new MutationObserver(function() {
+    if (window.PEPMASTERS_I18N) apply(getLang());
+  });
+
+  function startObserver() {
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', waitAndInit);
+    document.addEventListener('DOMContentLoaded', function() {
+      waitAndInit();
+      startObserver();
+    });
   } else {
     waitAndInit();
-    // Se DOM já pronto, reaplicar após pequeno delay para pegar elementos dinâmicos
-    setTimeout(function() { if(window.PEPMASTERS_I18N) apply(getLang()); }, 300);
-    setTimeout(function() { if(window.PEPMASTERS_I18N) apply(getLang()); }, 800);
+    startObserver();
+    setTimeout(function() { if(window.PEPMASTERS_I18N) apply(getLang()); }, 100);
+    setTimeout(function() { if(window.PEPMASTERS_I18N) apply(getLang()); }, 500);
+    setTimeout(function() { if(window.PEPMASTERS_I18N) apply(getLang()); }, 1500);
   }
 
 })();

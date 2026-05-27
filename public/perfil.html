@@ -108,7 +108,7 @@
     <span class="logo-text">PEPMASTERS</span>
   </a>
   <a href="index.html" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;color:var(--muted);text-decoration:none;letter-spacing:.04em;display:flex;align-items:center;gap:4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-    <span data-i18n="nav.home"><span data-i18n="nav.home">Início</span></a>
+    <span data-i18n="nav.home">Início</span></a>
 </header>
 
 <main>
@@ -118,11 +118,11 @@
     <div class="profile-name" id="sideNome">—</div>
     <div class="profile-email" id="sideEmail">—</div>
     <nav class="sidebar-nav">
-      <a href="perfil.html" class="active">👤 Meus Dados</a>
-      <a href="meus-pedidos.html">📦 Pedidos</a>
-      <a href="rastrear-pedido.html">📍 Rastrear</a>
+      <a href="perfil.html" class="active">👤 <span data-i18n="profile.personal">Meus Dados</span></a>
+      <a href="meus-pedidos.html">📦 <span data-i18n="nav.orders">Pedidos</span></a>
+      <a href="rastrear-pedido.html">📍 <span data-i18n="nav.track">Rastrear</span></a>
     </nav>
-    <button class="btn-sair" onclick="sair()">Sair da conta</button>
+    <button class="btn-sair" onclick="sair()"><span data-i18n="profile.logout">Sair da conta</span></button>
   </div>
 
   <!-- PAINEIS -->
@@ -130,7 +130,7 @@
 
     <!-- Dados pessoais -->
     <div class="panel">
-      <h2>👤 Dados Pessoais</h2>
+      <h2>👤 <span data-i18n="profile.personal">Dados Pessoais</span></h2>
       <div id="msgErro"></div>
       <div id="msgOk"></div>
 
@@ -155,12 +155,12 @@
         </div>
       </div>
 
-      <button class="btn-primary" onclick="salvarDados()">Salvar alterações</button>
+      <button class="btn-primary" onclick="salvarDados()"><span data-i18n="profile.save">Salvar alterações</span></button>
     </div>
 
     <!-- Alterar senha -->
     <div class="panel">
-      <h2>🔒 Alterar Senha</h2>
+      <h2>🔒 <span data-i18n="profile.password">Alterar Senha</span></h2>
       <div id="msgSenhaErro"></div>
       <div id="msgSenhaOk"></div>
 
@@ -179,7 +179,7 @@
         </div>
       </div>
 
-      <button class="btn-primary" onclick="alterarSenha()">Alterar senha</button>
+      <button class="btn-primary" onclick="alterarSenha()"><span data-i18n="profile.change">Alterar senha</span></button>
     </div>
 
   </div>
