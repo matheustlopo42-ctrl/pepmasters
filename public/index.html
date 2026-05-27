@@ -540,14 +540,17 @@ function toggleMobProd() {
 }
 
 function filtrarMobile(cat) {
+  // Fechar menu primeiro
   fecharMobileMenu();
-  // Scroll para produtos
-  const el = document.getElementById('produtos');
-  if (el) el.scrollIntoView({behavior:'smooth'});
   // Filtrar
   filtroAtivo = cat;
   document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
   aplicarFiltros();
+  // Scroll após fechar menu (pequeno delay para o menu fechar)
+  setTimeout(function() {
+    const el = document.getElementById('produtos');
+    if (el) el.scrollIntoView({behavior:'smooth'});
+  }, 150);
 }
 
 function toggleMobileMenu() {
