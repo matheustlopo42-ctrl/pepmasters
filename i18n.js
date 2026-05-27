@@ -2,6 +2,7 @@
 // EN (default), PT, ES, DE, FR
 
 window.PEPMASTERS_I18N = {
+  "nav.store": { en:"Store", pt:"Loja", es:"Tienda", de:"Shop", fr:"Boutique" },
   "nav.home":           { en:"Home",         pt:"Início",       es:"Inicio",      de:"Start",        fr:"Accueil" },
   "nav.products":       { en:"Products",     pt:"Produtos",     es:"Productos",   de:"Produkte",     fr:"Produits" },
   "nav.about":          { en:"About Us",     pt:"Quem Somos",   es:"Nosotros",    de:"Über uns",     fr:"À propos" },
