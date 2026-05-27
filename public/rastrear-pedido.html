@@ -52,14 +52,18 @@
   </style>
 </head>
 <body>
-<header>
-  <a href="index.html" class="logo-wrap">
-    <img src="Capturar.PNG" alt="Logo" />
+<header style="display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:64px;border-bottom:2px solid var(--amber)">
+  <a href="index.html" class="logo-wrap" style="text-decoration:none;display:flex;align-items:center;gap:8px">
+    <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain"/>
     <span class="logo-text">PEPMASTERS</span>
+  </a>
+  <a href="index.html" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;color:var(--muted);text-decoration:none;letter-spacing:.04em;display:flex;align-items:center;gap:4px">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    <span data-i18n="nav.home">Início</span>
   </a>
 </header>
 <main>
-  <h1>📍 Rastrear Pedido</h1>
+  <h1 data-i18n="track.title">Rastrear Pedido</h1>
 
   <div class="search-box">
     <label>Código de rastreio ou número do pedido</label>
@@ -90,19 +94,19 @@
       <p>Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</p>
     </div>
     <div class="footer-col">
-      <h4>Institucional</h4>
+      <h4 data-i18n="footer.institutional">Institucional</h4>
       <a href="quem-somos.html">Quem Somos</a>
       <a href="termos-de-uso.html">Termos de Uso</a>
       <a href="politica-privacidade.html">Política de Privacidade</a>
     </div>
     <div class="footer-col">
-      <h4>Suporte</h4>
+      <h4 data-i18n="footer.support">Suporte</h4>
       <a href="duvidas-frequentes.html">Dúvidas Frequentes</a>
       <a href="envio-e-prazos.html">Envio e Prazos</a>
       <a href="trocas-e-devolucoes.html">Trocas e Devoluções</a>
     </div>
     <div class="footer-col">
-      <h4>Minha Conta</h4>
+      <h4 data-i18n="footer.account">Minha Conta</h4>
       <a href="meus-pedidos.html">Meus Pedidos</a>
       <a href="perfil.html">Meu Perfil</a>
       <a href="rastrear-pedido.html">Rastrear Pedido</a>
@@ -110,7 +114,7 @@
   </div>
   <div class="footer-bottom">
     <p>© 2025 PEPMASTERS. Todos os direitos reservados.</p>
-    <a href="admin-login.html" class="admin-link">Área do Administrador</a>
+    <a href="admin-login.html" class="admin-link" data-i18n="footer.admin">Área do Administrador</a>
   </div>
 </footer>
 <script>
@@ -154,5 +158,7 @@
     } catch { erro.textContent = 'Erro de conexão.'; erro.style.display = 'block'; }
   }
 </script>
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
 </body>
 </html>

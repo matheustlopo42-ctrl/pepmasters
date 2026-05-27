@@ -198,7 +198,8 @@
   <!-- MOBILE MENU -->
   <div class="mobile-menu" id="mobileMenu">
     <a href="index.html" data-i18n="nav.home">Início</a>
-    <a href="#produtos" onclick="fecharMobileMenu()">Produtos</a>
+    <a href="#produtos" onclick="fecharMobileMenu()" data-i18n="nav.products" style="font-weight:900">Produtos</a>
+    <div id="mobCatList" style="padding:4px 0 8px 16px;display:flex;flex-direction:column;gap:2px"></div>
     <a href="quem-somos.html" data-i18n="nav.about">Quem Somos</a>
     <a href="duvidas-frequentes.html" data-i18n="nav.faq">Dúvidas</a>
     <a href="rastrear-pedido.html" data-i18n="nav.track">Rastrear</a>
@@ -525,6 +526,17 @@ function renderCarrinho(){
 }
 
 // ── AUTH ──
+function filtrarMobile(cat) {
+  fecharMobileMenu();
+  // Scroll para produtos
+  const el = document.getElementById('produtos');
+  if (el) el.scrollIntoView({behavior:'smooth'});
+  // Filtrar
+  filtroAtivo = cat;
+  document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+  aplicarFiltros();
+}
+
 function toggleMobileMenu() {
   const menu = document.getElementById('mobileMenu');
   const btn  = document.getElementById('hamburger');
@@ -545,6 +557,17 @@ document.addEventListener('click', function(e) {
   }
 });
 function renderMobileAuth() {
+  // Categorias no mobile menu
+  const catList = document.getElementById('mobCatList');
+  if (catList && produtosData && produtosData.length) {
+    const cats = [...new Set(produtosData.map(p => p.categoria))].sort((a,b) => a.localeCompare(b,'pt-BR'));
+    catList.innerHTML = cats.map(cat => {
+      const count = produtosData.filter(p => p.categoria === cat).length;
+      return '<a href="#produtos" onclick="filtrarMobile(''+cat+'')" style="font-size:.85rem;color:var(--muted);padding:6px 8px;display:flex;justify-content:space-between;align-items:center;border-bottom:none">'+
+        '<span>'+cat+'</span><span style="background:var(--cream);border-radius:20px;padding:2px 8px;font-size:.75rem;color:var(--orange);font-weight:700">'+count+'</span></a>';
+    }).join('');
+  }
+
   const area  = document.getElementById('mobileAuth');
   if (!area) return;
   const token = localStorage.getItem('pep_token');
@@ -767,6 +790,7 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 (function waitInit() {
   if (window.PEPMASTERS_I18N && window.PEP_LANG) {
     renderAuth();
+    renderMobileAuth();
     atualizarBadge();
     carregarProdutos();
   } else {
