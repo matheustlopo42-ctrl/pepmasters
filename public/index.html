@@ -28,12 +28,12 @@
     html{scroll-behavior:smooth}
     body{font-family:'Barlow',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh}
     header{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--warm-white);border-bottom:3px solid var(--amber);box-shadow:0 2px 20px rgba(255,179,0,.25)}
-    .header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;gap:24px}
+    .header-inner{max-width:1200px;margin:0 auto;padding:0 14px;height:58px;display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
     .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}
     .logo-wrap img{height:44px;width:44px;object-fit:contain}
-    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.7rem;letter-spacing:.04em;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;letter-spacing:.04em;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;white-space:nowrap}
     nav{display:flex;align-items:center;gap:4px;flex:1}
-    nav a{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mid);text-decoration:none;padding:6px 10px;border-radius:6px;transition:all .2s}
+    nav a{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;color:var(--mid);text-decoration:none;padding:4px 7px;border-radius:6px;transition:all .2s;white-space:nowrap}
     nav a:hover{background:var(--amber);color:var(--dark)}
     .dropdown{position:relative}
     .dropdown>a::after{content:" ▾";font-size:.75em}
@@ -43,12 +43,12 @@
     .dropdown-menu a:hover{background:#FFF3D0}
     .cat-label{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);padding:10px 16px 4px;pointer-events:none}
     #authArea{display:flex;align-items:center;gap:8px}
-    .btn-login{padding:7px 16px;border:2px solid var(--red);border-radius:8px;color:var(--red);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.88rem;letter-spacing:.04em;text-transform:uppercase;transition:all .2s}
+    .btn-login{padding:5px 10px;border:2px solid var(--red);border-radius:8px;color:var(--red);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;transition:all .2s;white-space:nowrap}
     .btn-login:hover{background:var(--red);color:#fff}
-    .btn-cadastro{padding:7px 16px;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:8px;color:#fff;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.04em;text-transform:uppercase;transition:transform .15s}
+    .btn-cadastro{padding:5px 10px;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:8px;color:#fff;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;transition:transform .15s;white-space:nowrap}
     .btn-cadastro:hover{transform:translateY(-1px)}
     /* CARRINHO BTN */
-    .cart-btn{position:relative;background:none;border:2px solid var(--border);border-radius:10px;padding:7px 14px;cursor:pointer;display:flex;align-items:center;gap:7px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.92rem;letter-spacing:.04em;text-transform:uppercase;color:var(--mid);transition:all .2s;white-space:nowrap}
+    .cart-btn{position:relative;background:none;border:2px solid var(--border);border-radius:10px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;color:var(--mid);transition:all .2s;white-space:nowrap}
     .cart-btn:hover{border-color:var(--orange);color:var(--orange)}
     .cart-count{background:var(--red);color:#fff;border-radius:50%;width:20px;height:20px;font-size:.65rem;font-weight:800;display:none;align-items:center;justify-content:center;margin-left:2px}
     .cart-count.show{display:flex}
@@ -644,7 +644,7 @@ function renderMobileAuth() {
 function renderAuth(){
   const area=document.getElementById('authArea');const token=localStorage.getItem('pep_token');const nome=localStorage.getItem('pep_nome');
   function tr(k){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d[k]&&(d[k][l]||d[k]['en']))||k;}
-  if(token&&nome){area.innerHTML='<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.88rem;color:var(--mid)">'+tr('nav.hello')+', '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>'}
+  if(token&&nome){area.innerHTML='<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.78rem;color:var(--mid)">'+tr('nav.hello')+', '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>'}
   else{area.innerHTML='<a href="login.html" class="btn-login">'+tr('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+tr('nav.register')+'</a>'}
 }
 function logout(e){e.preventDefault();localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');location.reload()}
