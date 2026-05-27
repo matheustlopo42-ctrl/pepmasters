@@ -18,6 +18,24 @@ const nodemailer   = require('nodemailer');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
+// ── RATE LIMITING ──
+const rateLimitMap = new Map();
+function rateLimit(maxReqs, windowMs) {
+  return (req, res, next) => {
+    const key = req.ip + ':' + req.path;
+    const now = Date.now();
+    const data = rateLimitMap.get(key) || { count: 0, start: now };
+    if (now - data.start > windowMs) { data.count = 1; data.start = now; }
+    else { data.count++; }
+    rateLimitMap.set(key, data);
+    if (data.count > maxReqs) {
+      return res.status(429).json({ erro: 'Too many requests. Please wait.' });
+    }
+    next();
+  };
+}
+setInterval(() => rateLimitMap.clear(), 3600000);
+
 // ── ENV ──────────────────────────────────────
 const DATABASE_URL        = process.env.DATABASE_URL;
 const JWT_SECRET          = process.env.JWT_SECRET          || 'pep_jwt_secret_2025';
