@@ -563,7 +563,7 @@ function renderMobileAuth() {
     const cats = [...new Set(produtosData.map(p => p.categoria))].sort((a,b) => a.localeCompare(b,'pt-BR'));
     catList.innerHTML = cats.map(cat => {
       const count = produtosData.filter(p => p.categoria === cat).length;
-      return '<a href="#produtos" onclick="filtrarMobile(''+cat+'')" style="font-size:.85rem;color:var(--muted);padding:6px 8px;display:flex;justify-content:space-between;align-items:center;border-bottom:none">'+
+      return '<a href="#produtos" onclick="filtrarMobile(\'' + cat + '\')" style="font-size:.85rem;color:var(--muted);padding:6px 8px;display:flex;justify-content:space-between;align-items:center;border-bottom:none">'+
         '<span>'+cat+'</span><span style="background:var(--cream);border-radius:20px;padding:2px 8px;font-size:.75rem;color:var(--orange);font-weight:700">'+count+'</span></a>';
     }).join('');
   }
