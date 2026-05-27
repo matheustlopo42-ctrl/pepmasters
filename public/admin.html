@@ -100,7 +100,7 @@
   <div class="table-wrap">
     <table>
       <thead>
-        <tr>
+        <tr class="${p.pagamento === 'cripto' && p.status === 'pix_pending' ? 'cripto-pending' : ''}">
           <th>ID</th><th>Cliente</th><th>Email</th><th>Produto</th><th>Total</th>
           <th>Cupom</th><th>Pagamento</th><th>Status</th><th>Rastreio</th><th>Data</th>
         </tr>
@@ -154,13 +154,19 @@
           <td>${p.produto_nome || '—'}</td>
           <td>R$ ${parseFloat(p.total || 0).toFixed(2).replace('.',',')}</td>
           <td>${p.cupom || '—'}</td>
-          <td>${p.pagamento === 'pix' ? 'PIX' : 'Cartão'}</td>
+          <td>${p.pagamento === 'pix' ? 'PIX' : p.pagamento === 'cripto' ? '🔶 Cripto' : 'Cartão'}</td>
           <td>
             <select class="status-sel" onchange="salvarStatus(${p.id}, this.value)">
               ${['pago','pix_pending','enviado','entregue','cancelado'].map(s =>
                 '<option value="' + s + '"' + (p.status === s ? ' selected' : '') + '>' + (statusLabel[s] || s) + '</option>'
               ).join('')}
             </select>
+            ${p.pagamento === 'cripto' && p.status === 'pix_pending' ? `
+            <div style="margin-top:6px;padding:6px 8px;background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;font-size:.72rem">
+              <div>Esperado: <strong>${p.crypto_valor || '?'} ${p.crypto_token || 'USDT'}</strong></div>
+              <a href="https://polygonscan.com/address/${p.crypto_token === 'USDC' ? '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359' : '0xc2132d05d31c914a87c6611c10748aeb04b58e8f'}?a=0xDA95bb300C7be3E3347d449b14b834Dc3098deAD" target="_blank" style="color:#b45309;font-size:.7rem">Ver no Polygonscan ↗</a>
+              <br><button onclick="confirmarCripto(${p.id})" style="margin-top:4px;padding:3px 8px;background:#15803d;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:.72rem;font-weight:700">✓ Confirmar pagamento</button>
+            </div>` : ''}
           </td>
           <td>
             <input class="input-rastreio" id="r-${p.id}" value="${p.codigo_rastreio || ''}" placeholder="Código" />
@@ -170,6 +176,17 @@
         </tr>
       `;
     });
+  }
+
+  async function confirmarCripto(id) {
+    if (!confirm('Confirmar pagamento cripto do pedido #' + id + '?')) return;
+    const res = await fetch('/api/admin/pedido/' + id + '/status', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'pago' })
+    });
+    if ((await res.json()).ok) { alert('Pedido #' + id + ' confirmado!'); carregarPedidos(); }
+    else alert('Erro ao confirmar.');
   }
 
   function filtrar() {
