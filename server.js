@@ -42,6 +42,14 @@ const pool = new Pool({
 
 // ── MIDDLEWARES ───────────────────────────────
 app.use(express.json());
+// Forçar HTTPS em produção
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
+    return res.redirect(301, 'https://' + req.headers.host + req.url);
+  }
+  next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Servir arquivos JS da raiz (i18n, etc)
@@ -236,7 +244,7 @@ app.get('/api/produtos', async (req, res) => {
 });
 
 // POST /api/cadastro
-app.post('/api/cadastro', async (req, res) => {
+app.post('/api/cadastro', rateLimit(5, 60000), async (req, res) => {
   const { nome, email, cpf, telefone, senha } = req.body;
   if (!nome || !email || !senha) return res.status(400).json({ erro: 'Campos obrigatórios ausentes.' });
   try {
@@ -256,7 +264,7 @@ app.post('/api/cadastro', async (req, res) => {
 });
 
 // POST /api/login
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', rateLimit(10, 60000), async (req, res) => {
   const { email, senha } = req.body;
   if (!email || !senha) return res.status(400).json({ erro: 'Preencha todos os campos.' });
   try {
@@ -272,7 +280,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 // POST /api/esqueci-senha
-app.post('/api/esqueci-senha', async (req, res) => {
+app.post('/api/esqueci-senha', rateLimit(3, 60000), async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ erro: 'Informe o email.' });
   try {
@@ -329,7 +337,7 @@ app.get('/api/cupom/:codigo', async (req, res) => {
 });
 
 // POST /api/pedido
-app.post('/api/pedido', async (req, res) => {
+app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
   const {
     nome, email, cpf, telefone,
     endereco, carrinho, pagamento, cupom, total: totalFront,
@@ -947,7 +955,7 @@ app.get('/api/pedido/:id/crypto-status', async (req, res) => {
         // Verificar: destino correto, após criação do pedido, valor correto (±2% tolerância)
         if (txTo === wallet && txTs >= pedidoTs - 300) {
           const diff = Math.abs(txValor - valorEsperado) / valorEsperado;
-          if (diff <= 0.02) {
+          if (diff <= 0.005) {
             // Marcar pedido como pago
             await pool.query(
               "UPDATE pep_pedidos SET status='pago', pixgo_id=$1 WHERE id=$2 AND status!='pago'",
@@ -955,6 +963,21 @@ app.get('/api/pedido/:id/crypto-status', async (req, res) => {
             );
             enviarWhatsApp('CRIPTO CONFIRMADO! Pedido #' + req.params.id + ' — ' + txValor + ' ' + token);
             return res.json({ pago: true, status: 'pago', tx: tx.hash });
+          }
+        }
+      }
+    }
+
+    // Verificar se houve transação mas com valor errado
+    if (data.status === '1' && data.result && data.result.length > 0) {
+      for (const tx of data.result) {
+        const txTs    = parseInt(tx.timeStamp);
+        const txValor = parseFloat(tx.value) / Math.pow(10, parseInt(tx.tokenDecimal));
+        const txTo    = tx.to.toLowerCase();
+        if (txTo === wallet && txTs >= pedidoTs - 300) {
+          const diff = Math.abs(txValor - valorEsperado) / valorEsperado;
+          if (diff > 0.005) {
+            return res.json({ pago: false, status: 'wrong_amount', sent: txValor, expected: valorEsperado });
           }
         }
       }

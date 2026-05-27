@@ -3,7 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PEPMASTERS — Performance Peptídeos</title>
+  <title>PEPMASTERS — High Performance Peptides</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Bioactive peptides for recovery, muscle mass, fat loss and cognitive performance. Quality and safety for athletes and enthusiasts."/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://pepmasters.onrender.com/index.html"/>
+  <!-- Open Graph (WhatsApp, Facebook, LinkedIn) -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="PEPMASTERS — High Performance Peptides"/>
+  <meta property="og:description" content="Bioactive peptides for recovery, muscle mass, fat loss and cognitive performance. Quality and safety for athletes and enthusiasts."/>
+  <meta property="og:image" content="https://pepmasters.onrender.com/Capturar.PNG"/>
+  <meta property="og:url" content="https://pepmasters.onrender.com/index.html"/>
+  <meta property="og:site_name" content="PEPMASTERS"/>
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="PEPMASTERS — High Performance Peptides"/>
+  <meta name="twitter:description" content="Bioactive peptides for recovery, muscle mass, fat loss and cognitive performance. Quality and safety for athletes and enthusiasts."/>
+  <meta name="twitter:image" content="https://pepmasters.onrender.com/Capturar.PNG"/>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
@@ -191,6 +207,14 @@
     .mobile-menu .mob-auth .btn-login{background:none;border:2px solid var(--border)!important;color:var(--dark)!important}
     .mobile-menu .mob-auth .btn-cadastro{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff!important}
   </style>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
 </head>
 <body>
 
@@ -666,13 +690,20 @@ function mkCard(p) {
   img.src = p.img; img.alt = p.nome;
   img.onerror = function(){ this.style.display='none'; };
   imgWrap.appendChild(img);
-  div.appendChild(imgWrap);
+  // Tornar imagem clicável
+  var imgLink = document.createElement('a');
+  imgLink.href = 'produto.html?id=' + p.id;
+  imgLink.style.textDecoration = 'none';
+  imgLink.appendChild(imgWrap);
+  div.appendChild(imgLink);
 
   var body = document.createElement('div');
   body.className = 'card-body';
   body.innerHTML =
     '<div class="card-cat-label">' + p.categoria + '</div>' +
-    '<div class="card-name">' + p.nome + '</div>' +
+    '<div class="card-cat-label">' + p.categoria + '</div>' +
+    '<a href="produto.html?id=' + p.id + '" style="text-decoration:none;color:inherit"><div class="card-name">' + p.nome + '</div></a>' +
+    '<div class="card-desc">' + p.descricao + '</div>';
     '<div class="card-desc">' + p.descricao + '</div>';
 
   var footer = document.createElement('div');
