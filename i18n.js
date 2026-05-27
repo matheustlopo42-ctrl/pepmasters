@@ -250,7 +250,7 @@ window.PEPMASTERS_I18N = {
 
   "404.title":          { en:"Page not found",     pt:"Página não encontrada", es:"Página no encontrada", de:"Seite nicht gefunden", fr:"Page non trouvée" },
   "404.subtitle":       { en:"The page you are looking for does not exist or has been moved.", pt:"A página que você procura não existe ou foi movida.", es:"La página que buscas no existe o fue movida.", de:"Die gesuchte Seite existiert nicht oder wurde verschoben.", fr:"La page que vous cherchez n'existe pas ou a été déplacée." },
-  "404.back":           { en:"Back to store",      pt:"Voltar à loja",       es:"Volver a la tienda", de:"Zurück zum Shop",  fr:"Retour à la boutique" }
+  "404.back":           { en:"Back to store",      pt:"Voltar à loja",       es:"Volver a la tienda", de:"Zurück zum Shop",  fr:"Retour à la boutique" },
   "about.subtitle": { en:"Discover the history and values behind PEPMASTERS.", pt:"Conheça a história e os valores por trás da PEPMASTERS.", es:"Descubre la historia y los valores detras de PEPMASTERS.", de:"Entdecken Sie die Geschichte hinter PEPMASTERS.", fr:"Decouvrez l histoire derriere PEPMASTERS." },
   "faq.subtitle": { en:"Answers to the most common questions about products, orders and delivery.", pt:"Respostas para as principais perguntas sobre produtos, pedidos e entrega.", es:"Respuestas a las preguntas mas frecuentes.", de:"Antworten auf haufige Fragen.", fr:"Reponses aux questions les plus courantes." },
   "shipping.subtitle": { en:"Complete information about shipping and delivery deadlines.", pt:"Informações completas sobre modalidades de envio e prazos de entrega.", es:"Informacion completa sobre envios.", de:"Vollstandige Versandinformationen.", fr:"Informations completes sur expedition." },
