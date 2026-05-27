@@ -75,27 +75,27 @@
 
   <div class="card">
     <h2 data-i18n="privacy.s1.title">1. Dados Coletados</h2>
-    <p>Coletamos informações fornecidas voluntariamente no cadastro (nome, email, CPF, telefone e endereço) e dados de navegação (páginas acessadas, tempo de sessão) para melhorar a experiência no site.</p>
+    <p data-i18n="privacy.s1.text">Coletamos informações fornecidas voluntariamente no cadastro</p>
   </div>
   <div class="card">
     <h2 data-i18n="privacy.s2.title">2. Uso dos Dados</h2>
-    <p>Seus dados são utilizados exclusivamente para processamento de pedidos, comunicação sobre entregas e suporte ao cliente. Não vendemos nem compartilhamos seus dados com terceiros, exceto quando necessário para processamento de pagamentos e entrega.</p>
+    <p data-i18n="privacy.s2.text">Seus dados são utilizados exclusivamente para processamento de pedidos</p>
   </div>
   <div class="card">
     <h2 data-i18n="privacy.s3.title">3. Armazenamento e Segurança</h2>
-    <p>Todas as informações são armazenadas em servidores seguros. Utilizamos criptografia e boas práticas de segurança para proteger seus dados contra acesso não autorizado.</p>
+    <p data-i18n="privacy.s3.text">Todas as informações são armazenadas em servidores seguros</p>
   </div>
   <div class="card">
     <h2 data-i18n="privacy.s4.title">4. Cookies</h2>
-    <p>Utilizamos cookies para manter sua sessão ativa e melhorar a navegação. Você pode desativar cookies nas configurações do seu navegador, porém algumas funcionalidades podem ser afetadas.</p>
+    <p data-i18n="privacy.s4.text">Utilizamos cookies para manter sua sessão ativa</p>
   </div>
   <div class="card">
     <h2 data-i18n="privacy.s5.title">5. Seus Direitos (LGPD)</h2>
-    <p>Em conformidade com a Lei Geral de Proteção de Dados (Lei 13.709/2018), você tem direito a acessar, corrigir, excluir ou solicitar a portabilidade de seus dados. Para exercer esses direitos, entre em contato com nosso suporte.</p>
+    <p data-i18n="privacy.s5.text">Em conformidade com a Lei Geral de Proteção de Dados</p>
   </div>
   <div class="card">
     <h2 data-i18n="privacy.s6.title">6. Contato</h2>
-    <p>Para dúvidas sobre esta política ou exercício de direitos, entre em contato pelo email disponível na página de contato do site.</p>
+    <p data-i18n="privacy.s6.text">Para dúvidas sobre esta política</p>
   </div>
 </main>
 <footer>
@@ -135,21 +135,30 @@
 <script src="i18n-init.js"></script>
 
 <script>
-(function waitI18n() {
-  if (window.PEPMASTERS_I18N && window.PEP_LANG) {
+// Forçar reaplicação de traduções
+(function() {
+  function applyNow() {
+    var d = window.PEPMASTERS_I18N;
+    var l = localStorage.getItem('pep_lang') || 'en';
+    if (!d) return;
     document.querySelectorAll('[data-i18n]').forEach(function(el) {
-      var d = window.PEPMASTERS_I18N;
-      var l = window.PEP_LANG.get();
-      var key = el.getAttribute('data-i18n');
-      var val = d[key] && (d[key][l] || d[key]['en']);
-      if (val) {
-        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = val;
-        else el.textContent = val;
-      }
+      var val = d[el.getAttribute('data-i18n')];
+      val = val && (val[l] || val['en']);
+      if (!val) return;
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = val;
+      else el.textContent = val;
     });
-  } else {
-    setTimeout(waitI18n, 50);
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+      var val = d[el.getAttribute('data-i18n-placeholder')];
+      val = val && (val[l] || val['en']);
+      if (val) el.placeholder = val;
+    });
   }
+  // Tentar imediatamente e após delays
+  applyNow();
+  setTimeout(applyNow, 100);
+  setTimeout(applyNow, 500);
+  window.addEventListener('load', applyNow);
 })();
 </script>
 </body>

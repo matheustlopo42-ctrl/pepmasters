@@ -78,20 +78,20 @@
 
   <div class="card">
     <h2 data-i18n="returns.policy.title">Política de Trocas</h2>
-    <p>Aceitamos trocas em casos de produto com defeito, avaria no transporte ou envio incorreto. O prazo para solicitar a troca é de 7 dias corridos após o recebimento do produto.</p>
+    <p data-i18n="returns.policy.text">Aceitamos trocas em casos de produto com defeito</p>
     <p>Produtos abertos ou com lacre violado não são elegíveis para troca, exceto em caso de defeito comprovado de fabricação.</p>
   </div>
 
   <div class="card">
     <h2 data-i18n="returns.how.title">Como Solicitar</h2>
-    <div class="step"><div class="step-num">1</div><p>Entre em contato com nosso suporte pelo email informando o número do pedido e o motivo da solicitação.</p></div>
-    <div class="step"><div class="step-num">2</div><p>Nossa equipe avaliará o caso e retornará em até 2 dias úteis com as instruções para devolução.</p></div>
-    <div class="step"><div class="step-num">3</div><p>Após recebermos o produto devolvido, processamos a troca ou o reembolso em até 5 dias úteis.</p></div>
+    <div class="step"><div class="step-num">1</div><p data-i18n="returns.step1">Entre em contato com nosso suporte pelo email informando</p></div>
+    <div class="step"><div class="step-num">2</div><p data-i18n="returns.step2">Nossa equipe avaliará o caso e retornará</p></div>
+    <div class="step"><div class="step-num">3</div><p data-i18n="returns.step3">Após recebermos o produto devolvido</p></div>
   </div>
 
   <div class="card">
     <h2 data-i18n="returns.refund.title">Reembolso</h2>
-    <p>Reembolsos para pagamentos via PIX são feitos via transferência bancária. Para cartão de crédito, o estorno é processado diretamente pela operadora e pode levar até 2 faturas para aparecer.</p>
+    <p data-i18n="returns.refund.text">Reembolsos para pagamentos via PIX são feitos</p>
     <p>O frete de devolução em casos de defeito ou erro nosso é por nossa conta. Em arrependimento de compra, o frete é de responsabilidade do cliente.</p>
   </div>
 </main>
@@ -132,21 +132,30 @@
 <script src="i18n-init.js"></script>
 
 <script>
-(function waitI18n() {
-  if (window.PEPMASTERS_I18N && window.PEP_LANG) {
+// Forçar reaplicação de traduções
+(function() {
+  function applyNow() {
+    var d = window.PEPMASTERS_I18N;
+    var l = localStorage.getItem('pep_lang') || 'en';
+    if (!d) return;
     document.querySelectorAll('[data-i18n]').forEach(function(el) {
-      var d = window.PEPMASTERS_I18N;
-      var l = window.PEP_LANG.get();
-      var key = el.getAttribute('data-i18n');
-      var val = d[key] && (d[key][l] || d[key]['en']);
-      if (val) {
-        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = val;
-        else el.textContent = val;
-      }
+      var val = d[el.getAttribute('data-i18n')];
+      val = val && (val[l] || val['en']);
+      if (!val) return;
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = val;
+      else el.textContent = val;
     });
-  } else {
-    setTimeout(waitI18n, 50);
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+      var val = d[el.getAttribute('data-i18n-placeholder')];
+      val = val && (val[l] || val['en']);
+      if (val) el.placeholder = val;
+    });
   }
+  // Tentar imediatamente e após delays
+  applyNow();
+  setTimeout(applyNow, 100);
+  setTimeout(applyNow, 500);
+  window.addEventListener('load', applyNow);
 })();
 </script>
 </body>

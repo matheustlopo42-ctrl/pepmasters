@@ -80,7 +80,7 @@
 
   <div class="card">
     <h2 data-i18n="shipping.methods.title">Modalidades de Envio</h2>
-    <p>Trabalhamos com os Correios nas modalidades PAC e SEDEX. O frete é calculado automaticamente com base no CEP de destino durante o checkout.</p>
+    <p data-i18n="shipping.methods.text">Trabalhamos com os Correios nas modalidades PAC e SEDEX</p>
     <table>
       <tr><th>Modalidade</th><th>Prazo Estimado</th><th>Rastreamento</th></tr>
       <tr><td>PAC</td><td>8 a 15 dias úteis</td><td>Sim</td></tr>
@@ -90,13 +90,13 @@
 
   <div class="card">
     <h2 data-i18n="shipping.processing.title">Processamento do Pedido</h2>
-    <p>Após a confirmação do pagamento, o pedido é processado em até 2 dias úteis. Pedidos feitos após as 14h ou em fins de semana e feriados são processados no próximo dia útil.</p>
+    <p data-i18n="shipping.processing.text">Após a confirmação do pagamento, o pedido é processado</p>
     <p>Assim que seu pedido for enviado, você receberá um email com o código de rastreio dos Correios.</p>
   </div>
 
   <div class="card">
     <h2 data-i18n="shipping.regions.title">Regiões e Observações</h2>
-    <p>Enviamos para todo o território nacional. Para regiões mais remotas (norte, interior), os prazos podem ser ligeiramente maiores do que o estimado pelos Correios.</p>
+    <p data-i18n="shipping.regions.text">Enviamos para todo o território nacional</p>
     <p>Em períodos de alta demanda (datas comemorativas, Black Friday), pode haver atrasos no processamento. Faremos o possível para manter o prazo informado.</p>
   </div>
 </main>
@@ -137,21 +137,30 @@
 <script src="i18n-init.js"></script>
 
 <script>
-(function waitI18n() {
-  if (window.PEPMASTERS_I18N && window.PEP_LANG) {
+// Forçar reaplicação de traduções
+(function() {
+  function applyNow() {
+    var d = window.PEPMASTERS_I18N;
+    var l = localStorage.getItem('pep_lang') || 'en';
+    if (!d) return;
     document.querySelectorAll('[data-i18n]').forEach(function(el) {
-      var d = window.PEPMASTERS_I18N;
-      var l = window.PEP_LANG.get();
-      var key = el.getAttribute('data-i18n');
-      var val = d[key] && (d[key][l] || d[key]['en']);
-      if (val) {
-        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = val;
-        else el.textContent = val;
-      }
+      var val = d[el.getAttribute('data-i18n')];
+      val = val && (val[l] || val['en']);
+      if (!val) return;
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = val;
+      else el.textContent = val;
     });
-  } else {
-    setTimeout(waitI18n, 50);
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+      var val = d[el.getAttribute('data-i18n-placeholder')];
+      val = val && (val[l] || val['en']);
+      if (val) el.placeholder = val;
+    });
   }
+  // Tentar imediatamente e após delays
+  applyNow();
+  setTimeout(applyNow, 100);
+  setTimeout(applyNow, 500);
+  window.addEventListener('load', applyNow);
 })();
 </script>
 </body>
