@@ -613,8 +613,25 @@ document.addEventListener('click', function(e) {
   if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
     menu.style.display = 'none';
     btn.classList.remove('open');
+    var catList = document.getElementById('mobCatList');
+    var arrow   = document.getElementById('mobProdArrow');
+    if (catList) catList.style.display = 'none';
+    if (arrow)   arrow.style.transform = '';
   }
 });
+// Fechar menu ao rolar
+window.addEventListener('scroll', function() {
+  var menu = document.getElementById('mobileMenu');
+  var btn  = document.getElementById('hamburger');
+  if (menu && menu.style.display === 'block') {
+    menu.style.display = 'none';
+    if (btn) btn.classList.remove('open');
+    var catList = document.getElementById('mobCatList');
+    var arrow   = document.getElementById('mobProdArrow');
+    if (catList) catList.style.display = 'none';
+    if (arrow)   arrow.style.transform = '';
+  }
+}, { passive: true });
 function renderMobileAuth() {
   // Categorias no mobile menu
   const catList = document.getElementById('mobCatList');
