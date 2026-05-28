@@ -506,6 +506,7 @@
 
   // ── FINALIZAR ──
   async function finalizar() {
+    if (pagAtual === 'cartao') { mostrarErro('Use o botão do PayPal acima para pagar.'); return; }
     const nome      = document.getElementById('nome').value.trim();
     const email     = document.getElementById('email').value.trim();
     const cpf       = document.getElementById('cpf').value.trim();
