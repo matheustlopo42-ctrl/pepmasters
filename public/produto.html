@@ -1,163 +1,1770 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>PEPMASTERS — Product</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <style>
-    :root{--red:#E8220A;--orange:#F97316;--amber:#FFB300;--dark:#1C0A00;--mid:#5C3D1E;--muted:#9C7B5A;--cream:#FFFDF9;--warm-white:#FFF8F0;--border:#FFE0A0;--bg:#FAF5EE}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark)}
-    header{background:#fff;border-bottom:2px solid var(--amber);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-    .logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none}
-    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:var(--red);letter-spacing:.06em}
-    .back-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:4px}
-    main{max-width:1000px;margin:0 auto;padding:32px 20px}
-    .product-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:48px}
-    .product-img{background:linear-gradient(135deg,#FFF3D0,#FFE0A0);border-radius:16px;padding:32px;display:flex;align-items:center;justify-content:center;min-height:320px}
-    .product-img img{max-width:100%;max-height:280px;object-fit:contain}
-    .product-info{display:flex;flex-direction:column;gap:16px}
-    .cat-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;background:var(--cream);border:1px solid var(--border);color:var(--orange)}
-    .product-name{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.4rem;letter-spacing:.02em;line-height:1}
-    .product-price{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;color:var(--red)}
-    .product-price span{font-size:1rem;font-weight:600;color:var(--muted)}
-    .product-desc{font-size:.95rem;color:var(--mid);line-height:1.7}
-    .qty-row{display:flex;align-items:center;gap:12px}
-    .qty-btn{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:none;cursor:pointer;font-size:1.2rem;font-weight:700;color:var(--mid);display:flex;align-items:center;justify-content:center;transition:all .2s}
-    .qty-btn:hover{border-color:var(--orange);color:var(--orange)}
-    .qty-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;min-width:32px;text-align:center}
-    .btn-add{padding:14px 32px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:30px;cursor:pointer;box-shadow:0 4px 16px rgba(232,34,10,.3);transition:transform .15s}
-    .btn-add:hover{transform:translateY(-2px)}
-    .esgotado{padding:14px 32px;background:#e5e7eb;color:#9ca3af;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:30px;cursor:not-allowed}
-    .section-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid var(--border)}
-    .info-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-    .tab-btn{padding:8px 18px;border:2px solid var(--border);border-radius:20px;background:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;color:var(--muted);transition:all .2s}
-    .tab-btn.active{border-color:var(--orange);color:var(--orange);background:#FFF3E0}
-    .tab-content{display:none;font-size:.9rem;color:var(--mid);line-height:1.8}
-    .tab-content.active{display:block}
-    .tab-content p{margin-bottom:12px}
-    .tab-content ul{padding-left:18px}
-    .tab-content li{margin-bottom:6px}
-    /* AVALIAÇÕES */
-    .reviews-section{margin-top:48px}
-    .stars{color:var(--amber);font-size:1.1rem;letter-spacing:2px}
-    .rating-summary{display:flex;align-items:center;gap:16px;margin-bottom:24px}
-    .rating-big{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:3rem;color:var(--dark)}
-    .review-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
-    .review-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-    .review-author{font-weight:700;font-size:.9rem}
-    .review-date{font-size:.78rem;color:var(--muted)}
-    .review-text{font-size:.88rem;color:var(--mid);line-height:1.6}
-    .review-form{background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:24px}
-    .review-form h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:16px}
-    .star-select{display:flex;gap:6px;margin-bottom:14px;font-size:1.6rem;cursor:pointer}
-    .star-select span{color:#d1d5db;transition:color .15s}
-    .star-select span.on{color:var(--amber)}
-    .form-input{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:.88rem;background:#fff;margin-bottom:10px;outline:none}
-    .form-input:focus{border-color:var(--orange)}
-    textarea.form-input{min-height:80px;resize:vertical}
-    .btn-review{padding:10px 24px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:20px;cursor:pointer}
-    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:12px 24px;border-radius:30px;font-size:.88rem;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
-    .toast.show{opacity:1}
-    @media(max-width:768px){
-      .product-grid{grid-template-columns:1fr}
-      .product-name{font-size:1.8rem}
-    }
-  </style>
-<!-- v1779920875 -->
-</head>
-<body>
-<header>
-  <a href="index.html" class="logo-wrap">
-    <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain"/>
-    <span class="logo-text">PEPMASTERS</span>
-  </a>
-  <a href="index.html" class="back-link">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-    <span data-i18n="nav.home">Início</span>
-  </a>
-</header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>PEPMASTERS — Product</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --red: #e8220a;
+        --orange: #f97316;
+        --amber: #ffb300;
+        --dark: #1c0a00;
+        --mid: #5c3d1e;
+        --muted: #9c7b5a;
+        --cream: #fffdf9;
+        --warm-white: #fff8f0;
+        --border: #ffe0a0;
+        --bg: #faf5ee;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--dark);
+      }
+      header {
+        background: #fff;
+        border-bottom: 2px solid var(--amber);
+        padding: 0 24px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .logo-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+      .logo-text {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 900;
+        font-size: 1.4rem;
+        color: var(--red);
+        letter-spacing: 0.06em;
+      }
+      .back-link {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      main {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 32px 20px;
+      }
+      .product-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 48px;
+      }
+      .product-img {
+        background: linear-gradient(135deg, #fff3d0, #ffe0a0);
+        border-radius: 16px;
+        padding: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 320px;
+      }
+      .product-img img {
+        max-width: 100%;
+        max-height: 280px;
+        object-fit: contain;
+      }
+      .product-info {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .cat-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        background: var(--cream);
+        border: 1px solid var(--border);
+        color: var(--orange);
+      }
+      .product-name {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 900;
+        font-size: 2.4rem;
+        letter-spacing: 0.02em;
+        line-height: 1;
+      }
+      .product-price {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 900;
+        font-size: 2rem;
+        color: var(--red);
+      }
+      .product-price span {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .product-desc {
+        font-size: 0.95rem;
+        color: var(--mid);
+        line-height: 1.7;
+      }
+      .qty-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .qty-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid var(--border);
+        background: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--mid);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+      .qty-btn:hover {
+        border-color: var(--orange);
+        color: var(--orange);
+      }
+      .qty-num {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 900;
+        font-size: 1.5rem;
+        min-width: 32px;
+        text-align: center;
+      }
+      .btn-add {
+        padding: 14px 32px;
+        background: linear-gradient(135deg, var(--red), var(--orange));
+        color: #fff;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(232, 34, 10, 0.3);
+        transition: transform 0.15s;
+      }
+      .btn-add:hover {
+        transform: translateY(-2px);
+      }
+      .esgotado {
+        padding: 14px 32px;
+        background: #e5e7eb;
+        color: #9ca3af;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 30px;
+        cursor: not-allowed;
+      }
+      .section-title {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 900;
+        font-size: 1.4rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--border);
+      }
+      .info-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .tab-btn {
+        padding: 8px 18px;
+        border: 2px solid var(--border);
+        border-radius: 20px;
+        background: none;
+        cursor: pointer;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        transition: all 0.2s;
+      }
+      .tab-btn.active {
+        border-color: var(--orange);
+        color: var(--orange);
+        background: #fff3e0;
+      }
+      .tab-content {
+        display: none;
+        font-size: 0.9rem;
+        color: var(--mid);
+        line-height: 1.8;
+      }
+      .tab-content.active {
+        display: block;
+      }
+      .tab-content p {
+        margin-bottom: 12px;
+      }
+      .tab-content ul {
+        padding-left: 18px;
+      }
+      .tab-content li {
+        margin-bottom: 6px;
+      }
+      /* AVALIAÇÕES */
+      .reviews-section {
+        margin-top: 48px;
+      }
+      .stars {
+        color: var(--amber);
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+      }
+      .rating-summary {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .rating-big {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 900;
+        font-size: 3rem;
+        color: var(--dark);
+      }
+      .review-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+      .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .review-author {
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .review-date {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .review-text {
+        font-size: 0.88rem;
+        color: var(--mid);
+        line-height: 1.6;
+      }
+      .review-form {
+        background: var(--cream);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 24px;
+      }
+      .review-form h4 {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 800;
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+      }
+      .star-select {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 14px;
+        font-size: 1.6rem;
+        cursor: pointer;
+      }
+      .star-select span {
+        color: #d1d5db;
+        transition: color 0.15s;
+      }
+      .star-select span.on {
+        color: var(--amber);
+      }
+      .form-input {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-family: "Inter", sans-serif;
+        font-size: 0.88rem;
+        background: #fff;
+        margin-bottom: 10px;
+        outline: none;
+      }
+      .form-input:focus {
+        border-color: var(--orange);
+      }
+      textarea.form-input {
+        min-height: 80px;
+        resize: vertical;
+      }
+      .btn-review {
+        padding: 10px 24px;
+        background: linear-gradient(135deg, var(--red), var(--orange));
+        color: #fff;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+      }
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--dark);
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        z-index: 9999;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+      }
+      .toast.show {
+        opacity: 1;
+      }
+      @media (max-width: 768px) {
+        .product-grid {
+          grid-template-columns: 1fr;
+        }
+        .product-name {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+    <!-- v1779920875 -->
+  </head>
+  <body>
+    <header>
+      <a href="index.html" class="logo-wrap">
+        <img
+          src="Capturar.PNG"
+          alt="Logo"
+          style="height: 36px; width: 36px; object-fit: contain"
+        />
+        <span class="logo-text">PEPMASTERS</span>
+      </a>
+      <a href="index.html" class="back-link">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <path d="M19 12H5M12 5l-7 7 7 7" />
+        </svg>
+        <span data-i18n="nav.home">Início</span>
+      </a>
+    </header>
 
-<main>
-  <div id="productContainer">
-    <div style="text-align:center;padding:60px;color:var(--muted)">Carregando...</div>
-  </div>
-</main>
+    <main>
+      <div id="productContainer">
+        <div style="text-align: center; padding: 60px; color: var(--muted)">
+          Carregando...
+        </div>
+      </div>
+    </main>
 
-<div class="toast" id="toast"></div>
+    <div class="toast" id="toast"></div>
 
-<script src="i18n.js"></script>
-<script src="i18n-init.js"></script>
-<script>
-const CATALOGO = [
-  {id:'16',nome:'VIP',img:'img/vip.png',catClass:'antiinfla',preco:200,i18n:{pt:{categoria:'Anti-inflamatório',descricao:'Peptídeo vasoativo intestinal. Potente anti-inflamatório sistêmico.',detalhes:'O VIP (Vasoactive Intestinal Peptide) é um neuropeptídeo com potente ação anti-inflamatória sistêmica. Age modulando o sistema imunológico e reduzindo citocinas inflamatórias.',protocolo:'Dosagem usual: 25-50mcg por administração. Frequência: 1-2x ao dia. Ciclo recomendado: 4-8 semanas.',beneficios:['Redução de inflamação sistêmica','Modulação imunológica','Neuroproteção','Melhora da função pulmonar']},en:{categoria:'Anti-inflammatory',descricao:'Vasoactive intestinal peptide. Potent systemic anti-inflammatory.',detalhes:'VIP (Vasoactive Intestinal Peptide) is a neuropeptide with potent systemic anti-inflammatory action. It modulates the immune system and reduces inflammatory cytokines.',protocolo:'Usual dosage: 25-50mcg per administration. Frequency: 1-2x per day. Recommended cycle: 4-8 weeks.',beneficios:['Reduction of systemic inflammation','Immune modulation','Neuroprotection','Improved lung function']},es:{categoria:'Antiinflamatorio',descricao:'Péptido vasoactivo intestinal. Potente antiinflamatorio sistémico.',detalhes:'El VIP es un neuropéptido con potente acción antiinflamatoria sistémica.',protocolo:'Dosis habitual: 25-50mcg por administración. Frecuencia: 1-2x al día.',beneficios:['Reducción de inflamación','Modulación inmune','Neuroprotección']},de:{categoria:'Entzündungshemmend',descricao:'Vasoaktives intestinales Peptid. Starkes systemisches Entzündungshemmemittel.',detalhes:'VIP ist ein Neuropeptid mit starker systemischer entzündungshemmender Wirkung.',protocolo:'Übliche Dosierung: 25-50mcg pro Verabreichung. Häufigkeit: 1-2x täglich.',beneficios:['Reduzierung von Entzündungen','Immunmodulation','Neuroprotektion']},fr:{categoria:'Anti-inflammatoire',descricao:'Peptide vasoactif intestinal. Puissant anti-inflammatoire systémique.',detalhes:'Le VIP est un neuropeptide à puissante action anti-inflammatoire systémique.',protocolo:'Dosage habituel: 25-50mcg par administration. Fréquence: 1-2x par jour.',beneficios:["Réduction de l'inflammation",'Modulation immunitaire','Neuroprotection']}}},
-  {id:'1',nome:'BPC-157',img:'img/bpc-157.png',catClass:'recuperacao',preco:150,i18n:{pt:{categoria:'Recuperação',descricao:'Recuperação muscular e articular acelerada. Excelente para lesões.',detalhes:'O BPC-157 é um pentadecapeptídeo derivado de uma proteína de proteção gástrica. Tem efeitos regenerativos comprovados em músculos, tendões, ligamentos e articulações.',protocolo:'Dosagem usual: 200-500mcg por dia. Via: subcutânea ou intramuscular próximo à área lesionada. Ciclo: 4-12 semanas.',beneficios:['Aceleração da recuperação muscular','Regeneração de tendões e ligamentos','Redução de inflamação','Proteção gástrica']},en:{categoria:'Recovery',descricao:'Accelerated muscle and joint recovery. Excellent for injuries.',detalhes:'BPC-157 is a pentadecapeptide derived from a gastric protection protein. It has proven regenerative effects on muscles, tendons, ligaments and joints.',protocolo:'Usual dosage: 200-500mcg per day. Route: subcutaneous or intramuscular near the injured area. Cycle: 4-12 weeks.',beneficios:['Accelerated muscle recovery','Tendon and ligament regeneration','Inflammation reduction','Gastric protection']},es:{categoria:'Recuperación',descricao:'Recuperación muscular y articular acelerada. Excelente para lesiones.',detalhes:'BPC-157 es un pentadecapéptido con efectos regenerativos probados en músculos, tendones y articulaciones.',protocolo:'Dosis habitual: 200-500mcg/día. Vía subcutánea o intramuscular. Ciclo: 4-12 semanas.',beneficios:['Recuperación muscular acelerada','Regeneración de tendones','Reducción de inflamación']},de:{categoria:'Erholung',descricao:'Beschleunigte Muskel- und Gelenkerholung. Ausgezeichnet bei Verletzungen.',detalhes:'BPC-157 ist ein Pentadecapeptid mit regenerativen Wirkungen auf Muskeln, Sehnen und Gelenke.',protocolo:'Übliche Dosierung: 200-500mcg/Tag. Subkutan oder intramuskulär. Zyklus: 4-12 Wochen.',beneficios:['Beschleunigte Muskelerholung','Sehnenregeneration','Entzündungshemmung']},fr:{categoria:'Récupération',descricao:'Récupération musculaire et articulaire accélérée. Excellent pour les blessures.',detalhes:'BPC-157 est un pentadecapeptide avec des effets régénérateurs sur les muscles, tendons et articulations.',protocolo:'Dosage habituel: 200-500mcg/jour. Voie sous-cutanée ou intramusculaire. Cycle: 4-12 semaines.',beneficios:['Récupération musculaire accélérée','Régénération des tendons','Réduction de inflammation']}}},
-  {id:'2',nome:'TB-500',img:'img/tb-500.png',catClass:'recuperacao',preco:180,i18n:{pt:{categoria:'Recuperação',descricao:'Regeneração tecidual profunda e efeito anti-inflamatório potente.',detalhes:'TB-500 é uma forma sintética do Thymosin Beta-4. Promove regeneração tecidual profunda e tem potente ação anti-inflamatória.',protocolo:'2-2.5mg 2x por semana nas primeiras 4-6 semanas, depois 1x por semana.',beneficios:['Regeneração tecidual','Redução de inflamação','Melhora da mobilidade','Cicatrização acelerada']},en:{categoria:'Recovery',descricao:'Deep tissue regeneration and potent anti-inflammatory effect.',detalhes:'TB-500 is a synthetic form of Thymosin Beta-4. Promotes deep tissue regeneration and has potent anti-inflammatory action.',protocolo:'2-2.5mg 2x per week for the first 4-6 weeks, then 1x per week.',beneficios:['Deep tissue regeneration','Inflammation reduction','Improved mobility','Accelerated healing']},es:{categoria:'Recuperación',descricao:'Regeneración tisular profunda.',detalhes:'Forma sintética del Thymosin Beta-4.',protocolo:'2-2.5mg 2x/semana primeras 4-6 semanas, luego 1x/semana.',beneficios:['Regeneración tisular','Antiinflamatorio','Movilidad mejorada']},de:{categoria:'Erholung',descricao:'Tiefe Geweberegeneration.',detalhes:'Synthetische Form von Thymosin Beta-4.',protocolo:'2-2.5mg 2x/Woche erste 4-6 Wochen, dann 1x/Woche.',beneficios:['Geweberegeneration','Entzündungshemmung','Mobilität']},fr:{categoria:'Récupération',descricao:'Régénération tissulaire profonde.',detalhes:'Forme synthétique de Thymosin Beta-4.',protocolo:'2-2.5mg 2x/semaine les 4-6 premières semaines, puis 1x/semaine.',beneficios:['Régénération tissulaire','Anti-inflammatoire','Mobilité']}}},
-  {id:'3',nome:'HGH Frag 176-191',img:'img/hgh-frag.png',catClass:'gordura',preco:160,i18n:{pt:{categoria:'Queima de Gordura',descricao:'Fragmento do GH com ação direta na queima de gordura localizada.',detalhes:'O HGH Frag 176-191 é um fragmento do hormônio do crescimento humano (GH) que retém as propriedades de queima de gordura sem os efeitos sobre crescimento ou glicose.',protocolo:'200-500mcg/dia em jejum, preferencialmente antes do treino ou pela manhã.',beneficios:['Queima de gordura localizada','Sem efeito rebote glicêmico','Preservação de massa magra','Melhora da composição corporal']},en:{categoria:'Fat Loss',descricao:'GH fragment with direct action on localized fat burning.',detalhes:'HGH Frag 176-191 is a fragment of human growth hormone that retains fat-burning properties without effects on growth or glucose.',protocolo:'200-500mcg/day fasted, preferably before training or in the morning.',beneficios:['Localized fat burning','No glycemic rebound','Lean mass preservation','Improved body composition']},es:{categoria:'Quema de Grasa',descricao:'Fragmento del GH para quema de grasa.',detalhes:'Fragmento del HGH que quema grasa sin efectos sobre el crecimiento.',protocolo:'200-500mcg/día en ayunas.',beneficios:['Quema de grasa localizada','Sin rebote glucémico','Preservación muscular']},de:{categoria:'Fettverbrennung',descricao:'GH-Fragment zur Fettverbrennung.',detalhes:'HGH-Fragment ohne Wachstumseffekte.',protocolo:'200-500mcg/Tag nüchtern.',beneficios:['Lokale Fettverbrennung','Kein Blutzuckereffekt','Muskelerhalt']},fr:{categoria:'Perte de graisse',descricao:'Fragment GH pour la combustion des graisses.',detalhes:'Fragment HGH sans effets sur la croissance.',protocolo:'200-500mcg/jour à jeun.',beneficios:['Combustion des graisses','Sans rebond glycémique','Préservation musculaire']}}},
-  {id:'4',nome:'Ipamorelin',img:'img/ipamorelin.png',catClass:'gh',preco:140,i18n:{pt:{categoria:'GH & Massa',descricao:'Estimulante seletivo do GH sem efeitos colaterais indesejados.',detalhes:'O Ipamorelin é um secretagogo seletivo do GH que estimula a liberação natural do hormônio do crescimento pela glândula pituitária sem aumentar cortisol ou prolactina.',protocolo:'200-300mcg 2-3x ao dia, preferencialmente ao acordar, pré-treino e antes de dormir.',beneficios:['Aumento do GH endógeno','Sem aumento de cortisol','Melhora do sono','Recuperação acelerada','Ganho de massa magra']},en:{categoria:'GH & Mass',descricao:'Selective GH stimulant without unwanted side effects.',detalhes:'Ipamorelin is a selective GH secretagogue that stimulates natural growth hormone release without increasing cortisol or prolactin.',protocolo:'200-300mcg 2-3x per day, preferably upon waking, pre-workout and before sleep.',beneficios:['Increased endogenous GH','No cortisol increase','Improved sleep','Accelerated recovery','Lean mass gain']},es:{categoria:'GH & Masa',descricao:'Estimulante selectivo del GH.',detalhes:'Secretagogo selectivo del GH sin cortisol ni prolactina.',protocolo:'200-300mcg 2-3x/día.',beneficios:['Aumento de GH','Sin cortisol','Mejor sueño','Recuperación']},de:{categoria:'GH & Masse',descricao:'Selektiver GH-Stimulator.',detalhes:'Selektiver GH-Sekretagog ohne Cortisol oder Prolaktin.',protocolo:'200-300mcg 2-3x/Tag.',beneficios:['GH-Steigerung','Kein Cortisol','Besserer Schlaf','Erholung']},fr:{categoria:'GH & Masse',descricao:'Stimulant sélectif de la GH.',detalhes:'Sécrétagogue sélectif de la GH sans cortisol.',protocolo:'200-300mcg 2-3x/jour.',beneficios:['Augmentation GH','Sans cortisol','Meilleur sommeil','Récupération']}}},
-  {id:'5',nome:'Sermorelin',img:'img/semorelin.png',catClass:'gh',preco:170,i18n:{pt:{categoria:'GH & Massa',descricao:'Anti-aging, melhora do sono e estímulo natural do GH.',detalhes:'O Sermorelin é um análogo do GHRH (hormônio liberador de GH) que estimula a hipófise a produzir e liberar GH de forma natural e pulsátil.',protocolo:'200-300mcg antes de dormir para aproveitar o pico natural de GH noturno.',beneficios:['Estimulação natural do GH','Melhora do sono profundo','Efeito anti-aging','Aumento de energia','Recuperação muscular']},en:{categoria:'GH & Mass',descricao:'Anti-aging, sleep improvement and natural GH stimulation.',detalhes:'Sermorelin is a GHRH analogue that stimulates the pituitary to produce and release GH naturally and in a pulsatile manner.',protocolo:'200-300mcg before sleep to take advantage of the natural nocturnal GH peak.',beneficios:['Natural GH stimulation','Deep sleep improvement','Anti-aging effect','Energy increase','Muscle recovery']},es:{categoria:'GH & Masa',descricao:'Anti-aging y estímulo natural del GH.',detalhes:'Análogo del GHRH que estimula el GH naturalmente.',protocolo:'200-300mcg antes de dormir.',beneficios:['GH natural','Mejor sueño','Anti-aging','Energía']},de:{categoria:'GH & Masse',descricao:'Anti-Aging und natürliche GH-Stimulation.',detalhes:'GHRH-Analogon das GH natürlich stimuliert.',protocolo:'200-300mcg vor dem Schlafen.',beneficios:['Natürliche GH-Stimulation','Besserer Schlaf','Anti-Aging','Energie']},fr:{categoria:'GH & Masse',descricao:'Anti-âge et stimulation naturelle de la GH.',detalhes:'Analogue GHRH qui stimule la GH naturellement.',protocolo:'200-300mcg avant le coucher.',beneficios:['GH naturelle','Meilleur sommeil','Anti-âge','Énergie']}}},
-  {id:'6',nome:'CJC-1295',img:'img/cjc-1295.png',catClass:'gh',preco:180,i18n:{pt:{categoria:'GH & Massa',descricao:'Estimulante de GH de longa duração. Ideal para massa muscular.',detalhes:'O CJC-1295 é um peptídeo GHRH de longa duração que aumenta os níveis de GH e IGF-1 de forma sustentada. Frequentemente combinado com Ipamorelin.',protocolo:'1-2mg 1-2x por semana. Combinar com Ipamorelin para efeito sinérgico.',beneficios:['Aumento sustentado de GH','Elevação do IGF-1','Ganho de massa muscular','Redução de gordura corporal','Recuperação acelerada']},en:{categoria:'GH & Mass',descricao:'Long-acting GH stimulant. Ideal for muscle mass.',detalhes:'CJC-1295 is a long-acting GHRH peptide that sustainably increases GH and IGF-1 levels. Often combined with Ipamorelin.',protocolo:'1-2mg 1-2x per week. Combine with Ipamorelin for synergistic effect.',beneficios:['Sustained GH increase','IGF-1 elevation','Muscle mass gain','Body fat reduction','Accelerated recovery']},es:{categoria:'GH & Masa',descricao:'Estimulante de GH de larga duración.',detalhes:'GHRH de larga duración. Combinar con Ipamorelin.',protocolo:'1-2mg 1-2x/semana.',beneficios:['GH sostenido','IGF-1','Masa muscular','Reducción de grasa']},de:{categoria:'GH & Masse',descricao:'Langwirksamer GH-Stimulator.',detalhes:'Langwirksames GHRH. Mit Ipamorelin kombinieren.',protocolo:'1-2mg 1-2x/Woche.',beneficios:['Anhaltende GH-Erhöhung','IGF-1','Muskelmasse','Fettreduktion']},fr:{categoria:'GH & Masse',descricao:'Stimulant GH longue durée.',detalhes:'GHRH longue durée. Combiner avec Ipamorelin.',protocolo:'1-2mg 1-2x/semaine.',beneficios:['GH soutenue','IGF-1','Masse musculaire','Réduction graisses']}}},
-  {id:'7',nome:'IGF-1 LR3',img:'img/igf-lr3.png',catClass:'gh',preco:220,i18n:{pt:{categoria:'GH & Massa',descricao:'Fator de crescimento insulínico de alta potência para hipertrofia.',detalhes:'O IGF-1 LR3 é uma variante de longa duração do IGF-1 (Insulin-like Growth Factor 1) com meia-vida estendida. Potente anabólico que promove hipertrofia muscular e recuperação.',protocolo:'20-50mcg/dia, injeção intramuscular nos músculos trabalhados. Ciclo máximo 4 semanas.',beneficios:['Hipertrofia muscular intensa','Recuperação acelerada','Aumento de força','Síntese proteica elevada']},en:{categoria:'GH & Mass',descricao:'High-potency insulin-like growth factor for hypertrophy.',detalhes:'IGF-1 LR3 is a long-acting variant of IGF-1 with extended half-life. Potent anabolic that promotes muscle hypertrophy and recovery.',protocolo:'20-50mcg/day, intramuscular injection in worked muscles. Maximum 4-week cycle.',beneficios:['Intense muscle hypertrophy','Accelerated recovery','Strength increase','Elevated protein synthesis']},es:{categoria:'GH & Masa',descricao:'Factor de crecimiento insulínico de alta potencia.',detalhes:'Variante de larga duración del IGF-1.',protocolo:'20-50mcg/día intramuscular. Ciclo máximo 4 semanas.',beneficios:['Hipertrofia muscular','Recuperación','Fuerza','Síntesis proteica']},de:{categoria:'GH & Masse',descricao:'Hochpotenter IGF-1.',detalhes:'Langwirksame Variante des IGF-1.',protocolo:'20-50mcg/Tag intramuskulär. Max 4 Wochen.',beneficios:['Muskelhypertrophie','Erholung','Kraft','Proteinsynthese']},fr:{categoria:'GH & Masse',descricao:'IGF-1 haute puissance.',detalhes:'Variante longue durée de IGF-1.',protocolo:'20-50mcg/jour intramusculaire. Max 4 semaines.',beneficios:['Hypertrophie musculaire','Récupération','Force','Synthèse protéique']}}},
-  {id:'8',nome:'IGF-1 DES',img:'img/igf-des.png',catClass:'gh',preco:200,i18n:{pt:{categoria:'GH & Massa',descricao:'Variante do IGF-1 com ação local intensa nos tecidos musculares.',detalhes:'O IGF-1 DES é uma versão truncada do IGF-1 com maior afinidade pelos receptores locais. Age de forma mais localizada que o LR3, ideal para grupos musculares específicos.',protocolo:'20-50mcg intramusculares no grupo muscular alvo imediatamente antes do treino.',beneficios:['Ação local intensa','Hipertrofia localizada','Alta afinidade receptora','Rápida absorção']},en:{categoria:'GH & Mass',descricao:'IGF-1 variant with intense local action on muscle tissue.',detalhes:'IGF-1 DES is a truncated version of IGF-1 with greater affinity for local receptors. Acts more locally than LR3, ideal for specific muscle groups.',protocolo:'20-50mcg intramuscular in target muscle group immediately before training.',beneficios:['Intense local action','Localized hypertrophy','High receptor affinity','Rapid absorption']},es:{categoria:'GH & Masa',descricao:'IGF-1 con acción local intensa.',detalhes:'Versión truncada del IGF-1 con mayor afinidad local.',protocolo:'20-50mcg intramuscular antes del entrenamiento.',beneficios:['Acción local','Hipertrofia localizada','Alta afinidad','Absorción rápida']},de:{categoria:'GH & Masse',descricao:'IGF-1 mit intensiver lokaler Wirkung.',detalhes:'Verkürzte Version des IGF-1 mit höherer lokaler Affinität.',protocolo:'20-50mcg intramuskulär vor dem Training.',beneficios:['Lokale Wirkung','Lokale Hypertrophie','Hohe Affinität','Schnelle Absorption']},fr:{categoria:'GH & Masse',descricao:'IGF-1 à action locale intense.',detalhes:'Version tronquée de IGF-1 à affinité locale élevée.',protocolo:'20-50mcg intramusculaire avant entraînement.',beneficios:['Action locale','Hypertrophie localisée','Haute affinité','Absorption rapide']}}},
-  {id:'9',nome:'ACE-031',img:'img/ace-031.png',catClass:'gh',preco:250,i18n:{pt:{categoria:'GH & Massa',descricao:'Inibidor da miostatina. Potencializa ganho de massa e força.',detalhes:'O ACE-031 é uma proteína de fusão que inibe a miostatina e outras proteínas que limitam o crescimento muscular. Aumenta significativamente a massa muscular e a força.',protocolo:'1-3mg/kg a cada 2 semanas. Protocolo deve ser supervisionado por profissional.',beneficios:['Inibição da miostatina','Ganho expressivo de massa','Aumento de força','Melhora da composição corporal']},en:{categoria:'GH & Mass',descricao:'Myostatin inhibitor. Enhances muscle mass and strength gains.',detalhes:'ACE-031 is a fusion protein that inhibits myostatin and other proteins that limit muscle growth. Significantly increases muscle mass and strength.',protocolo:'1-3mg/kg every 2 weeks. Protocol should be supervised by a professional.',beneficios:['Myostatin inhibition','Significant mass gain','Strength increase','Improved body composition']},es:{categoria:'GH & Masa',descricao:'Inhibidor de miostatina.',detalhes:'Proteína de fusión que inhibe la miostatina.',protocolo:'1-3mg/kg cada 2 semanas.',beneficios:['Inhibición miostatina','Ganancia muscular','Fuerza','Composición corporal']},de:{categoria:'GH & Masse',descricao:'Myostatin-Inhibitor.',detalhes:'Fusionsprotein das Myostatin hemmt.',protocolo:'1-3mg/kg alle 2 Wochen.',beneficios:['Myostatin-Hemmung','Muskelmasse','Kraft','Körperzusammensetzung']},fr:{categoria:'GH & Masse',descricao:'Inhibiteur de myostatine.',detalhes:'Protéine de fusion inhibant la myostatine.',protocolo:'1-3mg/kg toutes les 2 semaines.',beneficios:['Inhibition myostatine','Masse musculaire','Force','Composition corporelle']}}},
-  {id:'10',nome:'Semax',img:'img/semax.png',catClass:'cognitivo',preco:160,i18n:{pt:{categoria:'Cognitivo',descricao:'Neuropeptídeo que melhora foco, memória e função cerebral.',detalhes:'O Semax é um neuropeptídeo sintético derivado do ACTH que aumenta os níveis de BDNF (fator neurotrófico derivado do cérebro) e melhora significativamente função cognitiva.',protocolo:'200-300mcg intranasal 1-2x ao dia. Ciclo: 2-4 semanas com pausa equivalente.',beneficios:['Melhora do foco e concentração','Aumento de memória','Neuroprotecção','Redução de ansiedade','Aumento do BDNF']},en:{categoria:'Cognitive',descricao:'Neuropeptide that improves focus, memory and brain function.',detalhes:'Semax is a synthetic neuropeptide derived from ACTH that increases BDNF levels and significantly improves cognitive function.',protocolo:'200-300mcg intranasal 1-2x per day. Cycle: 2-4 weeks with equivalent break.',beneficios:['Improved focus','Memory increase','Neuroprotection','Anxiety reduction','BDNF increase']},es:{categoria:'Cognitivo',descricao:'Neuropéptido para foco y memoria.',detalhes:'Derivado del ACTH que aumenta el BDNF.',protocolo:'200-300mcg intranasal 1-2x/día.',beneficios:['Foco','Memoria','Neuroprotección','Ansiedad','BDNF']},de:{categoria:'Kognitiv',descricao:'Neuropeptid für Fokus und Gedächtnis.',detalhes:'ACTH-Derivat das BDNF erhöht.',protocolo:'200-300mcg intranasal 1-2x/Tag.',beneficios:['Fokus','Gedächtnis','Neuroprotection','Angst','BDNF']},fr:{categoria:'Cognitif',descricao:'Neuropeptide pour la concentration.',detalhes:'Dérivé de ACTH qui augmente le BDNF.',protocolo:'200-300mcg intranasal 1-2x/jour.',beneficios:['Concentration','Mémoire','Neuroprotection','Anxiété','BDNF']}}},
-  {id:'11',nome:'Selank',img:'img/selank.png',catClass:'cognitivo',preco:150,i18n:{pt:{categoria:'Cognitivo',descricao:'Ansiolítico natural com efeito nootrópico e neuroprotetor.',detalhes:'O Selank é um peptídeo ansiolítico que age no sistema GABAérgico sem causar dependência. Tem efeitos nootrópicos e neuroprotetores.',protocolo:'200-300mcg intranasal 2-3x ao dia. Pode ser usado conforme necessidade.',beneficios:['Redução de ansiedade','Melhora cognitiva','Neuroproteção','Sem dependência','Melhora do humor']},en:{categoria:'Cognitive',descricao:'Natural anxiolytic with nootropic and neuroprotective effects.',detalhes:'Selank is an anxiolytic peptide that acts on the GABAergic system without causing dependence. Has nootropic and neuroprotective effects.',protocolo:'200-300mcg intranasal 2-3x per day. Can be used as needed.',beneficios:['Anxiety reduction','Cognitive improvement','Neuroprotection','No dependence','Mood improvement']},es:{categoria:'Cognitivo',descricao:'Ansiolítico natural nootrópico.',detalhes:'Actúa en el sistema GABAérgico sin dependencia.',protocolo:'200-300mcg intranasal 2-3x/día.',beneficios:['Ansiedad','Cognitivo','Neuroprotección','Sin dependencia','Humor']},de:{categoria:'Kognitiv',descricao:'Natürliches Anxiolytikum.',detalhes:'Wirkt auf das GABAerge System ohne Abhängigkeit.',protocolo:'200-300mcg intranasal 2-3x/Tag.',beneficios:['Angst','Kognition','Neuroprotection','Keine Abhängigkeit','Stimmung']},fr:{categoria:'Cognitif',descricao:'Anxiolytique naturel nootropique.',detalhes:'Agit sur le système GABAergique sans dépendance.',protocolo:'200-300mcg intranasal 2-3x/jour.',beneficios:['Anxiété','Cognitif','Neuroprotection','Sans dépendance','Humeur']}}},
-  {id:'12',nome:'Kisspeptin',img:'img/kisspeptin.png',catClass:'hormonal',preco:190,i18n:{pt:{categoria:'Hormonal',descricao:'Regulador hormonal que estimula a produção de LH e testosterona.',detalhes:'A Kisspeptin é um neuropeptídeo que regula o eixo hipotálamo-hipófise-gonadal, estimulando a produção de LH e consequentemente de testosterona e estrogênio.',protocolo:'100-200mcg subcutâneo 1-2x ao dia. Protocolo conforme orientação profissional.',beneficios:['Aumento do LH','Estímulo à testosterona','Regulação hormonal','Melhora da fertilidade','Libido aumentada']},en:{categoria:'Hormonal',descricao:'Hormonal regulator that stimulates LH and testosterone production.',detalhes:'Kisspeptin is a neuropeptide that regulates the hypothalamic-pituitary-gonadal axis, stimulating LH production and consequently testosterone and estrogen.',protocolo:'100-200mcg subcutaneous 1-2x per day. Protocol as per professional guidance.',beneficios:['LH increase','Testosterone stimulation','Hormonal regulation','Fertility improvement','Increased libido']},es:{categoria:'Hormonal',descricao:'Regulador hormonal LH y testosterona.',detalhes:'Regula el eje hipotálamo-hipófisis-gonadal.',protocolo:'100-200mcg subcutáneo 1-2x/día.',beneficios:['LH','Testosterona','Regulación hormonal','Fertilidad','Libido']},de:{categoria:'Hormonal',descricao:'Hormoneller Regulator für LH und Testosteron.',detalhes:'Reguliert die Hypothalamus-Hypophysen-Gonaden-Achse.',protocolo:'100-200mcg subkutan 1-2x/Tag.',beneficios:['LH','Testosteron','Hormonregulation','Fertilität','Libido']},fr:{categoria:'Hormonal',descricao:'Régulateur hormonal LH et testostérone.',detalhes:'Régule l axe hypothalamo-hypophyso-gonadique.',protocolo:'100-200mcg sous-cutané 1-2x/jour.',beneficios:['LH','Testostérone','Régulation hormonale','Fertilité','Libido']}}},
-  {id:'13',nome:'SS-31',img:'img/ss-31.png',catClass:'antioxidante',preco:210,i18n:{pt:{categoria:'Antioxidante',descricao:'Peptídeo mitocondrial com ação antioxidante e cardioprotetora.',detalhes:'O SS-31 é um peptídeo mitocondrial que se concentra nas mitocôndrias, reduzindo o estresse oxidativo e protegendo o coração e outros órgãos.',protocolo:'1-5mg/kg subcutâneo. Protocolo deve ser supervisionado por profissional.',beneficios:['Proteção mitocondrial','Ação cardioprotetora','Redução de estresse oxidativo','Anti-aging celular','Melhora de energia']},en:{categoria:'Antioxidant',descricao:'Mitochondrial peptide with antioxidant and cardioprotective action.',detalhes:'SS-31 is a mitochondrial peptide that concentrates in mitochondria, reducing oxidative stress and protecting the heart and other organs.',protocolo:'1-5mg/kg subcutaneous. Protocol should be supervised by a professional.',beneficios:['Mitochondrial protection','Cardioprotective action','Oxidative stress reduction','Cellular anti-aging','Energy improvement']},es:{categoria:'Antioxidante',descricao:'Péptido mitocondrial antioxidante.',detalhes:'Se concentra en mitocondrias reduciendo estrés oxidativo.',protocolo:'1-5mg/kg subcutáneo.',beneficios:['Protección mitocondrial','Cardioprotector','Estrés oxidativo','Anti-aging','Energía']},de:{categoria:'Antioxidativ',descricao:'Mitochondriales Peptid.',detalhes:'Konzentriert sich in Mitochondrien und reduziert oxidativen Stress.',protocolo:'1-5mg/kg subkutan.',beneficios:['Mitochondrienschutz','Kardioprotektion','Oxidativer Stress','Anti-Aging','Energie']},fr:{categoria:'Antioxydant',descricao:'Peptide mitochondrial antioxydant.',detalhes:'Se concentre dans les mitochondries réduisant le stress oxydatif.',protocolo:'1-5mg/kg sous-cutané.',beneficios:['Protection mitochondriale','Cardioprotecteur','Stress oxydatif','Anti-âge','Énergie']}}},
-  {id:'14',nome:'SLU-PP-32',img:'img/slu-pp-32.png',catClass:'gordura',preco:230,i18n:{pt:{categoria:'Queima de Gordura',descricao:'Ativa receptores ERR. Simula os efeitos metabólicos do exercício.',detalhes:'O SLU-PP-32 ativa os receptores ERR (Estrogen-Related Receptors) simulando os efeitos metabólicos do exercício físico intenso sem necessidade de atividade física.',protocolo:'Em estudo. Dosagem experimental: 50-100mg/kg em modelos animais. Protocolo humano em desenvolvimento.',beneficios:['Simulação metabólica do exercício','Queima de gordura','Melhora endurance','Sem necessidade de exercício','Efeito cardioprotegido']},en:{categoria:'Fat Loss',descricao:'Activates ERR receptors. Simulates the metabolic effects of exercise.',detalhes:'SLU-PP-32 activates ERR receptors simulating the metabolic effects of intense physical exercise without requiring physical activity.',protocolo:'Under study. Experimental dosage: 50-100mg/kg in animal models. Human protocol in development.',beneficios:['Exercise metabolic simulation','Fat burning','Endurance improvement','No exercise needed','Cardioprotective effect']},es:{categoria:'Quema de Grasa',descricao:'Activa receptores ERR.',detalhes:'Simula efectos metabólicos del ejercicio.',protocolo:'En estudio. 50-100mg/kg modelos animales.',beneficios:['Simulación metabólica','Quema de grasa','Resistencia','Sin ejercicio','Cardioprotector']},de:{categoria:'Fettverbrennung',descricao:'Aktiviert ERR-Rezeptoren.',detalhes:'Simuliert metabolische Trainingseffekte.',protocolo:'In Studie. 50-100mg/kg Tiermodelle.',beneficios:['Metabolische Simulation','Fettverbrennung','Ausdauer','Kein Training','Kardioprotektion']},fr:{categoria:'Perte de graisse',descricao:'Active les récepteurs ERR.',detalhes:'Simule les effets métaboliques de l exercice.',protocolo:'En étude. 50-100mg/kg modèles animaux.',beneficios:['Simulation métabolique','Combustion graisses','Endurance','Sans exercice','Cardioprotecteur']}}},
-  {id:'15',nome:'AHK-CU',img:'img/ahk-cu.png',catClass:'estetico',preco:140,i18n:{pt:{categoria:'Estético',descricao:'Peptídeo de cobre para cabelo, pele e regeneração capilar.',detalhes:'O AHK-Cu é um peptídeo de cobre (tripeptídeo) que estimula o crescimento capilar, melhora a densidade do cabelo e tem ação regenerativa na pele.',protocolo:'Aplicação tópica: 2-5mg em solução aquosa aplicada no couro cabeludo 1-2x ao dia.',beneficios:['Crescimento capilar','Aumento da densidade do cabelo','Regeneração da pele','Ação antioxidante','Síntese de colágeno']},en:{categoria:'Aesthetic',descricao:'Copper peptide for hair, skin and capillary regeneration.',detalhes:'AHK-Cu is a copper peptide (tripeptide) that stimulates hair growth, improves hair density and has regenerative action on skin.',protocolo:'Topical application: 2-5mg in aqueous solution applied to scalp 1-2x per day.',beneficios:['Hair growth','Hair density increase','Skin regeneration','Antioxidant action','Collagen synthesis']},es:{categoria:'Estético',descricao:'Péptido de cobre para cabello y piel.',detalhes:'Tripéptido de cobre que estimula el crecimiento capilar.',protocolo:'Aplicación tópica: 2-5mg en solución acuosa 1-2x/día.',beneficios:['Crecimiento capilar','Densidad','Regeneración piel','Antioxidante','Colágeno']},de:{categoria:'Ästhetisch',descricao:'Kupferpeptid für Haare und Haut.',detalhes:'Kupfer-Tripeptid das Haarwachstum stimuliert.',protocolo:'Topische Anwendung: 2-5mg in wässriger Lösung 1-2x/Tag.',beneficios:['Haarwachstum','Dichte','Hautregeneration','Antioxidativ','Kollagen']},fr:{categoria:'Esthétique',descricao:'Peptide de cuivre pour cheveux et peau.',detalhes:'Tripeptide de cuivre stimulant la croissance capillaire.',protocolo:'Application topique: 2-5mg en solution aqueuse 1-2x/jour.',beneficios:['Croissance capillaire','Densité','Régénération peau','Antioxydant','Collagène']}}}
-];
+    <script src="i18n.js"></script>
+    <script src="i18n-init.js"></script>
+    <script>
+      const CATALOGO = [
+        {
+          id: "16",
+          nome: "VIP",
+          img: "img/vip.png",
+          catClass: "antiinfla",
+          preco: 200,
+          i18n: {
+            pt: {
+              categoria: "Anti-inflamatório",
+              descricao:
+                "Peptídeo vasoativo intestinal. Potente anti-inflamatório sistêmico.",
+              detalhes:
+                "O VIP (Vasoactive Intestinal Peptide) é um neuropeptídeo com potente ação anti-inflamatória sistêmica. Age modulando o sistema imunológico e reduzindo citocinas inflamatórias.",
+              protocolo:
+                "Dosagem usual: 25-50mcg por administração. Frequência: 1-2x ao dia. Ciclo recomendado: 4-8 semanas.",
+              beneficios: [
+                "Redução de inflamação sistêmica",
+                "Modulação imunológica",
+                "Neuroproteção",
+                "Melhora da função pulmonar",
+              ],
+            },
+            en: {
+              categoria: "Anti-inflammatory",
+              descricao:
+                "Vasoactive intestinal peptide. Potent systemic anti-inflammatory.",
+              detalhes:
+                "VIP (Vasoactive Intestinal Peptide) is a neuropeptide with potent systemic anti-inflammatory action. It modulates the immune system and reduces inflammatory cytokines.",
+              protocolo:
+                "Usual dosage: 25-50mcg per administration. Frequency: 1-2x per day. Recommended cycle: 4-8 weeks.",
+              beneficios: [
+                "Reduction of systemic inflammation",
+                "Immune modulation",
+                "Neuroprotection",
+                "Improved lung function",
+              ],
+            },
+            es: {
+              categoria: "Antiinflamatorio",
+              descricao:
+                "Péptido vasoactivo intestinal. Potente antiinflamatorio sistémico.",
+              detalhes:
+                "El VIP es un neuropéptido con potente acción antiinflamatoria sistémica.",
+              protocolo:
+                "Dosis habitual: 25-50mcg por administración. Frecuencia: 1-2x al día.",
+              beneficios: [
+                "Reducción de inflamación",
+                "Modulación inmune",
+                "Neuroprotección",
+              ],
+            },
+            de: {
+              categoria: "Entzündungshemmend",
+              descricao:
+                "Vasoaktives intestinales Peptid. Starkes systemisches Entzündungshemmemittel.",
+              detalhes:
+                "VIP ist ein Neuropeptid mit starker systemischer entzündungshemmender Wirkung.",
+              protocolo:
+                "Übliche Dosierung: 25-50mcg pro Verabreichung. Häufigkeit: 1-2x täglich.",
+              beneficios: [
+                "Reduzierung von Entzündungen",
+                "Immunmodulation",
+                "Neuroprotektion",
+              ],
+            },
+            fr: {
+              categoria: "Anti-inflammatoire",
+              descricao:
+                "Peptide vasoactif intestinal. Puissant anti-inflammatoire systémique.",
+              detalhes:
+                "Le VIP est un neuropeptide à puissante action anti-inflammatoire systémique.",
+              protocolo:
+                "Dosage habituel: 25-50mcg par administration. Fréquence: 1-2x par jour.",
+              beneficios: [
+                "Réduction de l'inflammation",
+                "Modulation immunitaire",
+                "Neuroprotection",
+              ],
+            },
+          },
+        },
+        {
+          id: "1",
+          nome: "BPC-157",
+          img: "img/bpc-157.png",
+          catClass: "recuperacao",
+          preco: 150,
+          i18n: {
+            pt: {
+              categoria: "Recuperação",
+              descricao:
+                "Recuperação muscular e articular acelerada. Excelente para lesões.",
+              detalhes:
+                "O BPC-157 é um pentadecapeptídeo derivado de uma proteína de proteção gástrica. Tem efeitos regenerativos comprovados em músculos, tendões, ligamentos e articulações.",
+              protocolo:
+                "Dosagem usual: 200-500mcg por dia. Via: subcutânea ou intramuscular próximo à área lesionada. Ciclo: 4-12 semanas.",
+              beneficios: [
+                "Aceleração da recuperação muscular",
+                "Regeneração de tendões e ligamentos",
+                "Redução de inflamação",
+                "Proteção gástrica",
+              ],
+            },
+            en: {
+              categoria: "Recovery",
+              descricao:
+                "Accelerated muscle and joint recovery. Excellent for injuries.",
+              detalhes:
+                "BPC-157 is a pentadecapeptide derived from a gastric protection protein. It has proven regenerative effects on muscles, tendons, ligaments and joints.",
+              protocolo:
+                "Usual dosage: 200-500mcg per day. Route: subcutaneous or intramuscular near the injured area. Cycle: 4-12 weeks.",
+              beneficios: [
+                "Accelerated muscle recovery",
+                "Tendon and ligament regeneration",
+                "Inflammation reduction",
+                "Gastric protection",
+              ],
+            },
+            es: {
+              categoria: "Recuperación",
+              descricao:
+                "Recuperación muscular y articular acelerada. Excelente para lesiones.",
+              detalhes:
+                "BPC-157 es un pentadecapéptido con efectos regenerativos probados en músculos, tendones y articulaciones.",
+              protocolo:
+                "Dosis habitual: 200-500mcg/día. Vía subcutánea o intramuscular. Ciclo: 4-12 semanas.",
+              beneficios: [
+                "Recuperación muscular acelerada",
+                "Regeneración de tendones",
+                "Reducción de inflamación",
+              ],
+            },
+            de: {
+              categoria: "Erholung",
+              descricao:
+                "Beschleunigte Muskel- und Gelenkerholung. Ausgezeichnet bei Verletzungen.",
+              detalhes:
+                "BPC-157 ist ein Pentadecapeptid mit regenerativen Wirkungen auf Muskeln, Sehnen und Gelenke.",
+              protocolo:
+                "Übliche Dosierung: 200-500mcg/Tag. Subkutan oder intramuskulär. Zyklus: 4-12 Wochen.",
+              beneficios: [
+                "Beschleunigte Muskelerholung",
+                "Sehnenregeneration",
+                "Entzündungshemmung",
+              ],
+            },
+            fr: {
+              categoria: "Récupération",
+              descricao:
+                "Récupération musculaire et articulaire accélérée. Excellent pour les blessures.",
+              detalhes:
+                "BPC-157 est un pentadecapeptide avec des effets régénérateurs sur les muscles, tendons et articulations.",
+              protocolo:
+                "Dosage habituel: 200-500mcg/jour. Voie sous-cutanée ou intramusculaire. Cycle: 4-12 semaines.",
+              beneficios: [
+                "Récupération musculaire accélérée",
+                "Régénération des tendons",
+                "Réduction de inflammation",
+              ],
+            },
+          },
+        },
+        {
+          id: "2",
+          nome: "TB-500",
+          img: "img/tb-500.png",
+          catClass: "recuperacao",
+          preco: 180,
+          i18n: {
+            pt: {
+              categoria: "Recuperação",
+              descricao:
+                "Regeneração tecidual profunda e efeito anti-inflamatório potente.",
+              detalhes:
+                "TB-500 é uma forma sintética do Thymosin Beta-4. Promove regeneração tecidual profunda e tem potente ação anti-inflamatória.",
+              protocolo:
+                "2-2.5mg 2x por semana nas primeiras 4-6 semanas, depois 1x por semana.",
+              beneficios: [
+                "Regeneração tecidual",
+                "Redução de inflamação",
+                "Melhora da mobilidade",
+                "Cicatrização acelerada",
+              ],
+            },
+            en: {
+              categoria: "Recovery",
+              descricao:
+                "Deep tissue regeneration and potent anti-inflammatory effect.",
+              detalhes:
+                "TB-500 is a synthetic form of Thymosin Beta-4. Promotes deep tissue regeneration and has potent anti-inflammatory action.",
+              protocolo:
+                "2-2.5mg 2x per week for the first 4-6 weeks, then 1x per week.",
+              beneficios: [
+                "Deep tissue regeneration",
+                "Inflammation reduction",
+                "Improved mobility",
+                "Accelerated healing",
+              ],
+            },
+            es: {
+              categoria: "Recuperación",
+              descricao: "Regeneración tisular profunda.",
+              detalhes: "Forma sintética del Thymosin Beta-4.",
+              protocolo:
+                "2-2.5mg 2x/semana primeras 4-6 semanas, luego 1x/semana.",
+              beneficios: [
+                "Regeneración tisular",
+                "Antiinflamatorio",
+                "Movilidad mejorada",
+              ],
+            },
+            de: {
+              categoria: "Erholung",
+              descricao: "Tiefe Geweberegeneration.",
+              detalhes: "Synthetische Form von Thymosin Beta-4.",
+              protocolo: "2-2.5mg 2x/Woche erste 4-6 Wochen, dann 1x/Woche.",
+              beneficios: [
+                "Geweberegeneration",
+                "Entzündungshemmung",
+                "Mobilität",
+              ],
+            },
+            fr: {
+              categoria: "Récupération",
+              descricao: "Régénération tissulaire profonde.",
+              detalhes: "Forme synthétique de Thymosin Beta-4.",
+              protocolo:
+                "2-2.5mg 2x/semaine les 4-6 premières semaines, puis 1x/semaine.",
+              beneficios: [
+                "Régénération tissulaire",
+                "Anti-inflammatoire",
+                "Mobilité",
+              ],
+            },
+          },
+        },
+        {
+          id: "3",
+          nome: "HGH Frag 176-191",
+          img: "img/hgh-frag.png",
+          catClass: "gordura",
+          preco: 160,
+          i18n: {
+            pt: {
+              categoria: "Queima de Gordura",
+              descricao:
+                "Fragmento do GH com ação direta na queima de gordura localizada.",
+              detalhes:
+                "O HGH Frag 176-191 é um fragmento do hormônio do crescimento humano (GH) que retém as propriedades de queima de gordura sem os efeitos sobre crescimento ou glicose.",
+              protocolo:
+                "200-500mcg/dia em jejum, preferencialmente antes do treino ou pela manhã.",
+              beneficios: [
+                "Queima de gordura localizada",
+                "Sem efeito rebote glicêmico",
+                "Preservação de massa magra",
+                "Melhora da composição corporal",
+              ],
+            },
+            en: {
+              categoria: "Fat Loss",
+              descricao:
+                "GH fragment with direct action on localized fat burning.",
+              detalhes:
+                "HGH Frag 176-191 is a fragment of human growth hormone that retains fat-burning properties without effects on growth or glucose.",
+              protocolo:
+                "200-500mcg/day fasted, preferably before training or in the morning.",
+              beneficios: [
+                "Localized fat burning",
+                "No glycemic rebound",
+                "Lean mass preservation",
+                "Improved body composition",
+              ],
+            },
+            es: {
+              categoria: "Quema de Grasa",
+              descricao: "Fragmento del GH para quema de grasa.",
+              detalhes:
+                "Fragmento del HGH que quema grasa sin efectos sobre el crecimiento.",
+              protocolo: "200-500mcg/día en ayunas.",
+              beneficios: [
+                "Quema de grasa localizada",
+                "Sin rebote glucémico",
+                "Preservación muscular",
+              ],
+            },
+            de: {
+              categoria: "Fettverbrennung",
+              descricao: "GH-Fragment zur Fettverbrennung.",
+              detalhes: "HGH-Fragment ohne Wachstumseffekte.",
+              protocolo: "200-500mcg/Tag nüchtern.",
+              beneficios: [
+                "Lokale Fettverbrennung",
+                "Kein Blutzuckereffekt",
+                "Muskelerhalt",
+              ],
+            },
+            fr: {
+              categoria: "Perte de graisse",
+              descricao: "Fragment GH pour la combustion des graisses.",
+              detalhes: "Fragment HGH sans effets sur la croissance.",
+              protocolo: "200-500mcg/jour à jeun.",
+              beneficios: [
+                "Combustion des graisses",
+                "Sans rebond glycémique",
+                "Préservation musculaire",
+              ],
+            },
+          },
+        },
+        {
+          id: "4",
+          nome: "Ipamorelin",
+          img: "img/ipamorelin.png",
+          catClass: "gh",
+          preco: 140,
+          i18n: {
+            pt: {
+              categoria: "GH & Massa",
+              descricao:
+                "Estimulante seletivo do GH sem efeitos colaterais indesejados.",
+              detalhes:
+                "O Ipamorelin é um secretagogo seletivo do GH que estimula a liberação natural do hormônio do crescimento pela glândula pituitária sem aumentar cortisol ou prolactina.",
+              protocolo:
+                "200-300mcg 2-3x ao dia, preferencialmente ao acordar, pré-treino e antes de dormir.",
+              beneficios: [
+                "Aumento do GH endógeno",
+                "Sem aumento de cortisol",
+                "Melhora do sono",
+                "Recuperação acelerada",
+                "Ganho de massa magra",
+              ],
+            },
+            en: {
+              categoria: "GH & Mass",
+              descricao:
+                "Selective GH stimulant without unwanted side effects.",
+              detalhes:
+                "Ipamorelin is a selective GH secretagogue that stimulates natural growth hormone release without increasing cortisol or prolactin.",
+              protocolo:
+                "200-300mcg 2-3x per day, preferably upon waking, pre-workout and before sleep.",
+              beneficios: [
+                "Increased endogenous GH",
+                "No cortisol increase",
+                "Improved sleep",
+                "Accelerated recovery",
+                "Lean mass gain",
+              ],
+            },
+            es: {
+              categoria: "GH & Masa",
+              descricao: "Estimulante selectivo del GH.",
+              detalhes:
+                "Secretagogo selectivo del GH sin cortisol ni prolactina.",
+              protocolo: "200-300mcg 2-3x/día.",
+              beneficios: [
+                "Aumento de GH",
+                "Sin cortisol",
+                "Mejor sueño",
+                "Recuperación",
+              ],
+            },
+            de: {
+              categoria: "GH & Masse",
+              descricao: "Selektiver GH-Stimulator.",
+              detalhes:
+                "Selektiver GH-Sekretagog ohne Cortisol oder Prolaktin.",
+              protocolo: "200-300mcg 2-3x/Tag.",
+              beneficios: [
+                "GH-Steigerung",
+                "Kein Cortisol",
+                "Besserer Schlaf",
+                "Erholung",
+              ],
+            },
+            fr: {
+              categoria: "GH & Masse",
+              descricao: "Stimulant sélectif de la GH.",
+              detalhes: "Sécrétagogue sélectif de la GH sans cortisol.",
+              protocolo: "200-300mcg 2-3x/jour.",
+              beneficios: [
+                "Augmentation GH",
+                "Sans cortisol",
+                "Meilleur sommeil",
+                "Récupération",
+              ],
+            },
+          },
+        },
+        {
+          id: "5",
+          nome: "Sermorelin",
+          img: "img/semorelin.png",
+          catClass: "gh",
+          preco: 170,
+          i18n: {
+            pt: {
+              categoria: "GH & Massa",
+              descricao:
+                "Anti-aging, melhora do sono e estímulo natural do GH.",
+              detalhes:
+                "O Sermorelin é um análogo do GHRH (hormônio liberador de GH) que estimula a hipófise a produzir e liberar GH de forma natural e pulsátil.",
+              protocolo:
+                "200-300mcg antes de dormir para aproveitar o pico natural de GH noturno.",
+              beneficios: [
+                "Estimulação natural do GH",
+                "Melhora do sono profundo",
+                "Efeito anti-aging",
+                "Aumento de energia",
+                "Recuperação muscular",
+              ],
+            },
+            en: {
+              categoria: "GH & Mass",
+              descricao:
+                "Anti-aging, sleep improvement and natural GH stimulation.",
+              detalhes:
+                "Sermorelin is a GHRH analogue that stimulates the pituitary to produce and release GH naturally and in a pulsatile manner.",
+              protocolo:
+                "200-300mcg before sleep to take advantage of the natural nocturnal GH peak.",
+              beneficios: [
+                "Natural GH stimulation",
+                "Deep sleep improvement",
+                "Anti-aging effect",
+                "Energy increase",
+                "Muscle recovery",
+              ],
+            },
+            es: {
+              categoria: "GH & Masa",
+              descricao: "Anti-aging y estímulo natural del GH.",
+              detalhes: "Análogo del GHRH que estimula el GH naturalmente.",
+              protocolo: "200-300mcg antes de dormir.",
+              beneficios: [
+                "GH natural",
+                "Mejor sueño",
+                "Anti-aging",
+                "Energía",
+              ],
+            },
+            de: {
+              categoria: "GH & Masse",
+              descricao: "Anti-Aging und natürliche GH-Stimulation.",
+              detalhes: "GHRH-Analogon das GH natürlich stimuliert.",
+              protocolo: "200-300mcg vor dem Schlafen.",
+              beneficios: [
+                "Natürliche GH-Stimulation",
+                "Besserer Schlaf",
+                "Anti-Aging",
+                "Energie",
+              ],
+            },
+            fr: {
+              categoria: "GH & Masse",
+              descricao: "Anti-âge et stimulation naturelle de la GH.",
+              detalhes: "Analogue GHRH qui stimule la GH naturellement.",
+              protocolo: "200-300mcg avant le coucher.",
+              beneficios: [
+                "GH naturelle",
+                "Meilleur sommeil",
+                "Anti-âge",
+                "Énergie",
+              ],
+            },
+          },
+        },
+        {
+          id: "6",
+          nome: "CJC-1295",
+          img: "img/cjc-1295.png",
+          catClass: "gh",
+          preco: 180,
+          i18n: {
+            pt: {
+              categoria: "GH & Massa",
+              descricao:
+                "Estimulante de GH de longa duração. Ideal para massa muscular.",
+              detalhes:
+                "O CJC-1295 é um peptídeo GHRH de longa duração que aumenta os níveis de GH e IGF-1 de forma sustentada. Frequentemente combinado com Ipamorelin.",
+              protocolo:
+                "1-2mg 1-2x por semana. Combinar com Ipamorelin para efeito sinérgico.",
+              beneficios: [
+                "Aumento sustentado de GH",
+                "Elevação do IGF-1",
+                "Ganho de massa muscular",
+                "Redução de gordura corporal",
+                "Recuperação acelerada",
+              ],
+            },
+            en: {
+              categoria: "GH & Mass",
+              descricao: "Long-acting GH stimulant. Ideal for muscle mass.",
+              detalhes:
+                "CJC-1295 is a long-acting GHRH peptide that sustainably increases GH and IGF-1 levels. Often combined with Ipamorelin.",
+              protocolo:
+                "1-2mg 1-2x per week. Combine with Ipamorelin for synergistic effect.",
+              beneficios: [
+                "Sustained GH increase",
+                "IGF-1 elevation",
+                "Muscle mass gain",
+                "Body fat reduction",
+                "Accelerated recovery",
+              ],
+            },
+            es: {
+              categoria: "GH & Masa",
+              descricao: "Estimulante de GH de larga duración.",
+              detalhes: "GHRH de larga duración. Combinar con Ipamorelin.",
+              protocolo: "1-2mg 1-2x/semana.",
+              beneficios: [
+                "GH sostenido",
+                "IGF-1",
+                "Masa muscular",
+                "Reducción de grasa",
+              ],
+            },
+            de: {
+              categoria: "GH & Masse",
+              descricao: "Langwirksamer GH-Stimulator.",
+              detalhes: "Langwirksames GHRH. Mit Ipamorelin kombinieren.",
+              protocolo: "1-2mg 1-2x/Woche.",
+              beneficios: [
+                "Anhaltende GH-Erhöhung",
+                "IGF-1",
+                "Muskelmasse",
+                "Fettreduktion",
+              ],
+            },
+            fr: {
+              categoria: "GH & Masse",
+              descricao: "Stimulant GH longue durée.",
+              detalhes: "GHRH longue durée. Combiner avec Ipamorelin.",
+              protocolo: "1-2mg 1-2x/semaine.",
+              beneficios: [
+                "GH soutenue",
+                "IGF-1",
+                "Masse musculaire",
+                "Réduction graisses",
+              ],
+            },
+          },
+        },
+        {
+          id: "7",
+          nome: "IGF-1 LR3",
+          img: "img/igf-lr3.png",
+          catClass: "gh",
+          preco: 220,
+          i18n: {
+            pt: {
+              categoria: "GH & Massa",
+              descricao:
+                "Fator de crescimento insulínico de alta potência para hipertrofia.",
+              detalhes:
+                "O IGF-1 LR3 é uma variante de longa duração do IGF-1 (Insulin-like Growth Factor 1) com meia-vida estendida. Potente anabólico que promove hipertrofia muscular e recuperação.",
+              protocolo:
+                "20-50mcg/dia, injeção intramuscular nos músculos trabalhados. Ciclo máximo 4 semanas.",
+              beneficios: [
+                "Hipertrofia muscular intensa",
+                "Recuperação acelerada",
+                "Aumento de força",
+                "Síntese proteica elevada",
+              ],
+            },
+            en: {
+              categoria: "GH & Mass",
+              descricao:
+                "High-potency insulin-like growth factor for hypertrophy.",
+              detalhes:
+                "IGF-1 LR3 is a long-acting variant of IGF-1 with extended half-life. Potent anabolic that promotes muscle hypertrophy and recovery.",
+              protocolo:
+                "20-50mcg/day, intramuscular injection in worked muscles. Maximum 4-week cycle.",
+              beneficios: [
+                "Intense muscle hypertrophy",
+                "Accelerated recovery",
+                "Strength increase",
+                "Elevated protein synthesis",
+              ],
+            },
+            es: {
+              categoria: "GH & Masa",
+              descricao: "Factor de crecimiento insulínico de alta potencia.",
+              detalhes: "Variante de larga duración del IGF-1.",
+              protocolo: "20-50mcg/día intramuscular. Ciclo máximo 4 semanas.",
+              beneficios: [
+                "Hipertrofia muscular",
+                "Recuperación",
+                "Fuerza",
+                "Síntesis proteica",
+              ],
+            },
+            de: {
+              categoria: "GH & Masse",
+              descricao: "Hochpotenter IGF-1.",
+              detalhes: "Langwirksame Variante des IGF-1.",
+              protocolo: "20-50mcg/Tag intramuskulär. Max 4 Wochen.",
+              beneficios: [
+                "Muskelhypertrophie",
+                "Erholung",
+                "Kraft",
+                "Proteinsynthese",
+              ],
+            },
+            fr: {
+              categoria: "GH & Masse",
+              descricao: "IGF-1 haute puissance.",
+              detalhes: "Variante longue durée de IGF-1.",
+              protocolo: "20-50mcg/jour intramusculaire. Max 4 semaines.",
+              beneficios: [
+                "Hypertrophie musculaire",
+                "Récupération",
+                "Force",
+                "Synthèse protéique",
+              ],
+            },
+          },
+        },
+        {
+          id: "8",
+          nome: "IGF-1 DES",
+          img: "img/igf-des.png",
+          catClass: "gh",
+          preco: 200,
+          i18n: {
+            pt: {
+              categoria: "GH & Massa",
+              descricao:
+                "Variante do IGF-1 com ação local intensa nos tecidos musculares.",
+              detalhes:
+                "O IGF-1 DES é uma versão truncada do IGF-1 com maior afinidade pelos receptores locais. Age de forma mais localizada que o LR3, ideal para grupos musculares específicos.",
+              protocolo:
+                "20-50mcg intramusculares no grupo muscular alvo imediatamente antes do treino.",
+              beneficios: [
+                "Ação local intensa",
+                "Hipertrofia localizada",
+                "Alta afinidade receptora",
+                "Rápida absorção",
+              ],
+            },
+            en: {
+              categoria: "GH & Mass",
+              descricao:
+                "IGF-1 variant with intense local action on muscle tissue.",
+              detalhes:
+                "IGF-1 DES is a truncated version of IGF-1 with greater affinity for local receptors. Acts more locally than LR3, ideal for specific muscle groups.",
+              protocolo:
+                "20-50mcg intramuscular in target muscle group immediately before training.",
+              beneficios: [
+                "Intense local action",
+                "Localized hypertrophy",
+                "High receptor affinity",
+                "Rapid absorption",
+              ],
+            },
+            es: {
+              categoria: "GH & Masa",
+              descricao: "IGF-1 con acción local intensa.",
+              detalhes: "Versión truncada del IGF-1 con mayor afinidad local.",
+              protocolo: "20-50mcg intramuscular antes del entrenamiento.",
+              beneficios: [
+                "Acción local",
+                "Hipertrofia localizada",
+                "Alta afinidad",
+                "Absorción rápida",
+              ],
+            },
+            de: {
+              categoria: "GH & Masse",
+              descricao: "IGF-1 mit intensiver lokaler Wirkung.",
+              detalhes:
+                "Verkürzte Version des IGF-1 mit höherer lokaler Affinität.",
+              protocolo: "20-50mcg intramuskulär vor dem Training.",
+              beneficios: [
+                "Lokale Wirkung",
+                "Lokale Hypertrophie",
+                "Hohe Affinität",
+                "Schnelle Absorption",
+              ],
+            },
+            fr: {
+              categoria: "GH & Masse",
+              descricao: "IGF-1 à action locale intense.",
+              detalhes: "Version tronquée de IGF-1 à affinité locale élevée.",
+              protocolo: "20-50mcg intramusculaire avant entraînement.",
+              beneficios: [
+                "Action locale",
+                "Hypertrophie localisée",
+                "Haute affinité",
+                "Absorption rapide",
+              ],
+            },
+          },
+        },
+        {
+          id: "9",
+          nome: "ACE-031",
+          img: "img/ace-031.png",
+          catClass: "gh",
+          preco: 250,
+          i18n: {
+            pt: {
+              categoria: "GH & Massa",
+              descricao:
+                "Inibidor da miostatina. Potencializa ganho de massa e força.",
+              detalhes:
+                "O ACE-031 é uma proteína de fusão que inibe a miostatina e outras proteínas que limitam o crescimento muscular. Aumenta significativamente a massa muscular e a força.",
+              protocolo:
+                "1-3mg/kg a cada 2 semanas. Protocolo deve ser supervisionado por profissional.",
+              beneficios: [
+                "Inibição da miostatina",
+                "Ganho expressivo de massa",
+                "Aumento de força",
+                "Melhora da composição corporal",
+              ],
+            },
+            en: {
+              categoria: "GH & Mass",
+              descricao:
+                "Myostatin inhibitor. Enhances muscle mass and strength gains.",
+              detalhes:
+                "ACE-031 is a fusion protein that inhibits myostatin and other proteins that limit muscle growth. Significantly increases muscle mass and strength.",
+              protocolo:
+                "1-3mg/kg every 2 weeks. Protocol should be supervised by a professional.",
+              beneficios: [
+                "Myostatin inhibition",
+                "Significant mass gain",
+                "Strength increase",
+                "Improved body composition",
+              ],
+            },
+            es: {
+              categoria: "GH & Masa",
+              descricao: "Inhibidor de miostatina.",
+              detalhes: "Proteína de fusión que inhibe la miostatina.",
+              protocolo: "1-3mg/kg cada 2 semanas.",
+              beneficios: [
+                "Inhibición miostatina",
+                "Ganancia muscular",
+                "Fuerza",
+                "Composición corporal",
+              ],
+            },
+            de: {
+              categoria: "GH & Masse",
+              descricao: "Myostatin-Inhibitor.",
+              detalhes: "Fusionsprotein das Myostatin hemmt.",
+              protocolo: "1-3mg/kg alle 2 Wochen.",
+              beneficios: [
+                "Myostatin-Hemmung",
+                "Muskelmasse",
+                "Kraft",
+                "Körperzusammensetzung",
+              ],
+            },
+            fr: {
+              categoria: "GH & Masse",
+              descricao: "Inhibiteur de myostatine.",
+              detalhes: "Protéine de fusion inhibant la myostatine.",
+              protocolo: "1-3mg/kg toutes les 2 semaines.",
+              beneficios: [
+                "Inhibition myostatine",
+                "Masse musculaire",
+                "Force",
+                "Composition corporelle",
+              ],
+            },
+          },
+        },
+        {
+          id: "10",
+          nome: "Semax",
+          img: "img/semax.png",
+          catClass: "cognitivo",
+          preco: 160,
+          i18n: {
+            pt: {
+              categoria: "Cognitivo",
+              descricao:
+                "Neuropeptídeo que melhora foco, memória e função cerebral.",
+              detalhes:
+                "O Semax é um neuropeptídeo sintético derivado do ACTH que aumenta os níveis de BDNF (fator neurotrófico derivado do cérebro) e melhora significativamente função cognitiva.",
+              protocolo:
+                "200-300mcg intranasal 1-2x ao dia. Ciclo: 2-4 semanas com pausa equivalente.",
+              beneficios: [
+                "Melhora do foco e concentração",
+                "Aumento de memória",
+                "Neuroprotecção",
+                "Redução de ansiedade",
+                "Aumento do BDNF",
+              ],
+            },
+            en: {
+              categoria: "Cognitive",
+              descricao:
+                "Neuropeptide that improves focus, memory and brain function.",
+              detalhes:
+                "Semax is a synthetic neuropeptide derived from ACTH that increases BDNF levels and significantly improves cognitive function.",
+              protocolo:
+                "200-300mcg intranasal 1-2x per day. Cycle: 2-4 weeks with equivalent break.",
+              beneficios: [
+                "Improved focus",
+                "Memory increase",
+                "Neuroprotection",
+                "Anxiety reduction",
+                "BDNF increase",
+              ],
+            },
+            es: {
+              categoria: "Cognitivo",
+              descricao: "Neuropéptido para foco y memoria.",
+              detalhes: "Derivado del ACTH que aumenta el BDNF.",
+              protocolo: "200-300mcg intranasal 1-2x/día.",
+              beneficios: [
+                "Foco",
+                "Memoria",
+                "Neuroprotección",
+                "Ansiedad",
+                "BDNF",
+              ],
+            },
+            de: {
+              categoria: "Kognitiv",
+              descricao: "Neuropeptid für Fokus und Gedächtnis.",
+              detalhes: "ACTH-Derivat das BDNF erhöht.",
+              protocolo: "200-300mcg intranasal 1-2x/Tag.",
+              beneficios: [
+                "Fokus",
+                "Gedächtnis",
+                "Neuroprotection",
+                "Angst",
+                "BDNF",
+              ],
+            },
+            fr: {
+              categoria: "Cognitif",
+              descricao: "Neuropeptide pour la concentration.",
+              detalhes: "Dérivé de ACTH qui augmente le BDNF.",
+              protocolo: "200-300mcg intranasal 1-2x/jour.",
+              beneficios: [
+                "Concentration",
+                "Mémoire",
+                "Neuroprotection",
+                "Anxiété",
+                "BDNF",
+              ],
+            },
+          },
+        },
+        {
+          id: "11",
+          nome: "Selank",
+          img: "img/selank.png",
+          catClass: "cognitivo",
+          preco: 150,
+          i18n: {
+            pt: {
+              categoria: "Cognitivo",
+              descricao:
+                "Ansiolítico natural com efeito nootrópico e neuroprotetor.",
+              detalhes:
+                "O Selank é um peptídeo ansiolítico que age no sistema GABAérgico sem causar dependência. Tem efeitos nootrópicos e neuroprotetores.",
+              protocolo:
+                "200-300mcg intranasal 2-3x ao dia. Pode ser usado conforme necessidade.",
+              beneficios: [
+                "Redução de ansiedade",
+                "Melhora cognitiva",
+                "Neuroproteção",
+                "Sem dependência",
+                "Melhora do humor",
+              ],
+            },
+            en: {
+              categoria: "Cognitive",
+              descricao:
+                "Natural anxiolytic with nootropic and neuroprotective effects.",
+              detalhes:
+                "Selank is an anxiolytic peptide that acts on the GABAergic system without causing dependence. Has nootropic and neuroprotective effects.",
+              protocolo:
+                "200-300mcg intranasal 2-3x per day. Can be used as needed.",
+              beneficios: [
+                "Anxiety reduction",
+                "Cognitive improvement",
+                "Neuroprotection",
+                "No dependence",
+                "Mood improvement",
+              ],
+            },
+            es: {
+              categoria: "Cognitivo",
+              descricao: "Ansiolítico natural nootrópico.",
+              detalhes: "Actúa en el sistema GABAérgico sin dependencia.",
+              protocolo: "200-300mcg intranasal 2-3x/día.",
+              beneficios: [
+                "Ansiedad",
+                "Cognitivo",
+                "Neuroprotección",
+                "Sin dependencia",
+                "Humor",
+              ],
+            },
+            de: {
+              categoria: "Kognitiv",
+              descricao: "Natürliches Anxiolytikum.",
+              detalhes: "Wirkt auf das GABAerge System ohne Abhängigkeit.",
+              protocolo: "200-300mcg intranasal 2-3x/Tag.",
+              beneficios: [
+                "Angst",
+                "Kognition",
+                "Neuroprotection",
+                "Keine Abhängigkeit",
+                "Stimmung",
+              ],
+            },
+            fr: {
+              categoria: "Cognitif",
+              descricao: "Anxiolytique naturel nootropique.",
+              detalhes: "Agit sur le système GABAergique sans dépendance.",
+              protocolo: "200-300mcg intranasal 2-3x/jour.",
+              beneficios: [
+                "Anxiété",
+                "Cognitif",
+                "Neuroprotection",
+                "Sans dépendance",
+                "Humeur",
+              ],
+            },
+          },
+        },
+        {
+          id: "12",
+          nome: "Kisspeptin",
+          img: "img/kisspeptin.png",
+          catClass: "hormonal",
+          preco: 190,
+          i18n: {
+            pt: {
+              categoria: "Hormonal",
+              descricao:
+                "Regulador hormonal que estimula a produção de LH e testosterona.",
+              detalhes:
+                "A Kisspeptin é um neuropeptídeo que regula o eixo hipotálamo-hipófise-gonadal, estimulando a produção de LH e consequentemente de testosterona e estrogênio.",
+              protocolo:
+                "100-200mcg subcutâneo 1-2x ao dia. Protocolo conforme orientação profissional.",
+              beneficios: [
+                "Aumento do LH",
+                "Estímulo à testosterona",
+                "Regulação hormonal",
+                "Melhora da fertilidade",
+                "Libido aumentada",
+              ],
+            },
+            en: {
+              categoria: "Hormonal",
+              descricao:
+                "Hormonal regulator that stimulates LH and testosterone production.",
+              detalhes:
+                "Kisspeptin is a neuropeptide that regulates the hypothalamic-pituitary-gonadal axis, stimulating LH production and consequently testosterone and estrogen.",
+              protocolo:
+                "100-200mcg subcutaneous 1-2x per day. Protocol as per professional guidance.",
+              beneficios: [
+                "LH increase",
+                "Testosterone stimulation",
+                "Hormonal regulation",
+                "Fertility improvement",
+                "Increased libido",
+              ],
+            },
+            es: {
+              categoria: "Hormonal",
+              descricao: "Regulador hormonal LH y testosterona.",
+              detalhes: "Regula el eje hipotálamo-hipófisis-gonadal.",
+              protocolo: "100-200mcg subcutáneo 1-2x/día.",
+              beneficios: [
+                "LH",
+                "Testosterona",
+                "Regulación hormonal",
+                "Fertilidad",
+                "Libido",
+              ],
+            },
+            de: {
+              categoria: "Hormonal",
+              descricao: "Hormoneller Regulator für LH und Testosteron.",
+              detalhes: "Reguliert die Hypothalamus-Hypophysen-Gonaden-Achse.",
+              protocolo: "100-200mcg subkutan 1-2x/Tag.",
+              beneficios: [
+                "LH",
+                "Testosteron",
+                "Hormonregulation",
+                "Fertilität",
+                "Libido",
+              ],
+            },
+            fr: {
+              categoria: "Hormonal",
+              descricao: "Régulateur hormonal LH et testostérone.",
+              detalhes: "Régule l axe hypothalamo-hypophyso-gonadique.",
+              protocolo: "100-200mcg sous-cutané 1-2x/jour.",
+              beneficios: [
+                "LH",
+                "Testostérone",
+                "Régulation hormonale",
+                "Fertilité",
+                "Libido",
+              ],
+            },
+          },
+        },
+        {
+          id: "13",
+          nome: "SS-31",
+          img: "img/ss-31.png",
+          catClass: "antioxidante",
+          preco: 210,
+          i18n: {
+            pt: {
+              categoria: "Antioxidante",
+              descricao:
+                "Peptídeo mitocondrial com ação antioxidante e cardioprotetora.",
+              detalhes:
+                "O SS-31 é um peptídeo mitocondrial que se concentra nas mitocôndrias, reduzindo o estresse oxidativo e protegendo o coração e outros órgãos.",
+              protocolo:
+                "1-5mg/kg subcutâneo. Protocolo deve ser supervisionado por profissional.",
+              beneficios: [
+                "Proteção mitocondrial",
+                "Ação cardioprotetora",
+                "Redução de estresse oxidativo",
+                "Anti-aging celular",
+                "Melhora de energia",
+              ],
+            },
+            en: {
+              categoria: "Antioxidant",
+              descricao:
+                "Mitochondrial peptide with antioxidant and cardioprotective action.",
+              detalhes:
+                "SS-31 is a mitochondrial peptide that concentrates in mitochondria, reducing oxidative stress and protecting the heart and other organs.",
+              protocolo:
+                "1-5mg/kg subcutaneous. Protocol should be supervised by a professional.",
+              beneficios: [
+                "Mitochondrial protection",
+                "Cardioprotective action",
+                "Oxidative stress reduction",
+                "Cellular anti-aging",
+                "Energy improvement",
+              ],
+            },
+            es: {
+              categoria: "Antioxidante",
+              descricao: "Péptido mitocondrial antioxidante.",
+              detalhes:
+                "Se concentra en mitocondrias reduciendo estrés oxidativo.",
+              protocolo: "1-5mg/kg subcutáneo.",
+              beneficios: [
+                "Protección mitocondrial",
+                "Cardioprotector",
+                "Estrés oxidativo",
+                "Anti-aging",
+                "Energía",
+              ],
+            },
+            de: {
+              categoria: "Antioxidativ",
+              descricao: "Mitochondriales Peptid.",
+              detalhes:
+                "Konzentriert sich in Mitochondrien und reduziert oxidativen Stress.",
+              protocolo: "1-5mg/kg subkutan.",
+              beneficios: [
+                "Mitochondrienschutz",
+                "Kardioprotektion",
+                "Oxidativer Stress",
+                "Anti-Aging",
+                "Energie",
+              ],
+            },
+            fr: {
+              categoria: "Antioxydant",
+              descricao: "Peptide mitochondrial antioxydant.",
+              detalhes:
+                "Se concentre dans les mitochondries réduisant le stress oxydatif.",
+              protocolo: "1-5mg/kg sous-cutané.",
+              beneficios: [
+                "Protection mitochondriale",
+                "Cardioprotecteur",
+                "Stress oxydatif",
+                "Anti-âge",
+                "Énergie",
+              ],
+            },
+          },
+        },
+        {
+          id: "14",
+          nome: "SLU-PP-32",
+          img: "img/slu-pp-32.png",
+          catClass: "gordura",
+          preco: 230,
+          i18n: {
+            pt: {
+              categoria: "Queima de Gordura",
+              descricao:
+                "Ativa receptores ERR. Simula os efeitos metabólicos do exercício.",
+              detalhes:
+                "O SLU-PP-32 ativa os receptores ERR (Estrogen-Related Receptors) simulando os efeitos metabólicos do exercício físico intenso sem necessidade de atividade física.",
+              protocolo:
+                "Em estudo. Dosagem experimental: 50-100mg/kg em modelos animais. Protocolo humano em desenvolvimento.",
+              beneficios: [
+                "Simulação metabólica do exercício",
+                "Queima de gordura",
+                "Melhora endurance",
+                "Sem necessidade de exercício",
+                "Efeito cardioprotegido",
+              ],
+            },
+            en: {
+              categoria: "Fat Loss",
+              descricao:
+                "Activates ERR receptors. Simulates the metabolic effects of exercise.",
+              detalhes:
+                "SLU-PP-32 activates ERR receptors simulating the metabolic effects of intense physical exercise without requiring physical activity.",
+              protocolo:
+                "Under study. Experimental dosage: 50-100mg/kg in animal models. Human protocol in development.",
+              beneficios: [
+                "Exercise metabolic simulation",
+                "Fat burning",
+                "Endurance improvement",
+                "No exercise needed",
+                "Cardioprotective effect",
+              ],
+            },
+            es: {
+              categoria: "Quema de Grasa",
+              descricao: "Activa receptores ERR.",
+              detalhes: "Simula efectos metabólicos del ejercicio.",
+              protocolo: "En estudio. 50-100mg/kg modelos animales.",
+              beneficios: [
+                "Simulación metabólica",
+                "Quema de grasa",
+                "Resistencia",
+                "Sin ejercicio",
+                "Cardioprotector",
+              ],
+            },
+            de: {
+              categoria: "Fettverbrennung",
+              descricao: "Aktiviert ERR-Rezeptoren.",
+              detalhes: "Simuliert metabolische Trainingseffekte.",
+              protocolo: "In Studie. 50-100mg/kg Tiermodelle.",
+              beneficios: [
+                "Metabolische Simulation",
+                "Fettverbrennung",
+                "Ausdauer",
+                "Kein Training",
+                "Kardioprotektion",
+              ],
+            },
+            fr: {
+              categoria: "Perte de graisse",
+              descricao: "Active les récepteurs ERR.",
+              detalhes: "Simule les effets métaboliques de l exercice.",
+              protocolo: "En étude. 50-100mg/kg modèles animaux.",
+              beneficios: [
+                "Simulation métabolique",
+                "Combustion graisses",
+                "Endurance",
+                "Sans exercice",
+                "Cardioprotecteur",
+              ],
+            },
+          },
+        },
+        {
+          id: "15",
+          nome: "AHK-CU",
+          img: "img/ahk-cu.png",
+          catClass: "estetico",
+          preco: 140,
+          i18n: {
+            pt: {
+              categoria: "Estético",
+              descricao:
+                "Peptídeo de cobre para cabelo, pele e regeneração capilar.",
+              detalhes:
+                "O AHK-Cu é um peptídeo de cobre (tripeptídeo) que estimula o crescimento capilar, melhora a densidade do cabelo e tem ação regenerativa na pele.",
+              protocolo:
+                "Aplicação tópica: 2-5mg em solução aquosa aplicada no couro cabeludo 1-2x ao dia.",
+              beneficios: [
+                "Crescimento capilar",
+                "Aumento da densidade do cabelo",
+                "Regeneração da pele",
+                "Ação antioxidante",
+                "Síntese de colágeno",
+              ],
+            },
+            en: {
+              categoria: "Aesthetic",
+              descricao:
+                "Copper peptide for hair, skin and capillary regeneration.",
+              detalhes:
+                "AHK-Cu is a copper peptide (tripeptide) that stimulates hair growth, improves hair density and has regenerative action on skin.",
+              protocolo:
+                "Topical application: 2-5mg in aqueous solution applied to scalp 1-2x per day.",
+              beneficios: [
+                "Hair growth",
+                "Hair density increase",
+                "Skin regeneration",
+                "Antioxidant action",
+                "Collagen synthesis",
+              ],
+            },
+            es: {
+              categoria: "Estético",
+              descricao: "Péptido de cobre para cabello y piel.",
+              detalhes:
+                "Tripéptido de cobre que estimula el crecimiento capilar.",
+              protocolo:
+                "Aplicación tópica: 2-5mg en solución acuosa 1-2x/día.",
+              beneficios: [
+                "Crecimiento capilar",
+                "Densidad",
+                "Regeneración piel",
+                "Antioxidante",
+                "Colágeno",
+              ],
+            },
+            de: {
+              categoria: "Ästhetisch",
+              descricao: "Kupferpeptid für Haare und Haut.",
+              detalhes: "Kupfer-Tripeptid das Haarwachstum stimuliert.",
+              protocolo:
+                "Topische Anwendung: 2-5mg in wässriger Lösung 1-2x/Tag.",
+              beneficios: [
+                "Haarwachstum",
+                "Dichte",
+                "Hautregeneration",
+                "Antioxidativ",
+                "Kollagen",
+              ],
+            },
+            fr: {
+              categoria: "Esthétique",
+              descricao: "Peptide de cuivre pour cheveux et peau.",
+              detalhes:
+                "Tripeptide de cuivre stimulant la croissance capillaire.",
+              protocolo:
+                "Application topique: 2-5mg en solution aqueuse 1-2x/jour.",
+              beneficios: [
+                "Croissance capillaire",
+                "Densité",
+                "Régénération peau",
+                "Antioxydant",
+                "Collagène",
+              ],
+            },
+          },
+        },
+      ];
 
-// Avaliações exemplo (substituir por API real depois)
-const REVIEWS_MOCK = {
-  '1': [{autor:'Carlos M.',nota:5,texto:'BPC-157 incrível! Recuperei uma lesão no joelho em 3 semanas que estava me incomodando há meses.',data:'2025-03-15'},{autor:'Ana R.',nota:5,texto:'Produto de altíssima qualidade. Resultados visíveis em 2 semanas de uso.',data:'2025-04-02'}],
-  '2': [{autor:'Pedro S.',nota:5,texto:'TB-500 funcionou muito bem para uma lesão no ombro. Recomendo!',data:'2025-04-10'}],
-};
+      // Avaliações exemplo (substituir por API real depois)
+      const REVIEWS_MOCK = {
+        1: [
+          {
+            autor: "Carlos M.",
+            nota: 5,
+            texto:
+              "BPC-157 incrível! Recuperei uma lesão no joelho em 3 semanas que estava me incomodando há meses.",
+            data: "2025-03-15",
+          },
+          {
+            autor: "Ana R.",
+            nota: 5,
+            texto:
+              "Produto de altíssima qualidade. Resultados visíveis em 2 semanas de uso.",
+            data: "2025-04-02",
+          },
+        ],
+        2: [
+          {
+            autor: "Pedro S.",
+            nota: 5,
+            texto:
+              "TB-500 funcionou muito bem para uma lesão no ombro. Recomendo!",
+            data: "2025-04-10",
+          },
+        ],
+      };
 
-let qtd = 1;
+      let qtd = 1;
 
-function tr(k) {
-  const d = window.PEPMASTERS_I18N;
-  const l = localStorage.getItem('pep_lang') || 'en';
-  return (d && d[k] && (d[k][l] || d[k]['en'])) || k;
-}
+      function tr(k) {
+        const d = window.PEPMASTERS_I18N;
+        const l = localStorage.getItem("pep_lang") || "en";
+        return (d && d[k] && (d[k][l] || d[k]["en"])) || k;
+      }
 
-function getLang() { return localStorage.getItem('pep_lang') || 'en'; }
+      function getLang() {
+        return localStorage.getItem("pep_lang") || "en";
+      }
 
-function getProductInfo(p) {
-  const lang = getLang();
-  const i = p.i18n && p.i18n[lang] ? p.i18n[lang] : p.i18n && p.i18n['en'] ? p.i18n['en'] : {};
-  return i;
-}
+      function getProductInfo(p) {
+        const lang = getLang();
+        const i =
+          p.i18n && p.i18n[lang]
+            ? p.i18n[lang]
+            : p.i18n && p.i18n["en"]
+              ? p.i18n["en"]
+              : {};
+        return i;
+      }
 
-function renderProduct(p) {
-  const info = getProductInfo(p);
-  const esgotado = p.estoque <= 0;
-  const reviews = REVIEWS_MOCK[p.id] || [];
-  const avgRating = reviews.length ? (reviews.reduce((s,r) => s+r.nota, 0) / reviews.length).toFixed(1) : null;
+      function renderProduct(p) {
+        const info = getProductInfo(p);
+        const esgotado = p.estoque <= 0;
+        const reviews = REVIEWS_MOCK[p.id] || [];
+        const avgRating = reviews.length
+          ? (reviews.reduce((s, r) => s + r.nota, 0) / reviews.length).toFixed(
+              1,
+            )
+          : null;
 
-  document.title = p.nome + ' — PEPMASTERS';
+        document.title = p.nome + " — PEPMASTERS";
 
-  document.getElementById('productContainer').innerHTML = `
+        document.getElementById("productContainer").innerHTML = `
     <div class="product-grid">
       <div class="product-img">
         <img src="${p.img}" alt="${p.nome}" onerror="this.style.display='none'"/>
       </div>
       <div class="product-info">
-        <span class="cat-badge">${info.categoria || ''}</span>
+        <span class="cat-badge">${info.categoria || ""}</span>
         <h1 class="product-name">${p.nome}</h1>
-        ${avgRating ? `<div><span class="stars">${'★'.repeat(Math.round(avgRating))}${'☆'.repeat(5-Math.round(avgRating))}</span> <span style="font-size:.85rem;color:var(--muted)">${avgRating} (${reviews.length} reviews)</span></div>` : ''}
-        <p class="product-desc">${info.descricao || ''}</p>
-        <div class="product-price"><span>R$</span>${p.preco.toFixed(2).replace('.',',')}</div>
-        ${esgotado ? '<button class="esgotado">Sold Out</button>' : `
+        ${avgRating ? `<div><span class="stars">${"★".repeat(Math.round(avgRating))}${"☆".repeat(5 - Math.round(avgRating))}</span> <span style="font-size:.85rem;color:var(--muted)">${avgRating} (${reviews.length} reviews)</span></div>` : ""}
+        <p class="product-desc">${info.descricao || ""}</p>
+        <div class="product-price"><span>R$</span>${p.preco.toFixed(2).replace(".", ",")}</div>
+        ${
+          esgotado
+            ? '<button class="esgotado">Sold Out</button>'
+            : `
         <div class="qty-row">
           <button class="qty-btn" onclick="changeQty(-1)">−</button>
           <span class="qty-num" id="qtyNum">1</span>
           <button class="qty-btn" onclick="changeQty(1)">+</button>
         </div>
-        <button class="btn-add" onclick="addToCart('${p.id}')">Add to Cart</button>`}
+        <button class="btn-add" onclick="addToCart('${p.id}')">Add to Cart</button>`
+        }
       </div>
     </div>
 
@@ -166,29 +1773,37 @@ function renderProduct(p) {
       <button class="tab-btn" onclick="showTab('protocol',this)">Protocol</button>
       <button class="tab-btn" onclick="showTab('benefits',this)">Benefits</button>
     </div>
-    <div id="tab-details" class="tab-content active"><p>${info.detalhes || info.descricao || ''}</p></div>
-    <div id="tab-protocol" class="tab-content"><p>${info.protocolo || 'Contact us for protocol information.'}</p></div>
-    <div id="tab-benefits" class="tab-content"><ul>${(info.beneficios||[]).map(b=>'<li>'+b+'</li>').join('')}</ul></div>
+    <div id="tab-details" class="tab-content active"><p>${info.detalhes || info.descricao || ""}</p></div>
+    <div id="tab-protocol" class="tab-content"><p>${info.protocolo || "Contact us for protocol information."}</p></div>
+    <div id="tab-benefits" class="tab-content"><ul>${(info.beneficios || []).map((b) => "<li>" + b + "</li>").join("")}</ul></div>
 
     <div class="reviews-section">
       <div class="section-title">Reviews</div>
-      ${reviews.length ? `
+      ${
+        reviews.length
+          ? `
         <div class="rating-summary">
           <span class="rating-big">${avgRating}</span>
           <div>
-            <div class="stars">${'★'.repeat(Math.round(avgRating))}${'☆'.repeat(5-Math.round(avgRating))}</div>
-            <div style="font-size:.8rem;color:var(--muted)">${reviews.length} review${reviews.length>1?'s':''}</div>
+            <div class="stars">${"★".repeat(Math.round(avgRating))}${"☆".repeat(5 - Math.round(avgRating))}</div>
+            <div style="font-size:.8rem;color:var(--muted)">${reviews.length} review${reviews.length > 1 ? "s" : ""}</div>
           </div>
         </div>
-        ${reviews.map(r=>`
+        ${reviews
+          .map(
+            (r) => `
           <div class="review-card">
             <div class="review-header">
               <span class="review-author">${r.autor}</span>
               <span class="review-date">${r.data}</span>
             </div>
-            <div class="stars" style="font-size:.9rem;margin-bottom:6px">${'★'.repeat(r.nota)}${'☆'.repeat(5-r.nota)}</div>
+            <div class="stars" style="font-size:.9rem;margin-bottom:6px">${"★".repeat(r.nota)}${"☆".repeat(5 - r.nota)}</div>
             <p class="review-text">${r.texto}</p>
-          </div>`).join('')}` : '<p style="color:var(--muted);font-size:.9rem">No reviews yet. Be the first!</p>'}
+          </div>`,
+          )
+          .join("")}`
+          : '<p style="color:var(--muted);font-size:.9rem">No reviews yet. Be the first!</p>'
+      }
 
       <div class="review-form">
         <h4>Write a Review</h4>
@@ -202,98 +1817,157 @@ function renderProduct(p) {
         <button class="btn-review" onclick="submitReview('${p.id}')">Submit Review</button>
       </div>
     </div>`;
-}
+      }
 
-function showTab(tab, btn) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  btn.classList.add('active');
-}
+      function showTab(tab, btn) {
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById("tab-" + tab).classList.add("active");
+        btn.classList.add("active");
+      }
 
-let selectedStars = 0;
-function setStar(n) {
-  selectedStars = n;
-  document.querySelectorAll('#starSelect span').forEach((s,i) => {
-    s.classList.toggle('on', i < n);
-  });
-}
+      let selectedStars = 0;
+      function setStar(n) {
+        selectedStars = n;
+        document.querySelectorAll("#starSelect span").forEach((s, i) => {
+          s.classList.toggle("on", i < n);
+        });
+      }
 
-function changeQty(d) {
-  qtd = Math.max(1, qtd + d);
-  const el = document.getElementById('qtyNum');
-  if (el) el.textContent = qtd;
-}
+      function changeQty(d) {
+        qtd = Math.max(1, qtd + d);
+        const el = document.getElementById("qtyNum");
+        if (el) el.textContent = qtd;
+      }
 
-function addToCart(id) {
-  const p = CATALOGO.find(x => x.id === id);
-  if (!p) return;
-  try {
-    const c = JSON.parse(localStorage.getItem('pep_carrinho') || '[]');
-    const info = getProductInfo(p);
-    const idx = c.findIndex(i => i.id === id);
-    if (idx >= 0) c[idx].quantidade += qtd;
-    else c.push({id: p.id, nome: p.nome, img: p.img, categoria: info.categoria, preco: p.preco, quantidade: qtd});
-    localStorage.setItem('pep_carrinho', JSON.stringify(c));
-    showToast(p.nome + ' × ' + qtd + ' added to cart!');
-  } catch(e) {}
-}
+      function addToCart(id) {
+        const p = CATALOGO.find((x) => x.id === id);
+        if (!p) return;
+        try {
+          const c = JSON.parse(localStorage.getItem("pep_carrinho") || "[]");
+          const info = getProductInfo(p);
+          const idx = c.findIndex((i) => i.id === id);
+          if (idx >= 0) c[idx].quantidade += qtd;
+          else
+            c.push({
+              id: p.id,
+              nome: p.nome,
+              img: p.img,
+              categoria: info.categoria,
+              preco: p.preco,
+              quantidade: qtd,
+            });
+          localStorage.setItem("pep_carrinho", JSON.stringify(c));
+          showToast(p.nome + " × " + qtd + " added to cart!");
+        } catch (e) {}
+      }
 
-function submitReview(prodId) {
-  const nome  = document.getElementById('reviewName').value.trim();
-  const texto = document.getElementById('reviewText').value.trim();
-  if (!selectedStars) { showToast('Please select a rating!'); return; }
-  if (!nome || !texto) { showToast('Please fill all fields!'); return; }
-  // Salvar no localStorage por enquanto
-  const key = 'reviews_' + prodId;
-  const reviews = JSON.parse(localStorage.getItem(key) || '[]');
-  reviews.push({autor: nome, nota: selectedStars, texto: texto, data: new Date().toISOString().split('T')[0]});
-  localStorage.setItem(key, JSON.stringify(reviews));
-  showToast('Review submitted! Thank you.');
-  document.getElementById('reviewName').value = '';
-  document.getElementById('reviewText').value = '';
-  selectedStars = 0;
-  document.querySelectorAll('#starSelect span').forEach(s => s.classList.remove('on'));
-}
+      function submitReview(prodId) {
+        const nome = document.getElementById("reviewName").value.trim();
+        const texto = document.getElementById("reviewText").value.trim();
+        if (!selectedStars) {
+          showToast("Please select a rating!");
+          return;
+        }
+        if (!nome || !texto) {
+          showToast("Please fill all fields!");
+          return;
+        }
+        // Salvar no localStorage por enquanto
+        const key = "reviews_" + prodId;
+        const reviews = JSON.parse(localStorage.getItem(key) || "[]");
+        reviews.push({
+          autor: nome,
+          nota: selectedStars,
+          texto: texto,
+          data: new Date().toISOString().split("T")[0],
+        });
+        localStorage.setItem(key, JSON.stringify(reviews));
+        showToast("Review submitted! Thank you.");
+        document.getElementById("reviewName").value = "";
+        document.getElementById("reviewText").value = "";
+        selectedStars = 0;
+        document
+          .querySelectorAll("#starSelect span")
+          .forEach((s) => s.classList.remove("on"));
+      }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2500);
+      }
 
-// Init — pegar produto da URL
-(function() {
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
-  if (!id) { window.location.href = 'index.html'; return; }
-  
-  // Buscar dados do produto na API
-  fetch('/api/produtos').then(r => r.json()).then(lista => {
-    const p = CATALOGO.find(x => x.id === id);
-    if (!p) { window.location.href = 'index.html'; return; }
-    const api = lista.find(x => String(x.id) === String(id));
-    p.estoque = api ? parseInt(api.estoque) : 10;
-    p.preco   = api ? parseFloat(api.preco) : p.preco;
-    renderProduct(p);
-  }).catch(() => {
-    const p = CATALOGO.find(x => x.id === id);
-    if (!p) { window.location.href = 'index.html'; return; }
-    p.estoque = 10;
-    renderProduct(p);
-  });
-})();
-</script>
+      // Init — pegar produto da URL
+      (function () {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        if (!id) {
+          window.location.href = "index.html";
+          return;
+        }
 
-<!-- WhatsApp Button -->
-<a href="https://wa.me/5512988875509" target="_blank" rel="noopener" 
-   style="position:fixed;bottom:24px;right:24px;width:56px;height:56px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,.4);z-index:9999;transition:transform .2s;text-decoration:none"
-   onmouseover="this.style.transform='scale(1.1)'" 
-   onmouseout="this.style.transform='scale(1)'"
-   aria-label="WhatsApp">
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-  </svg>
-</a>
-</body>
+        // Buscar dados do produto na API
+        fetch("/api/produtos")
+          .then((r) => r.json())
+          .then((lista) => {
+            const p = CATALOGO.find((x) => x.id === id);
+            if (!p) {
+              window.location.href = "index.html";
+              return;
+            }
+            const api = lista.find((x) => String(x.id) === String(id));
+            p.estoque = api ? parseInt(api.estoque) : 10;
+            p.preco = api ? parseFloat(api.preco) : p.preco;
+            renderProduct(p);
+          })
+          .catch(() => {
+            const p = CATALOGO.find((x) => x.id === id);
+            if (!p) {
+              window.location.href = "index.html";
+              return;
+            }
+            p.estoque = 10;
+            renderProduct(p);
+          });
+      })();
+    </script>
+
+    <!-- WhatsApp Button -->
+    <a
+      href="https://wa.me/5512991217552"
+      target="_blank"
+      rel="noopener"
+      style="
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 56px;
+        height: 56px;
+        background: #25d366;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+        z-index: 9999;
+        transition: transform 0.2s;
+        text-decoration: none;
+      "
+      onmouseover="this.style.transform = 'scale(1.1)'"
+      onmouseout="this.style.transform = 'scale(1)'"
+      aria-label="WhatsApp"
+    >
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+        <path
+          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+        />
+      </svg>
+    </a>
+  </body>
 </html>
