@@ -357,6 +357,57 @@
   }
 
   // ── PAGAMENTO ──
+  // ── PAYPAL ──
+  var paypalInited = false;
+  function initPayPal() {
+    if (paypalInited) return;
+    if (typeof paypal_sdk === 'undefined') {
+      document.getElementById('paypal-loading').textContent = 'PayPal unavailable.';
+      return;
+    }
+    paypalInited = true;
+    document.getElementById('paypal-loading').style.display = 'none';
+    paypal_sdk.Buttons({
+      style: { layout:'vertical', color:'gold', shape:'pill', label:'paypal' },
+      createOrder: async function() {
+        var totalEl = document.getElementById('resumoTotal');
+        var totalBRL = parseFloat((totalEl ? totalEl.textContent : '0').replace('R$','').replace(',','.').trim()) || 0;
+        var totalUSD = (totalBRL / 5.8).toFixed(2);
+        const res = await fetch('/api/paypal/create-order', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ amount: totalUSD, currency: 'USD' })
+        });
+        const data = await res.json();
+        if (data.erro) throw new Error(data.erro);
+        return data.orderID;
+      },
+      onApprove: async function(data) {
+        const carrinho = getCarrinho();
+        const email = document.getElementById('email') ? document.getElementById('email').value : '';
+        const cupom = document.getElementById('cupomInput') ? document.getElementById('cupomInput').value : '';
+        const res = await fetch('/api/paypal/capture-order', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ orderID: data.orderID, carrinho: carrinho, email: email, cupom: cupom })
+        });
+        const result = await res.json();
+        if (result.pedidoId) {
+          localStorage.removeItem('pep_carrinho');
+          location.href = 'confirmacao.html?id=' + result.pedidoId;
+        } else {
+          document.getElementById('paypal-error').style.display = 'block';
+          document.getElementById('paypal-error').textContent = result.erro || 'Payment error. Please try again.';
+        }
+      },
+      onError: function(err) {
+        document.getElementById('paypal-error').style.display = 'block';
+        document.getElementById('paypal-error').textContent = 'PayPal error. Please try again.';
+        console.error('[PayPal]', err);
+      }
+    }).render('#paypal-button-container');
+  }
+
   function trocarPag(tipo, btn) {
     pagAtual = tipo;
     document.querySelectorAll('.pay-tabs .pay-tab').forEach(t => t.classList.remove('active'));
@@ -506,6 +557,7 @@
 
   // ── FINALIZAR ──
   async function finalizar() {
+    if (pagAtual === 'cartao') { mostrarErro('Use o botão do PayPal acima para pagar.'); return; }
     if (pagAtual === 'cartao') { mostrarErro('Use o botão do PayPal acima para pagar.'); return; }
     const nome      = document.getElementById('nome').value.trim();
     const email     = document.getElementById('email').value.trim();
