@@ -754,6 +754,70 @@ app.put('/api/admin/estoque/:id', adminMiddleware, async (req, res) => {
 // ─────────────────────────────────────────────
 //  WEBHOOK PIXGO
 // ─────────────────────────────────────────────
+// ── PAYPAL ──
+async function getPayPalToken() {
+  const creds = Buffer.from(PAYPAL_CLIENT_ID + ':' + PAYPAL_CLIENT_SECRET).toString('base64');
+  const r = await fetch(PAYPAL_BASE_URL + '/v1/oauth2/token', {
+    method: 'POST',
+    headers: { 'Authorization': 'Basic ' + creds, 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'grant_type=client_credentials'
+  });
+  const d = await r.json();
+  return d.access_token;
+}
+
+app.post('/api/paypal/create-order', async (req, res) => {
+  try {
+    const { amount, currency } = req.body;
+    const token = await getPayPalToken();
+    const r = await fetch(PAYPAL_BASE_URL + '/v2/checkout/orders', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        intent: 'CAPTURE',
+        purchase_units: [{ amount: { currency_code: currency || 'USD', value: String(amount) } }]
+      })
+    });
+    const d = await r.json();
+    if (d.id) res.json({ orderID: d.id });
+    else res.status(400).json({ erro: 'Erro ao criar ordem PayPal' });
+  } catch (err) {
+    console.error('[PayPal] create-order:', err.message);
+    res.status(500).json({ erro: 'Erro interno PayPal' });
+  }
+});
+
+app.post('/api/paypal/capture-order', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { orderID, carrinho, nome, email, cupom } = req.body;
+    const token = await getPayPalToken();
+    const r = await fetch(PAYPAL_BASE_URL + '/v2/checkout/orders/' + orderID + '/capture', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
+    });
+    const d = await r.json();
+    if (d.status !== 'COMPLETED') return res.status(400).json({ erro: 'Payment not completed' });
+
+    const prods = await client.query('SELECT id, preco FROM pep_estoque');
+    let total = 0;
+    const itens = [];
+    for (const item of (carrinho || [])) {
+      const p = prods.rows.find(x => String(x.id) === String(item.id));
+      if (p) { total += parseFloat(p.preco) * item.quantidade; itens.push(item.nome + (item.quantidade > 1 ? ' x' + item.quantidade : '')); }
+    }
+
+    const result = await client.query(
+      "INSERT INTO pep_pedidos (usuario_email, produto, total, pagamento, cupom, status) VALUES ($1,$2,$3,$4,$5,'pago') RETURNING id",
+      [email, itens.join(', '), total, 'paypal', cupom || null]
+    );
+    res.json({ pedidoId: result.rows[0].id });
+  } catch (err) {
+    console.error('[PayPal] capture-order:', err.message);
+    res.status(500).json({ erro: 'Erro ao registrar pedido' });
+  } finally { client.release(); }
+});
+
 app.post('/webhook/pixgo', express.raw({ type: '*/*' }), async (req, res) => {
   // Obter body como string/buffer
   let rawBody;
