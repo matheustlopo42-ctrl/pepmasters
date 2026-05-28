@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="google-site-verification" content="41MPDpavwlRynwC8pdjkfrB4-Sh1G31ws4E5otbhkFY"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PEPMASTERS — High Performance Peptides</title>
   <!-- SEO Meta Tags -->
@@ -681,9 +680,9 @@ function mkCard(p) {
 
   var imgWrap = document.createElement('div');
   imgWrap.className = 'card-img-wrap';
-  var badge = document.createElement('span');
-  badge.className = 'cat-badge cat-' + p.catClass;
-  badge.textContent = p.categoria;
+  // badge removido
+  // badge removido
+  // badge removido
   imgWrap.appendChild(badge);
   if (esgotado) {
     var eb = document.createElement('span');
@@ -712,8 +711,8 @@ function mkCard(p) {
   var body = document.createElement('div');
   body.className = 'card-body';
   body.innerHTML =
-    '<div class="card-cat-label">' + p.categoria + '</div>' +
-    '<div class="card-cat-label">' + p.categoria + '</div>' +
+    // categoria removida (duplicada)
+    // categoria removida (duplicada)
     '<a href="produto.html?id=' + p.id + '" style="text-decoration:none;color:inherit;cursor:pointer"><div class="card-name">' + p.nome + '</div></a>' +
     '<div class="card-desc">' + p.descricao + '</div>';
     '<div class="card-desc">' + p.descricao + '</div>';
