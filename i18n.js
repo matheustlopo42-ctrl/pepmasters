@@ -256,7 +256,7 @@ window.PEPMASTERS_I18N = {
   "shipping.subtitle": { en:"Complete information about shipping and delivery deadlines.", pt:"Informações completas sobre modalidades de envio e prazos de entrega.", es:"Informacion completa sobre envios.", de:"Vollstandige Versandinformationen.", fr:"Informations completes sur expedition." },
   "returns.subtitle": { en:"Your satisfaction is our priority. See how our process works.", pt:"Sua satisfação é nossa prioridade. Veja como funciona nosso processo.", es:"Tu satisfaccion es nuestra prioridad.", de:"Ihre Zufriedenheit ist unsere Prioritat.", fr:"Votre satisfaction est notre priorite." },
   "terms.subtitle": { en:"Last updated: January 2025", pt:"Última atualização: Janeiro de 2025", es:"Ultima actualizacion: Enero de 2025", de:"Zuletzt aktualisiert: Januar 2025", fr:"Derniere mise a jour: Janvier 2025" },
-  "privacy.subtitle": { en:"Last updated: January 2025", pt:"Última atualização: Janeiro de 2025", es:"Ultima actualizacion: Enero de 2025", de:"Zuletzt aktualisiert: Januar 2025", fr:"Derniere mise a jour: Janvier 2025" }
+  "privacy.subtitle": { en:"Last updated: January 2025", pt:"Última atualização: Janeiro de 2025", es:"Ultima actualizacion: Enero de 2025", de:"Zuletzt aktualisiert: Januar 2025", fr:"Derniere mise a jour: Janvier 2025" },
 
   "cat.recuperacao":  { en:"Recovery",        pt:"Recuperação",        es:"Recuperación",       de:"Erholung",          fr:"Récupération" },
   "cat.gordura":      { en:"Fat Loss",         pt:"Queima de Gordura",  es:"Quema de Grasa",     de:"Fettverbrennung",   fr:"Perte de graisse" },
