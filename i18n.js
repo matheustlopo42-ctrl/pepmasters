@@ -258,4 +258,13 @@ window.PEPMASTERS_I18N = {
   "terms.subtitle": { en:"Last updated: January 2025", pt:"Última atualização: Janeiro de 2025", es:"Ultima actualizacion: Enero de 2025", de:"Zuletzt aktualisiert: Januar 2025", fr:"Derniere mise a jour: Janvier 2025" },
   "privacy.subtitle": { en:"Last updated: January 2025", pt:"Última atualização: Janeiro de 2025", es:"Ultima actualizacion: Enero de 2025", de:"Zuletzt aktualisiert: Januar 2025", fr:"Derniere mise a jour: Janvier 2025" }
 
+  "cat.recuperacao":  { en:"Recovery",        pt:"Recuperação",        es:"Recuperación",       de:"Erholung",          fr:"Récupération" },
+  "cat.gordura":      { en:"Fat Loss",         pt:"Queima de Gordura",  es:"Quema de Grasa",     de:"Fettverbrennung",   fr:"Perte de graisse" },
+  "cat.gh":           { en:"GH & Mass",        pt:"GH & Massa",         es:"GH & Masa",          de:"GH & Masse",        fr:"GH & Masse" },
+  "cat.cognitivo":    { en:"Cognitive",        pt:"Cognitivo",          es:"Cognitivo",          de:"Kognitiv",          fr:"Cognitif" },
+  "cat.hormonal":     { en:"Hormonal",         pt:"Hormonal",           es:"Hormonal",           de:"Hormonal",          fr:"Hormonal" },
+  "cat.antioxidante": { en:"Antioxidant",      pt:"Antioxidante",       es:"Antioxidante",       de:"Antioxidativ",      fr:"Antioxydant" },
+  "cat.estetico":     { en:"Aesthetic",        pt:"Estético",           es:"Estético",           de:"Ästhetisch",        fr:"Esthétique" },
+  "cat.antiinfla":    { en:"Anti-inflammatory",pt:"Anti-inflamatório",  es:"Antiinflamatorio",   de:"Entzündungshemmend",fr:"Anti-inflammatoire" },
+
 };
