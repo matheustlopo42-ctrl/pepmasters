@@ -73,6 +73,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Servir arquivos JS da raiz (i18n, etc)
 app.get('/i18n.js', (req, res) => res.sendFile(path.join(__dirname, 'i18n.js')));
 app.get('/i18n-init.js', (req, res) => res.sendFile(path.join(__dirname, 'i18n-init.js')));
+app.get('/sitemap.xml', (req, res) => res.sendFile(path.join(__dirname, 'sitemap.xml')));
+app.get('/robots.txt', (req, res) => res.sendFile(path.join(__dirname, 'robots.txt')));
 
 // ── INIT TABELAS ─────────────────────────────
 async function initDB() {

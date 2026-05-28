@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /admin-cupons.html
+Disallow: /admin-estoque.html
+Disallow: /admin-usuarios.html
+Disallow: /api/
+
+Sitemap: https://pepmasters.onrender.com/sitemap.xml
