@@ -299,14 +299,14 @@
   <div class="section-label"><h2 data-i18n="products.title">Nossos Produtos</h2></div>
   <div class="filtros">
     <button class="filtro-btn active" onclick="filtrar('',this)" data-i18n="products.all">Todos</button>
-    <button class="filtro-btn" onclick="filtrar('Recuperação',this)" data-i18n="cat.recuperacao">Recuperação</button>
-    <button class="filtro-btn" onclick="filtrar('Queima de Gordura',this)" data-i18n="cat.gordura">Queima de Gordura</button>
-    <button class="filtro-btn" onclick="filtrar('GH & Massa',this)" data-i18n="cat.gh">GH & Massa</button>
-    <button class="filtro-btn" onclick="filtrar('Cognitivo',this)" data-i18n="cat.cognitivo">Cognitivo</button>
-    <button class="filtro-btn" onclick="filtrar('Hormonal',this)" data-i18n="cat.hormonal">Hormonal</button>
-    <button class="filtro-btn" onclick="filtrar('Antioxidante',this)" data-i18n="cat.antioxidante">Antioxidante</button>
-    <button class="filtro-btn" onclick="filtrar('Estético',this)" data-i18n="cat.estetico">Estético</button>
-    <button class="filtro-btn" onclick="filtrar('Anti-inflamatório',this)" data-i18n="cat.antiinfla">Anti-inflamatório</button>
+    <button class="filtro-btn" onclick="filtrar('recuperacao',this)" data-i18n="cat.recuperacao">Recuperação</button>
+    <button class="filtro-btn" onclick="filtrar('gordura',this)" data-i18n="cat.gordura">Queima de Gordura</button>
+    <button class="filtro-btn" onclick="filtrar('gh',this)" data-i18n="cat.gh">GH & Massa</button>
+    <button class="filtro-btn" onclick="filtrar('cognitivo',this)" data-i18n="cat.cognitivo">Cognitivo</button>
+    <button class="filtro-btn" onclick="filtrar('hormonal',this)" data-i18n="cat.hormonal">Hormonal</button>
+    <button class="filtro-btn" onclick="filtrar('antioxidante',this)" data-i18n="cat.antioxidante">Antioxidante</button>
+    <button class="filtro-btn" onclick="filtrar('estetico',this)" data-i18n="cat.estetico">Estético</button>
+    <button class="filtro-btn" onclick="filtrar('antiinfla',this)" data-i18n="cat.antiinfla">Anti-inflamatório</button>
     <div class="busca-wrap"><input type="text" id="buscaInput" placeholder="Buscar peptídeo..." data-i18n-placeholder="products.search" oninput="buscar()"/></div>
   </div>
   <div id="produtosGrid"></div>
@@ -798,9 +798,9 @@ function renderGrid(lista){
 // ── FILTROS ──
 function filtrar(cat,btn){filtroAtivo=cat;document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('buscaInput').value='';aplicarFiltros()}
 function getCatNome(catClass){const lang=window.PEP_LANG?window.PEP_LANG.get():'en';const p=produtosData.find(x=>x.catClass===catClass);return p?p.categoria:catClass;}
-function filtrarLink(cat){filtroAtivo=cat;document.querySelectorAll('.filtro-btn').forEach(b=>{if(b.textContent.includes(cat))b.classList.add('active');else b.classList.remove('active')});aplicarFiltros();setTimeout(()=>document.getElementById('produtos').scrollIntoView({behavior:'smooth'}),100)}
+function filtrarLink(cat){filtroAtivo=cat;document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('active'));aplicarFiltros();setTimeout(()=>document.getElementById('produtos').scrollIntoView({behavior:'smooth'}),100)}
 function buscar(){filtroAtivo='';document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('active'));document.querySelector('.filtro-btn').classList.add('active');aplicarFiltros()}
-function aplicarFiltros(){const q=document.getElementById('buscaInput').value.toLowerCase();renderGrid(produtosData.filter(p=>(!filtroAtivo||p.categoria===filtroAtivo)&&(!q||p.nome.toLowerCase().includes(q)||p.descricao.toLowerCase().includes(q))))}
+function aplicarFiltros(){const q=document.getElementById('buscaInput').value.toLowerCase();renderGrid(produtosData.filter(p=>(!filtroAtivo||p.catClass===filtroAtivo||p.categoria===filtroAtivo)&&(!q||p.nome.toLowerCase().includes(q)||p.descricao.toLowerCase().includes(q))))}
 
 // ── LISTA ESPERA ──
 function abrirEspera(nome){document.getElementById('espera-produto').value=nome;document.getElementById('modalEspera').classList.add('open')}
