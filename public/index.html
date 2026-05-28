@@ -219,22 +219,22 @@
 </head>
 <body>
 
-<header>
-  <!-- MOBILE MENU -->
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="index.html" data-i18n="nav.home">Início</a>
-    <div style="border-bottom:1px solid var(--border)">
-      <button onclick="toggleMobProd()" style="width:100%;text-align:left;background:none;border:none;padding:12px 8px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase;color:var(--dark);cursor:pointer;display:flex;justify-content:space-between;align-items:center">
-        <span data-i18n="nav.products">Produtos</span>
-        <svg id="mobProdArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div id="mobCatList" style="display:none;padding:0 0 8px 0"></div>
-    </div>
-    <a href="quem-somos.html" data-i18n="nav.about">Quem Somos</a>
-    <a href="duvidas-frequentes.html" data-i18n="nav.faq">Dúvidas</a>
-    <a href="rastrear-pedido.html" data-i18n="nav.track">Rastrear</a>
-    <div class="mob-auth" id="mobileAuth"></div>
+<!-- MOBILE MENU (fora do header) -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" data-i18n="nav.home">Início</a>
+  <div style="border-bottom:1px solid var(--border)">
+    <button onclick="toggleMobProd()" style="width:100%;text-align:left;background:none;border:none;padding:12px 8px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase;color:var(--dark);cursor:pointer;display:flex;justify-content:space-between;align-items:center">
+      <span data-i18n="nav.products">Produtos</span>
+      <svg id="mobProdArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div id="mobCatList" style="display:none;padding:0 0 8px 0"></div>
   </div>
+  <a href="quem-somos.html" data-i18n="nav.about">Quem Somos</a>
+  <a href="duvidas-frequentes.html" data-i18n="nav.faq">Dúvidas</a>
+  <a href="rastrear-pedido.html" data-i18n="nav.track">Rastrear</a>
+  <div class="mob-auth" id="mobileAuth"></div>
+</div>
+<header>
   <div class="header-inner">
     <a href="index.html" class="logo-wrap">
       <img src="Capturar.PNG" alt="Logo"/>
