@@ -506,17 +506,26 @@
 
   // ── FINALIZAR ──
   function finalizarWhatsApp() {
-    const nome     = document.getElementById('nome')     ? document.getElementById('nome').value.trim()     : '';
-    const email    = document.getElementById('email')    ? document.getElementById('email').value.trim()    : '';
-    const telefone = document.getElementById('telefone') ? document.getElementById('telefone').value.trim() : '';
-    const itens    = carrinho.map(i => i.nome + ' x' + i.quantidade + ' (R$ ' + (i.preco * i.quantidade).toFixed(2) + ')').join('%0A');
-    const total    = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0).toFixed(2);
+    const nome       = document.getElementById('nome')        ? document.getElementById('nome').value.trim()        : '';
+    const email      = document.getElementById('email')       ? document.getElementById('email').value.trim()       : '';
+    const telefone   = document.getElementById('telefone')    ? document.getElementById('telefone').value.trim()    : '';
+    const cep        = document.getElementById('cep')         ? document.getElementById('cep').value.trim()         : '';
+    const rua        = document.getElementById('rua')         ? document.getElementById('rua').value.trim()         : '';
+    const numero     = document.getElementById('numero')      ? document.getElementById('numero').value.trim()      : '';
+    const bairro     = document.getElementById('bairro')      ? document.getElementById('bairro').value.trim()      : '';
+    const cidade     = document.getElementById('cidade')      ? document.getElementById('cidade').value.trim()      : '';
+    const complemento= document.getElementById('complemento') ? document.getElementById('complemento').value.trim() : '';
+    const itens      = carrinho.map(i => i.nome + ' x' + i.quantidade + ' (R$ ' + (i.preco * i.quantidade).toFixed(2) + ')').join('%0A');
+    const total      = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0).toFixed(2);
+    const endereco   = [rua, numero, complemento, bairro, cidade, cep].filter(Boolean).join(', ');
     const msg = 'Ol%C3%A1! Gostaria de fazer um pedido:%0A%0A' +
       '*Itens:*%0A' + itens + '%0A%0A' +
       '*Total: R$ ' + total + '*%0A%0A' +
-      (nome     ? 'Nome: '  + encodeURIComponent(nome)     + '%0A' : '') +
-      (email    ? 'Email: ' + encodeURIComponent(email)    + '%0A' : '') +
-      (telefone ? 'Tel: '   + encodeURIComponent(telefone)          : '');
+      '*Dados do cliente:*%0A' +
+      (nome      ? 'Nome: '      + encodeURIComponent(nome)      + '%0A' : '') +
+      (email     ? 'Email: '     + encodeURIComponent(email)     + '%0A' : '') +
+      (telefone  ? 'Tel: '       + encodeURIComponent(telefone)  + '%0A' : '') +
+      (endereco  ? 'Endere%C3%A7o: ' + encodeURIComponent(endereco) : '');
     window.open('https://wa.me/5512988875509?text=' + msg, '_blank');
   }
 
