@@ -294,7 +294,7 @@
 </footer>
 
 <script>
-  let pagAtual    = 'pix';
+  let pagAtual    = 'cripto';
   let cryptoToken = 'USDT';
   let cryptoValor = 0;
   const WALLET    = '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
@@ -303,6 +303,7 @@
 
   // ── INIT ──
   function init() {
+    carregarCotacao();
     try { carrinho = JSON.parse(localStorage.getItem('pep_carrinho') || '[]'); } catch { carrinho = []; }
 
     if (!carrinho.length) {
