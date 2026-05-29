@@ -305,4 +305,20 @@ window.PEPMASTERS_I18N = {
   "checkout.shipping.calc":{ en:"Calculated at checkout", pt:"A calcular",        es:"A calcular",          de:"Wird berechnet",      fr:"À calculer" },
   "checkout.empty":        { en:"Your cart is empty", pt:"Seu carrinho está vazio", es:"Tu carrito está vacío", de:"Ihr Warenkorb ist leer", fr:"Votre panier est vide" },
 
+  "checkout.back":              { en:"Continue shopping",    pt:"Continuar comprando",    es:"Seguir comprando",       de:"Weiter einkaufen",       fr:"Continuer les achats" },
+  "checkout.apply":             { en:"Apply",                pt:"Aplicar",                es:"Aplicar",                de:"Anwenden",               fr:"Appliquer" },
+  "checkout.ph.name":           { en:"Your name",            pt:"Seu nome",               es:"Su nombre",              de:"Ihr Name",               fr:"Votre nom" },
+  "checkout.ph.email":          { en:"your@email.com",       pt:"seu@email.com",          es:"su@email.com",           de:"ihre@email.com",         fr:"votre@email.com" },
+  "checkout.ph.cpf":            { en:"ID / Tax Number",      pt:"000.000.000-00",         es:"Número de documento",    de:"Steuer-ID",              fr:"Numéro fiscal" },
+  "checkout.ph.phone":          { en:"(00) 00000-0000",      pt:"(00) 00000-0000",        es:"(00) 00000-0000",        de:"(00) 00000-0000",        fr:"(00) 00000-0000" },
+  "checkout.ph.street":         { en:"Street address",       pt:"Logradouro",             es:"Calle",                  de:"Straße",                 fr:"Adresse" },
+  "checkout.ph.complement":     { en:"Apt, unit...",         pt:"Apto, bloco...",         es:"Apto, bloque...",        de:"Wohnung, Block...",      fr:"Appt, bâtiment..." },
+  "checkout.ph.coupon":         { en:"CODE",                 pt:"CÓDIGO",                 es:"CÓDIGO",                 de:"CODE",                   fr:"CODE" },
+  "checkout.crypto.network":    { en:"Network: <strong>Polygon (MATIC)</strong> — near-zero fees", pt:"Rede: <strong>Polygon (MATIC)</strong> — taxas quase zero", es:"Red: <strong>Polygon (MATIC)</strong> — tarifas casi nulas", de:"Netzwerk: <strong>Polygon (MATIC)</strong> — fast null Gebühren", fr:"Réseau: <strong>Polygon (MATIC)</strong> — frais quasi nuls" },
+  "checkout.crypto.wallet":     { en:"Wallet address",       pt:"Endereço da carteira",   es:"Dirección de billetera", de:"Wallet-Adresse",         fr:"Adresse du portefeuille" },
+  "checkout.crypto.copy.addr":  { en:"Copy address",         pt:"Copiar endereço",        es:"Copiar dirección",       de:"Adresse kopieren",       fr:"Copier l'adresse" },
+  "checkout.crypto.copy.amount":{ en:"Copy exact amount",    pt:"Copiar valor exato",     es:"Copiar monto exacto",    de:"Genauen Betrag kopieren",fr:"Copier le montant exact" },
+  "checkout.crypto.send":       { en:"Send exactly:",        pt:"Envie exatamente:",      es:"Envíe exactamente:",     de:"Senden Sie genau:",      fr:"Envoyez exactement:" },
+  "checkout.crypto.monitoring": { en:"Monitoring transaction on Polygon...", pt:"Monitorando transação na Polygon...", es:"Monitoreando transacción en Polygon...", de:"Transaktion wird überwacht...", fr:"Surveillance de la transaction sur Polygon..." },
+
 };
