@@ -310,7 +310,7 @@ window.PEPMASTERS_I18N = {
   "checkout.ph.name":           { en:"Your name",            pt:"Seu nome",               es:"Su nombre",              de:"Ihr Name",               fr:"Votre nom" },
   "checkout.ph.email":          { en:"your@email.com",       pt:"seu@email.com",          es:"su@email.com",           de:"ihre@email.com",         fr:"votre@email.com" },
   "checkout.ph.cpf":            { en:"ID / Tax Number",      pt:"000.000.000-00",         es:"Número de documento",    de:"Steuer-ID",              fr:"Numéro fiscal" },
-  "checkout.ph.phone":          { en:"(00) 00000-0000",      pt:"(00) 00000-0000",        es:"(00) 00000-0000",        de:"(00) 00000-0000",        fr:"(00) 00000-0000" },
+  "checkout.ph.phone":          { en:"+1 (000) 000-0000",    pt:"+55 (00) 00000-0000",    es:"+52 (00) 0000-0000",     de:"+49 (00) 0000-0000",     fr:"+33 (0) 00 00 00 00" },
   "checkout.ph.street":         { en:"Street address",       pt:"Logradouro",             es:"Calle",                  de:"Straße",                 fr:"Adresse" },
   "checkout.ph.complement":     { en:"Apt, unit...",         pt:"Apto, bloco...",         es:"Apto, bloque...",        de:"Wohnung, Block...",      fr:"Appt, bâtiment..." },
   "checkout.ph.coupon":         { en:"CODE",                 pt:"CÓDIGO",                 es:"CÓDIGO",                 de:"CODE",                   fr:"CODE" },
