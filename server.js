@@ -501,13 +501,61 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
 
     // email confirmação para o cliente
     const itensHtml = carrinho.map(i => '<li>' + i.nome + ' × ' + i.quantidade + ' — R$ ' + (i.preco * i.quantidade).toFixed(2).replace('.',',') + '</li>').join('');
-    enviarEmail(email, 'Pedido #' + pedidoId + ' recebido — PEPMASTERS',
-      '<h2>Obrigado, ' + nome.split(' ')[0] + '!</h2>' +
-      '<p>Seu pedido <b>#' + pedidoId + '</b> foi recebido!</p>' +
-      '<ul>' + itensHtml + '</ul>' +
-      '<p><b>Total: R$ ' + total.toFixed(2).replace('.',',') + '</b></p>' +
-      '<p>Acompanhe em: <a href="' + BASE_URL + '/meus-pedidos.html">Meus Pedidos</a></p>'
-    );
+
+    if (pagamento === 'cripto') {
+      // Email especial para cripto explicando confirmação manual
+      enviarEmail(email, '⏳ Aguardando confirmação — Pedido #' + pedidoId + ' PEPMASTERS',
+        '<div style="font-family:sans-serif;max-width:600px;margin:0 auto">' +
+        '<h2 style="color:#e8220a">Olá, ' + nome.split(' ')[0] + '! Seu pedido foi recebido.</h2>' +
+        '<p>Seu pedido <b>#' + pedidoId + '</b> está sendo processado.</p>' +
+        '<ul>' + itensHtml + '</ul>' +
+        '<p><b>Total: R$ ' + total.toFixed(2).replace('.',',') + '</b></p>' +
+        (crypto_valor ? '<p>💰 <b>Valor em cripto: ' + crypto_valor + ' ' + (crypto_token || 'USDT') + '</b></p>' : '') +
+        '<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:16px;margin:20px 0">' +
+        '<h3 style="margin:0 0 8px;color:#856404">⏳ Por que meu pedido está aguardando confirmação?</h3>' +
+        '<p style="margin:0;color:#856404">Pagamentos em criptomoeda requerem verificação manual na blockchain. ' +
+        'Isso é uma característica técnica da tecnologia cripto — não reflete qualquer falha da PEPMASTERS. ' +
+        'Nossa equipe verifica e confirma todos os pagamentos em até <b>24 horas úteis</b>.</p>' +
+        '</div>' +
+        '<p>Assim que confirmarmos seu pagamento, você receberá um email de confirmação.</p>' +
+        '<p>Qualquer dúvida, entre em contato via <a href="https://wa.me/5512991217552">WhatsApp</a>.</p>' +
+        '<p>Acompanhe seu pedido: <a href="' + BASE_URL + '/meus-pedidos.html">Meus Pedidos</a></p>' +
+        '</div>'
+      );
+    } else {
+      enviarEmail(email, 'Pedido #' + pedidoId + ' recebido — PEPMASTERS',
+        '<h2>Obrigado, ' + nome.split(' ')[0] + '!</h2>' +
+        '<p>Seu pedido <b>#' + pedidoId + '</b> foi recebido!</p>' +
+        '<ul>' + itensHtml + '</ul>' +
+        '<p><b>Total: R$ ' + total.toFixed(2).replace('.',',') + '</b></p>' +
+        '<p>Acompanhe em: <a href="' + BASE_URL + '/meus-pedidos.html">Meus Pedidos</a></p>'
+      );
+    }
+
+    // Timeout automático para cripto — cancela após 48h se não confirmado
+    if (pagamento === 'cripto') {
+      setTimeout(async () => {
+        try {
+          const { rows } = await pool.query('SELECT status FROM pep_pedidos WHERE id=$1', [pedidoId]);
+          if (rows[0] && rows[0].status === 'pix_pending') {
+            await pool.query("UPDATE pep_pedidos SET status='cancelado' WHERE id=$1", [pedidoId]);
+            enviarEmail(email, '❌ Pedido #' + pedidoId + ' cancelado — PEPMASTERS',
+              '<div style="font-family:sans-serif;max-width:600px;margin:0 auto">' +
+              '<h2 style="color:#e8220a">Pedido #' + pedidoId + ' cancelado</h2>' +
+              '<p>Olá, ' + nome.split(' ')[0] + '!</p>' +
+              '<p>Infelizmente seu pedido foi cancelado automaticamente pois não identificamos a confirmação do pagamento em cripto dentro de <b>48 horas</b>.</p>' +
+              '<div style="background:#f8d7da;border:1px solid #f5c6cb;border-radius:8px;padding:16px;margin:20px 0">' +
+              '<p style="margin:0;color:#721c24">Se você já realizou o pagamento, entre em contato conosco via ' +
+              '<a href="https://wa.me/5512991217552">WhatsApp</a> com o comprovante da transação e resolveremos imediatamente.</p>' +
+              '</div>' +
+              '<p>Sentimos muito pelo inconveniente. Você pode fazer um novo pedido a qualquer momento em <a href="' + BASE_URL + '">pepmasters.io</a></p>' +
+              '</div>'
+            );
+            console.log('[Cripto] Pedido #' + pedidoId + ' cancelado por timeout de 48h');
+          }
+        } catch(e) { console.error('[Cripto Timeout]', e.message); }
+      }, 48 * 60 * 60 * 1000); // 48 horas
+    }
 
     res.json({ pedido_id: pedidoId, qrcode_url, pix_copia_cola });
   } catch (err) {
