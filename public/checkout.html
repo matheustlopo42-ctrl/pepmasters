@@ -178,9 +178,9 @@
         <!-- CARTÃO -->
         <div class="pay-panel" id="pag-cartao">
           <div style="text-align:center;padding:12px 0 8px">
-            <p style="font-size:.85rem;color:var(--muted);margin-bottom:16px">Pay securely with PayPal — accepts credit/debit cards from any country.</p>
+            <p style="font-size:.85rem;color:var(--muted);margin-bottom:16px"><span data-i18n="checkout.paypal.desc">Pay securely with PayPal — accepts credit/debit cards from any country.</span></p>
             <div id="paypal-button-container"></div>
-            <div id="paypal-loading" style="color:var(--muted);font-size:.85rem;padding:12px">Loading PayPal...</div>
+            <div id="paypal-loading" style="color:var(--muted);font-size:.85rem;padding:12px" data-i18n="checkout.paypal.loading">Loading PayPal...</div>
             <div id="paypal-error" style="display:none;color:#b91c1c;font-size:.85rem;padding:12px"></div>
           </div>
         </div>
@@ -212,12 +212,12 @@
                 <span data-i18n="checkout.crypto.send">Envie exatamente:</span> <span id="cryptoValor">0</span> <span id="cryptoToken">USDT</span>
               </div>
               <div style="margin-top:10px;padding:10px 14px;background:#FFF8E1;border:1px solid #FFD580;border-radius:8px;font-size:.78rem;color:#7c4d00;line-height:1.5">
-                ⚠️ Send the <strong>exact amount</strong> shown above. Network fees are the buyer's responsibility. Incorrect amounts will not be confirmed automatically.
+                <span data-i18n="checkout.crypto.warning">⚠️ Send the <strong>exact amount</strong> shown above. Network fees are the buyer's responsibility. Incorrect amounts will not be confirmed automatically.</span>
               </div>
             </div>
             <div style="margin-top:10px;padding:10px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;font-size:.76rem;color:#0369a1;line-height:1.6">
-                <strong>📱 Mobile:</strong> Scan the QR Code with MetaMask, Trust Wallet or Coinbase Wallet — amount is pre-filled automatically.<br>
-                <strong>💻 PC:</strong> Copy the address and exact amount using the buttons above, then send from your wallet.
+                <strong>📱 <span data-i18n="checkout.crypto.mobile.label">Mobile:</span></strong> <span data-i18n="checkout.crypto.mobile">Scan the QR Code with MetaMask, Trust Wallet or Coinbase Wallet — amount is pre-filled automatically.</span><br>
+                <strong>💻 <span data-i18n="checkout.crypto.pc.label">PC:</span></strong> <span data-i18n="checkout.crypto.pc">Copy the address and exact amount using the buttons above, then send from your wallet.</span>
               </div>
               <div id="cryptoStatus" style="text-align:center;font-size:.88rem;color:var(--muted);margin-top:10px"><span data-i18n="checkout.crypto.monitoring">Monitoring transaction on Polygon...</span></div>
           </div>
