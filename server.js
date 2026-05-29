@@ -230,7 +230,7 @@ async function enviarEmail(para, assunto, html) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'PEPMASTERS <onboarding@resend.dev>',
+        from: 'PEPMASTERS <noreply@pepmasters.io>',
         to: [para],
         subject: assunto,
         html
