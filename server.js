@@ -416,6 +416,7 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
 
     // criar pedido
     const statusInicial = (pagamento === 'pix' || pagamento === 'cripto') ? 'pix_pending' : 'pago';
+    const pagamentoLabel = pagamento === 'whatsapp' ? 'WhatsApp' : pagamento.toUpperCase();
     const { rows: pedRows } = await client.query(
       `INSERT INTO pep_pedidos
          (usuario_id,nome,email,cpf,telefone,cep,rua,numero,bairro,cidade,complemento,

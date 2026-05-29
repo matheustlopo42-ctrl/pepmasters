@@ -505,7 +505,7 @@
   }
 
   // ── FINALIZAR ──
-  function finalizarWhatsApp() {
+  async function finalizarWhatsApp() {
     const nome       = document.getElementById('nome')        ? document.getElementById('nome').value.trim()        : '';
     const email      = document.getElementById('email')       ? document.getElementById('email').value.trim()       : '';
     const telefone   = document.getElementById('telefone')    ? document.getElementById('telefone').value.trim()    : '';
@@ -515,17 +515,37 @@
     const bairro     = document.getElementById('bairro')      ? document.getElementById('bairro').value.trim()      : '';
     const cidade     = document.getElementById('cidade')      ? document.getElementById('cidade').value.trim()      : '';
     const complemento= document.getElementById('complemento') ? document.getElementById('complemento').value.trim() : '';
-    const itens      = carrinho.map(i => i.nome + ' x' + i.quantidade + ' (R$ ' + (i.preco * i.quantidade).toFixed(2) + ')').join('%0A');
-    const total      = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0).toFixed(2);
-    const endereco   = [rua, numero, complemento, bairro, cidade, cep].filter(Boolean).join(', ');
+
+    if (!nome || !email) { mostrarErro('Preencha nome e email antes de continuar.'); return; }
+
+    const itensWA  = carrinho.map(i => i.nome + ' x' + i.quantidade + ' (R$ ' + (i.preco * i.quantidade).toFixed(2) + ')').join('%0A');
+    const totalVal = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0).toFixed(2);
+    const endereco = [rua, numero, complemento, bairro, cidade, cep].filter(Boolean).join(', ');
+
+    // Criar pedido no banco e enviar email
+    try {
+      const token = localStorage.getItem('pep_token') || '';
+      await fetch('/api/pedido', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome, email, telefone,
+          endereco: { cep, rua, numero, bairro, cidade, complemento },
+          carrinho, pagamento: 'whatsapp', cupom: cupomAplicado || '',
+          token
+        })
+      });
+    } catch(e) { console.warn('Pedido não registrado:', e); }
+
+    // Abrir WhatsApp
     const msg = 'Ol%C3%A1! Gostaria de fazer um pedido:%0A%0A' +
-      '*Itens:*%0A' + itens + '%0A%0A' +
-      '*Total: R$ ' + total + '*%0A%0A' +
+      '*Itens:*%0A' + itensWA + '%0A%0A' +
+      '*Total: R$ ' + totalVal + '*%0A%0A' +
       '*Dados do cliente:*%0A' +
-      (nome      ? 'Nome: '      + encodeURIComponent(nome)      + '%0A' : '') +
-      (email     ? 'Email: '     + encodeURIComponent(email)     + '%0A' : '') +
-      (telefone  ? 'Tel: '       + encodeURIComponent(telefone)  + '%0A' : '') +
-      (endereco  ? 'Endere%C3%A7o: ' + encodeURIComponent(endereco) : '');
+      (nome      ? 'Nome: '         + encodeURIComponent(nome)      + '%0A' : '') +
+      (email     ? 'Email: '        + encodeURIComponent(email)     + '%0A' : '') +
+      (telefone  ? 'Tel: '          + encodeURIComponent(telefone)  + '%0A' : '') +
+      (endereco  ? 'Endere%C3%A7o: '+ encodeURIComponent(endereco)           : '');
     window.open('https://wa.me/5512988875509?text=' + msg, '_blank');
   }
 
