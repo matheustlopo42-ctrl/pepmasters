@@ -329,4 +329,5 @@ window.PEPMASTERS_I18N = {
   "checkout.crypto.pc.label":  { en:"PC:", pt:"PC:", es:"PC:", de:"PC:", fr:"PC:" },
   "checkout.crypto.pc":        { en:"Copy the address and exact amount using the buttons above, then send from your wallet.", pt:"Copie o endereço e o valor exato usando os botões acima e envie da sua carteira.", es:"Copie la dirección y el monto exacto con los botones de arriba y envíe desde su billetera.", de:"Kopieren Sie Adresse und Betrag mit den Buttons oben und senden Sie von Ihrer Wallet.", fr:"Copiez l'adresse et le montant exact avec les boutons ci-dessus et envoyez depuis votre portefeuille." },
 
+  "checkout.whatsapp": { en:"Order via WhatsApp", pt:"Finalizar via WhatsApp", es:"Finalizar por WhatsApp", de:"Per WhatsApp bestellen", fr:"Commander via WhatsApp" },
 };

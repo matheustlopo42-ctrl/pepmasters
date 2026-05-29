@@ -162,12 +162,10 @@
       <div class="panel">
         <h2 data-i18n="checkout.payment">💳 Pagamento</h2>
         <div class="pay-tabs">
-          <button class="pay-tab active" onclick="trocarPag('pix',this)" data-i18n="checkout.tab.pix">PIX</button>
-          <button class="pay-tab" onclick="trocarPag('cartao',this)">PayPal</button>
-          <button class="pay-tab" onclick="trocarPag('cripto',this)" data-i18n="checkout.tab.crypto">Cripto</button>
+          <button class="pay-tab active" onclick="trocarPag('cripto',this)" data-i18n="checkout.tab.crypto">Cripto</button>
         </div>
         <!-- PIX -->
-        <div class="pay-panel active" id="pag-pix">
+        <div class="pay-panel" id="pag-pix">
           <p style="font-size:.88rem;color:var(--muted)"><span data-i18n="checkout.pix.info">Clique em "Finalizar" para gerar o QR Code PIX. Confirmação automática.</span></p>
           <div class="pix-area" id="pixArea" style="display:none">
             <img id="qrcodeImg" src="" alt="QR Code PIX"/>
@@ -186,7 +184,7 @@
         </div>
 
         <!-- CRIPTO -->
-        <div class="pay-panel" id="pag-cripto">
+        <div class="pay-panel active" id="pag-cripto">
           <div id="cripto-loading" style="text-align:center;padding:16px 0;font-size:.9rem;color:var(--muted)">
             Calculando valor em cripto...
           </div>
@@ -252,7 +250,9 @@
           <p id="cupomMsg" style="font-size:.82rem;margin-top:6px;color:var(--muted)"></p>
         </div>
 
-        <button class="btn-finalizar" id="btnFinalizar" onclick="finalizar()" data-i18n="checkout.finalize">Finalizar Pedido</button>
+        <button class="btn-finalizar" id="btnFinalizar" onclick="finalizarWhatsApp()" style="background:linear-gradient(135deg,#25D366,#128C7E)">
+          📱 <span data-i18n="checkout.whatsapp">Finalizar via WhatsApp</span>
+        </button>
         <p class="seguro">🔒 <span data-i18n="checkout.secure">Pagamento 100% seguro</span></p>
       </div>
     </div>
