@@ -486,9 +486,15 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     enviarWhatsApp('Novo pedido PEPMASTERS #' + pedidoId + '\nCliente: ' + nome + '\nItens: ' + itensTexto + '\nTotal: R$ ' + total.toFixed(2).replace('.',',') + '\nPag: ' + pagamento.toUpperCase());
 
     if (EMAIL_DESTINO) {
+      const cryptoInfo = (pagamento === 'cripto' && cryptoValor) ? '<br>💰 Cripto esperado: <b>' + cryptoValor + ' ' + cryptoToken + '</b>' : '';
       enviarEmail(EMAIL_DESTINO, 'Novo pedido #' + pedidoId + ' — PEPMASTERS',
-        '<b>Pedido #' + pedidoId + '</b><br>Cliente: ' + nome + '<br>Email: ' + email +
-        '<br>Itens: ' + itensTexto + '<br>Total: R$ ' + total.toFixed(2).replace('.',',') + '<br>Pagamento: ' + pagamento
+        '<h2>Novo pedido #' + pedidoId + '</h2>' +
+        '<b>Cliente:</b> ' + nome + '<br>' +
+        '<b>Email:</b> ' + email + '<br>' +
+        '<b>Itens:</b> ' + itensTexto + '<br>' +
+        '<b>Total:</b> R$ ' + total.toFixed(2).replace('.',',') + '<br>' +
+        '<b>Pagamento:</b> ' + pagamento.toUpperCase() +
+        cryptoInfo
       );
     }
 
