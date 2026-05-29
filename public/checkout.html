@@ -510,6 +510,16 @@
 
   function verificarModal() {
     if (pagAtual === 'cripto') {
+      const lang = localStorage.getItem('pep_lang') || 'en';
+      const msgs = {
+        pt: '⏳ Confirmação manual em até 24h úteis.\n\nPagamentos via criptomoeda precisam ser verificados manualmente na blockchain. Isso é uma característica técnica da tecnologia cripto — não é falha da PEPMASTERS.\n\nApós enviar o pagamento, nossa equipe irá confirmar e você receberá um email de confirmação.',
+        en: '⏳ Manual confirmation within 24 business hours.\n\nCryptocurrency payments require manual blockchain verification. This is a technical characteristic of crypto technology — not a PEPMASTERS issue.\n\nAfter sending payment, our team will confirm and you will receive a confirmation email.',
+        es: '⏳ Confirmación manual en hasta 24 horas hábiles.\n\nLos pagos en criptomoneda requieren verificación manual en la blockchain. Esta es una característica técnica de la tecnología cripto — no es un problema de PEPMASTERS.\n\nDespués de enviar el pago, nuestro equipo confirmará y recibirá un correo de confirmación.',
+        de: '⏳ Manuelle Bestätigung innerhalb von 24 Geschäftsstunden.\n\nKryptowährungszahlungen erfordern manuelle Blockchain-Überprüfung. Dies ist ein technisches Merkmal der Krypto-Technologie — kein PEPMASTERS-Problem.\n\nNach dem Senden der Zahlung wird unser Team bestätigen und Sie erhalten eine Bestätigungs-E-Mail.',
+        fr: '⏳ Confirmation manuelle sous 24h ouvrables.\n\nLes paiements en cryptomonnaie nécessitent une vérification manuelle sur la blockchain. C'est une caractéristique technique de la technologie crypto — pas un problème PEPMASTERS.\n\nAprès l'envoi du paiement, notre équipe confirmera et vous recevrez un e-mail de confirmation.'
+      };
+      const txt = (msgs[lang] || msgs.en).replace(/\n/g, '<br>');
+      document.getElementById('modal-cripto-info').innerHTML = txt;
       document.getElementById('modal-cripto').style.display = 'flex';
     } else {
       finalizar();
@@ -693,12 +703,7 @@
         <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;margin:8px 0 0" data-i18n="modal.cripto.title">Pagamento em Criptomoeda</h2>
       </div>
       <div style="background:#fff3cd;border:2px solid #ffc107;border-radius:10px;padding:16px;margin-bottom:20px">
-        <p style="margin:0;font-size:.9rem;line-height:1.6" data-i18n="modal.cripto.info">
-          ⏳ <strong>Confirmação manual em até 24h úteis.</strong><br><br>
-          Pagamentos via criptomoeda precisam ser verificados manualmente na blockchain. 
-          Isso é uma característica técnica da tecnologia cripto — <strong>não é falha da PEPMASTERS</strong>.<br><br>
-          Após enviar o pagamento, nossa equipe irá confirmar e você receberá um email de confirmação.
-        </p>
+        <p id="modal-cripto-info" style="margin:0;font-size:.9rem;line-height:1.6"></p>
       </div>
       <div style="display:flex;gap:12px">
         <button onclick="fecharModalCripto()" style="flex:1;padding:12px;border:2px solid #dee2e6;border-radius:10px;background:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem" data-i18n="modal.cripto.cancel">Cancelar</button>
