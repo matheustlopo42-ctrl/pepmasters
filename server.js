@@ -219,22 +219,26 @@ function adminMiddleware(req, res, next) {
   }
 }
 
-// ── EMAIL (Gmail SMTP via Nodemailer) ────────
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: { user: EMAIL_USER, pass: EMAIL_PASS }
-});
-
+// ── EMAIL (Resend) ────────────────────────────
 async function enviarEmail(para, assunto, html) {
-  if (!para) return;
+  if (!para || !RESEND_API_KEY) return;
   try {
-    await transporter.sendMail({
-      from: 'PEPMASTERS <' + EMAIL_USER + '>',
-      to: para,
-      subject: assunto,
-      html
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + RESEND_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: 'PEPMASTERS <onboarding@resend.dev>',
+        to: [para],
+        subject: assunto,
+        html
+      })
     });
-    console.log('[Email] Enviado para ' + para);
+    const d = await r.json();
+    if (d.id) console.log('[Email] Enviado para ' + para);
+    else console.error('[Email] Erro Resend:', JSON.stringify(d));
   } catch (err) {
     console.error('[Email] Erro:', err.message);
   }
