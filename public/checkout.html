@@ -102,10 +102,9 @@
     gtag('js', new Date());
     gtag('config', 'G-XXXXXXXXXX');
   </script>
-<!-- x1779920875 -->
+<!-- v1779920875 -->
   <!-- PayPal SDK - substituir YOUR_CLIENT_ID pela sua Client ID do PayPal -->
   <script src="https://www.paypal.com/sdk/js?client-id=BAAlPNp3t3nHsQ7UAjkKFei2InsWuKIMUIz_LjNjHyb4Zk1eRuc93FYZ6INFd2n5s73QXr8gm2rXvOarGA&currency=USD&intent=capture" data-namespace="paypal_sdk"></script>
-<!-- build:1780006094 -->
 </head>
 <body>
 
@@ -123,7 +122,7 @@
 
   <!-- Carrinho vazio -->
   <div id="carrinhoVazio" class="carrinho-vazio" style="display:none">
-    <h2>Seu carrinho está vazio</h2>
+    <h2 data-i18n="checkout.empty">Seu carrinho está vazio</h2>
     <p>Adicione peptídeos antes de finalizar o pedido.</p>
     <a href="index.html">Ver produtos</a>
   </div>
@@ -133,43 +132,43 @@
     <div>
       <!-- DADOS PESSOAIS -->
       <div class="panel">
-        <h2>👤 Seus Dados</h2>
+        <h2 data-i18n="checkout.personal">👤 Seus Dados</h2>
         <div class="form-row">
-          <div class="form-group"><label>Nome completo</label><input type="text" id="nome" placeholder="Seu nome"/></div>
-          <div class="form-group"><label>Email</label><input type="email" id="email" placeholder="seu@email.com"/></div>
+          <div class="form-group"><label data-i18n="checkout.name">Nome completo</label><input type="text" id="nome" placeholder="Seu nome"/></div>
+          <div class="form-group"><label data-i18n="checkout.email">Email</label><input type="email" id="email" placeholder="seu@email.com"/></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>CPF</label><input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14"/></div>
-          <div class="form-group"><label>Telefone</label><input type="text" id="telefone" placeholder="(00) 00000-0000" maxlength="15"/></div>
+          <div class="form-group"><label data-i18n="checkout.cpf">CPF</label><input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14"/></div>
+          <div class="form-group"><label data-i18n="checkout.phone">Telefone</label><input type="text" id="telefone" placeholder="(00) 00000-0000" maxlength="15"/></div>
         </div>
       </div>
 
       <!-- ENTREGA -->
       <div class="panel">
-        <h2>📦 Endereço de Entrega</h2>
+        <h2 data-i18n="checkout.address">📦 Endereço de Entrega</h2>
         <div class="form-row">
-          <div class="form-group"><label>CEP</label><input type="text" id="cep" placeholder="00000-000" maxlength="9" oninput="buscarCep(this)"/></div>
-          <div class="form-group"><label>Número</label><input type="text" id="numero" placeholder="Nº"/></div>
+          <div class="form-group"><label data-i18n="checkout.zip">CEP</label><input type="text" id="cep" placeholder="00000-000" maxlength="9" oninput="buscarCep(this)"/></div>
+          <div class="form-group"><label data-i18n="checkout.number">Número</label><input type="text" id="numero" placeholder="Nº"/></div>
         </div>
-        <div class="form-group"><label>Rua</label><input type="text" id="rua" placeholder="Logradouro" readonly/></div>
+        <div class="form-group"><label data-i18n="checkout.street">Rua</label><input type="text" id="rua" placeholder="Logradouro" readonly/></div>
         <div class="form-row">
-          <div class="form-group"><label>Bairro</label><input type="text" id="bairro" readonly/></div>
-          <div class="form-group"><label>Cidade / UF</label><input type="text" id="cidade" readonly/></div>
+          <div class="form-group"><label data-i18n="checkout.district">Bairro</label><input type="text" id="bairro" readonly/></div>
+          <div class="form-group"><label data-i18n="checkout.city">Cidade / UF</label><input type="text" id="cidade" readonly/></div>
         </div>
-        <div class="form-group"><label>Complemento</label><input type="text" id="complemento" placeholder="Apto, bloco..."/></div>
+        <div class="form-group"><label data-i18n="checkout.complement">Complemento</label><input type="text" id="complemento" placeholder="Apto, bloco..."/></div>
       </div>
 
       <!-- PAGAMENTO -->
       <div class="panel">
-        <h2>💳 Pagamento</h2>
+        <h2 data-i18n="checkout.payment">💳 Pagamento</h2>
         <div class="pay-tabs">
-          <button class="pay-tab active" onclick="trocarPag('pix',this)">PIX</button>
-          <button class="pay-tab" onclick="trocarPag('cartao',this)">Cartão</button>
-          <button class="pay-tab" onclick="trocarPag('cripto',this)">Cripto</button>
+          <button class="pay-tab active" onclick="trocarPag('pix',this)" data-i18n="checkout.tab.pix">PIX</button>
+          <button class="pay-tab" onclick="trocarPag('cartao',this)" data-i18n="checkout.tab.card">Cartão</button>
+          <button class="pay-tab" onclick="trocarPag('cripto',this)" data-i18n="checkout.tab.crypto">Cripto</button>
         </div>
         <!-- PIX -->
         <div class="pay-panel active" id="pag-pix">
-          <p style="font-size:.88rem;color:var(--muted)">Clique em "Finalizar" para gerar o QR Code PIX. Confirmação automática.</p>
+          <p style="font-size:.88rem;color:var(--muted)"><span data-i18n="checkout.pix.info">Clique em "Finalizar" para gerar o QR Code PIX. Confirmação automática.</span></p>
           <div class="pix-area" id="pixArea" style="display:none">
             <img id="qrcodeImg" src="" alt="QR Code PIX"/>
             <div class="pix-copy" id="pixCopia" onclick="copiarPix()">Clique para copiar o código PIX</div>
@@ -229,18 +228,18 @@
     <!-- RESUMO -->
     <div>
       <div class="panel" style="position:sticky;top:88px">
-        <h2>🧾 Resumo do Pedido</h2>
+        <h2 data-i18n="checkout.summary">🧾 Resumo do Pedido</h2>
 
         <div class="resumo-items" id="resumoItems"></div>
 
         <div class="resumo-subtotais">
-          <div class="resumo-linha"><span>Subtotal</span><span id="resumoSubtotal">R$ 0,00</span></div>
+          <div class="resumo-linha"><span data-i18n="checkout.subtotal">Subtotal</span><span id="resumoSubtotal">R$ 0,00</span></div>
           <div class="resumo-linha" id="descontoRow" style="display:none">
             <span>Desconto <span class="desconto-tag" id="descontoTag"></span></span>
             <span id="descontoValor" style="color:#22c55e">— R$ 0,00</span>
           </div>
-          <div class="resumo-linha"><span>Frete</span><span>A calcular</span></div>
-          <div class="resumo-total"><span>Total</span><span class="valor" id="resumoTotal">R$ 0,00</span></div>
+          <div class="resumo-linha"><span data-i18n="checkout.freight">Frete</span><span data-i18n="checkout.shipping.calc">A calcular</span></div>
+          <div class="resumo-total"><span data-i18n="checkout.total">Total</span><span class="valor" id="resumoTotal">R$ 0,00</span></div>
         </div>
 
         <!-- Cupom -->
@@ -254,7 +253,7 @@
         </div>
 
         <button class="btn-finalizar" id="btnFinalizar" onclick="finalizar()" data-i18n="checkout.finalize">Finalizar Pedido</button>
-        <p class="seguro">🔒 Pagamento 100% seguro</p>
+        <p class="seguro">🔒 <span data-i18n="checkout.secure">Pagamento 100% seguro</span></p>
       </div>
     </div>
   </div>
@@ -358,57 +357,6 @@
   }
 
   // ── PAGAMENTO ──
-  // ── PAYPAL ──
-  var paypalInited = false;
-  function initPayPal() {
-    if (paypalInited) return;
-    if (typeof paypal_sdk === 'undefined') {
-      document.getElementById('paypal-loading').textContent = 'PayPal unavailable.';
-      return;
-    }
-    paypalInited = true;
-    document.getElementById('paypal-loading').style.display = 'none';
-    paypal_sdk.Buttons({
-      style: { layout:'vertical', color:'gold', shape:'pill', label:'paypal' },
-      createOrder: async function() {
-        var totalEl = document.getElementById('resumoTotal');
-        var totalBRL = parseFloat((totalEl ? totalEl.textContent : '0').replace('R$','').replace(',','.').trim()) || 0;
-        var totalUSD = (totalBRL / 5.8).toFixed(2);
-        const res = await fetch('/api/paypal/create-order', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ amount: totalUSD, currency: 'USD' })
-        });
-        const data = await res.json();
-        if (data.erro) throw new Error(data.erro);
-        return data.orderID;
-      },
-      onApprove: async function(data) {
-        const carrinho = getCarrinho();
-        const email = document.getElementById('email') ? document.getElementById('email').value : '';
-        const cupom = document.getElementById('cupomInput') ? document.getElementById('cupomInput').value : '';
-        const res = await fetch('/api/paypal/capture-order', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ orderID: data.orderID, carrinho: carrinho, email: email, cupom: cupom })
-        });
-        const result = await res.json();
-        if (result.pedidoId) {
-          localStorage.removeItem('pep_carrinho');
-          location.href = 'confirmacao.html?id=' + result.pedidoId;
-        } else {
-          document.getElementById('paypal-error').style.display = 'block';
-          document.getElementById('paypal-error').textContent = result.erro || 'Payment error. Please try again.';
-        }
-      },
-      onError: function(err) {
-        document.getElementById('paypal-error').style.display = 'block';
-        document.getElementById('paypal-error').textContent = 'PayPal error. Please try again.';
-        console.error('[PayPal]', err);
-      }
-    }).render('#paypal-button-container');
-  }
-
   function trocarPag(tipo, btn) {
     pagAtual = tipo;
     document.querySelectorAll('.pay-tabs .pay-tab').forEach(t => t.classList.remove('active'));
@@ -417,9 +365,7 @@
     document.getElementById('pag-' + tipo).classList.add('active');
     atualizarTotais();
     if (tipo === 'cripto') carregarCotacao();
-    if (tipo === 'cartao') setTimeout(initPayPal, 100);
   }
-  window.addEventListener('load', function() { if (pagAtual === 'cartao') setTimeout(initPayPal, 500); });
 
   async function carregarCotacao() {
     document.getElementById('cripto-loading').style.display = 'block';
@@ -560,8 +506,6 @@
 
   // ── FINALIZAR ──
   async function finalizar() {
-    if (pagAtual === 'cartao') { mostrarErro('Use o botão do PayPal acima para pagar.'); return; }
-    if (pagAtual === 'cartao') { mostrarErro('Use o botão do PayPal acima para pagar.'); return; }
     const nome      = document.getElementById('nome').value.trim();
     const email     = document.getElementById('email').value.trim();
     const cpf       = document.getElementById('cpf').value.trim();
