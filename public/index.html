@@ -118,8 +118,7 @@
     .todos-produtos{display:none}
     .todos-produtos.aberto{display:block}
     .cat-grid-2col{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-    @media(min-width:640px){.cat-grid-2col{grid-template-columns:repeat(3,1fr)}}
-    @media(min-width:1024px){.cat-grid-2col{grid-template-columns:repeat(4,1fr)}}
+    @media(min-width:768px){.cat-grid-2col{grid-template-columns:repeat(3,1fr)}}
     .section-label{display:flex;align-items:center;gap:14px;margin-bottom:28px}
     .section-label h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dark)}
     .section-label::after{content:'';flex:1;height:3px;background:linear-gradient(90deg,var(--amber),transparent);border-radius:2px}
@@ -831,20 +830,11 @@ function renderGridDoisColunas(lista) {
     container.innerHTML = '<div class="empty-state"><h3>Nenhum produto encontrado</h3></div>';
     return;
   }
-  var grupos = {};
-  lista.forEach(function(p){ if (!grupos[p.categoria]) grupos[p.categoria] = []; grupos[p.categoria].push(p); });
-  var cats = Object.keys(grupos).sort(function(a,b){ return a.localeCompare(b,'pt-BR'); });
-  cats.forEach(function(cat){
-    var prods = grupos[cat];
-    var sec = document.createElement('div');
-    sec.className = 'section-cat-label';
-    sec.innerHTML = '<h3>' + cat + '</h3><span class="sec-count">' + prods.length + ' produto(s)</span>';
-    container.appendChild(sec);
-    var grid = document.createElement('div');
-    grid.className = 'cat-grid-2col';
-    prods.forEach(function(p){ grid.appendChild(mkCard(p)); });
-    container.appendChild(grid);
-  });
+  // Todos os produtos em grade sem separação por categoria
+  var grid = document.createElement('div');
+  grid.className = 'cat-grid-2col';
+  lista.forEach(function(p){ grid.appendChild(mkCard(p)); });
+  container.appendChild(grid);
 }
 
 var todosProdutosAberto = false;
