@@ -137,7 +137,8 @@
     .top-sellers-scroll::-webkit-scrollbar{height:4px}
     .top-sellers-scroll::-webkit-scrollbar-track{background:#f1f1f1;border-radius:4px}
     .top-sellers-scroll::-webkit-scrollbar-thumb{background:var(--amber);border-radius:4px}
-    .top-sellers-scroll .card{min-width:200px;max-width:200px;scroll-snap-align:start;flex-shrink:0}
+    .top-sellers-scroll .card{min-width:160px;width:160px;scroll-snap-align:start;flex-shrink:0}
+    @media(min-width:640px){.top-sellers-scroll .card{min-width:220px;width:220px}}
     .ver-mais-wrap{text-align:center;margin:32px 0 8px}
     .btn-ver-mais{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:.06em;padding:12px 32px;border:2px solid var(--orange);border-radius:50px;background:none;color:var(--orange);cursor:pointer;transition:all .2s}
     .btn-ver-mais:hover{background:var(--orange);color:#fff}
@@ -172,7 +173,7 @@
     .suggestion-item-cat{font-size:.75rem;color:var(--muted)}
     .suggestion-item-price{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--red);font-size:.9rem}
     .search-no-results{padding:16px;text-align:center;color:var(--muted);font-size:.88rem}
-    @media(max-width:768px){.header-search{display:none}}
+    @media(max-width:900px){.header-search{display:none}}
     .section-label{display:flex;align-items:center;gap:14px;margin-bottom:28px}
     .section-label h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dark)}
     .section-label::after{content:'';flex:1;height:3px;background:linear-gradient(90deg,var(--amber),transparent);border-radius:2px}
@@ -425,7 +426,7 @@
     <h2 class="top-sellers-title" data-i18n="home.topsellers">🔥 Top Sellers</h2>
     <div class="top-sellers-scroll" id="topSellersGrid"></div>
     <div class="ver-mais-wrap">
-      <button class="btn-ver-mais" onclick="toggleTodosProdutos()" id="btnVerMais" data-i18n="home.verMais">Ver todos os produtos ↓</button>
+      <button class="btn-ver-mais" onclick="toggleTodosProdutos()" id="btnVerMais">Ver todos os produtos ↓</button>
     </div>
   </div>
   <!-- Todos os produtos -->
@@ -942,12 +943,16 @@ function toggleTodosProdutos() {
   var btn = document.getElementById('btnVerMais');
   todosProdutosAberto = !todosProdutosAberto;
   div.classList.toggle('aberto', todosProdutosAberto);
+  var lang = localStorage.getItem('pep_lang') || 'en';
+  var i18n = window.PEPMASTERS_I18N || {};
+  var txtMais = i18n['home.verMais'] ? (i18n['home.verMais'][lang] || 'See all products ↓') : 'See all products ↓';
+  var txtMenos = i18n['home.verMenos'] ? (i18n['home.verMenos'][lang] || 'Show less ↑') : 'Show less ↑';
   if (todosProdutosAberto) {
     renderGridDoisColunas(produtosData);
-    btn.textContent = '↑ Ver menos';
+    btn.textContent = txtMenos;
     setTimeout(function(){ document.getElementById('todosProdutos').scrollIntoView({behavior:'smooth'}); }, 100);
   } else {
-    btn.textContent = 'Ver todos os produtos ↓';
+    btn.textContent = txtMais;
     document.getElementById('produtos').scrollIntoView({behavior:'smooth'});
   }
 }
