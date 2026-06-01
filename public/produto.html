@@ -21,6 +21,8 @@
     .product-info{display:flex;flex-direction:column;gap:16px}
     .cat-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;background:var(--cream);border:1px solid var(--border);color:var(--orange)}
     .product-name{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.4rem;letter-spacing:.02em;line-height:1}
+    .product-price-antes{font-size:1rem;color:#999;text-decoration:line-through;font-weight:600;display:block;margin-bottom:2px}
+    .product-price-badge{display:inline-block;background:#e8220a;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;padding:2px 7px;border-radius:4px;margin-left:6px;text-decoration:none}
     .product-price{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;color:var(--red)}
     .product-price span{font-size:1rem;font-weight:600;color:var(--muted)}
     .product-desc{font-size:.95rem;color:var(--mid);line-height:1.7}
@@ -150,7 +152,10 @@ function renderProduct(p) {
         <h1 class="product-name">${p.nome}</h1>
         ${avgRating ? `<div><span class="stars">${'★'.repeat(Math.round(avgRating))}${'☆'.repeat(5-Math.round(avgRating))}</span> <span style="font-size:.85rem;color:var(--muted)">${avgRating} (${reviews.length} reviews)</span></div>` : ''}
         <p class="product-desc">${info.descricao || ''}</p>
-        <div class="product-price"><span>R$</span>${p.preco.toFixed(2).replace('.',',')}</div>
+        <div>
+          ${p.precoAntes && p.precoAntes > p.preco ? `<div class="product-price-antes">R$ ${p.precoAntes.toFixed(2).replace('.',',')} <span class="product-price-badge">-${Math.round((1-p.preco/p.precoAntes)*100)}%</span></div>` : ''}
+          <div class="product-price"><span>R$</span>${p.preco.toFixed(2).replace('.',',')}</div>
+        </div>
         ${esgotado ? '<button class="esgotado">Sold Out</button>' : `
         <div class="qty-row">
           <button class="qty-btn" onclick="changeQty(-1)">−</button>
