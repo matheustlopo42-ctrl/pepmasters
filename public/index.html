@@ -927,9 +927,7 @@ function headerBuscar(q) {
   if (!q || q.length === 0) { box.style.display = 'none'; return; }
   var ql = q.toLowerCase();
   var matches = (produtosData || []).filter(function(p){
-    return p.nome.toLowerCase().includes(ql) ||
-           (p.categoria && p.categoria.toLowerCase().includes(ql)) ||
-           (p.descricao && p.descricao.toLowerCase().includes(ql));
+    return p.nome.toLowerCase().includes(ql);
   }).slice(0, 6);
   if (!matches.length) {
     box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>';
@@ -988,7 +986,7 @@ function filtrar(cat,btn){filtroAtivo=cat;document.querySelectorAll('.filtro-btn
 function getCatNome(catClass){const lang=window.PEP_LANG?window.PEP_LANG.get():'en';const p=produtosData.find(x=>x.catClass===catClass);return p?p.categoria:catClass;}
 function filtrarLink(cat){filtroAtivo=cat;document.querySelectorAll('.filtro-btn').forEach(b=>{if(b.textContent.includes(cat))b.classList.add('active');else b.classList.remove('active')});aplicarFiltros();setTimeout(()=>document.getElementById('produtos').scrollIntoView({behavior:'smooth'}),100)}
 function buscar(){filtroAtivo='';document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('active'));document.querySelector('.filtro-btn').classList.add('active');aplicarFiltros()}
-function aplicarFiltros(){const q=document.getElementById('buscaInput').value.toLowerCase();renderGrid(produtosData.filter(p=>(!filtroAtivo||p.categoria===filtroAtivo)&&(!q||p.nome.toLowerCase().includes(q)||p.descricao.toLowerCase().includes(q))))}
+function aplicarFiltros(){const q=document.getElementById('buscaInput').value.toLowerCase();renderGrid(produtosData.filter(p=>(!filtroAtivo||p.catClass===filtroAtivo||p.categoria===filtroAtivo)&&(!q||p.nome.toLowerCase().includes(q)||p.descricao.toLowerCase().includes(q))))}
 
 // ── LISTA ESPERA ──
 function abrirEspera(nome){document.getElementById('espera-produto').value=nome;document.getElementById('modalEspera').classList.add('open')}
