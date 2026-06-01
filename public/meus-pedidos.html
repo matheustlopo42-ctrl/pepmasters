@@ -122,6 +122,7 @@
   </div>
 </footer>
 <script>
+  function _t(k){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d[k]&&(d[k][l]||d[k]['en']))||k;}
   const statusLabels = { pago:_t('orders.status.pago'), pix_pending:_t('orders.status.pending'), enviado:_t('orders.status.enviado'), entregue:_t('orders.status.entregue'), cancelado:_t('orders.status.cancelado') };
   const statusClass  = { pago:'badge-pago', pix_pending:'badge-pendente', enviado:'badge-enviado', entregue:'badge-entregue', cancelado:'badge-cancelado' };
 
