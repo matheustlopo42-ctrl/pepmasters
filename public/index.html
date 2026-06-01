@@ -802,15 +802,12 @@ function renderMobileAuth() {
     }).join('');
   }
 
-  const area  = document.getElementById('mobileAuth');
-  if (!area) return;
-  const token = localStorage.getItem('pep_token');
-  const nome  = localStorage.getItem('pep_nome');
-  const tr    = function(k){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d[k]&&(d[k][l]||d[k]['en']))||k;};
+  var area2 = document.getElementById('mobileAuth');
+  if (!area2) return;
   if (token && nome) {
-    area.innerHTML = '<a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>';
+    area2.innerHTML = '<a href="meus-pedidos.html" class="btn-login">'+tr2('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+tr2('nav.logout')+'</a>';
   } else {
-    area.innerHTML = '<a href="login.html" class="btn-login">'+tr('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+tr('nav.register')+'</a>';
+    area2.innerHTML = '<a href="login.html" class="btn-login">'+tr2('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+tr2('nav.register')+'</a>';
   }
 }
 
