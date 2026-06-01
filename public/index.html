@@ -103,6 +103,16 @@
     .banner-strip span{opacity:.7;margin:0 16px}
     /* PRODUTOS */
     .produtos-section{max-width:1200px;margin:0 auto;padding:52px 24px}
+    /* Banners de anúncio */
+    .ad-banners{max-width:1200px;margin:0 auto;padding:32px 24px 0;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    @media(max-width:640px){.ad-banners{grid-template-columns:1fr;padding:24px 16px 0}}
+    .ad-banner{border-radius:16px;padding:28px 32px;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden}
+    .ad-banner-1{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff}
+    .ad-banner-2{background:linear-gradient(135deg,#0f3460,#533483);color:#fff}
+    .ad-banner-icon{font-size:2.5rem;flex-shrink:0}
+    .ad-banner-text h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem;text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px}
+    .ad-banner-text p{font-size:.88rem;opacity:.85;margin:0;line-height:1.5}
+    .ad-banner::before{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.05)}
     /* Lista horizontal - top sellers */
     .top-sellers-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;text-transform:uppercase;letter-spacing:.04em;margin:0 0 16px;display:flex;align-items:center;gap:12px}
     .top-sellers-title::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,var(--amber),transparent)}
@@ -318,6 +328,24 @@
 </section>
 
 <div class="banner-strip"><span data-i18n="banner.shipping">Entrega para todo o Brasil</span> <span style="opacity:.7;margin:0 16px">|</span> <span data-i18n="banner.payment">Pagamento Seguro</span> <span style="opacity:.7;margin:0 16px">|</span> <span data-i18n="banner.quality">Qualidade Garantida</span></div>
+
+<!-- Banners de anúncio -->
+<div class="ad-banners">
+  <div class="ad-banner ad-banner-1">
+    <div class="ad-banner-icon">🧬</div>
+    <div class="ad-banner-text">
+      <h3 data-i18n="ad.banner1.title">Pure Science, Real Results</h3>
+      <p data-i18n="ad.banner1.desc">High-purity bioactive peptides designed to push your performance beyond limits.</p>
+    </div>
+  </div>
+  <div class="ad-banner ad-banner-2">
+    <div class="ad-banner-icon">⚡</div>
+    <div class="ad-banner-text">
+      <h3 data-i18n="ad.banner2.title">Accelerated Recovery</h3>
+      <p data-i18n="ad.banner2.desc">Optimize body composition, accelerate recovery and unlock your full potential.</p>
+    </div>
+  </div>
+</div>
 
 <section class="produtos-section" id="produtos">
   <!-- Top Sellers - lista horizontal -->

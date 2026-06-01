@@ -340,4 +340,9 @@ window.PEPMASTERS_I18N = {
   "home.verMais":    { en:"See all products ↓", pt:"Ver todos os produtos ↓", es:"Ver todos los productos ↓", de:"Alle Produkte anzeigen ↓", fr:"Voir tous les produits ↓" },
   "home.verMenos":   { en:"Show less ↑", pt:"Ver menos ↑", es:"Ver menos ↑", de:"Weniger anzeigen ↑", fr:"Voir moins ↑" },
 
+  "ad.banner1.title": { en:"Pure Science, Real Results",      pt:"Ciência Pura, Resultados Reais",       es:"Ciencia Pura, Resultados Reales",       de:"Reine Wissenschaft, Echte Ergebnisse",  fr:"Science Pure, Résultats Réels" },
+  "ad.banner1.desc":  { en:"High-purity bioactive peptides designed to push your performance beyond limits.", pt:"Peptídeos bioativos de alta pureza projetados para elevar sua performance além dos limites.", es:"Péptidos bioactivos de alta pureza diseñados para elevar tu rendimiento.", de:"Hochreine bioaktive Peptide zur Steigerung Ihrer Leistung.", fr:"Peptides bioactifs de haute pureté conçus pour pousser vos performances au-delà des limites." },
+  "ad.banner2.title": { en:"Accelerated Recovery",            pt:"Recuperação Acelerada",                 es:"Recuperación Acelerada",                de:"Beschleunigte Erholung",                fr:"Récupération Accélérée" },
+  "ad.banner2.desc":  { en:"Optimize body composition, accelerate recovery and unlock your full potential.", pt:"Otimize a composição corporal, acelere a recuperação e libere todo o seu potencial.", es:"Optimiza la composición corporal, acelera la recuperación y desbloquea tu potencial.", de:"Körperzusammensetzung optimieren, Erholung beschleunigen und volles Potenzial entfalten.", fr:"Optimisez la composition corporelle, accélérez la récupération et libérez tout votre potentiel." },
+
 };
