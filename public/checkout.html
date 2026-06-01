@@ -702,6 +702,14 @@
 </script>
 <script src="i18n.js"></script>
 <script src="i18n-init.js"></script>
+<script>
+  // Verificar login após tudo carregar
+  window.addEventListener('load', function() {
+    if (!localStorage.getItem('pep_token')) {
+      document.getElementById('modalLoginRequired').classList.add('open');
+    }
+  });
+</script>
 
 <!-- WhatsApp Button -->
 <a href="https://wa.me/5512988875509" target="_blank" rel="noopener" 
