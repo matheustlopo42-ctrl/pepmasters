@@ -134,8 +134,19 @@
     .btn-ver-mais:hover{background:var(--orange);color:#fff}
     .todos-produtos{display:none}
     .todos-produtos.aberto{display:block}
-    .cat-grid-2col{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-    @media(min-width:768px){.cat-grid-2col{grid-template-columns:repeat(3,1fr)}}
+    .cat-grid-2col{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    @media(min-width:768px){.cat-grid-2col{grid-template-columns:repeat(3,1fr);gap:16px}}
+    /* Cards em 2 colunas no mobile - ajustes */
+    @media(max-width:767px){
+      .cat-grid-2col .card-body{padding:10px 10px 12px}
+      .cat-grid-2col .card-name{font-size:.9rem}
+      .cat-grid-2col .card-desc{display:none}
+      .cat-grid-2col .card-price{font-size:1.1rem}
+      .cat-grid-2col .card-price-antes{font-size:.75rem}
+      .cat-grid-2col .card-footer{flex-direction:column;align-items:stretch;gap:6px}
+      .cat-grid-2col .btn-add{width:100%;text-align:center;padding:8px 6px;font-size:.75rem}
+      .cat-grid-2col .esgotado{width:100%;text-align:center}
+    }
     /* Header search */
     .header-search{display:flex;align-items:center;background:#f5f5f5;border:2px solid var(--border);border-radius:20px;padding:0 12px;gap:6px;height:34px;transition:border-color .2s;min-width:180px;max-width:240px}
     .header-search:focus-within{border-color:var(--orange);background:#fff}
