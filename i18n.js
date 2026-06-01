@@ -363,6 +363,6 @@ window.PEPMASTERS_I18N = {
 
   "checkout.login.required.title": { en:"Login Required", pt:"Login Necessário", es:"Inicio de Sesión Requerido", de:"Anmeldung erforderlich", fr:"Connexion requise" },
   "checkout.login.required.desc":  { en:"You need to be logged in to complete your purchase. Please log in or create an account to continue.", pt:"Você precisa estar logado para concluir sua compra. Faça login ou crie uma conta para continuar.", es:"Necesitas iniciar sesión para completar tu compra.", de:"Sie müssen angemeldet sein, um Ihren Kauf abzuschließen.", fr:"Vous devez être connecté pour finaliser votre achat." },
-  "checkout.modal.close":          { en:"Cancel", pt:"Cancelar", es:"Cancelar", de:"Abbrechen", fr:"Annuler" },
+  "checkout.modal.back":           { en:"← Back to store", pt:"← Voltar à loja", es:"← Volver a la tienda", de:"← Zurück zum Shop", fr:"← Retour à la boutique" },
 
 };
