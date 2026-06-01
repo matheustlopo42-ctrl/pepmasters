@@ -772,15 +772,20 @@ window.addEventListener('scroll', function() {
   }
 }, { passive: true });
 function renderMobileAuth() {
-  // Preencher auth no menu lateral também
   var menuAuth = document.getElementById('mobMenuAuth');
   var token = localStorage.getItem('pep_token');
   var nome = localStorage.getItem('pep_nome');
+  var tr2 = function(k){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d[k]&&(d[k][l]||d[k]['en']))||k;};
   if (menuAuth) {
     if (token && nome) {
-      menuAuth.innerHTML = '<span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.9rem;color:var(--mid);display:block;margin-bottom:8px">'+tr('nav.hello')+', '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" style="display:block;padding:10px 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--dark);text-decoration:none;border-bottom:1px solid var(--border)">'+tr('nav.orders')+'</a><a href="#" onclick="logout(event)" style="display:block;padding:10px 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--red);text-decoration:none">'+tr('nav.logout')+'</a>';
+      menuAuth.innerHTML = '<span style="font-weight:600;font-size:.9rem;color:#666;display:block;margin-bottom:8px">'+tr2('nav.hello')+', '+nome.split(' ')[0]+'</span>' +
+        '<a href="meus-pedidos.html" style="display:block;padding:10px 0;font-weight:700;text-transform:uppercase;color:#1a1a1a;text-decoration:none;border-bottom:1px solid #eee">'+tr2('nav.orders')+'</a>' +
+        '<a href="#" onclick="logout(event)" style="display:block;padding:10px 0;font-weight:700;text-transform:uppercase;color:#e8220a;text-decoration:none">'+tr2('nav.logout')+'</a>';
     } else {
-      menuAuth.innerHTML = '<div style="display:flex;gap:8px"><a href="login.html" style="flex:1;padding:10px 0;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:.9rem;border:2px solid var(--border);border-radius:30px;color:var(--dark);text-decoration:none">'+tr('nav.login')+'</a><a href="cadastro.html" style="flex:1;padding:10px 0;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:.9rem;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:30px;color:#fff;text-decoration:none">'+tr('nav.register')+'</a></div>';
+      menuAuth.innerHTML = '<div style="display:flex;gap:8px">' +
+        '<a href="login.html" style="flex:1;padding:10px 0;text-align:center;font-weight:700;text-transform:uppercase;font-size:.9rem;border:2px solid #ddd;border-radius:30px;color:#1a1a1a;text-decoration:none">'+tr2('nav.login')+'</a>' +
+        '<a href="cadastro.html" style="flex:1;padding:10px 0;text-align:center;font-weight:700;text-transform:uppercase;font-size:.9rem;background:linear-gradient(135deg,#e8220a,#ff8c00);border-radius:30px;color:#fff;text-decoration:none">'+tr2('nav.register')+'</a>' +
+        '</div>';
     }
   }
   // Categorias no mobile menu
