@@ -936,9 +936,13 @@ function headerBuscar(q) {
     box.style.display = 'block'; return;
   }
   box.innerHTML = matches.map(function(p) {
-    var nome = p.nome.replace(new RegExp('(' + q.replace(/[-\/\^$*+?.()|[\]{}]/g,'\\$&') + ')', 'gi'), '<mark>$1</mark>');
+    var ql2 = q.toLowerCase();
+    var idx = p.nome.toLowerCase().indexOf(ql2);
+    var nome = idx >= 0
+      ? p.nome.slice(0,idx) + '<mark>' + p.nome.slice(idx, idx+q.length) + '</mark>' + p.nome.slice(idx+q.length)
+      : p.nome;
     return '<div class="suggestion-item" onclick="selecionarSugestao(' + p.id + ')">' +
-      '<img src="' + (p.img||'') + '" onerror="this.style.display='none'"/>' +
+      '<img src="' + (p.img||'') + '" onerror="this.style.display=\'none\'"/>' +
       '<div class="suggestion-item-info">' +
         '<div class="suggestion-item-name">' + nome + '</div>' +
         '<div class="suggestion-item-cat">' + (p.categoria||'') + '</div>' +
