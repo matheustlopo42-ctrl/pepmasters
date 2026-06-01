@@ -814,6 +814,13 @@ async function carregarProdutos(){
     produtosData=CATALOGO.map(c=>{const api=lista.find(p=>String(p.id)===String(c.id)||p.nome===c.nome);const i=getProdI18n(c);return{...c,categoria:i.categoria,descricao:i.descricao,preco:api?parseFloat(api.preco):c.preco,estoque:api?parseInt(api.estoque):10}})
   }catch{produtosData=CATALOGO.map(c=>{const i=getProdI18n(c);return{...c,categoria:i.categoria,descricao:i.descricao,estoque:c.id==='5'?0:10}})}
   renderGrid(produtosData)
+  // Traduzir botão ver mais
+  var btnVM = document.getElementById('btnVerMais');
+  if (btnVM) {
+    var l = localStorage.getItem('pep_lang') || 'en';
+    var i18nD = window.PEPMASTERS_I18N || {};
+    btnVM.textContent = i18nD['home.verMais'] ? (i18nD['home.verMais'][l] || 'See all products ↓') : 'See all products ↓';
+  }
   renderMobileAuth();
 }
 

@@ -517,6 +517,15 @@
 
   // ── FINALIZAR ──
 
+  function verificarLogin() {
+    const token = localStorage.getItem('pep_token');
+    if (!token) {
+      document.getElementById('modalLoginRequired').classList.add('open');
+      return false;
+    }
+    return true;
+  }
+
   function verificarModal() {
     if (pagAtual === 'cripto') {
       const lang = localStorage.getItem('pep_lang') || 'en';
