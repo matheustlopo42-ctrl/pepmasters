@@ -331,20 +331,22 @@
   </div>
   <!-- Todos os produtos - grade 2 colunas -->
   <div class="todos-produtos" id="todosProdutos">
-  <div class="section-label"><h2 data-i18n="products.title">Nossos Produtos</h2></div>
-  <div class="filtros">
-    <button class="filtro-btn active" onclick="filtrar('',this)" data-i18n="products.all">Todos</button>
-    <button class="filtro-btn" onclick="filtrar('recuperacao',this)" data-i18n="cat.recuperacao">Recuperação</button>
-    <button class="filtro-btn" onclick="filtrar('gordura',this)" data-i18n="cat.gordura">Queima de Gordura</button>
-    <button class="filtro-btn" onclick="filtrar('gh',this)" data-i18n="cat.gh">GH & Massa</button>
-    <button class="filtro-btn" onclick="filtrar('cognitivo',this)" data-i18n="cat.cognitivo">Cognitivo</button>
-    <button class="filtro-btn" onclick="filtrar('hormonal',this)" data-i18n="cat.hormonal">Hormonal</button>
-    <button class="filtro-btn" onclick="filtrar('antioxidante',this)" data-i18n="cat.antioxidante">Antioxidante</button>
-    <button class="filtro-btn" onclick="filtrar('estetico',this)" data-i18n="cat.estetico">Estético</button>
-    <button class="filtro-btn" onclick="filtrar('antiinfla',this)" data-i18n="cat.antiinfla">Anti-inflamatório</button>
-    <div class="busca-wrap"><input type="text" id="buscaInput" placeholder="Buscar peptídeo..." data-i18n-placeholder="products.search" oninput="buscar()"/></div>
+    <div class="section-label"><h2 data-i18n="products.title">Nossos Produtos</h2></div>
+    <div class="filtros">
+      <button class="filtro-btn active" onclick="filtrar('',this)" data-i18n="products.all">Todos</button>
+      <button class="filtro-btn" onclick="filtrar('recuperacao',this)" data-i18n="cat.recuperacao">Recuperação</button>
+      <button class="filtro-btn" onclick="filtrar('gordura',this)" data-i18n="cat.gordura">Queima de Gordura</button>
+      <button class="filtro-btn" onclick="filtrar('gh',this)" data-i18n="cat.gh">GH & Massa</button>
+      <button class="filtro-btn" onclick="filtrar('cognitivo',this)" data-i18n="cat.cognitivo">Cognitivo</button>
+      <button class="filtro-btn" onclick="filtrar('hormonal',this)" data-i18n="cat.hormonal">Hormonal</button>
+      <button class="filtro-btn" onclick="filtrar('antioxidante',this)" data-i18n="cat.antioxidante">Antioxidante</button>
+      <button class="filtro-btn" onclick="filtrar('estetico',this)" data-i18n="cat.estetico">Estético</button>
+      <button class="filtro-btn" onclick="filtrar('antiinfla',this)" data-i18n="cat.antiinfla">Anti-inflamatório</button>
+      <div class="busca-wrap"><input type="text" id="buscaInput" placeholder="Buscar peptídeo..." data-i18n-placeholder="products.search" oninput="buscar()"/></div>
+    </div>
+    <div id="produtosGrid"></div>
   </div>
-
+</section>
 
 <div class="modal-overlay" id="modalEspera">
   <div class="modal-box">
