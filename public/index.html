@@ -916,7 +916,17 @@ function toggleTodosProdutos() {
   }
 }
 function renderGrid(lista){
-  renderTopSellers(lista);
+  // Top sellers sempre com lista completa, nunca filtrada
+  renderTopSellers(produtosData && produtosData.length ? produtosData : lista);
+  // Se há filtro ativo ou busca, abrir todosProdutos automaticamente
+  var q = document.getElementById('buscaInput') ? document.getElementById('buscaInput').value : '';
+  if (filtroAtivo || q) {
+    todosProdutosAberto = true;
+    var div = document.getElementById('todosProdutos');
+    if (div) div.classList.add('aberto');
+    var btn = document.getElementById('btnVerMais');
+    if (btn) btn.textContent = '↑ Ver menos';
+  }
   if (todosProdutosAberto) renderGridDoisColunas(lista);
 }
 
