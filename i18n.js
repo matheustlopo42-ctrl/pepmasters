@@ -361,4 +361,8 @@ window.PEPMASTERS_I18N = {
   "ad.badge.tested":  { en:"Third-Party Tested", pt:"Testado por Terceiros", es:"Probado por Terceros", de:"Drittgetestet", fr:"Testé par des Tiers" },
   "ad.badge.discreet":{ en:"Discreet Shipping", pt:"Envio Discreto", es:"Envío Discreto", de:"Diskreter Versand", fr:"Expédition Discrète" },
 
+  "checkout.login.required.title": { en:"Login Required", pt:"Login Necessário", es:"Inicio de Sesión Requerido", de:"Anmeldung erforderlich", fr:"Connexion requise" },
+  "checkout.login.required.desc":  { en:"You need to be logged in to complete your purchase. Please log in or create an account to continue.", pt:"Você precisa estar logado para concluir sua compra. Faça login ou crie uma conta para continuar.", es:"Necesitas iniciar sesión para completar tu compra.", de:"Sie müssen angemeldet sein, um Ihren Kauf abzuschließen.", fr:"Vous devez être connecté pour finaliser votre achat." },
+  "checkout.modal.close":          { en:"Cancel", pt:"Cancelar", es:"Cancelar", de:"Abbrechen", fr:"Annuler" },
+
 };
