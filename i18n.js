@@ -336,4 +336,8 @@ window.PEPMASTERS_I18N = {
   "modal.cripto.cancel":  { en:"Cancel", pt:"Cancelar", es:"Cancelar", de:"Abbrechen", fr:"Annuler" },
   "modal.cripto.confirm": { en:"Got it, complete order", pt:"Entendi, finalizar pedido", es:"Entendido, finalizar pedido", de:"Verstanden, Bestellung abschließen", fr:"Compris, finaliser la commande" },
 
+  "home.topsellers": { en:"🔥 Top Sellers", pt:"🔥 Mais Vendidos", es:"🔥 Más Vendidos", de:"🔥 Bestseller", fr:"🔥 Meilleures Ventes" },
+  "home.verMais":    { en:"See all products ↓", pt:"Ver todos os produtos ↓", es:"Ver todos los productos ↓", de:"Alle Produkte anzeigen ↓", fr:"Voir tous les produits ↓" },
+  "home.verMenos":   { en:"Show less ↑", pt:"Ver menos ↑", es:"Ver menos ↑", de:"Weniger anzeigen ↑", fr:"Voir moins ↑" },
+
 };

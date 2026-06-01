@@ -103,6 +103,23 @@
     .banner-strip span{opacity:.7;margin:0 16px}
     /* PRODUTOS */
     .produtos-section{max-width:1200px;margin:0 auto;padding:52px 24px}
+    /* Lista horizontal - top sellers */
+    .top-sellers-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;text-transform:uppercase;letter-spacing:.04em;margin:0 0 16px;display:flex;align-items:center;gap:12px}
+    .top-sellers-title::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,var(--amber),transparent)}
+    .top-sellers-scroll{display:flex;gap:16px;overflow-x:auto;padding-bottom:12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+    .top-sellers-scroll::-webkit-scrollbar{height:4px}
+    .top-sellers-scroll::-webkit-scrollbar-track{background:#f1f1f1;border-radius:4px}
+    .top-sellers-scroll::-webkit-scrollbar-thumb{background:var(--amber);border-radius:4px}
+    .top-sellers-scroll .card{min-width:200px;max-width:200px;scroll-snap-align:start;flex-shrink:0}
+    .ver-mais-wrap{text-align:center;margin:32px 0 8px}
+    .btn-ver-mais{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:.06em;padding:12px 32px;border:2px solid var(--orange);border-radius:50px;background:none;color:var(--orange);cursor:pointer;transition:all .2s}
+    .btn-ver-mais:hover{background:var(--orange);color:#fff}
+    /* Grade 2 colunas - todos produtos */
+    .todos-produtos{display:none}
+    .todos-produtos.aberto{display:block}
+    .cat-grid-2col{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    @media(min-width:640px){.cat-grid-2col{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:1024px){.cat-grid-2col{grid-template-columns:repeat(4,1fr)}}
     .section-label{display:flex;align-items:center;gap:14px;margin-bottom:28px}
     .section-label h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dark)}
     .section-label::after{content:'';flex:1;height:3px;background:linear-gradient(90deg,var(--amber),transparent);border-radius:2px}
@@ -304,6 +321,16 @@
 <div class="banner-strip"><span data-i18n="banner.shipping">Entrega para todo o Brasil</span> <span style="opacity:.7;margin:0 16px">|</span> <span data-i18n="banner.payment">Pagamento Seguro</span> <span style="opacity:.7;margin:0 16px">|</span> <span data-i18n="banner.quality">Qualidade Garantida</span></div>
 
 <section class="produtos-section" id="produtos">
+  <!-- Top Sellers - lista horizontal -->
+  <div id="topSellersSection">
+    <h2 class="top-sellers-title" data-i18n="home.topsellers">🔥 Top Sellers</h2>
+    <div class="top-sellers-scroll" id="topSellersGrid"></div>
+    <div class="ver-mais-wrap">
+      <button class="btn-ver-mais" onclick="toggleTodosProdutos()" id="btnVerMais" data-i18n="home.verMais">Ver todos os produtos ↓</button>
+    </div>
+  </div>
+  <!-- Todos os produtos - grade 2 colunas -->
+  <div class="todos-produtos" id="todosProdutos">
   <div class="section-label"><h2 data-i18n="products.title">Nossos Produtos</h2></div>
   <div class="filtros">
     <button class="filtro-btn active" onclick="filtrar('',this)" data-i18n="products.all">Todos</button>
@@ -317,8 +344,7 @@
     <button class="filtro-btn" onclick="filtrar('antiinfla',this)" data-i18n="cat.antiinfla">Anti-inflamatório</button>
     <div class="busca-wrap"><input type="text" id="buscaInput" placeholder="Buscar peptídeo..." data-i18n-placeholder="products.search" oninput="buscar()"/></div>
   </div>
-  <div id="produtosGrid"></div>
-</section>
+
 
 <div class="modal-overlay" id="modalEspera">
   <div class="modal-box">
@@ -777,11 +803,30 @@ function mkCard(p) {
   return div;
 }
 
-function renderGrid(lista){
+
+// ── TOP SELLERS ──
+var TOP_SELLER_NOMES = ['BPC-157','TB-500','SLU-PP-32','AHK-CU','Ipamorelin'];
+
+function renderTopSellers(lista) {
+  var grid = document.getElementById('topSellersGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  var tops = lista.filter(function(p) {
+    return TOP_SELLER_NOMES.some(function(n) {
+      return p.nome && p.nome.toUpperCase().includes(n.toUpperCase());
+    });
+  });
+  // Se não encontrou por nome, pega os primeiros 5
+  if (tops.length === 0) tops = lista.slice(0, 5);
+  tops.slice(0, 5).forEach(function(p) { grid.appendChild(mkCard(p)); });
+}
+
+function renderGridDoisColunas(lista) {
   var container = document.getElementById('produtosGrid');
+  if (!container) return;
   container.innerHTML = '';
   if (!lista.length) {
-    container.innerHTML = '<div class="empty-state"><h3>Nenhum produto encontrado</h3><p>Tente outro filtro ou busca.</p></div>';
+    container.innerHTML = '<div class="empty-state"><h3>Nenhum produto encontrado</h3></div>';
     return;
   }
   var grupos = {};
@@ -791,16 +836,34 @@ function renderGrid(lista){
     var prods = grupos[cat];
     var sec = document.createElement('div');
     sec.className = 'section-cat-label';
-    var ll=window.PEP_LANG?window.PEP_LANG.get():'en';
-    var pw={en:{s:'product',p:'products'},pt:{s:'produto',p:'produtos'},es:{s:'producto',p:'productos'},de:{s:'Produkt',p:'Produkte'},fr:{s:'produit',p:'produits'}};
-    var pw2=pw[ll]||pw['en'];
-    sec.innerHTML = '<h3>' + cat + '</h3><span class="sec-count">' + prods.length + ' ' + (prods.length > 1 ? pw2.p : pw2.s) + '</span>';
+    sec.innerHTML = '<h3>' + cat + '</h3><span class="sec-count">' + prods.length + ' produto(s)</span>';
     container.appendChild(sec);
     var grid = document.createElement('div');
-    grid.className = 'cat-grid';
+    grid.className = 'cat-grid-2col';
     prods.forEach(function(p){ grid.appendChild(mkCard(p)); });
     container.appendChild(grid);
   });
+}
+
+var todosProdutosAberto = false;
+function toggleTodosProdutos() {
+  var div = document.getElementById('todosProdutos');
+  var btn = document.getElementById('btnVerMais');
+  todosProdutosAberto = !todosProdutosAberto;
+  div.classList.toggle('aberto', todosProdutosAberto);
+  if (todosProdutosAberto) {
+    renderGridDoisColunas(produtosData);
+    btn.textContent = '↑ ' + (window.PEPMASTERS_I18N && window.PEPMASTERS_I18N['home.verMenos'] ? (window.PEPMASTERS_I18N['home.verMenos'][localStorage.getItem('pep_lang')||'en'] || 'Ver menos') : 'Ver menos');
+    setTimeout(function(){ document.getElementById('todosProdutos').scrollIntoView({behavior:'smooth'}); }, 100);
+  } else {
+    btn.textContent = (window.PEPMASTERS_I18N && window.PEPMASTERS_I18N['home.verMais'] ? (window.PEPMASTERS_I18N['home.verMais'][localStorage.getItem('pep_lang')||'en'] || 'Ver todos os produtos ↓') : 'Ver todos os produtos ↓');
+    document.getElementById('produtos').scrollIntoView({behavior:'smooth'});
+  }
+}
+
+function renderGrid(lista){
+  renderTopSellers(lista);
+  if (todosProdutosAberto) renderGridDoisColunas(lista);
 }
 
 // ── FILTROS ──
