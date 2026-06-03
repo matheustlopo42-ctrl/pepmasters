@@ -83,6 +83,22 @@
     .admin-link:hover{color:var(--amber)}
     @media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:600px){.back-link span{display:none}}
+    @media(max-width:768px){#authArea{display:none}}
+    .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0}
+    .hamburger span{display:block;width:22px;height:2px;background:var(--dark);border-radius:2px;transition:all .3s}
+    .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .hamburger.open span:nth-child(2){opacity:0}
+    .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    @media(max-width:768px){.hamburger{display:flex}}
+    .mobile-menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998}
+    .mobile-menu-overlay.open{display:block}
+    .mobile-menu{display:block;position:fixed;top:0;left:0;bottom:0;width:80%;max-width:300px;background:#fff;border-right:2px solid var(--amber);z-index:9999;padding:80px 20px 24px;box-shadow:4px 0 24px rgba(0,0,0,.15);overflow-y:auto;transform:translateX(-110%);transition:transform .3s ease;visibility:hidden}
+    .mobile-menu.open{transform:translateX(0);visibility:visible}
+    .mobile-menu a{display:block;padding:12px 8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;color:var(--dark);text-decoration:none;border-bottom:1px solid var(--border);letter-spacing:.04em;text-transform:uppercase}
+    .mob-auth{display:flex;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+    .mob-auth a{flex:1;padding:10px 0;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;text-decoration:none;border-radius:30px}
+    .mob-auth .btn-login{border:2px solid var(--border);color:var(--dark)}
+    .mob-auth .btn-cadastro{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff}
   </style>
 </head>
 <body>
@@ -101,12 +117,21 @@
     <button class="btn-limpar" onclick="limparCarrinho()" data-i18n="cart.clear">Limpar carrinho</button>
   </div>
 </div>
+<div class="mobile-menu-overlay" id="menuOverlay" onclick="toggleMobileMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" data-i18n="nav.home">Início</a>
+  <a href="quem-somos.html" data-i18n="nav.about">Quem Somos</a>
+  <a href="duvidas-frequentes.html" data-i18n="nav.faq">Dúvidas</a>
+  <a href="rastrear-pedido.html" data-i18n="nav.track">Rastrear</a>
+  <div class="mob-auth" id="mobileAuth"></div>
+</div>
 <header>
   <div class="header-inner">
     <a href="index.html" class="logo-wrap">
       <img src="Capturar.PNG" alt="Logo"/>
       <span class="logo-text">PEPMASTERS</span>
     </a>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
     <div class="header-right">
       <a href="index.html" class="back-link">← <span data-i18n="nav.home">Início</span></a>
       <div id="authArea"></div>
@@ -199,6 +224,28 @@ function renderCarrinho(){
   document.getElementById('cartSubtotal').textContent='R$ '+subtotal.toFixed(2).replace('.',',');
   document.getElementById('cartTotal').textContent='R$ '+subtotal.toFixed(2).replace('.',',');
 }
+// MENU MOBILE
+function toggleMobileMenu(){
+  var menu=document.getElementById('mobileMenu');
+  var btn=document.getElementById('hamburger');
+  var overlay=document.getElementById('menuOverlay');
+  menu.classList.toggle('open');
+  btn.classList.toggle('open');
+  if(overlay)overlay.classList.toggle('open',menu.classList.contains('open'));
+}
+function renderMobileAuth(){
+  var area=document.getElementById('mobileAuth');if(!area)return;
+  var token=localStorage.getItem('pep_token');var nome=localStorage.getItem('pep_nome');
+  var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';
+  var tr=function(k){return(d[k]&&(d[k][l]||d[k]['en']))||k;};
+  if(token&&nome){
+    area.innerHTML='<a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a>'+
+      '<a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>';
+  }else{
+    area.innerHTML='<a href="login.html" class="btn-login">'+tr('nav.login')+'</a>'+
+      '<a href="cadastro.html" class="btn-cadastro">'+tr('nav.register')+'</a>';
+  }
+}
 // AUTH
 function renderAuth(){
   var area=document.getElementById('authArea');if(!area)return;
@@ -217,7 +264,7 @@ function renderAuth(){
 function logout(e){e.preventDefault();localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');location.reload()}
 window.addEventListener('DOMContentLoaded',function(){atualizarBadge();});
 (function waitInit(){
-  if(window.PEPMASTERS_I18N&&window.PEP_LANG){renderAuth();atualizarBadge();}
+  if(window.PEPMASTERS_I18N&&window.PEP_LANG){renderAuth();renderMobileAuth();atualizarBadge();}
   else{setTimeout(waitInit,50);}
 })();
 </script>
