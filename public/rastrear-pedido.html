@@ -525,7 +525,6 @@
       border-bottom: 1px solid rgba(255,179,0,0.2);
     }
 
-    .footer-brand .logo-text { font-size: 1.5rem; }
 
     .footer-brand p {
       font-size: 0.85rem;
@@ -554,7 +553,6 @@
       transition: color 0.2s;
     }
 
-    .footer-col a:hover { color: var(--amber); }
 
     .footer-bottom {
       max-width: 1200px;
@@ -600,7 +598,6 @@
 
     /* ───────────── RESPONSIVO ───────────── */
     @media (max-width: 768px) {
-      .footer-grid { grid-template-columns: 1fr 1fr; }
       nav { display: none; }
       .hero h1 { font-size: 2.4rem; }
     }
@@ -621,6 +618,17 @@
     .btn-login:hover{background:var(--red);color:#fff}
     .btn-cadastro{padding:5px 10px;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:8px;color:#fff;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
     @media(max-width:600px){.back-link{display:none}.back-link-mobile{display:inline}}
+      .top-sellers-scroll .card .card-footer{flex-direction:column;align-items:stretch;gap:6px}
+      .cat-grid-2col .card-footer{flex-direction:column;align-items:stretch;gap:6px}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    footer{background:var(--dark);color:#fff;padding:52px 24px 0;margin-top:60px}
+    .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;padding-bottom:44px;border-bottom:1px solid rgba(255,179,0,.2)}
+    .footer-brand p{font-size:.84rem;color:rgba(255,255,255,.5);line-height:1.7;margin-top:12px;max-width:260px}
+    .footer-col h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+    .footer-col a{display:block;font-size:.86rem;color:rgba(255,255,255,.6);text-decoration:none;margin-bottom:8px;transition:color .2s}
+    .footer-col a:hover{color:var(--amber)}
+    .footer-bottom{max-width:1200px;margin:0 auto;padding:18px 0;text-align:center;font-size:.78rem;color:rgba(255,255,255,.3)}
+      .footer-grid{grid-template-columns:1fr 1fr}
   </style>
 </head>
 <body>
@@ -887,3 +895,4 @@
 <script src="i18n-init.js"></script>
 </body>
 </html>
+<!-- updated -->

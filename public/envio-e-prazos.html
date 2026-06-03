@@ -27,7 +27,6 @@
     td{padding:10px 14px;border-bottom:1px solid #FFE5B0;font-size:.9rem;color:var(--mid)}
     tr:last-child td{border:none}
     tr:nth-child(even) td{background:#FFF8EC}
-    footer{background:var(--dark);color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:.8rem}
     footer a{color:rgba(255,179,0,.5);text-decoration:none}
       header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0;height:68px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(255,179,0,.2)}
     .header-inner{max-width:1200px;width:100%;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
@@ -46,6 +45,9 @@
     .btn-login:hover{background:var(--red);color:#fff}
     .btn-cadastro{padding:5px 10px;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:8px;color:#fff;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
     @media(max-width:600px){.back-link{display:none}.back-link-mobile{display:inline}}
+      .top-sellers-scroll .card .card-footer{flex-direction:column;align-items:stretch;gap:6px}
+      .cat-grid-2col .card-footer{flex-direction:column;align-items:stretch;gap:6px}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
       .top-sellers-scroll .card .card-footer{flex-direction:column;align-items:stretch;gap:6px}
       .cat-grid-2col .card-footer{flex-direction:column;align-items:stretch;gap:6px}
     .card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -174,3 +176,4 @@ window.addEventListener('DOMContentLoaded',function(){renderAuth();updateCartCou
 </script>
 </body>
 </html>
+<!-- updated -->
