@@ -106,14 +106,14 @@
     .btn-login:hover{background:var(--red);color:#fff}
     .btn-cadastro{padding:5px 10px;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:8px;color:#fff;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
     @media(max-width:600px){.back-link{display:none}.back-link-mobile{display:inline}}
-  
-    footer{background:var(--dark);color:#fff;padding:52px 24px 0;margin-top:60px}
+  }}
+      footer{background:var(--dark);color:#fff;padding:52px 24px 0;margin-top:60px}
     .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;padding-bottom:44px;border-bottom:1px solid rgba(255,179,0,.2)}
     .footer-brand p{font-size:.84rem;color:rgba(255,255,255,.5);line-height:1.7;margin-top:12px;max-width:260px}
     .footer-col h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
     .footer-col a{display:block;font-size:.86rem;color:rgba(255,255,255,.6);text-decoration:none;margin-bottom:8px;transition:color .2s}
     .footer-col a:hover{color:var(--amber)}
-    .footer-bottom{max-width:1200px;margin:0 auto;padding:20px 0;display:flex;align-items:center;justify-content:space-between;font-size:.8rem;color:rgba(255,255,255,.3)}
+    .footer-bottom{max-width:1200px;margin:0 auto;padding:18px 0;text-align:center;font-size:.78rem;color:rgba(255,255,255,.3)}
     .footer-bottom a{color:rgba(255,179,0,.4);text-decoration:none}
     .footer-bottom a:hover{color:var(--amber)}
     @media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}}
@@ -302,7 +302,7 @@
         <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain"/>
         <span class="logo-text">PEPMASTERS</span>
       </a>
-      <p data-i18n="footer.desc"><span data-i18n="footer.desc">Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</span></p>
+      <p data-i18n="footer.desc">Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</p>
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer.institutional">Institucional</h4>
@@ -552,6 +552,21 @@ function updateCartCount(){
 }
 window.addEventListener('DOMContentLoaded',function(){renderAuth();updateCartCount();});
 </script>
+<script>
+function abrirCarrinho(){window.location.href='checkout.html';}
+function logout(e){e.preventDefault();localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');window.location.href='index.html';}
+function renderAuth(){
+  var area=document.getElementById('authArea');if(!area)return;
+  var token=localStorage.getItem('pep_token');var nome=localStorage.getItem('pep_nome');
+  var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';
+  var tr=function(k){return(d[k]&&(d[k][l]||d[k]['en']))||k;};
+  if(token&&nome){area.innerHTML='<span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;color:var(--muted)">'+tr('nav.hello')+', '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>';}
+  else{area.innerHTML='<a href="login.html" class="btn-login">'+tr('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+tr('nav.register')+'</a>';}
+}
+function updateCartCount(){try{var c=JSON.parse(localStorage.getItem('pep_carrinho')||'[]');var n=c.reduce(function(s,i){return s+i.quantidade;},0);var el=document.getElementById('cartCount');if(el){el.style.display=n>0?'flex':'none';el.textContent=n;}}catch(e){}}
+window.addEventListener('DOMContentLoaded',function(){renderAuth();updateCartCount();});
+</script>
+
 <script src="i18n.js"></script>
 <script src="i18n-init.js"></script>
 <script>
@@ -562,7 +577,7 @@ function renderAuth(){
   var token=localStorage.getItem('pep_token');var nome=localStorage.getItem('pep_nome');
   var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';
   var tr=function(k){return(d[k]&&(d[k][l]||d[k]['en']))||k;};
-  if(token&&nome){area.innerHTML='<span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;color:var(--muted)">'+tr('nav.hello')+', '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>';}
+  if(token&&nome){area.innerHTML='<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.78rem;color:var(--muted)">'+tr('nav.hello')+', '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>';}
   else{area.innerHTML='<a href="login.html" class="btn-login">'+tr('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+tr('nav.register')+'</a>';}
 }
 function updateCartCount(){try{var c=JSON.parse(localStorage.getItem('pep_carrinho')||'[]');var n=c.reduce(function(s,i){return s+i.quantidade;},0);var el=document.getElementById('cartCount');if(el){el.style.display=n>0?'flex':'none';el.textContent=n;}}catch(e){}}
