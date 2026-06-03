@@ -1,94 +1,500 @@
-<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n  <title>Quem Somos \u2014 PEPMASTERS</title>\n  <link href=\"https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap\" rel=\"stylesheet\" />\n  <style>\n    :root { --amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580; }\n    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}\n    body{font-family:'Barlow',sans-serif;background:var(--cream);min-height:100vh;display:flex;flex-direction:column}\n    header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0 24px;height:68px;display:flex;align-items:center;gap:20px;box-shadow:0 2px 20px rgba(255,179,0,.2)}\n    .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}\n    .logo-wrap img{height:40px;width:40px;object-fit:contain}\n    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}\n    .back-link{margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none}\n    .back-link:hover{color:var(--orange)}\n    main{flex:1;max-width:800px;margin:0 auto;padding:52px 24px;width:100%}\n    .page-hero{background:linear-gradient(135deg,#FFF3D0,#FFE0A0);border-radius:20px;padding:44px 40px;margin-bottom:40px;border-left:6px solid var(--orange)}\n    .page-hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.4rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dark);margin-bottom:8px}\n    .page-hero p{font-size:1rem;color:var(--mid);line-height:1.6}\n    .content-card{background:#fff;border-radius:16px;padding:32px;border:1px solid #FFE5B0;box-shadow:0 4px 20px rgba(255,179,0,.08);margin-bottom:20px}\n    .content-card h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dark);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--border)}\n    .content-card p{font-size:.93rem;color:var(--mid);line-height:1.75;margin-bottom:12px}\n    .content-card p:last-child{margin-bottom:0}\n    .values-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:14px}\n    .value-item{background:var(--cream);border-radius:12px;padding:18px;border:1px solid var(--border);text-align:center}\n    .value-item .icon{font-size:2rem;margin-bottom:8px}\n    .value-item h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;text-transform:uppercase;letter-spacing:.06em;color:var(--dark);margin-bottom:4px}\n    .value-item p{font-size:.82rem;color:var(--muted);margin:0}\n    footer{background:var(--dark);color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:.8rem}\n    footer a{color:rgba(255,179,0,.5);text-decoration:none}\n      header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0;height:68px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(255,179,0,.2)}
-    .header-inner{max-width:1200px;width:100%;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;gap:8px}
-    .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
-    .logo-wrap img{height:40px;width:40px;object-fit:contain}
-    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .header-right{display:flex;align-items:center;gap:8px;margin-left:auto}
-    .back-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none;white-space:nowrap}
-    .back-link:hover{color:var(--orange)}
-    .back-link-mobile{display:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;color:var(--muted);text-decoration:none;padding:0 4px}
-    .cart-btn{background:none;border:2px solid var(--border);border-radius:10px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;color:var(--mid);transition:all .2s;white-space:nowrap}
-    .cart-btn:hover{border-color:var(--orange);color:var(--orange)}
-    .cart-count{background:var(--red);color:#fff;border-radius:50%;width:20px;height:20px;font-size:.65rem;font-weight:800;display:none;align-items:center;justify-content:center;margin-left:2px}
-    .cart-count.show{display:flex}
-    .btn-login{padding:5px 10px;border:2px solid var(--red);border-radius:8px;color:var(--red);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;text-transform:uppercase;transition:all .2s;white-space:nowrap}
-    .btn-login:hover{background:var(--red);color:#fff}
-    .btn-cadastro{padding:5px 10px;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:8px;color:#fff;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;text-transform:uppercase;white-space:nowrap}
-    @media(max-width:600px){.back-link{display:none}.back-link-mobile{display:inline}}
-    footer{background:var(--dark);color:#fff;padding:52px 24px 0;margin-top:60px}
-    .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;padding-bottom:44px;border-bottom:1px solid rgba(255,179,0,.2)}
-    .footer-brand p{font-size:.84rem;color:rgba(255,255,255,.5);line-height:1.7;margin-top:12px;max-width:260px}
-    .footer-col h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
-    .footer-col a{display:block;font-size:.86rem;color:rgba(255,255,255,.6);text-decoration:none;margin-bottom:8px;transition:color .2s}
-    .footer-col a:hover{color:var(--amber)}
-    .footer-bottom{max-width:1200px;margin:0 auto;padding:18px 0;text-align:center;font-size:.78rem;color:rgba(255,255,255,.3)}
-    .footer-bottom a{color:rgba(255,179,0,.4);text-decoration:none}
-    .footer-bottom a:hover{color:var(--amber)}
-    @media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}}
-    @media(max-width:480px){.footer-grid{grid-template-columns:1fr}}
-  </style>\n</head>\n<body>\n<header>
-  <div class="header-inner">
-    <a href="index.html" class="back-link-mobile">←</a>
-    <a href="index.html" class="logo-wrap">
-      <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain"/>
-      <span class="logo-text">PEPMASTERS</span>
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us — PEPMASTERS</title>
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="Learn about PEPMASTERS mission, values and commitment to quality bioactive peptides."
+    />
+    <meta name="robots" content="index, follow" />
+    <link
+      rel="canonical"
+      href="https://pepmasters.onrender.com/quem-somos.html"
+    />
+    <!-- Open Graph (WhatsApp, Facebook, LinkedIn) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="About Us — PEPMASTERS" />
+    <meta
+      property="og:description"
+      content="Learn about PEPMASTERS mission, values and commitment to quality bioactive peptides."
+    />
+    <meta
+      property="og:image"
+      content="https://pepmasters.onrender.com/Capturar.PNG"
+    />
+    <meta
+      property="og:url"
+      content="https://pepmasters.onrender.com/quem-somos.html"
+    />
+    <meta property="og:site_name" content="PEPMASTERS" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="About Us — PEPMASTERS" />
+    <meta
+      name="twitter:description"
+      content="Learn about PEPMASTERS mission, values and commitment to quality bioactive peptides."
+    />
+    <meta
+      name="twitter:image"
+      content="https://pepmasters.onrender.com/Capturar.PNG"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --amber: #ffb300;
+        --red: #e8220a;
+        --orange: #ff6b00;
+        --cream: #fff8f0;
+        --warm-white: #fffdf9;
+        --dark: #1c0a00;
+        --mid: #3d1a00;
+        --muted: #7a4a2a;
+        --border: #ffd580;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Barlow", sans-serif;
+        background: var(--cream);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      header {
+        background: var(--warm-white);
+        border-bottom: 3px solid var(--amber);
+        padding: 0 24px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 2px 20px rgba(255, 179, 0, 0.2);
+      }
+      .logo-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+      .logo-wrap img {
+        height: 40px;
+        width: 40px;
+        object-fit: contain;
+      }
+      .logo-text {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 900;
+        font-size: 1.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--red),
+          var(--orange),
+          var(--amber)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .back-link {
+        margin-left: auto;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        text-decoration: none;
+      }
+      .back-link:hover {
+        color: var(--orange);
+      }
+      main {
+        flex: 1;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 52px 24px;
+        width: 100%;
+      }
+      .page-hero {
+        background: linear-gradient(135deg, #fff3d0, #ffe0a0);
+        border-radius: 20px;
+        padding: 44px 40px;
+        margin-bottom: 40px;
+        border-left: 6px solid var(--orange);
+      }
+      .page-hero h1 {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 900;
+        font-size: 2.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--dark);
+        margin-bottom: 8px;
+      }
+      .page-hero p {
+        font-size: 1rem;
+        color: var(--mid);
+        line-height: 1.6;
+      }
+      .content-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 32px;
+        border: 1px solid #ffe5b0;
+        box-shadow: 0 4px 20px rgba(255, 179, 0, 0.08);
+        margin-bottom: 20px;
+      }
+      .content-card h2 {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 800;
+        font-size: 1.3rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--dark);
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--border);
+      }
+      .content-card p {
+        font-size: 0.93rem;
+        color: var(--mid);
+        line-height: 1.75;
+        margin-bottom: 12px;
+      }
+      .content-card p:last-child {
+        margin-bottom: 0;
+      }
+      .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-top: 14px;
+      }
+      .value-item {
+        background: var(--cream);
+        border-radius: 12px;
+        padding: 18px;
+        border: 1px solid var(--border);
+        text-align: center;
+      }
+      .value-item .icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+      .value-item h3 {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 800;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--dark);
+        margin-bottom: 4px;
+      }
+      .value-item p {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin: 0;
+      }
+      footer {
+        background: var(--dark);
+        color: rgba(255, 255, 255, 0.4);
+        text-align: center;
+        padding: 16px;
+        font-size: 0.8rem;
+      }
+      footer a {
+        color: rgba(255, 179, 0, 0.5);
+        text-decoration: none;
+      }
+
+      /* FOOTER */
+      footer {
+        background: var(--dark);
+        color: #fff;
+        padding: 52px 24px 0;
+        margin-top: 60px;
+      }
+      .footer-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 36px;
+        padding-bottom: 44px;
+        border-bottom: 1px solid rgba(255, 179, 0, 0.2);
+      }
+      .footer-brand p {
+        font-size: 0.84rem;
+        color: rgba(255, 255, 255, 0.5);
+        line-height: 1.7;
+        margin-top: 12px;
+        max-width: 260px;
+      }
+      .footer-col h4 {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 0.78rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--amber);
+        margin-bottom: 14px;
+      }
+      .footer-col a {
+        display: block;
+        font-size: 0.86rem;
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        margin-bottom: 8px;
+        transition: color 0.2s;
+      }
+      .footer-col a:hover {
+        color: var(--amber);
+      }
+      .footer-bottom {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 18px 0;
+        text-align: center;
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.3);
+      }
+      .admin-link {
+        display: block;
+        text-align: center;
+        padding: 8px;
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.15);
+        text-decoration: none;
+      }
+      .admin-link:hover {
+        color: var(--amber);
+      }
+      @media (max-width: 768px) {
+        .footer-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+    <!-- Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-XXXXXXXXXX");
+    </script>
+    <!-- v1779920875 -->
+  </head>
+  <body>
+    <header>
+      <a href="index.html" class="logo-wrap"
+        ><img src="Capturar.PNG" alt="Logo" /><span class="logo-text"
+          >PEPMASTERS</span
+        ></a
+      >
+      <a href="index.html" class="back-link"
+        >← <span data-i18n="nav.store">Loja</span></a
+      >
+    </header>
+    <main>
+      <div class="page-hero">
+        <h1 data-i18n="about.title">Quem Somos</h1>
+        <p>
+          <span data-i18n="about.subtitle"
+            >Conheça a história e os valores por trás da PEPMASTERS.</span
+          >
+        </p>
+      </div>
+
+      <div class="content-card">
+        <h2 data-i18n="about.mission.title">Nossa Missão</h2>
+        <p data-i18n="about.mission.text">
+          A PEPMASTERS nasceu da paixão pela ciência e pela performance humana.
+        </p>
+      </div>
+
+      <div class="content-card">
+        <h2 data-i18n="about.values.title">Nossos Valores</h2>
+        <div class="values-grid">
+          <div class="value-item">
+            <div class="icon">🧬</div>
+            <h3 data-i18n="about.values.science">Ciência</h3>
+            <p data-i18n="about.values.science.text">
+              Baseados em evidências e pesquisa científica atualizada.
+            </p>
+          </div>
+          <div class="value-item">
+            <div class="icon">🔒</div>
+            <h3 data-i18n="about.values.quality">Qualidade</h3>
+            <p data-i18n="about.values.quality.text">
+              Produtos com pureza e procedência garantidas.
+            </p>
+          </div>
+          <div class="value-item">
+            <div class="icon">💬</div>
+            <h3 data-i18n="about.values.transparency">Transparência</h3>
+            <p data-i18n="about.values.transparency.text">
+              Informações claras sobre cada composto que vendemos.
+            </p>
+          </div>
+          <div class="value-item">
+            <div class="icon">🚀</div>
+            <h3 data-i18n="about.values.performance">Performance</h3>
+            <p data-i18n="about.values.performance.text">
+              Foco em resultados reais para quem busca evolução.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h2 data-i18n="about.commitment.title">Compromisso com o Cliente</h2>
+        <p data-i18n="about.commitment.text">
+          Nossa equipe está sempre disponível para tirar dúvidas.
+        </p>
+      </div>
+    </main>
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo-wrap" style="margin-bottom: 0">
+            <img
+              src="Capturar.PNG"
+              alt="Logo"
+              style="height: 36px; width: 36px; object-fit: contain"
+            />
+            <span class="logo-text">PEPMASTERS</span>
+          </a>
+          <p>
+            <span data-i18n="footer.desc"
+              >Performance através da ciência. Peptídeos bioativos com qualidade
+              e segurança para atletas e entusiastas.</span
+            >
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer.institutional">Institucional</h4>
+          <a href="quem-somos.html" data-i18n="footer.about">Quem Somos</a>
+          <a href="termos-de-uso.html" data-i18n="footer.terms"
+            >Termos de Uso</a
+          >
+          <a href="politica-privacidade.html" data-i18n="footer.privacy"
+            >Política de Privacidade</a
+          >
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer.support">Suporte</h4>
+          <a href="duvidas-frequentes.html" data-i18n="footer.faq"
+            >Dúvidas Frequentes</a
+          >
+          <a href="envio-e-prazos.html" data-i18n="footer.shipping"
+            >Envio e Prazos</a
+          >
+          <a href="trocas-e-devolucoes.html" data-i18n="footer.returns"
+            >Trocas e Devoluções</a
+          >
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer.account">Minha Conta</h4>
+          <a href="meus-pedidos.html" data-i18n="footer.myorders"
+            >Meus Pedidos</a
+          >
+          <a href="perfil.html" data-i18n="footer.profile">Meu Perfil</a>
+          <a href="rastrear-pedido.html" data-i18n="footer.trackorder"
+            >Rastrear Pedido</a
+          >
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          © 2025 PEPMASTERS.
+          <span data-i18n="footer.rights">Todos os direitos reservados.</span>
+        </p>
+        <a href="admin-login.html" class="admin-link" data-i18n="footer.admin"
+          >Área do Administrador</a
+        >
+      </div>
+    </footer>
+    <script src="i18n.js"></script>
+    <script src="i18n-init.js"></script>
+
+    <script>
+      // Forçar reaplicação de traduções
+      (function () {
+        function applyNow() {
+          var d = window.PEPMASTERS_I18N;
+          var l = localStorage.getItem("pep_lang") || "en";
+          if (!d) return;
+          document.querySelectorAll("[data-i18n]").forEach(function (el) {
+            var val = d[el.getAttribute("data-i18n")];
+            val = val && (val[l] || val["en"]);
+            if (!val) return;
+            if (el.tagName === "INPUT" || el.tagName === "TEXTAREA")
+              el.placeholder = val;
+            else el.textContent = val;
+          });
+          document
+            .querySelectorAll("[data-i18n-placeholder]")
+            .forEach(function (el) {
+              var val = d[el.getAttribute("data-i18n-placeholder")];
+              val = val && (val[l] || val["en"]);
+              if (val) el.placeholder = val;
+            });
+        }
+        // Tentar imediatamente e após delays
+        applyNow();
+        setTimeout(applyNow, 100);
+        setTimeout(applyNow, 500);
+        window.addEventListener("load", applyNow);
+      })();
+    </script>
+
+    <!-- WhatsApp Button -->
+    <a
+      href="https://wa.me/5512991217552"
+      target="_blank"
+      rel="noopener"
+      style="
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 56px;
+        height: 56px;
+        background: #25d366;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+        z-index: 9999;
+        transition: transform 0.2s;
+        text-decoration: none;
+      "
+      onmouseover="this.style.transform = 'scale(1.1)'"
+      onmouseout="this.style.transform = 'scale(1)'"
+      aria-label="WhatsApp"
+    >
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+        <path
+          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+        />
+      </svg>
     </a>
-    <div class="header-right">
-      <a href="index.html" class="back-link">← Início</a>
-      <div id="authArea"></div>
-      <button class="cart-btn" onclick="abrirCarrinho()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.98-1.61L23 6H6"/></svg>
-        <span data-i18n="nav.cart">Cart</span>
-        <span class="cart-count" id="cartCount">0</span>
-      </button>
-    </div>
-  </div>
-</header>\n<main>\n  <div class=\"page-hero\">\n    <h1>Quem Somos</h1>\n    <p>Conhe\u00e7a a hist\u00f3ria e os valores por tr\u00e1s da PEPMASTERS.</p>\n  </div>\n\n  <div class=\"content-card\">\n    <h2>Nossa Miss\u00e3o</h2>\n    <p>A PEPMASTERS nasceu da paix\u00e3o pela ci\u00eancia e pela performance humana. Somos uma empresa dedicada a oferecer pept\u00eddeos bioativos de alta qualidade para atletas, praticantes de esportes e entusiastas do bem-estar.</p>\n    <p>Acreditamos que o acesso a compostos avan\u00e7ados deve vir acompanhado de informa\u00e7\u00e3o, transpar\u00eancia e responsabilidade. Por isso, cada produto que comercializamos passa por rigoroso controle de qualidade.</p>\n  </div>\n\n  <div class=\"content-card\">\n    <h2>Nossos Valores</h2>\n    <div class=\"values-grid\">\n      <div class=\"value-item\"><div class=\"icon\">\ud83e\uddec</div><h3>Ci\u00eancia</h3><p>Baseados em evid\u00eancias e pesquisa cient\u00edfica atualizada.</p></div>\n      <div class=\"value-item\"><div class=\"icon\">\ud83d\udd12</div><h3>Qualidade</h3><p>Produtos com pureza e proced\u00eancia garantidas.</p></div>\n      <div class=\"value-item\"><div class=\"icon\">\ud83d\udcac</div><h3>Transpar\u00eancia</h3><p>Informa\u00e7\u00f5es claras sobre cada composto que vendemos.</p></div>\n      <div class=\"value-item\"><div class=\"icon\">\ud83d\ude80</div><h3>Performance</h3><p>Foco em resultados reais para quem busca evolu\u00e7\u00e3o.</p></div>\n    </div>\n  </div>\n\n  <div class=\"content-card\">\n    <h2>Compromisso com o Cliente</h2>\n    <p>Nossa equipe est\u00e1 sempre dispon\u00edvel para tirar d\u00favidas, orientar sobre os produtos e garantir que sua experi\u00eancia de compra seja a melhor poss\u00edvel. Desde o primeiro contato at\u00e9 a entrega, cuidamos de cada detalhe.</p>\n  </div>\n</main>\n<footer>
-  <div class="footer-grid">
-    <div class="footer-brand">
-      <a href="index.html" class="logo-wrap" style="margin-bottom:0">
-        <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain"/>
-        <span class="logo-text">PEPMASTERS</span>
-      </a>
-      <p data-i18n="footer.desc"><span data-i18n="footer.desc">Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</span></p>
-    </div>
-    <div class="footer-col">
-      <h4 data-i18n="footer.institutional">Institucional</h4>
-      <a href="quem-somos.html" data-i18n="footer.about">Quem Somos</a>
-      <a href="termos-de-uso.html" data-i18n="footer.terms">Termos de Uso</a>
-      <a href="politica-privacidade.html" data-i18n="footer.privacy">Política de Privacidade</a>
-    </div>
-    <div class="footer-col">
-      <h4 data-i18n="footer.support">Suporte</h4>
-      <a href="duvidas-frequentes.html" data-i18n="footer.faq">Dúvidas Frequentes</a>
-      <a href="envio-e-prazos.html" data-i18n="footer.shipping">Envio e Prazos</a>
-      <a href="trocas-e-devolucoes.html" data-i18n="footer.returns">Trocas e Devoluções</a>
-    </div>
-    <div class="footer-col">
-      <h4 data-i18n="footer.account">Minha Conta</h4>
-      <a href="meus-pedidos.html" data-i18n="footer.myorders">Meus Pedidos</a>
-      <a href="perfil.html" data-i18n="footer.profile">Meu Perfil</a>
-      <a href="rastrear-pedido.html" data-i18n="footer.trackorder">Rastrear Pedido</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>© 2025 PEPMASTERS. <span data-i18n="footer.rights">Todos os direitos reservados.</span></p>
-    <a href="admin-login.html" class="admin-link" data-i18n="footer.admin">Área do Administrador</a>
-  </div>
-</footer>\n<script src="i18n.js"></script>
-<script src="i18n-init.js"></script>
-<script>
-function abrirCarrinho(){window.location.href='checkout.html';}
-function logout(e){e.preventDefault();localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');window.location.href='index.html';}
-function renderAuth(){
-  var area=document.getElementById('authArea');if(!area)return;
-  var token=localStorage.getItem('pep_token');var nome=localStorage.getItem('pep_nome');
-  var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';
-  var tr=function(k){return(d[k]&&(d[k][l]||d[k]['en']))||k;};
-  if(token&&nome){area.innerHTML='<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.78rem;color:var(--muted)">'+tr('nav.hello')+', '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>';}
-  else{area.innerHTML='<a href="login.html" class="btn-login">'+tr('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+tr('nav.register')+'</a>';}
-}
-function updateCartCount(){try{var c=JSON.parse(localStorage.getItem('pep_carrinho')||'[]');var n=c.reduce(function(s,i){return s+i.quantidade;},0);var el=document.getElementById('cartCount');if(el){el.style.display=n>0?'flex':'none';el.textContent=n;}}catch(e){}}
-window.addEventListener('DOMContentLoaded',function(){renderAuth();updateCartCount();});
-</script>
-</body>\n</html>
+  </body>
+</html>

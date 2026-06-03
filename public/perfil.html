@@ -1,3 +1,888 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>PEPMASTERS — High Performance Peptides</title>
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="Bioactive peptides for recovery, muscle mass, fat loss and cognitive performance."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://pepmasters.onrender.com/perfil.html" />
+    <!-- Open Graph (WhatsApp, Facebook, LinkedIn) -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="PEPMASTERS — High Performance Peptides"
+    />
+    <meta
+      property="og:description"
+      content="Bioactive peptides for recovery, muscle mass, fat loss and cognitive performance."
+    />
+    <meta
+      property="og:image"
+      content="https://pepmasters.onrender.com/Capturar.PNG"
+    />
+    <meta
+      property="og:url"
+      content="https://pepmasters.onrender.com/perfil.html"
+    />
+    <meta property="og:site_name" content="PEPMASTERS" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="PEPMASTERS — High Performance Peptides"
+    />
+    <meta
+      name="twitter:description"
+      content="Bioactive peptides for recovery, muscle mass, fat loss and cognitive performance."
+    />
+    <meta
+      name="twitter:image"
+      content="https://pepmasters.onrender.com/Capturar.PNG"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --amber: #ffb300;
+        --red: #e8220a;
+        --orange: #ff6b00;
+        --cream: #fff8f0;
+        --warm-white: #fffdf9;
+        --dark: #1c0a00;
+        --mid: #3d1a00;
+        --muted: #7a4a2a;
+        --border: #ffd580;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Barlow", sans-serif;
+        background: var(--cream);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-<!-- updated -->
-<!-- v3 -->
+      /* HEADER */
+      header {
+        background: var(--warm-white);
+        border-bottom: 3px solid var(--amber);
+        padding: 0 24px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 2px 20px rgba(255, 179, 0, 0.2);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .logo-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+      .logo-wrap img {
+        height: 40px;
+        width: 40px;
+        object-fit: contain;
+      }
+      .logo-text {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 900;
+        font-size: 1.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--red),
+          var(--orange),
+          var(--amber)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .back-link {
+        margin-left: auto;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        text-decoration: none;
+      }
+      .back-link:hover {
+        color: var(--orange);
+      }
+
+      /* LAYOUT */
+      main {
+        flex: 1;
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 44px 24px;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: 28px;
+        align-items: start;
+      }
+
+      /* SIDEBAR PERFIL */
+      .profile-sidebar {
+        background: #fff;
+        border-radius: 18px;
+        padding: 28px 22px;
+        border: 1px solid #ffe5b0;
+        box-shadow: 0 4px 20px rgba(255, 179, 0, 0.08);
+        text-align: center;
+      }
+      .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--red), var(--orange));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        margin: 0 auto 14px;
+        box-shadow: 0 4px 16px rgba(232, 34, 10, 0.25);
+      }
+      .profile-name {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 800;
+        font-size: 1.2rem;
+        color: var(--dark);
+        margin-bottom: 4px;
+      }
+      .profile-email {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-bottom: 20px;
+        word-break: break-all;
+      }
+      .sidebar-nav a {
+        display: block;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--mid);
+        text-decoration: none;
+        margin-bottom: 4px;
+        transition: all 0.2s;
+        text-align: left;
+      }
+      .sidebar-nav a:hover {
+        background: #fff3d0;
+        color: var(--orange);
+      }
+      .sidebar-nav a.active {
+        background: linear-gradient(
+          135deg,
+          rgba(232, 34, 10, 0.08),
+          rgba(255, 107, 0, 0.08)
+        );
+        color: var(--red);
+        border-left: 3px solid var(--red);
+      }
+      .btn-sair {
+        width: 100%;
+        margin-top: 18px;
+        padding: 9px;
+        background: none;
+        border: 2px solid #ffe5b0;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 0.88rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        transition: all 0.2s;
+      }
+      .btn-sair:hover {
+        border-color: var(--red);
+        color: var(--red);
+      }
+
+      /* PAINEIS */
+      .panels {
+      }
+      .panel {
+        background: #fff;
+        border-radius: 18px;
+        padding: 28px;
+        border: 1px solid #ffe5b0;
+        box-shadow: 0 4px 20px rgba(255, 179, 0, 0.08);
+        margin-bottom: 20px;
+      }
+      .panel h2 {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 800;
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--dark);
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--border);
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .form-group {
+        margin-bottom: 14px;
+      }
+      label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--mid);
+        margin-bottom: 5px;
+      }
+      input {
+        width: 100%;
+        padding: 11px 13px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.93rem;
+        font-family: "Barlow", sans-serif;
+        color: var(--dark);
+        background: var(--warm-white);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      input:focus {
+        border-color: var(--orange);
+      }
+      input[disabled] {
+        background: #f5f5f5;
+        color: #aaa;
+        cursor: not-allowed;
+      }
+      .btn-primary {
+        padding: 11px 28px;
+        background: linear-gradient(135deg, var(--red), var(--orange));
+        color: #fff;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(232, 34, 10, 0.28);
+        transition: transform 0.15s;
+      }
+      .btn-primary:hover {
+        transform: translateY(-1px);
+      }
+      #msgOk {
+        background: #f0fff4;
+        border-left: 4px solid #22c55e;
+        padding: 9px 13px;
+        border-radius: 8px;
+        font-size: 0.87rem;
+        color: #15803d;
+        margin-bottom: 14px;
+        display: none;
+      }
+      #msgErro {
+        background: #fff0ee;
+        border-left: 4px solid var(--red);
+        padding: 9px 13px;
+        border-radius: 8px;
+        font-size: 0.87rem;
+        color: var(--red);
+        margin-bottom: 14px;
+        display: none;
+      }
+      #msgSenhaOk {
+        background: #f0fff4;
+        border-left: 4px solid #22c55e;
+        padding: 9px 13px;
+        border-radius: 8px;
+        font-size: 0.87rem;
+        color: #15803d;
+        margin-bottom: 14px;
+        display: none;
+      }
+      #msgSenhaErro {
+        background: #fff0ee;
+        border-left: 4px solid var(--red);
+        padding: 9px 13px;
+        border-radius: 8px;
+        font-size: 0.87rem;
+        color: var(--red);
+        margin-bottom: 14px;
+        display: none;
+      }
+
+      /* RESPONSIVO */
+      @media (max-width: 680px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+        .profile-sidebar {
+          display: none;
+        }
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      footer {
+        background: var(--dark);
+        color: rgba(255, 255, 255, 0.4);
+        text-align: center;
+        padding: 16px;
+        font-size: 0.8rem;
+      }
+      footer a {
+        color: rgba(255, 179, 0, 0.5);
+        text-decoration: none;
+      }
+
+      /* FOOTER */
+      footer {
+        background: var(--dark);
+        color: #fff;
+        padding: 52px 24px 0;
+        margin-top: 60px;
+      }
+      .footer-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 36px;
+        padding-bottom: 44px;
+        border-bottom: 1px solid rgba(255, 179, 0, 0.2);
+      }
+      .footer-brand p {
+        font-size: 0.84rem;
+        color: rgba(255, 255, 255, 0.5);
+        line-height: 1.7;
+        margin-top: 12px;
+        max-width: 260px;
+      }
+      .footer-col h4 {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 0.78rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--amber);
+        margin-bottom: 14px;
+      }
+      .footer-col a {
+        display: block;
+        font-size: 0.86rem;
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        margin-bottom: 8px;
+        transition: color 0.2s;
+      }
+      .footer-col a:hover {
+        color: var(--amber);
+      }
+      .footer-bottom {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 18px 0;
+        text-align: center;
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.3);
+      }
+      .admin-link {
+        display: block;
+        text-align: center;
+        padding: 8px;
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.15);
+        text-decoration: none;
+      }
+      .admin-link:hover {
+        color: var(--amber);
+      }
+      @media (max-width: 768px) {
+        .footer-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+    <!-- Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-XXXXXXXXXX");
+    </script>
+    <!-- v1779920875 -->
+  </head>
+  <body>
+    <header
+      style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        height: 64px;
+        border-bottom: 2px solid var(--amber);
+      "
+    >
+      <a href="index.html" class="logo-wrap">
+        <img src="Capturar.PNG" alt="Logo" />
+        <span class="logo-text">PEPMASTERS</span>
+      </a>
+      <a
+        href="index.html"
+        style="
+          font-family: &quot;Barlow Condensed&quot;, sans-serif;
+          font-weight: 700;
+          font-size: 0.85rem;
+          color: var(--muted);
+          text-decoration: none;
+          letter-spacing: 0.04em;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        "
+        ><svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <path d="M19 12H5M12 5l-7 7 7 7" />
+        </svg>
+        <span data-i18n="nav.home">Início</span></a
+      >
+    </header>
+
+    <main>
+      <!-- SIDEBAR -->
+      <div class="profile-sidebar">
+        <div class="avatar" id="avatarIcon">👤</div>
+        <div class="profile-name" id="sideNome">—</div>
+        <div class="profile-email" id="sideEmail">—</div>
+        <nav class="sidebar-nav">
+          <a href="perfil.html" class="active"
+            >👤 <span data-i18n="profile.personal">Meus Dados</span></a
+          >
+          <a href="meus-pedidos.html"
+            >📦 <span data-i18n="nav.orders">Pedidos</span></a
+          >
+          <a href="rastrear-pedido.html"
+            >📍 <span data-i18n="nav.track">Rastrear</span></a
+          >
+        </nav>
+        <button class="btn-sair" onclick="sair()">
+          <span data-i18n="profile.logout">Sair da conta</span>
+        </button>
+      </div>
+
+      <!-- PAINEIS -->
+      <div class="panels">
+        <!-- Dados pessoais -->
+        <div class="panel">
+          <h2>👤 <span data-i18n="profile.personal">Dados Pessoais</span></h2>
+          <div id="msgErro"></div>
+          <div id="msgOk"></div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="checkout.fullname">Nome completo</label>
+              <input type="text" id="nome" placeholder="Seu nome" />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="email" disabled />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="register.cpf">CPF</label>
+              <input
+                type="text"
+                id="cpf"
+                placeholder="000.000.000-00"
+                maxlength="14"
+              />
+            </div>
+            <div class="form-group">
+              <label data-i18n="register.phone">Telefone</label>
+              <input
+                type="text"
+                id="telefone"
+                placeholder="(00) 00000-0000"
+                maxlength="15"
+              />
+            </div>
+          </div>
+
+          <button class="btn-primary" onclick="salvarDados()">
+            <span data-i18n="profile.save">Salvar alterações</span>
+          </button>
+        </div>
+
+        <!-- Alterar senha -->
+        <div class="panel">
+          <h2>🔒 <span data-i18n="profile.password">Alterar Senha</span></h2>
+          <div id="msgSenhaErro"></div>
+          <div id="msgSenhaOk"></div>
+
+          <div class="form-group">
+            <label data-i18n="profile.current">Senha atual</label>
+            <input type="password" id="senhaAtual" placeholder="••••••••" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="profile.new">Nova senha</label>
+              <input type="password" id="novaSenha" placeholder="••••••••" />
+            </div>
+            <div class="form-group">
+              <label data-i18n="profile.confirm">Confirmar</label>
+              <input
+                type="password"
+                id="confirmarSenha"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+
+          <button class="btn-primary" onclick="alterarSenha()">
+            <span data-i18n="profile.change">Alterar senha</span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo-wrap" style="margin-bottom: 0">
+            <img
+              src="Capturar.PNG"
+              alt="Logo"
+              style="height: 36px; width: 36px; object-fit: contain"
+            />
+            <span class="logo-text">PEPMASTERS</span>
+          </a>
+          <p>
+            <span data-i18n="footer.desc"
+              >Performance através da ciência. Peptídeos bioativos com qualidade
+              e segurança para atletas e entusiastas.</span
+            >
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer.institutional">Institucional</h4>
+          <a href="quem-somos.html" data-i18n="footer.about">Quem Somos</a>
+          <a href="termos-de-uso.html" data-i18n="footer.terms"
+            >Termos de Uso</a
+          >
+          <a href="politica-privacidade.html" data-i18n="footer.privacy"
+            >Política de Privacidade</a
+          >
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer.support">Suporte</h4>
+          <a href="duvidas-frequentes.html" data-i18n="footer.faq"
+            >Dúvidas Frequentes</a
+          >
+          <a href="envio-e-prazos.html" data-i18n="footer.shipping"
+            >Envio e Prazos</a
+          >
+          <a href="trocas-e-devolucoes.html" data-i18n="footer.returns"
+            >Trocas e Devoluções</a
+          >
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer.account">Minha Conta</h4>
+          <a href="meus-pedidos.html" data-i18n="footer.myorders"
+            >Meus Pedidos</a
+          >
+          <a href="perfil.html" data-i18n="footer.profile">Meu Perfil</a>
+          <a href="rastrear-pedido.html" data-i18n="footer.trackorder"
+            >Rastrear Pedido</a
+          >
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          © 2025 PEPMASTERS.
+          <span data-i18n="footer.rights">Todos os direitos reservados.</span>
+        </p>
+        <a href="admin-login.html" class="admin-link" data-i18n="footer.admin"
+          >Área do Administrador</a
+        >
+      </div>
+    </footer>
+
+    <script>
+      const token = localStorage.getItem("pep_token");
+      const nome = localStorage.getItem("pep_nome");
+
+      if (!token) {
+        location.href = "login.html?redirect=perfil.html";
+      }
+
+      // ── INIT ──
+      async function init() {
+        // sidebar
+        document.getElementById("sideNome").textContent = nome || "—";
+
+        try {
+          const res = await fetch("/api/perfil", {
+            headers: { Authorization: "Bearer " + token },
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            sair();
+            return;
+          }
+
+          document.getElementById("nome").value = data.nome || "";
+          document.getElementById("email").value = data.email || "";
+          document.getElementById("cpf").value = data.cpf || "";
+          document.getElementById("telefone").value = data.telefone || "";
+          document.getElementById("sideEmail").textContent = data.email || "";
+
+          // avatar inicial do nome
+          const ini = (data.nome || "U")[0].toUpperCase();
+          document.getElementById("avatarIcon").textContent = ini;
+        } catch {
+          document.getElementById("email").value = "";
+        }
+      }
+
+      // ── SALVAR DADOS ──
+      async function salvarDados() {
+        const nome = document.getElementById("nome").value.trim();
+        const cpf = document.getElementById("cpf").value.trim();
+        const telefone = document.getElementById("telefone").value.trim();
+        if (!nome) {
+          mostrarErro("O nome não pode ficar vazio.");
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/perfil", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify({ nome, cpf, telefone }),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            mostrarErro(data.erro || "Erro ao salvar.");
+            return;
+          }
+
+          localStorage.setItem("pep_nome", nome);
+          document.getElementById("sideNome").textContent = nome;
+          mostrarOk("Dados atualizados com sucesso!");
+        } catch {
+          mostrarErro("Erro de conexão.");
+        }
+      }
+
+      // ── <span data-i18n="profile.password">ALTERAR SENHA</span> ──
+      async function alterarSenha() {
+        const atual = document.getElementById("senhaAtual").value;
+        const nova = document.getElementById("novaSenha").value;
+        const confirmar = document.getElementById("confirmarSenha").value;
+
+        if (!atual || !nova) {
+          mostrarSenhaErro("Preencha todos os campos.");
+          return;
+        }
+        if (nova !== confirmar) {
+          mostrarSenhaErro("As senhas não conferem.");
+          return;
+        }
+        if (nova.length < 6) {
+          mostrarSenhaErro("A nova senha deve ter pelo menos 6 caracteres.");
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/perfil/senha", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify({ senhaAtual: atual, novaSenha: nova }),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            mostrarSenhaErro(data.erro || "Senha atual incorreta.");
+            return;
+          }
+
+          document.getElementById("senhaAtual").value = "";
+          document.getElementById("novaSenha").value = "";
+          document.getElementById("confirmarSenha").value = "";
+          mostrarSenhaOk("Senha alterada com sucesso!");
+        } catch {
+          mostrarSenhaErro("Erro de conexão.");
+        }
+      }
+
+      function sair() {
+        localStorage.removeItem("pep_token");
+        localStorage.removeItem("pep_nome");
+        location.href = "index.html";
+      }
+
+      // ── MENSAGENS ──
+      function mostrarErro(msg) {
+        const e = document.getElementById("msgErro");
+        e.textContent = msg;
+        e.style.display = "block";
+        document.getElementById("msgOk").style.display = "none";
+      }
+      function mostrarOk(msg) {
+        const e = document.getElementById("msgOk");
+        e.textContent = msg;
+        e.style.display = "block";
+        document.getElementById("msgErro").style.display = "none";
+      }
+      function mostrarSenhaErro(msg) {
+        const e = document.getElementById("msgSenhaErro");
+        e.textContent = msg;
+        e.style.display = "block";
+        document.getElementById("msgSenhaOk").style.display = "none";
+      }
+      function mostrarSenhaOk(msg) {
+        const e = document.getElementById("msgSenhaOk");
+        e.textContent = msg;
+        e.style.display = "block";
+        document.getElementById("msgSenhaErro").style.display = "none";
+      }
+
+      // ── MÁSCARAS ──
+      document.getElementById("cpf").addEventListener("input", function () {
+        let v = this.value.replace(/\D/g, "").slice(0, 11);
+        v = v
+          .replace(/(\d{3})(\d)/, "$1.$2")
+          .replace(/(\d{3})(\d)/, "$1.$2")
+          .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        this.value = v;
+      });
+      document
+        .getElementById("telefone")
+        .addEventListener("input", function () {
+          let v = this.value.replace(/\D/g, "").slice(0, 11);
+          if (v.length > 6)
+            v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3");
+          else if (v.length > 2) v = v.replace(/^(\d{2})(\d*)/, "($1) $2");
+          this.value = v;
+        });
+
+      init();
+    </script>
+    <script src="i18n.js"></script>
+    <script src="i18n-init.js"></script>
+
+    <script>
+      // Forçar reaplicação de traduções
+      (function () {
+        function applyNow() {
+          var d = window.PEPMASTERS_I18N;
+          var l = localStorage.getItem("pep_lang") || "en";
+          if (!d) return;
+          document.querySelectorAll("[data-i18n]").forEach(function (el) {
+            var val = d[el.getAttribute("data-i18n")];
+            val = val && (val[l] || val["en"]);
+            if (!val) return;
+            if (el.tagName === "INPUT" || el.tagName === "TEXTAREA")
+              el.placeholder = val;
+            else el.textContent = val;
+          });
+          document
+            .querySelectorAll("[data-i18n-placeholder]")
+            .forEach(function (el) {
+              var val = d[el.getAttribute("data-i18n-placeholder")];
+              val = val && (val[l] || val["en"]);
+              if (val) el.placeholder = val;
+            });
+        }
+        // Tentar imediatamente e após delays
+        applyNow();
+        setTimeout(applyNow, 100);
+        setTimeout(applyNow, 500);
+        window.addEventListener("load", applyNow);
+      })();
+    </script>
+
+    <!-- WhatsApp Button -->
+    <a
+      href="https://wa.me/5512991217552"
+      target="_blank"
+      rel="noopener"
+      style="
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 56px;
+        height: 56px;
+        background: #25d366;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+        z-index: 9999;
+        transition: transform 0.2s;
+        text-decoration: none;
+      "
+      onmouseover="this.style.transform = 'scale(1.1)'"
+      onmouseout="this.style.transform = 'scale(1)'"
+      aria-label="WhatsApp"
+    >
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+        <path
+          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+        />
+      </svg>
+    </a>
+  </body>
+</html>

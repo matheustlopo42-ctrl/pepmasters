@@ -105,31 +105,22 @@
     /* PRODUTOS */
     .produtos-section{max-width:1200px;margin:0 auto;padding:52px 24px}
     /* Banners */
-    .lab-banners{width:100%;margin-top:68px;display:block!important}
-    .lab-banner{position:relative;width:100%;height:560px;min-height:560px;display:flex;align-items:center;overflow:hidden}
-    .lab-banner-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.35)}
-    @media(max-width:767px){
-      .lab-banner{height:400px;min-height:400px}
-      .lab-banner-bg{background-size:cover;background-position:center 40%}
-      .lab-banner-1 .lab-banner-bg{background-position:center 40%}
-      .lab-banner-2 .lab-banner-bg{background-position:center 25%}
-      .lab-banner-content{padding:32px 20px}
-      .lab-banner-content h2{font-size:1.4rem}
-      .lab-banner-content p{font-size:.85rem}
-    }
-    .lab-banner-1 .lab-banner-bg{background-image:url('/img/pepvariety.png');background-position:center 40%}
-    .lab-banner-2 .lab-banner-bg{background-image:url('https://images.unsplash.com/photo-1614935151651-0bea6508db6b?w=1400&q=80')}
-    .lab-banner-content{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:52px 32px;color:#fff;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.6)}
-    .lab-banner-content .lab-tag{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:12px;display:block}
-    .lab-banner-content h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.8rem,4vw,2.8rem);text-transform:uppercase;letter-spacing:.04em;margin:0 0 16px;line-height:1.1}
-    .lab-banner-content p{font-size:.95rem;line-height:1.7;opacity:.9;margin:0 0 28px;max-width:600px;margin-left:auto;margin-right:auto}
-    .lab-banner-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-    .lab-btn-primary{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;padding:12px 28px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;border-radius:50px;text-decoration:none;cursor:pointer;transition:opacity .2s}
-    .lab-btn-primary:hover{opacity:.85}
-    .lab-btn-secondary{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;padding:12px 28px;background:none;color:#fff;border:2px solid rgba(255,255,255,.6);border-radius:50px;text-decoration:none;cursor:pointer;transition:all .2s}
-    .lab-btn-secondary:hover{background:rgba(255,255,255,.1)}
-    .lab-banner-badges{display:flex;gap:24px;justify-content:center;margin-top:24px;flex-wrap:wrap}
-    .lab-badge{font-size:.8rem;opacity:.8;display:flex;align-items:center;gap:6px}
+    .ad-section{width:100%;margin-top:68px}
+    .ad-block{position:relative;width:100%;min-height:560px;display:flex;align-items:center;overflow:hidden}
+    .ad-block-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.35)}
+    .ad-block-1 .ad-block-bg{background-image:url('/img/pepvariety.png');background-position:center 40%}
+    .ad-block-2 .ad-block-bg{background-image:url('https://images.unsplash.com/photo-1614935151651-0bea6508db6b?w=1400&q=80')}
+    .ad-block-content{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:52px 32px;color:#fff;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+    .ad-block-content .ad-tag{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:12px;display:block}
+    .ad-block-content h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.8rem,4vw,2.8rem);text-transform:uppercase;letter-spacing:.04em;margin:0 0 16px;line-height:1.1}
+    .ad-block-content p{font-size:.95rem;line-height:1.7;opacity:.9;margin:0 0 28px;max-width:600px;margin-left:auto;margin-right:auto}
+    .ad-block-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .ad-btn-primary{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;padding:12px 28px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;border-radius:50px;text-decoration:none;cursor:pointer;transition:opacity .2s}
+    .ad-btn-primary:hover{opacity:.85}
+    .ad-btn-secondary{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;padding:12px 28px;background:none;color:#fff;border:2px solid rgba(255,255,255,.6);border-radius:50px;text-decoration:none;cursor:pointer;transition:all .2s}
+    .ad-btn-secondary:hover{background:rgba(255,255,255,.1)}
+    .ad-block-badges{display:flex;gap:24px;justify-content:center;margin-top:24px;flex-wrap:wrap}
+    .ad-badge{font-size:.8rem;opacity:.8;display:flex;align-items:center;gap:6px}
     /* Top sellers */
     .top-sellers-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;text-transform:uppercase;letter-spacing:.04em;margin:0 0 16px;display:flex;align-items:center;gap:12px}
     .top-sellers-title::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,var(--amber),transparent)}
@@ -137,30 +128,14 @@
     .top-sellers-scroll::-webkit-scrollbar{height:4px}
     .top-sellers-scroll::-webkit-scrollbar-track{background:#f1f1f1;border-radius:4px}
     .top-sellers-scroll::-webkit-scrollbar-thumb{background:var(--amber);border-radius:4px}
-    .top-sellers-scroll .card{min-width:180px;width:180px;scroll-snap-align:start;flex-shrink:0}
-    @media(min-width:640px){.top-sellers-scroll .card{min-width:240px;width:240px}}
-    .top-sellers-scroll .card .card-desc{display:none}
-    .top-sellers-scroll .card .card-footer{flex-direction:column;align-items:stretch;gap:6px}
-    .top-sellers-scroll .card .btn-add{width:100%;text-align:center;padding:8px 6px;font-size:.8rem}
-    .top-sellers-scroll .card .esgotado{width:100%;text-align:center}
+    .top-sellers-scroll .card{min-width:200px;max-width:200px;scroll-snap-align:start;flex-shrink:0}
     .ver-mais-wrap{text-align:center;margin:32px 0 8px}
     .btn-ver-mais{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:.06em;padding:12px 32px;border:2px solid var(--orange);border-radius:50px;background:none;color:var(--orange);cursor:pointer;transition:all .2s}
     .btn-ver-mais:hover{background:var(--orange);color:#fff}
     .todos-produtos{display:none}
     .todos-produtos.aberto{display:block}
-    .cat-grid-2col{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-    @media(min-width:768px){.cat-grid-2col{grid-template-columns:repeat(3,1fr);gap:16px}}
-    /* Cards em 2 colunas no mobile - ajustes */
-    @media(max-width:767px){
-      .cat-grid-2col .card-body{padding:10px 10px 12px}
-      .cat-grid-2col .card-name{font-size:.9rem}
-      .cat-grid-2col .card-desc{display:none}
-      .cat-grid-2col .card-price{font-size:1.1rem}
-      .cat-grid-2col .card-price-antes{font-size:.75rem}
-      .cat-grid-2col .card-footer{flex-direction:column;align-items:stretch;gap:6px}
-      .cat-grid-2col .btn-add{width:100%;text-align:center;padding:8px 6px;font-size:.75rem}
-      .cat-grid-2col .esgotado{width:100%;text-align:center}
-    }
+    .cat-grid-2col{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    @media(min-width:768px){.cat-grid-2col{grid-template-columns:repeat(3,1fr)}}
     /* Header search */
     .header-search{display:flex;align-items:center;background:#f5f5f5;border:2px solid var(--border);border-radius:20px;padding:0 12px;gap:6px;height:34px;transition:border-color .2s;min-width:180px;max-width:240px}
     .header-search:focus-within{border-color:var(--orange);background:#fff}
@@ -177,7 +152,7 @@
     .suggestion-item-cat{font-size:.75rem;color:var(--muted)}
     .suggestion-item-price{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--red);font-size:.9rem}
     .search-no-results{padding:16px;text-align:center;color:var(--muted);font-size:.88rem}
-    @media(max-width:900px){.header-search{display:none}}
+    @media(max-width:768px){.header-search{display:none}}
     .section-label{display:flex;align-items:center;gap:14px;margin-bottom:28px}
     .section-label h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dark)}
     .section-label::after{content:'';flex:1;height:3px;background:linear-gradient(90deg,var(--amber),transparent);border-radius:2px}
@@ -199,7 +174,7 @@
     .cat-gh{background:#DBEAFE;color:#1d4ed8}.cat-cognitivo{background:#F3E8FF;color:#7c3aed}
     .cat-hormonal{background:#FEF3C7;color:#92400e}.cat-antioxidante{background:#CCFBF1;color:#0f766e}
     .cat-estetico{background:#FCE7F3;color:#9d174d}.cat-antiinfla{background:#E0F2FE;color:#075985}
-    .estoque-badge{position:absolute;bottom:8px;left:8px;font-size:.6rem;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:20px;z-index:2}
+    .estoque-badge{position:absolute;top:10px;right:10px;font-size:.65rem;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:20px}
     .estoque-low{background:rgba(234,179,8,.15);color:#a16207}.estoque-zero{background:rgba(239,68,68,.15);color:#b91c1c}
     .card-body{padding:16px 18px 18px}
     .card-cat-label{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:4px}
@@ -207,9 +182,6 @@
     .card-desc{font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:14px;min-height:36px}
     .card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
     .card-price{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;color:var(--red)}
-    .card-price-wrap{display:flex;flex-direction:column;gap:2px}
-    .card-price-antes{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;color:#999;text-decoration:line-through;font-weight:600;line-height:1.2}
-    .card-price-badge{display:inline-block;background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;padding:1px 5px;border-radius:4px;text-decoration:none;margin-left:4px}
     .card-price span{font-size:.88rem;font-weight:600;color:var(--muted)}
     .btn-add{padding:8px 14px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;border:none;border-radius:30px;cursor:pointer;transition:transform .15s,background .2s;white-space:nowrap}
     .btn-add:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(232,34,10,.4)}
@@ -262,11 +234,8 @@
       .cart-drawer{width:100%}
       nav{display:none}
       .hamburger{display:flex!important;margin-left:auto}
-      .header-inner{padding:0 12px;gap:6px}
-      .logo-text{font-size:1rem}
-      .header-inner .nav-auth{display:none}
-      .header-inner .lang-wrap{display:none}
-      .header-inner nav{display:none}
+      .header-inner{padding:0 16px;gap:12px}
+      .logo-text{font-size:1.1rem}
       #authArea{display:none}
       #langSelector{margin-left:auto}
       /* mobile-menu aberto via classe .open */
@@ -280,9 +249,7 @@
     .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
     .hamburger.open span:nth-child(2){opacity:0}
     .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-    .mobile-menu{display:block;position:fixed;top:0;left:0;bottom:0;width:80%;max-width:300px;background:#fff;border-right:2px solid var(--amber);z-index:9999;padding:80px 20px 24px;box-shadow:4px 0 24px rgba(0,0,0,.15);overflow-y:auto;transform:translateX(-110%);transition:transform .3s ease;visibility:hidden}.mobile-menu.open{transform:translateX(0);visibility:visible}
-    .mobile-menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998}
-    .mobile-menu-overlay.open{display:block}
+    .mobile-menu{display:block;position:fixed;top:58px;left:0;right:0;background:#fff;border-top:2px solid var(--amber);z-index:9998;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.15);max-height:70vh;overflow-y:auto;transform:translateY(-150%);transition:transform .25s ease;visibility:hidden}.mobile-menu.open{transform:translateY(0);visibility:visible}
     .mobile-menu a{display:block;padding:12px 8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;color:var(--dark);text-decoration:none;border-bottom:1px solid var(--border);letter-spacing:.04em;text-transform:uppercase}
     .mobile-menu a:last-child{border-bottom:none}
     .mobile-menu .mob-auth{display:flex;gap:8px;margin-top:12px}
@@ -291,13 +258,18 @@
     .mobile-menu .mob-auth .btn-cadastro{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff!important}
   </style>
   <!-- Google Analytics -->
-
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
 <!-- v1779920875 -->
 </head>
 <body>
 
 <!-- MOBILE MENU (fora do header) -->
-<div class="mobile-menu-overlay" id="menuOverlay" onclick="toggleMobileMenu()"></div>
 <div class="mobile-menu" id="mobileMenu">
   <a href="index.html" data-i18n="nav.home">Início</a>
   <div style="border-bottom:1px solid var(--border)">
@@ -383,37 +355,37 @@
 </section>
 
 <!-- Banners Lab -->
-<div class="lab-banners">
-  <div class="lab-banner lab-banner-1">
-    <div class="lab-banner-bg"></div>
-    <div class="lab-banner-content">
-      <span class="lab-tag" data-i18n="ad.tag1">Premium Peptides · Global Delivery</span>
+<div class="ad-section">
+  <div class="ad-block ad-block-1">
+    <div class="ad-block-bg"></div>
+    <div class="ad-block-content">
+      <span class="ad-tag" data-i18n="ad.tag1">Premium Peptides · Global Delivery</span>
       <h2 data-i18n="ad.title1">Unlock Your Potential with Premium Peptides</h2>
       <p data-i18n="ad.desc1">High-purity bioactive peptides for recovery, performance, and longevity. From BPC-157 for rapid healing to SLU-PP-32 for fat loss — science-backed solutions, delivered worldwide with purity above 99%.</p>
-      <div class="lab-banner-btns">
-        <a href="#produtos" class="lab-btn-primary" data-i18n="ad.btn.shop">Shop Peptides</a>
-        <a href="quem-somos.html" class="lab-btn-secondary" data-i18n="ad.btn.about">Learn More</a>
+      <div class="ad-block-btns">
+        <a href="#produtos" class="ad-btn-primary" data-i18n="ad.btn.shop">Shop Peptides</a>
+        <a href="quem-somos.html" class="ad-btn-secondary" data-i18n="ad.btn.about">Learn More</a>
       </div>
-      <div class="lab-banner-badges">
-        <span class="lab-badge">⚡ <span data-i18n="ad.badge.shipping">Fast Shipping</span></span>
-        <span class="lab-badge">🔒 <span data-i18n="ad.badge.secure">Secure Delivery</span></span>
-        <span class="lab-badge">🧬 <span data-i18n="ad.badge.purity">99%+ Purity</span></span>
+      <div class="ad-block-badges">
+        <span class="ad-badge">⚡ <span data-i18n="ad.badge.shipping">Fast Shipping</span></span>
+        <span class="ad-badge">🔒 <span data-i18n="ad.badge.secure">Secure Delivery</span></span>
+        <span class="ad-badge">🧬 <span data-i18n="ad.badge.purity">99%+ Purity</span></span>
       </div>
     </div>
   </div>
-  <div class="lab-banner lab-banner-2">
-    <div class="lab-banner-bg"></div>
-    <div class="lab-banner-content">
-      <span class="lab-tag" data-i18n="ad.tag2">About PEPMASTERS</span>
+  <div class="ad-block ad-block-2">
+    <div class="ad-block-bg"></div>
+    <div class="ad-block-content">
+      <span class="ad-tag" data-i18n="ad.tag2">About PEPMASTERS</span>
       <h2 data-i18n="ad.title2">Precision Science. Unmatched Quality.</h2>
       <p data-i18n="ad.desc2">PEPMASTERS specializes in ultra-high-purity peptides for performance optimization. Every product is third-party tested — shipped discreetly to over 50 countries.</p>
-      <div class="lab-banner-btns">
-        <a href="quem-somos.html" class="lab-btn-primary" data-i18n="ad.btn.about2">Our Story</a>
+      <div class="ad-block-btns">
+        <a href="quem-somos.html" class="ad-btn-primary" data-i18n="ad.btn.about2">Our Story</a>
       </div>
-      <div class="lab-banner-badges">
-        <span class="lab-badge">🌍 <span data-i18n="ad.badge.global">50+ Countries</span></span>
-        <span class="lab-badge">✅ <span data-i18n="ad.badge.tested">Third-Party Tested</span></span>
-        <span class="lab-badge">📦 <span data-i18n="ad.badge.discreet">Discreet Shipping</span></span>
+      <div class="ad-block-badges">
+        <span class="ad-badge">🌍 <span data-i18n="ad.badge.global">50+ Countries</span></span>
+        <span class="ad-badge">✅ <span data-i18n="ad.badge.tested">Third-Party Tested</span></span>
+        <span class="ad-badge">📦 <span data-i18n="ad.badge.discreet">Discreet Shipping</span></span>
       </div>
     </div>
   </div>
@@ -427,7 +399,7 @@
     <h2 class="top-sellers-title" data-i18n="home.topsellers">🔥 Top Sellers</h2>
     <div class="top-sellers-scroll" id="topSellersGrid"></div>
     <div class="ver-mais-wrap">
-      <button class="btn-ver-mais" onclick="toggleTodosProdutos()" id="btnVerMais">Ver todos os produtos ↓</button>
+      <button class="btn-ver-mais" onclick="toggleTodosProdutos()" id="btnVerMais" data-i18n="home.verMais">Ver todos os produtos ↓</button>
     </div>
   </div>
   <!-- Todos os produtos -->
@@ -435,15 +407,15 @@
   <div class="section-label"><h2 data-i18n="products.title">Nossos Produtos</h2></div>
   <div class="filtros">
     <button class="filtro-btn active" onclick="filtrar('',this)" data-i18n="products.all">Todos</button>
-    <button class="filtro-btn" onclick="filtrar('recuperacao',this)" data-i18n="cat.recuperacao">Recuperação</button>
-    <button class="filtro-btn" onclick="filtrar('gordura',this)" data-i18n="cat.gordura">Queima de Gordura</button>
-    <button class="filtro-btn" onclick="filtrar('gh',this)" data-i18n="cat.gh">GH & Massa</button>
-    <button class="filtro-btn" onclick="filtrar('cognitivo',this)" data-i18n="cat.cognitivo">Cognitivo</button>
-    <button class="filtro-btn" onclick="filtrar('hormonal',this)" data-i18n="cat.hormonal">Hormonal</button>
-    <button class="filtro-btn" onclick="filtrar('antioxidante',this)" data-i18n="cat.antioxidante">Antioxidante</button>
-    <button class="filtro-btn" onclick="filtrar('estetico',this)" data-i18n="cat.estetico">Estético</button>
-    <button class="filtro-btn" onclick="filtrar('antiinfla',this)" data-i18n="cat.antiinfla">Anti-inflamatório</button>
-    <input type="hidden" id="buscaInput" value=""/>
+    <button class="filtro-btn" onclick="filtrar('Recuperação',this)" data-i18n="cat.recuperacao">Recuperação</button>
+    <button class="filtro-btn" onclick="filtrar('Queima de Gordura',this)" data-i18n="cat.gordura">Queima de Gordura</button>
+    <button class="filtro-btn" onclick="filtrar('GH & Massa',this)" data-i18n="cat.gh">GH & Massa</button>
+    <button class="filtro-btn" onclick="filtrar('Cognitivo',this)" data-i18n="cat.cognitivo">Cognitivo</button>
+    <button class="filtro-btn" onclick="filtrar('Hormonal',this)" data-i18n="cat.hormonal">Hormonal</button>
+    <button class="filtro-btn" onclick="filtrar('Antioxidante',this)" data-i18n="cat.antioxidante">Antioxidante</button>
+    <button class="filtro-btn" onclick="filtrar('Estético',this)" data-i18n="cat.estetico">Estético</button>
+    <button class="filtro-btn" onclick="filtrar('Anti-inflamatório',this)" data-i18n="cat.antiinfla">Anti-inflamatório</button>
+    <div class="busca-wrap"><input type="text" id="buscaInput" placeholder="Buscar peptídeo..." data-i18n-placeholder="products.search" oninput="buscar()"/></div>
   </div>
   <div id="produtosGrid"></div>
   </div>
@@ -501,7 +473,7 @@
 
 <script>
 const CATALOGO=[
-  {id:'16',nome:'VIP',precoAntes:230,img:'img/vip.png',catClass:'antiinfla',preco:200,
+  {id:'16',nome:'VIP',img:'img/vip.png',catClass:'antiinfla',preco:200,
     i18n:{
       pt:{categoria:'Anti-inflamatório',descricao:'Peptídeo vasoativo intestinal. Potente anti-inflamatório sistêmico.'},
       en:{categoria:'Anti-inflammatory',descricao:'Vasoactive intestinal peptide. Potent systemic anti-inflammatory.'},
@@ -509,7 +481,7 @@ const CATALOGO=[
       de:{categoria:'Entzündungshemmend',descricao:'Vasoaktives intestinales Peptid. Starkes systemisches Entzündungshemmemittel.'},
       fr:{categoria:'Anti-inflammatoire',descricao:'Peptide vasoactif intestinal. Puissant anti-inflammatoire systémique.'}
     }},
-  {id:'13',nome:'SS-31',precoAntes:252,img:'img/ss-31.png',catClass:'antioxidante',preco:210,
+  {id:'13',nome:'SS-31',img:'img/ss-31.png',catClass:'antioxidante',preco:210,
     i18n:{
       pt:{categoria:'Antioxidante',descricao:'Peptídeo mitocondrial com ação antioxidante e cardioprotetora.'},
       en:{categoria:'Antioxidant',descricao:'Mitochondrial peptide with antioxidant and cardioprotective action.'},
@@ -517,7 +489,7 @@ const CATALOGO=[
       de:{categoria:'Antioxidativ',descricao:'Mitochondriales Peptid mit antioxidativer und kardioprotektiver Wirkung.'},
       fr:{categoria:'Antioxydant',descricao:'Peptide mitochondrial avec action antioxydante et cardioprotectrice.'}
     }},
-  {id:'10',nome:'Semax',precoAntes:176,img:'img/semax.png',catClass:'cognitivo',preco:160,
+  {id:'10',nome:'Semax',img:'img/semax.png',catClass:'cognitivo',preco:160,
     i18n:{
       pt:{categoria:'Cognitivo',descricao:'Neuropeptídeo que melhora foco, memória e função cerebral.'},
       en:{categoria:'Cognitive',descricao:'Neuropeptide that improves focus, memory and brain function.'},
@@ -525,7 +497,7 @@ const CATALOGO=[
       de:{categoria:'Kognitiv',descricao:'Neuropeptid, das Fokus, Gedächtnis und Gehirnfunktion verbessert.'},
       fr:{categoria:'Cognitif',descricao:'Neuropeptide qui améliore la concentration, la mémoire et la fonction cérébrale.'}
     }},
-  {id:'11',nome:'Selank',precoAntes:180,img:'img/selank.png',catClass:'cognitivo',preco:150,
+  {id:'11',nome:'Selank',img:'img/selank.png',catClass:'cognitivo',preco:150,
     i18n:{
       pt:{categoria:'Cognitivo',descricao:'Ansiolítico natural com efeito nootrópico e neuroprotetor.'},
       en:{categoria:'Cognitive',descricao:'Natural anxiolytic with nootropic and neuroprotective effects.'},
@@ -533,7 +505,7 @@ const CATALOGO=[
       de:{categoria:'Kognitiv',descricao:'Natürliches Anxiolytikum mit nootropen und neuroprotektiven Wirkungen.'},
       fr:{categoria:'Cognitif',descricao:'Anxiolytique naturel avec effets nootropiques et neuroprotecteurs.'}
     }},
-  {id:'15',nome:'AHK-CU',precoAntes:168,img:'img/ahk-cu.png',catClass:'estetico',preco:140,
+  {id:'15',nome:'AHK-CU',img:'img/ahk-cu.png',catClass:'estetico',preco:140,
     i18n:{
       pt:{categoria:'Estético',descricao:'Peptídeo de cobre para cabelo, pele e regeneração capilar.'},
       en:{categoria:'Aesthetic',descricao:'Copper peptide for hair, skin and capillary regeneration.'},
@@ -541,7 +513,7 @@ const CATALOGO=[
       de:{categoria:'Ästhetisch',descricao:'Kupferpeptid für Haar, Haut und kapillare Regeneration.'},
       fr:{categoria:'Esthétique',descricao:'Peptide de cuivre pour les cheveux, la peau et la régénération capillaire.'}
     }},
-  {id:'4',nome:'Ipamorelin',precoAntes:168,img:'img/ipamorelin.png',catClass:'gh',preco:140,
+  {id:'4',nome:'Ipamorelin',img:'img/ipamorelin.png',catClass:'gh',preco:140,
     i18n:{
       pt:{categoria:'GH & Massa',descricao:'Estimulante seletivo do GH sem efeitos colaterais indesejados.'},
       en:{categoria:'GH & Mass',descricao:'Selective GH stimulant without unwanted side effects.'},
@@ -549,7 +521,7 @@ const CATALOGO=[
       de:{categoria:'GH & Masse',descricao:'Selektiver GH-Stimulator ohne unerwünschte Nebenwirkungen.'},
       fr:{categoria:'GH & Masse',descricao:'Stimulant sélectif de la GH sans effets secondaires indésirables.'}
     }},
-  {id:'5',nome:'Sermorelin',precoAntes:195,img:'img/semorelin.png',catClass:'gh',preco:170,
+  {id:'5',nome:'Sermorelin',img:'img/semorelin.png',catClass:'gh',preco:170,
     i18n:{
       pt:{categoria:'GH & Massa',descricao:'Anti-aging, melhora do sono e estímulo natural do GH.'},
       en:{categoria:'GH & Mass',descricao:'Anti-aging, sleep improvement and natural GH stimulation.'},
@@ -557,7 +529,7 @@ const CATALOGO=[
       de:{categoria:'GH & Masse',descricao:'Anti-Aging, Schlafverbesserung und natürliche GH-Stimulation.'},
       fr:{categoria:'GH & Masse',descricao:'Anti-âge, amélioration du sommeil et stimulation naturelle de la GH.'}
     }},
-  {id:'6',nome:'CJC-1295',precoAntes:198,img:'img/cjc-1295.png',catClass:'gh',preco:180,
+  {id:'6',nome:'CJC-1295',img:'img/cjc-1295.png',catClass:'gh',preco:180,
     i18n:{
       pt:{categoria:'GH & Massa',descricao:'Estimulante de GH de longa duração. Ideal para massa muscular.'},
       en:{categoria:'GH & Mass',descricao:'Long-acting GH stimulant. Ideal for muscle mass.'},
@@ -565,7 +537,7 @@ const CATALOGO=[
       de:{categoria:'GH & Masse',descricao:'Langwirksamer GH-Stimulator. Ideal für Muskelmasse.'},
       fr:{categoria:'GH & Masse',descricao:'Stimulant GH à longue durée. Idéal pour la masse musculaire.'}
     }},
-  {id:'8',nome:'IGF-1 DES',precoAntes:220,img:'img/igf-des.png',catClass:'gh',preco:200,
+  {id:'8',nome:'IGF-1 DES',img:'img/igf-des.png',catClass:'gh',preco:200,
     i18n:{
       pt:{categoria:'GH & Massa',descricao:'Variante do IGF-1 com ação local intensa nos tecidos musculares.'},
       en:{categoria:'GH & Mass',descricao:'IGF-1 variant with intense local action on muscle tissue.'},
@@ -573,7 +545,7 @@ const CATALOGO=[
       de:{categoria:'GH & Masse',descricao:'IGF-1-Variante mit intensiver lokaler Wirkung auf Muskelgewebe.'},
       fr:{categoria:'GH & Masse',descricao:"Variante de l'IGF-1 avec une action locale intense sur les tissus musculaires."}
     }},
-  {id:'7',nome:'IGF-1 LR3',precoAntes:242,img:'img/igf-lr3.png',catClass:'gh',preco:220,
+  {id:'7',nome:'IGF-1 LR3',img:'img/igf-lr3.png',catClass:'gh',preco:220,
     i18n:{
       pt:{categoria:'GH & Massa',descricao:'Fator de crescimento insulínico de alta potência para hipertrofia.'},
       en:{categoria:'GH & Mass',descricao:'High-potency insulin-like growth factor for hypertrophy.'},
@@ -581,7 +553,7 @@ const CATALOGO=[
       de:{categoria:'GH & Masse',descricao:'Hochpotentes insulinähnliches Wachstumsfaktor für Hypertrophie.'},
       fr:{categoria:'GH & Masse',descricao:'Facteur de croissance insulinique haute puissance pour l hypertrophie.'}
     }},
-  {id:'9',nome:'ACE-031',precoAntes:300,img:'img/ace-031.png',catClass:'gh',preco:250,
+  {id:'9',nome:'ACE-031',img:'img/ace-031.png',catClass:'gh',preco:250,
     i18n:{
       pt:{categoria:'GH & Massa',descricao:'Inibidor da miostatina. Potencializa ganho de massa e força.'},
       en:{categoria:'GH & Mass',descricao:'Myostatin inhibitor. Enhances muscle mass and strength gains.'},
@@ -589,7 +561,7 @@ const CATALOGO=[
       de:{categoria:'GH & Masse',descricao:'Myostatin-Inhibitor. Steigert Muskelmasseaufbau und Kraft.'},
       fr:{categoria:'GH & Masse',descricao:'Inhibiteur de la myostatine. Améliore les gains de masse et de force.'}
     }},
-  {id:'12',nome:'Kisspeptin',precoAntes:228,img:'img/kisspeptin.png',catClass:'hormonal',preco:190,
+  {id:'12',nome:'Kisspeptin',img:'img/kisspeptin.png',catClass:'hormonal',preco:190,
     i18n:{
       pt:{categoria:'Hormonal',descricao:'Regulador hormonal que estimula a produção de LH e testosterona.'},
       en:{categoria:'Hormonal',descricao:'Hormonal regulator that stimulates LH and testosterone production.'},
@@ -597,7 +569,7 @@ const CATALOGO=[
       de:{categoria:'Hormonal',descricao:'Hormoneller Regulator, der die LH- und Testosteronproduktion stimuliert.'},
       fr:{categoria:'Hormonal',descricao:'Régulateur hormonal qui stimule la production de LH et de testostérone.'}
     }},
-  {id:'3',nome:'HGH Frag 176-191',precoAntes:176,img:'img/hgh-frag.png',catClass:'gordura',preco:160,
+  {id:'3',nome:'HGH Frag 176-191',img:'img/hgh-frag.png',catClass:'gordura',preco:160,
     i18n:{
       pt:{categoria:'Queima de Gordura',descricao:'Fragmento do GH com ação direta na queima de gordura localizada.'},
       en:{categoria:'Fat Loss',descricao:'GH fragment with direct action on localized fat burning.'},
@@ -605,7 +577,7 @@ const CATALOGO=[
       de:{categoria:'Fettverbrennung',descricao:'GH-Fragment mit direkter Wirkung auf lokalisierte Fettverbrennung.'},
       fr:{categoria:'Perte de graisse',descricao:'Fragment GH avec action directe sur la combustion des graisses localisées.'}
     }},
-  {id:'14',nome:'SLU-PP-32',precoAntes:253,img:'img/slu-pp-32.png',catClass:'gordura',preco:230,
+  {id:'14',nome:'SLU-PP-32',img:'img/slu-pp-32.png',catClass:'gordura',preco:230,
     i18n:{
       pt:{categoria:'Queima de Gordura',descricao:'Ativa receptores ERR. Simula os efeitos metabólicos do exercício.'},
       en:{categoria:'Fat Loss',descricao:'Activates ERR receptors. Simulates the metabolic effects of exercise.'},
@@ -613,7 +585,7 @@ const CATALOGO=[
       de:{categoria:'Fettverbrennung',descricao:'Aktiviert ERR-Rezeptoren. Simuliert die metabolischen Wirkungen von Sport.'},
       fr:{categoria:'Perte de graisse',descricao:'Active les récepteurs ERR. Simule les effets métaboliques de l exercice.'}
     }},
-  {id:'1',nome:'BPC-157',precoAntes:180,img:'img/bpc-157.png',catClass:'recuperacao',preco:150,
+  {id:'1',nome:'BPC-157',img:'img/bpc-157.png',catClass:'recuperacao',preco:150,
     i18n:{
       pt:{categoria:'Recuperação',descricao:'Recuperação muscular e articular acelerada. Excelente para lesões.'},
       en:{categoria:'Recovery',descricao:'Accelerated muscle and joint recovery. Excellent for injuries.'},
@@ -621,7 +593,7 @@ const CATALOGO=[
       de:{categoria:'Erholung',descricao:'Beschleunigte Muskel- und Gelenkerholung. Ausgezeichnet bei Verletzungen.'},
       fr:{categoria:'Récupération',descricao:'Récupération musculaire et articulaire accélérée. Excellent pour les blessures.'}
     }},
-  {id:'2',nome:'TB-500',precoAntes:198,img:'img/tb-500.png',catClass:'recuperacao',preco:180,
+  {id:'2',nome:'TB-500',img:'img/tb-500.png',catClass:'recuperacao',preco:180,
     i18n:{
       pt:{categoria:'Recuperação',descricao:'Regeneração tecidual profunda e efeito anti-inflamatório potente.'},
       en:{categoria:'Recovery',descricao:'Deep tissue regeneration and potent anti-inflammatory effect.'},
@@ -761,9 +733,6 @@ window.addEventListener('scroll', function() {
   }
 }, { passive: true });
 function renderMobileAuth() {
-  var token = localStorage.getItem('pep_token');
-  var nome = localStorage.getItem('pep_nome');
-  var tr2 = function(k){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d[k]&&(d[k][l]||d[k]['en']))||k;};
   // Categorias no mobile menu
   const catList = document.getElementById('mobCatList');
   if (catList && produtosData && produtosData.length) {
@@ -778,12 +747,15 @@ function renderMobileAuth() {
     }).join('');
   }
 
-  var area2 = document.getElementById('mobileAuth');
-  if (!area2) return;
+  const area  = document.getElementById('mobileAuth');
+  if (!area) return;
+  const token = localStorage.getItem('pep_token');
+  const nome  = localStorage.getItem('pep_nome');
+  const tr    = function(k){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d[k]&&(d[k][l]||d[k]['en']))||k;};
   if (token && nome) {
-    area2.innerHTML = '<a href="meus-pedidos.html" class="btn-login">'+tr2('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+tr2('nav.logout')+'</a>';
+    area.innerHTML = '<a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>';
   } else {
-    area2.innerHTML = '<a href="login.html" class="btn-login">'+tr2('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+tr2('nav.register')+'</a>';
+    area.innerHTML = '<a href="login.html" class="btn-login">'+tr('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+tr('nav.register')+'</a>';
   }
 }
 
@@ -804,13 +776,6 @@ async function carregarProdutos(){
     produtosData=CATALOGO.map(c=>{const api=lista.find(p=>String(p.id)===String(c.id)||p.nome===c.nome);const i=getProdI18n(c);return{...c,categoria:i.categoria,descricao:i.descricao,preco:api?parseFloat(api.preco):c.preco,estoque:api?parseInt(api.estoque):10}})
   }catch{produtosData=CATALOGO.map(c=>{const i=getProdI18n(c);return{...c,categoria:i.categoria,descricao:i.descricao,estoque:c.id==='5'?0:10}})}
   renderGrid(produtosData)
-  // Traduzir botão ver mais
-  var btnVM = document.getElementById('btnVerMais');
-  if (btnVM) {
-    var l = localStorage.getItem('pep_lang') || 'en';
-    var i18nD = window.PEPMASTERS_I18N || {};
-    btnVM.textContent = i18nD['home.verMais'] ? (i18nD['home.verMais'][l] || 'See all products ↓') : 'See all products ↓';
-  }
   renderMobileAuth();
 }
 
@@ -855,27 +820,18 @@ function mkCard(p) {
   var body = document.createElement('div');
   body.className = 'card-body';
   body.innerHTML =
-    
+    '<div class="card-cat-label">' + p.categoria + '</div>' +
+    '<div class="card-cat-label">' + p.categoria + '</div>' +
     '<a href="produto.html?id=' + p.id + '" style="text-decoration:none;color:inherit;cursor:pointer"><div class="card-name">' + p.nome + '</div></a>' +
     '<div class="card-desc">' + p.descricao + '</div>';
     '<div class="card-desc">' + p.descricao + '</div>';
 
   var footer = document.createElement('div');
   footer.className = 'card-footer';
-  var priceWrap = document.createElement('div');
-  priceWrap.className = 'card-price-wrap';
-  if (p.precoAntes && p.precoAntes > preco) {
-    var pct = Math.round((1 - preco/p.precoAntes) * 100);
-    var antesEl = document.createElement('div');
-    antesEl.className = 'card-price-antes';
-    antesEl.innerHTML = 'R$ ' + p.precoAntes.toFixed(2).replace('.', ',') + ' <span class="card-price-badge">-' + pct + '%</span>';
-    priceWrap.appendChild(antesEl);
-  }
   var priceEl = document.createElement('div');
   priceEl.className = 'card-price';
   priceEl.innerHTML = '<span>R$</span>' + preco.toFixed(2).replace('.', ',');
-  priceWrap.appendChild(priceEl);
-  footer.appendChild(priceWrap);
+  footer.appendChild(priceEl);
 
   if (esgotado) {
     var btnEsg = document.createElement('button');
@@ -950,31 +906,17 @@ function toggleTodosProdutos() {
   var btn = document.getElementById('btnVerMais');
   todosProdutosAberto = !todosProdutosAberto;
   div.classList.toggle('aberto', todosProdutosAberto);
-  var lang = localStorage.getItem('pep_lang') || 'en';
-  var i18n = window.PEPMASTERS_I18N || {};
-  var txtMais = i18n['home.verMais'] ? (i18n['home.verMais'][lang] || 'See all products ↓') : 'See all products ↓';
-  var txtMenos = i18n['home.verMenos'] ? (i18n['home.verMenos'][lang] || 'Show less ↑') : 'Show less ↑';
   if (todosProdutosAberto) {
     renderGridDoisColunas(produtosData);
-    btn.textContent = txtMenos;
+    btn.textContent = '↑ Ver menos';
     setTimeout(function(){ document.getElementById('todosProdutos').scrollIntoView({behavior:'smooth'}); }, 100);
   } else {
-    btn.textContent = txtMais;
+    btn.textContent = 'Ver todos os produtos ↓';
     document.getElementById('produtos').scrollIntoView({behavior:'smooth'});
   }
 }
 function renderGrid(lista){
-  // Top sellers sempre com lista completa, nunca filtrada
-  renderTopSellers(produtosData && produtosData.length ? produtosData : lista);
-  // Se há filtro ativo ou busca, abrir todosProdutos automaticamente
-  var q = document.getElementById('buscaInput') ? document.getElementById('buscaInput').value : '';
-  if (filtroAtivo || q) {
-    todosProdutosAberto = true;
-    var div = document.getElementById('todosProdutos');
-    if (div) div.classList.add('aberto');
-    var btn = document.getElementById('btnVerMais');
-    if (btn) btn.textContent = '↑ Ver menos';
-  }
+  renderTopSellers(lista);
   if (todosProdutosAberto) renderGridDoisColunas(lista);
 }
 
@@ -985,7 +927,9 @@ function headerBuscar(q) {
   if (!q || q.length === 0) { box.style.display = 'none'; return; }
   var ql = q.toLowerCase();
   var matches = (produtosData || []).filter(function(p){
-    return p.nome.toLowerCase().includes(ql);
+    return p.nome.toLowerCase().includes(ql) ||
+           (p.categoria && p.categoria.toLowerCase().includes(ql)) ||
+           (p.descricao && p.descricao.toLowerCase().includes(ql));
   }).slice(0, 6);
   if (!matches.length) {
     box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>';
@@ -1044,7 +988,7 @@ function filtrar(cat,btn){filtroAtivo=cat;document.querySelectorAll('.filtro-btn
 function getCatNome(catClass){const lang=window.PEP_LANG?window.PEP_LANG.get():'en';const p=produtosData.find(x=>x.catClass===catClass);return p?p.categoria:catClass;}
 function filtrarLink(cat){filtroAtivo=cat;document.querySelectorAll('.filtro-btn').forEach(b=>{if(b.textContent.includes(cat))b.classList.add('active');else b.classList.remove('active')});aplicarFiltros();setTimeout(()=>document.getElementById('produtos').scrollIntoView({behavior:'smooth'}),100)}
 function buscar(){filtroAtivo='';document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('active'));document.querySelector('.filtro-btn').classList.add('active');aplicarFiltros()}
-function aplicarFiltros(){const q=document.getElementById('buscaInput').value.toLowerCase();renderGrid(produtosData.filter(p=>(!filtroAtivo||p.catClass===filtroAtivo||p.categoria===filtroAtivo)&&(!q||p.nome.toLowerCase().includes(q)||p.descricao.toLowerCase().includes(q))))}
+function aplicarFiltros(){const q=document.getElementById('buscaInput').value.toLowerCase();renderGrid(produtosData.filter(p=>(!filtroAtivo||p.categoria===filtroAtivo)&&(!q||p.nome.toLowerCase().includes(q)||p.descricao.toLowerCase().includes(q))))}
 
 // ── LISTA ESPERA ──
 function abrirEspera(nome){document.getElementById('espera-produto').value=nome;document.getElementById('modalEspera').classList.add('open')}

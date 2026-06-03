@@ -73,15 +73,6 @@
     .btn-finalizar{width:100%;padding:14px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:12px;cursor:pointer;box-shadow:0 4px 20px rgba(232,34,10,.35);transition:transform .15s,box-shadow .15s;margin-top:14px}
     .btn-finalizar:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(232,34,10,.45)}
     .btn-finalizar:disabled{opacity:.5;cursor:not-allowed;transform:none}
-    .modal-login-required{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center}
-    .modal-login-required.open{display:flex}
-    .modal-login-box{background:#fff;border-radius:16px;padding:32px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-    .modal-login-box h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;margin:0 0 12px}
-    .modal-login-box p{font-size:.9rem;color:#666;margin:0 0 24px;line-height:1.6}
-    .modal-login-btns{display:flex;gap:12px;justify-content:center}
-    .modal-login-btns a{flex:1;padding:12px;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;text-transform:uppercase;letter-spacing:.06em;text-decoration:none;text-align:center}
-    .modal-btn-login{border:2px solid #ddd;color:#1a1a1a}
-    .modal-btn-cadastro{background:linear-gradient(135deg,#e8220a,#ff8c00);color:#fff}
     .seguro{text-align:center;font-size:.76rem;color:var(--muted);margin-top:10px}
     .carrinho-vazio{text-align:center;padding:48px 20px;color:var(--muted)}
     .carrinho-vazio h2{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;margin-bottom:10px}
@@ -517,15 +508,6 @@
 
   // ── FINALIZAR ──
 
-  function verificarLogin() {
-    const token = localStorage.getItem('pep_token');
-    if (!token) {
-      document.getElementById('modalLoginRequired').classList.add('open');
-      return false;
-    }
-    return true;
-  }
-
   function verificarModal() {
     if (pagAtual === 'cripto') {
       const lang = localStorage.getItem('pep_lang') || 'en';
@@ -552,7 +534,6 @@
   }
 
   async function finalizarWhatsApp() {
-    if (!verificarLogin()) return;
     const nome       = document.getElementById('nome')        ? document.getElementById('nome').value.trim()        : '';
     const email      = document.getElementById('email')       ? document.getElementById('email').value.trim()       : '';
     const telefone   = document.getElementById('telefone')    ? document.getElementById('telefone').value.trim()    : '';
@@ -702,14 +683,6 @@
 </script>
 <script src="i18n.js"></script>
 <script src="i18n-init.js"></script>
-<script>
-  // Verificar login após tudo carregar
-  window.addEventListener('load', function() {
-    if (!localStorage.getItem('pep_token')) {
-      document.getElementById('modalLoginRequired').classList.add('open');
-    }
-  });
-</script>
 
 <!-- WhatsApp Button -->
 <a href="https://wa.me/5512988875509" target="_blank" rel="noopener" 
@@ -738,21 +711,6 @@
       </div>
     </div>
   </div>
-
-
-<!-- Modal login necessário -->
-<div class="modal-login-required" id="modalLoginRequired">
-  <div class="modal-login-box">
-    <div style="font-size:2.5rem;margin-bottom:12px">🔐</div>
-    <h3 data-i18n="checkout.login.required.title">Login Required</h3>
-    <p data-i18n="checkout.login.required.desc">You need to be logged in to complete your purchase. Please log in or create an account to continue.</p>
-    <div class="modal-login-btns">
-      <a href="login.html?redirect=checkout.html" class="modal-btn-login" data-i18n="nav.login">Login</a>
-      <a href="cadastro.html?redirect=checkout.html" class="modal-btn-cadastro" data-i18n="nav.register">Register</a>
-    </div>
-    <a href="index.html" style="display:inline-block;margin-top:16px;background:none;border:none;color:#999;cursor:pointer;font-size:.85rem;text-decoration:underline" data-i18n="checkout.modal.back">← Back to store</a>
-  </div>
-</div>
 
 </body>
 </html>
