@@ -83,7 +83,7 @@
     .admin-link:hover{color:var(--amber)}
     @media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:600px){.back-link span{display:none}}
-    @media(max-width:768px){#authArea{display:none}}
+    @media(max-width:768px){#authArea{display:none}#cartLabel{display:none}.back-link-arrow{display:inline!important}}
     .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0}
     .hamburger span{display:block;width:22px;height:2px;background:var(--dark);border-radius:2px;transition:all .3s}
     .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
@@ -127,7 +127,8 @@
 </div>
 <header>
   <div class="header-inner">
-    <a href="index.html" class="logo-wrap">
+    <a href="index.html" class="back-link-arrow" style="font-size:1.1rem;color:var(--muted);text-decoration:none;display:none;padding:0 4px">←</a>
+    <a href="index.html" class="logo-wrap" title="Início">
       <img src="Capturar.PNG" alt="Logo"/>
       <span class="logo-text">PEPMASTERS</span>
     </a>
