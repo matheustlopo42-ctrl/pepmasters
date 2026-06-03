@@ -1,4 +1,610 @@
-<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n  <title>PEPMASTERS \u2014 Performance Pept\u00eddeos</title>\n  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\" />\n  <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin />\n  <link href=\"https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap\" rel=\"stylesheet\" />\n  <style>\n    :root {\n      --amber:    #FFB300;\n      --red:      #E8220A;\n      --orange:   #FF6B00;\n      --cream:    #FFF8F0;\n      --warm-white: #FFFDF9;\n      --dark:     #1C0A00;\n      --mid:      #3D1A00;\n      --text:     #1C0A00;\n      --muted:    #7A4A2A;\n      --border:   #FFD580;\n      --card-bg:  #FFFFFF;\n      --shadow:   rgba(232,34,10,0.12);\n    }\n\n    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }\n\n    html { scroll-behavior: smooth; }\n\n    body {\n      font-family: 'Barlow', sans-serif;\n      background: var(--cream);\n      color: var(--text);\n      min-height: 100vh;\n    }\n\n    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 HEADER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */\n    header {\n      position: fixed;\n      top: 0; left: 0; right: 0;\n      z-index: 1000;\n      background: var(--warm-white);\n      border-bottom: 3px solid var(--amber);\n      box-shadow: 0 2px 20px rgba(255,179,0,0.25);\n    }\n\n    .header-inner {\n      max-width: 1200px;\n      margin: 0 auto;\n      padding: 0 24px;\n      height: 68px;\n      display: flex;\n      align-items: center;\n      gap: 32px;\n    }\n\n    .logo-wrap {\n      display: flex;\n      align-items: center;\n      gap: 10px;\n      text-decoration: none;\n    }\n\n    .logo-wrap img {\n      height: 44px;\n      width: 44px;\n      object-fit: contain;\n    }\n\n    .logo-text {\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 900;\n      font-size: 1.7rem;\n      letter-spacing: 0.04em;\n      background: linear-gradient(135deg, var(--red) 0%, var(--orange) 50%, var(--amber) 100%);\n      -webkit-background-clip: text;\n      -webkit-text-fill-color: transparent;\n      background-clip: text;\n      line-height: 1;\n    }\n\n    nav {\n      display: flex;\n      align-items: center;\n      gap: 8px;\n      flex: 1;\n    }\n\n    nav a {\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 600;\n      font-size: 1rem;\n      letter-spacing: 0.06em;\n      text-transform: uppercase;\n      color: var(--mid);\n      text-decoration: none;\n      padding: 6px 12px;\n      border-radius: 6px;\n      transition: all 0.2s;\n    }\n\n    nav a:hover { background: var(--amber); color: var(--dark); }\n\n    /* Dropdown Produtos */\n    .dropdown { position: relative; }\n\n    .dropdown > a::after {\n      content: \" \u25be\";\n      font-size: 0.75em;\n    }\n\n    .dropdown-menu {\n      display: none;\n      position: absolute;\n      top: calc(100% + 8px);\n      left: 0;\n      background: var(--warm-white);\n      border: 2px solid var(--amber);\n      border-radius: 10px;\n      min-width: 200px;\n      box-shadow: 0 8px 30px var(--shadow);\n      overflow: hidden;\n      z-index: 200;\n    }\n\n    .dropdown:hover .dropdown-menu { display: block; }\n\n    .dropdown-menu a {\n      display: block;\n      padding: 10px 16px;\n      font-size: 0.9rem;\n      border-radius: 0;\n      color: var(--text);\n    }\n\n    .dropdown-menu a:hover { background: #FFF3D0; }\n\n    /* Auth area */\n    #authArea {\n      margin-left: auto;\n      display: flex;\n      align-items: center;\n      gap: 10px;\n    }\n\n    #authArea a, #authArea span {\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 600;\n      font-size: 0.95rem;\n      letter-spacing: 0.04em;\n      text-transform: uppercase;\n    }\n\n    .btn-login {\n      padding: 7px 18px;\n      border: 2px solid var(--red);\n      border-radius: 8px;\n      color: var(--red) !important;\n      text-decoration: none;\n      transition: all 0.2s;\n    }\n\n    .btn-login:hover { background: var(--red); color: #fff !important; }\n\n    .btn-cadastro {\n      padding: 7px 18px;\n      background: linear-gradient(135deg, var(--red), var(--orange));\n      border-radius: 8px;\n      color: #fff !important;\n      text-decoration: none;\n      transition: transform 0.15s;\n    }\n\n    .btn-cadastro:hover { transform: translateY(-1px); }\n\n    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 HERO \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */\n    .hero {\n      margin-top: 68px;\n      background: linear-gradient(135deg, #FFF8F0 0%, #FFEDD0 40%, #FFD580 100%);\n      padding: 80px 24px 60px;\n      text-align: center;\n      position: relative;\n      overflow: hidden;\n    }\n\n    .hero::before {\n      content: '';\n      position: absolute;\n      inset: 0;\n      background: radial-gradient(ellipse at 70% 50%, rgba(255,107,0,0.18) 0%, transparent 60%),\n                  radial-gradient(ellipse at 20% 80%, rgba(232,34,10,0.10) 0%, transparent 50%);\n    }\n\n    .hero-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }\n\n    .hero-eyebrow {\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 700;\n      font-size: 0.85rem;\n      letter-spacing: 0.2em;\n      text-transform: uppercase;\n      color: var(--orange);\n      margin-bottom: 16px;\n    }\n\n    .hero h1 {\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 900;\n      font-size: clamp(2.8rem, 6vw, 4.5rem);\n      line-height: 1.0;\n      letter-spacing: 0.02em;\n      text-transform: uppercase;\n      color: var(--dark);\n      margin-bottom: 18px;\n    }\n\n    .hero h1 span {\n      background: linear-gradient(135deg, var(--red), var(--orange));\n      -webkit-background-clip: text;\n      -webkit-text-fill-color: transparent;\n      background-clip: text;\n    }\n\n    .hero p {\n      font-size: 1.1rem;\n      color: var(--mid);\n      max-width: 500px;\n      margin: 0 auto 32px;\n      line-height: 1.6;\n    }\n\n    .hero-cta {\n      display: inline-block;\n      padding: 14px 40px;\n      background: linear-gradient(135deg, var(--red), var(--orange));\n      color: #fff;\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 700;\n      font-size: 1.1rem;\n      letter-spacing: 0.1em;\n      text-transform: uppercase;\n      text-decoration: none;\n      border-radius: 50px;\n      box-shadow: 0 6px 24px rgba(232,34,10,0.35);\n      transition: transform 0.15s, box-shadow 0.15s;\n    }\n\n    .hero-cta:hover {\n      transform: translateY(-2px);\n      box-shadow: 0 10px 32px rgba(232,34,10,0.45);\n    }\n\n    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 SECTION LABEL \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */\n    .section-label {\n      display: flex;\n      align-items: center;\n      gap: 14px;\n      margin-bottom: 36px;\n    }\n\n    .section-label h2 {\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 900;\n      font-size: 2rem;\n      text-transform: uppercase;\n      letter-spacing: 0.04em;\n      color: var(--dark);\n    }\n\n    .section-label::after {\n      content: '';\n      flex: 1;\n      height: 3px;\n      background: linear-gradient(90deg, var(--amber), transparent);\n      border-radius: 2px;\n    }\n\n    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 PRODUTOS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */\n    .produtos-section {\n      max-width: 1200px;\n      margin: 0 auto;\n      padding: 60px 24px;\n    }\n\n    .produtos-grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));\n      gap: 24px;\n    }\n\n    .card {\n      background: var(--card-bg);\n      border-radius: 16px;\n      overflow: hidden;\n      border: 1px solid #FFE5B0;\n      box-shadow: 0 4px 20px rgba(255,179,0,0.10);\n      transition: transform 0.2s, box-shadow 0.2s;\n    }\n\n    .card:hover {\n      transform: translateY(-4px);\n      box-shadow: 0 12px 36px rgba(232,34,10,0.15);\n    }\n\n    .card-img-wrap {\n      background: linear-gradient(135deg, #FFF3D0, #FFE0A0);\n      height: 200px;\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      position: relative;\n    }\n\n    .card-badge {\n      position: absolute;\n      top: 12px;\n      left: 12px;\n      background: var(--red);\n      color: #fff;\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 700;\n      font-size: 0.72rem;\n      letter-spacing: 0.1em;\n      text-transform: uppercase;\n      padding: 3px 10px;\n      border-radius: 20px;\n    }\n\n    .card-icon {\n      font-size: 3.5rem;\n    }\n\n    .card-body {\n      padding: 18px 20px 20px;\n    }\n\n    .card-category {\n      font-size: 0.72rem;\n      font-weight: 600;\n      letter-spacing: 0.12em;\n      text-transform: uppercase;\n      color: var(--orange);\n      margin-bottom: 6px;\n    }\n\n    .card-name {\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 800;\n      font-size: 1.35rem;\n      color: var(--dark);\n      margin-bottom: 6px;\n      letter-spacing: 0.02em;\n    }\n\n    .card-desc {\n      font-size: 0.85rem;\n      color: var(--muted);\n      line-height: 1.5;\n      margin-bottom: 16px;\n    }\n\n    .card-footer {\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n    }\n\n    .card-price {\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 900;\n      font-size: 1.6rem;\n      color: var(--red);\n    }\n\n    .card-price span {\n      font-size: 0.95rem;\n      font-weight: 600;\n      color: var(--muted);\n    }\n\n    .btn-comprar {\n      padding: 9px 20px;\n      background: linear-gradient(135deg, var(--red), var(--orange));\n      color: #fff;\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 700;\n      font-size: 0.95rem;\n      letter-spacing: 0.06em;\n      text-transform: uppercase;\n      border: none;\n      border-radius: 30px;\n      cursor: pointer;\n      transition: transform 0.15s, box-shadow 0.15s;\n      text-decoration: none;\n    }\n\n    .btn-comprar:hover {\n      transform: translateY(-1px);\n      box-shadow: 0 4px 14px rgba(232,34,10,0.4);\n    }\n\n    .esgotado {\n      padding: 9px 20px;\n      background: #eee;\n      color: #999;\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 700;\n      font-size: 0.95rem;\n      letter-spacing: 0.06em;\n      text-transform: uppercase;\n      border: none;\n      border-radius: 30px;\n      cursor: not-allowed;\n    }\n\n    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 LISTA ESPERA MODAL \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */\n    .modal-overlay {\n      display: none;\n      position: fixed;\n      inset: 0;\n      background: rgba(28,10,0,0.55);\n      z-index: 2000;\n      align-items: center;\n      justify-content: center;\n    }\n\n    .modal-overlay.open { display: flex; }\n\n    .modal-box {\n      background: var(--warm-white);\n      border-radius: 16px;\n      padding: 32px;\n      max-width: 400px;\n      width: 90%;\n      border-top: 4px solid var(--amber);\n      box-shadow: 0 20px 60px rgba(0,0,0,0.25);\n    }\n\n    .modal-box h3 {\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 800;\n      font-size: 1.4rem;\n      color: var(--dark);\n      margin-bottom: 8px;\n    }\n\n    .modal-box p { font-size: 0.9rem; color: var(--muted); margin-bottom: 20px; }\n\n    .modal-box input {\n      width: 100%;\n      padding: 11px 14px;\n      border: 2px solid var(--border);\n      border-radius: 8px;\n      font-size: 0.95rem;\n      font-family: 'Barlow', sans-serif;\n      margin-bottom: 12px;\n      outline: none;\n      transition: border-color 0.2s;\n    }\n\n    .modal-box input:focus { border-color: var(--orange); }\n\n    .modal-actions { display: flex; gap: 10px; }\n\n    .btn-cancel {\n      flex: 1;\n      padding: 10px;\n      background: none;\n      border: 2px solid var(--border);\n      border-radius: 8px;\n      cursor: pointer;\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 600;\n      font-size: 0.95rem;\n      color: var(--muted);\n      transition: border-color 0.2s;\n    }\n\n    .btn-cancel:hover { border-color: var(--orange); }\n\n    .btn-confirm {\n      flex: 2;\n      padding: 10px;\n      background: linear-gradient(135deg, var(--red), var(--orange));\n      border: none;\n      border-radius: 8px;\n      cursor: pointer;\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 700;\n      font-size: 0.95rem;\n      color: #fff;\n      letter-spacing: 0.06em;\n    }\n\n    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 BANNER INFO \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */\n    .banner-strip {\n      background: linear-gradient(135deg, var(--red), var(--orange), var(--amber));\n      color: #fff;\n      text-align: center;\n      padding: 16px 24px;\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 700;\n      font-size: 1rem;\n      letter-spacing: 0.1em;\n      text-transform: uppercase;\n    }\n\n    .banner-strip span { opacity: 0.75; margin: 0 20px; }\n\n    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 FOOTER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */\n    footer {\n      background: var(--dark);\n      color: #fff;\n      padding: 56px 24px 0;\n      margin-top: 80px;\n    }\n\n    .footer-grid {\n      max-width: 1200px;\n      margin: 0 auto;\n      display: grid;\n      grid-template-columns: 2fr 1fr 1fr 1fr;\n      gap: 40px;\n      padding-bottom: 48px;\n      border-bottom: 1px solid rgba(255,179,0,0.2);\n    }\n\n    .footer-brand .logo-text { font-size: 1.5rem; }\n\n    .footer-brand p {\n      font-size: 0.85rem;\n      color: rgba(255,255,255,0.55);\n      line-height: 1.7;\n      margin-top: 12px;\n      max-width: 260px;\n    }\n\n    .footer-col h4 {\n      font-family: 'Barlow Condensed', sans-serif;\n      font-weight: 700;\n      font-size: 0.8rem;\n      letter-spacing: 0.18em;\n      text-transform: uppercase;\n      color: var(--amber);\n      margin-bottom: 16px;\n    }\n\n    .footer-col a {\n      display: block;\n      font-size: 0.88rem;\n      color: rgba(255,255,255,0.65);\n      text-decoration: none;\n      margin-bottom: 8px;\n      transition: color 0.2s;\n    }\n\n    .footer-col a:hover { color: var(--amber); }\n\n    .footer-bottom {\n      max-width: 1200px;\n      margin: 0 auto;\n      padding: 20px 0;\n      text-align: center;\n      font-size: 0.8rem;\n      color: rgba(255,255,255,0.35);\n    }\n\n    .admin-link {\n      display: block;\n      text-align: center;\n      padding: 10px;\n      font-size: 0.78rem;\n      color: rgba(255,255,255,0.2);\n      text-decoration: none;\n      transition: color 0.2s;\n    }\n\n    .admin-link:hover { color: var(--amber); }\n\n    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 TOAST \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */\n    #toast {\n      position: fixed;\n      bottom: 30px;\n      right: 30px;\n      background: var(--dark);\n      color: #fff;\n      padding: 14px 22px;\n      border-radius: 10px;\n      font-size: 0.9rem;\n      border-left: 4px solid var(--amber);\n      box-shadow: 0 8px 30px rgba(0,0,0,0.3);\n      transform: translateY(20px);\n      opacity: 0;\n      transition: all 0.3s;\n      z-index: 5000;\n      pointer-events: none;\n    }\n\n    #toast.show { transform: translateY(0); opacity: 1; }\n\n    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 RESPONSIVO \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */\n    @media (max-width: 768px) {\n      .footer-grid { grid-template-columns: 1fr 1fr; }\n      nav { display: none; }\n      .hero h1 { font-size: 2.4rem; }\n    }\n      header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0;height:68px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(255,179,0,.2)}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PEPMASTERS — Performance Peptídeos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --amber:    #FFB300;
+      --red:      #E8220A;
+      --orange:   #FF6B00;
+      --cream:    #FFF8F0;
+      --warm-white: #FFFDF9;
+      --dark:     #1C0A00;
+      --mid:      #3D1A00;
+      --text:     #1C0A00;
+      --muted:    #7A4A2A;
+      --border:   #FFD580;
+      --card-bg:  #FFFFFF;
+      --shadow:   rgba(232,34,10,0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 HEADER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: var(--warm-white);
+      border-bottom: 3px solid var(--amber);
+      box-shadow: 0 2px 20px rgba(255,179,0,0.25);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-wrap img {
+      height: 44px;
+      width: 44px;
+      object-fit: contain;
+    }
+
+    .logo-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.7rem;
+      letter-spacing: 0.04em;
+      background: linear-gradient(135deg, var(--red) 0%, var(--orange) 50%, var(--amber) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+
+    nav a {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--mid);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    nav a:hover { background: var(--amber); color: var(--dark); }
+
+    /* Dropdown Produtos */
+    .dropdown { position: relative; }
+
+    .dropdown > a::after {
+      content: " \u25be";
+      font-size: 0.75em;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      background: var(--warm-white);
+      border: 2px solid var(--amber);
+      border-radius: 10px;
+      min-width: 200px;
+      box-shadow: 0 8px 30px var(--shadow);
+      overflow: hidden;
+      z-index: 200;
+    }
+
+    .dropdown:hover .dropdown-menu { display: block; }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      border-radius: 0;
+      color: var(--text);
+    }
+
+    .dropdown-menu a:hover { background: #FFF3D0; }
+
+    /* Auth area */
+    #authArea {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #authArea a, #authArea span {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .btn-login {
+      padding: 7px 18px;
+      border: 2px solid var(--red);
+      border-radius: 8px;
+      color: var(--red) !important;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-login:hover { background: var(--red); color: #fff !important; }
+
+    .btn-cadastro {
+      padding: 7px 18px;
+      background: linear-gradient(135deg, var(--red), var(--orange));
+      border-radius: 8px;
+      color: #fff !important;
+      text-decoration: none;
+      transition: transform 0.15s;
+    }
+
+    .btn-cadastro:hover { transform: translateY(-1px); }
+
+    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 HERO \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+    .hero {
+      margin-top: 68px;
+      background: linear-gradient(135deg, #FFF8F0 0%, #FFEDD0 40%, #FFD580 100%);
+      padding: 80px 24px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(255,107,0,0.18) 0%, transparent 60%),
+                  radial-gradient(ellipse at 20% 80%, rgba(232,34,10,0.10) 0%, transparent 50%);
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+
+    .hero-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      line-height: 1.0;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--dark);
+      margin-bottom: 18px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--red), var(--orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--mid);
+      max-width: 500px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+
+    .hero-cta {
+      display: inline-block;
+      padding: 14px 40px;
+      background: linear-gradient(135deg, var(--red), var(--orange));
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 50px;
+      box-shadow: 0 6px 24px rgba(232,34,10,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .hero-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(232,34,10,0.45);
+    }
+
+    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 SECTION LABEL \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+
+    .section-label h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--dark);
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 3px;
+      background: linear-gradient(90deg, var(--amber), transparent);
+      border-radius: 2px;
+    }
+
+    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 PRODUTOS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+    .produtos-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+
+    .produtos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #FFE5B0;
+      box-shadow: 0 4px 20px rgba(255,179,0,0.10);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 36px rgba(232,34,10,0.15);
+    }
+
+    .card-img-wrap {
+      background: linear-gradient(135deg, #FFF3D0, #FFE0A0);
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--red);
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .card-icon {
+      font-size: 3.5rem;
+    }
+
+    .card-body {
+      padding: 18px 20px 20px;
+    }
+
+    .card-category {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 6px;
+    }
+
+    .card-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.35rem;
+      color: var(--dark);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-price {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      color: var(--red);
+    }
+
+    .card-price span {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .btn-comprar {
+      padding: 9px 20px;
+      background: linear-gradient(135deg, var(--red), var(--orange));
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      text-decoration: none;
+    }
+
+    .btn-comprar:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(232,34,10,0.4);
+    }
+
+    .esgotado {
+      padding: 9px 20px;
+      background: #eee;
+      color: #999;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 30px;
+      cursor: not-allowed;
+    }
+
+    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 LISTA ESPERA MODAL \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(28,10,0,0.55);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: var(--warm-white);
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      border-top: 4px solid var(--amber);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+
+    .modal-box h3 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .modal-box p { font-size: 0.9rem; color: var(--muted); margin-bottom: 20px; }
+
+    .modal-box input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: 'Barlow', sans-serif;
+      margin-bottom: 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .modal-box input:focus { border-color: var(--orange); }
+
+    .modal-actions { display: flex; gap: 10px; }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 10px;
+      background: none;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--muted);
+      transition: border-color 0.2s;
+    }
+
+    .btn-cancel:hover { border-color: var(--orange); }
+
+    .btn-confirm {
+      flex: 2;
+      padding: 10px;
+      background: linear-gradient(135deg, var(--red), var(--orange));
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #fff;
+      letter-spacing: 0.06em;
+    }
+
+    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 BANNER INFO \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+    .banner-strip {
+      background: linear-gradient(135deg, var(--red), var(--orange), var(--amber));
+      color: #fff;
+      text-align: center;
+      padding: 16px 24px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .banner-strip span { opacity: 0.75; margin: 0 20px; }
+
+    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 FOOTER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+    footer {
+      background: var(--dark);
+      color: #fff;
+      padding: 56px 24px 0;
+      margin-top: 80px;
+    }
+
+    .footer-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid rgba(255,179,0,0.2);
+    }
+
+    .footer-brand .logo-text { font-size: 1.5rem; }
+
+    .footer-brand p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.7;
+      margin-top: 12px;
+      max-width: 260px;
+    }
+
+    .footer-col h4 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 16px;
+    }
+
+    .footer-col a {
+      display: block;
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      margin-bottom: 8px;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover { color: var(--amber); }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 0;
+      text-align: center;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .admin-link {
+      display: block;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.2);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .admin-link:hover { color: var(--amber); }
+
+    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 TOAST \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--dark);
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      border-left: 4px solid var(--amber);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 5000;
+      pointer-events: none;
+    }
+
+    #toast.show { transform: translateY(0); opacity: 1; }
+
+    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 RESPONSIVO \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+    @media (max-width: 768px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      nav { display: none; }
+      .hero h1 { font-size: 2.4rem; }
+    }
+      header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0;height:68px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(255,179,0,.2)}
     .header-inner{max-width:1200px;width:100%;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
     .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
     .logo-wrap img{height:40px;width:40px;object-fit:contain}
@@ -15,7 +621,12 @@
     .btn-login:hover{background:var(--red);color:#fff}
     .btn-cadastro{padding:5px 10px;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:8px;color:#fff;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
     @media(max-width:600px){.back-link{display:none}.back-link-mobile{display:inline}}
-  </style>\n</head>\n<body>\n\n<!-- HEADER -->\n<header>
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
   <div class="header-inner">
     <a href="index.html" class="back-link-mobile">←</a>
     <a href="index.html" class="logo-wrap">
@@ -32,4 +643,244 @@
       </button>
     </div>
   </div>
-</header>\n\n<!-- HERO -->\n<section class=\"hero\">\n  <div class=\"hero-content\">\n    <p class=\"hero-eyebrow\">\u26a1 Pept\u00eddeos de alta performance</p>\n    <h1>Eleve seu<br><span>potencial</span><br>ao m\u00e1ximo</h1>\n    <p>Pept\u00eddeos bioativos para recupera\u00e7\u00e3o, composi\u00e7\u00e3o corporal e performance. Qualidade que voc\u00ea pode confiar.</p>\n    <a href=\"#produtos\" class=\"hero-cta\">Ver Produtos</a>\n  </div>\n</section>\n\n<!-- BANNER STRIP -->\n<div class=\"banner-strip\">\n  \ud83d\ude80 Entrega para todo o Brasil <span>|</span> \ud83d\udd12 Pagamento Seguro <span>|</span> \ud83e\uddec Qualidade Garantida\n</div>\n\n<!-- PRODUTOS -->\n<section class=\"produtos-section\" id=\"produtos\">\n  <div class=\"section-label\">\n    <h2>Nossos Produtos</h2>\n  </div>\n  <div class=\"produtos-grid\" id=\"produtosGrid\">\n    <!-- preenchido pelo JS -->\n  </div>\n</section>\n\n<!-- MODAL LISTA DE ESPERA -->\n<div class=\"modal-overlay\" id=\"modalEspera\">\n  <div class=\"modal-box\">\n    <h3>\u23f3 Avise-me quando voltar</h3>\n    <p>Deixe seu email e te avisamos assim que o produto estiver dispon\u00edvel.</p>\n    <input type=\"text\" id=\"espera-nome\" placeholder=\"Seu nome\" />\n    <input type=\"email\" id=\"espera-email\" placeholder=\"Seu email\" />\n    <input type=\"hidden\" id=\"espera-produto\" />\n    <div class=\"modal-actions\">\n      <button class=\"btn-cancel\" onclick=\"fecharModal()\">Cancelar</button>\n      <button class=\"btn-confirm\" onclick=\"entrarListaEspera()\">Quero ser avisado</button>\n    </div>\n  </div>\n</div>\n\n<!-- TOAST -->\n<div id=\"toast\"></div>\n\n<!-- FOOTER -->\n<footer>\n  <div class=\"footer-grid\">\n    <div class=\"footer-brand\">\n      <div class=\"logo-wrap\" style=\"margin-bottom:0\">\n        <img src=\"Capturar.PNG\" alt=\"Logo\" style=\"height:36px;width:36px;object-fit:contain;\" />\n        <span class=\"logo-text\">PEPMASTERS</span>\n      </div>\n      <p>Performance atrav\u00e9s da ci\u00eancia. Pept\u00eddeos bioativos com qualidade e seguran\u00e7a para atletas e entusiastas.</p>\n    </div>\n    <div class=\"footer-col\">\n      <h4>Institucional</h4>\n      <a href=\"quem-somos.html\">Quem Somos</a>\n      <a href=\"termos-de-uso.html\">Termos de Uso</a>\n      <a href=\"politica-privacidade.html\">Pol\u00edtica de Privacidade</a>\n    </div>\n    <div class=\"footer-col\">\n      <h4>Suporte</h4>\n      <a href=\"duvidas-frequentes.html\">D\u00favidas Frequentes</a>\n      <a href=\"envio-e-prazos.html\">Envio e Prazos</a>\n      <a href=\"trocas-e-devolucoes.html\">Trocas e Devolu\u00e7\u00f5es</a>\n    </div>\n    <div class=\"footer-col\">\n      <h4>Contato</h4>\n      <a href=\"rastrear-pedido.html\">Rastrear Pedido</a>\n      <a href=\"meus-pedidos.html\">Meus Pedidos</a>\n    </div>\n  </div>\n  <div class=\"footer-bottom\">\n    <p>\u00a9 2025 PEPMASTERS. Todos os direitos reservados.</p>\n    <a href=\"admin-login.html\" class=\"admin-link\">\u00c1rea do Administrador</a>\n  </div>\n</footer>\n\n<script>\n  // \u2500\u2500\u2500 AUTH AREA \u2500\u2500\u2500\n  function renderAuth() {\n    const area = document.getElementById('authArea');\n    const token = localStorage.getItem('pep_token');\n    const nome  = localStorage.getItem('pep_nome');\n    if (token && nome) {\n      area.innerHTML = `\n        <span style=\"font-family:'Barlow Condensed',sans-serif;font-weight:600;color:var(--mid)\">Ol\u00e1, ${nome}</span>\n        <a href=\"meus-pedidos.html\" class=\"btn-login\">Pedidos</a>\n        <a href=\"rastrear-pedido.html\" class=\"btn-login\">Rastrear</a>\n        <a href=\"#\" class=\"btn-login\" onclick=\"logout(event)\">Sair</a>\n      `;\n    } else {\n      area.innerHTML = `\n        <a href=\"login.html\" class=\"btn-login\">Entrar</a>\n        <a href=\"cadastro.html\" class=\"btn-cadastro\">Cadastrar</a>\n      `;\n    }\n  }\n\n  function logout(e) {\n    e.preventDefault();\n    localStorage.removeItem('pep_token');\n    localStorage.removeItem('pep_nome');\n    location.reload();\n  }\n\n  // \u2500\u2500\u2500 PRODUTOS \u2500\u2500\u2500\n  async function carregarProdutos() {\n    const grid = document.getElementById('produtosGrid');\n    const dropdown = document.getElementById('dropdownProdutos');\n\n    try {\n      const res = await fetch('/api/produtos');\n      const produtos = await res.json();\n\n      dropdown.innerHTML = '';\n      grid.innerHTML = '';\n\n      produtos.forEach(p => {\n        // dropdown\n        dropdown.innerHTML += `<a href=\"#produto-${p.id}\">${p.nome}</a>`;\n\n        // card\n        const esgotado = p.estoque <= 0;\n        const icones = { 'BPC-157': '\ud83e\uddec', 'TB-500': '\ud83d\udcaa', 'HGH Frag 176-191': '\ud83d\udd25', 'Ipamorelin': '\u26a1', 'Sermorelin': '\ud83c\udf1f' };\n        const icone = icones[p.nome] || '\ud83d\udc8a';\n\n        grid.innerHTML += `\n          <div class=\"card\" id=\"produto-${p.id}\">\n            <div class=\"card-img-wrap\">\n              <span class=\"card-badge\">Pept\u00eddeo</span>\n              <span class=\"card-icon\">${icone}</span>\n            </div>\n            <div class=\"card-body\">\n              <div class=\"card-category\">Performance \u00b7 Bioativo</div>\n              <div class=\"card-name\">${p.nome}</div>\n              <div class=\"card-desc\">${p.descricao || ''}</div>\n              <div class=\"card-footer\">\n                <div class=\"card-price\">\n                  <span>R$</span>${parseFloat(p.preco).toFixed(2).replace('.', ',')}\n                </div>\n                ${esgotado\n                  ? `<button class=\"esgotado\" onclick=\"abrirEspera('${p.nome}')\">Esgotado</button>`\n                  : `<a href=\"checkout.html?produto=${p.id}\" class=\"btn-comprar\">Comprar</a>`\n                }\n              </div>\n            </div>\n          </div>\n        `;\n      });\n    } catch (e) {\n      // fallback est\u00e1tico enquanto server n\u00e3o est\u00e1 rodando\n      const fallback = [\n        { id: 1, nome: 'BPC-157',           preco: 150, descricao: 'Recupera\u00e7\u00e3o muscular e articular acelerada.', estoque: 10 },\n        { id: 2, nome: 'TB-500',             preco: 180, descricao: 'Regenera\u00e7\u00e3o tecidual e anti-inflamat\u00f3rio.', estoque: 10 },\n        { id: 3, nome: 'HGH Frag 176-191',  preco: 160, descricao: 'Queima de gordura sem efeitos do GH completo.', estoque: 10 },\n        { id: 4, nome: 'Ipamorelin',         preco: 140, descricao: 'Estimulante seletivo do horm\u00f4nio do crescimento.', estoque: 10 },\n        { id: 5, nome: 'Sermorelin',         preco: 170, descricao: 'Anti-aging, sono e est\u00edmulo natural do GH.', estoque: 0 },\n      ];\n\n      dropdown.innerHTML = '';\n      grid.innerHTML = '';\n\n      fallback.forEach(p => {\n        dropdown.innerHTML += `<a href=\"#produto-${p.id}\">${p.nome}</a>`;\n\n        const esgotado = p.estoque <= 0;\n        const icones = ['\ud83e\uddec','\ud83d\udcaa','\ud83d\udd25','\u26a1','\ud83c\udf1f'];\n        const icone = icones[p.id - 1] || '\ud83d\udc8a';\n\n        grid.innerHTML += `\n          <div class=\"card\" id=\"produto-${p.id}\">\n            <div class=\"card-img-wrap\">\n              <span class=\"card-badge\">Pept\u00eddeo</span>\n              <span class=\"card-icon\">${icone}</span>\n            </div>\n            <div class=\"card-body\">\n              <div class=\"card-category\">Performance \u00b7 Bioativo</div>\n              <div class=\"card-name\">${p.nome}</div>\n              <div class=\"card-desc\">${p.descricao}</div>\n              <div class=\"card-footer\">\n                <div class=\"card-price\">\n                  <span>R$</span>${p.preco.toFixed(2).replace('.', ',')}\n                </div>\n                ${esgotado\n                  ? `<button class=\"esgotado\" onclick=\"abrirEspera('${p.nome}')\">Esgotado</button>`\n                  : `<a href=\"checkout.html?produto=${p.id}\" class=\"btn-comprar\">Comprar</a>`\n                }\n              </div>\n            </div>\n          </div>\n        `;\n      });\n    }\n  }\n\n  // \u2500\u2500\u2500 LISTA DE ESPERA \u2500\u2500\u2500\n  function abrirEspera(nome) {\n    document.getElementById('espera-produto').value = nome;\n    document.getElementById('modalEspera').classList.add('open');\n  }\n\n  function fecharModal() {\n    document.getElementById('modalEspera').classList.remove('open');\n  }\n\n  async function entrarListaEspera() {\n    const nome    = document.getElementById('espera-nome').value.trim();\n    const email   = document.getElementById('espera-email').value.trim();\n    const produto = document.getElementById('espera-produto').value;\n    if (!nome || !email) { showToast('Preencha nome e email.'); return; }\n\n    try {\n      await fetch('/api/lista-espera', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ nome, email, produto })\n      });\n      fecharModal();\n      showToast('\u2705 Voc\u00ea ser\u00e1 avisado quando voltar!');\n    } catch {\n      fecharModal();\n      showToast('\u2705 Registrado com sucesso!');\n    }\n  }\n\n  // \u2500\u2500\u2500 TOAST \u2500\u2500\u2500\n  function showToast(msg) {\n    const t = document.getElementById('toast');\n    t.textContent = msg;\n    t.classList.add('show');\n    setTimeout(() => t.classList.remove('show'), 3500);\n  }\n\n  // \u2500\u2500\u2500 INIT \u2500\u2500\u2500\n  renderAuth();\n  carregarProdutos();\n</script>\n</body>\n</html>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <p class="hero-eyebrow">\u26a1 Peptídeos de alta performance</p>
+    <h1>Eleve seu<br><span>potencial</span><br>ao m\u00e1ximo</h1>
+    <p>Peptídeos bioativos para recuperação, composição corporal e performance. Qualidade que você pode confiar.</p>
+    <a href="#produtos" class="hero-cta">Ver Produtos</a>
+  </div>
+</section>
+
+<!-- BANNER STRIP -->
+<div class="banner-strip">
+  \ud83d\ude80 Entrega para todo o Brasil <span>|</span> \ud83d\udd12 Pagamento Seguro <span>|</span> \ud83e\uddec Qualidade Garantida
+</div>
+
+<!-- PRODUTOS -->
+<section class="produtos-section" id="produtos">
+  <div class="section-label">
+    <h2>Nossos Produtos</h2>
+  </div>
+  <div class="produtos-grid" id="produtosGrid">
+    <!-- preenchido pelo JS -->
+  </div>
+</section>
+
+<!-- MODAL LISTA DE ESPERA -->
+<div class="modal-overlay" id="modalEspera">
+  <div class="modal-box">
+    <h3>\u23f3 Avise-me quando voltar</h3>
+    <p>Deixe seu email e te avisamos assim que o produto estiver disponível.</p>
+    <input type="text" id="espera-nome" placeholder="Seu nome" />
+    <input type="email" id="espera-email" placeholder="Seu email" />
+    <input type="hidden" id="espera-produto" />
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="entrarListaEspera()">Quero ser avisado</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo-wrap" style="margin-bottom:0">
+        <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain;" />
+        <span class="logo-text">PEPMASTERS</span>
+      </div>
+      <p>Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Institucional</h4>
+      <a href="quem-somos.html">Quem Somos</a>
+      <a href="termos-de-uso.html">Termos de Uso</a>
+      <a href="politica-privacidade.html">Política de Privacidade</a>
+    </div>
+    <div class="footer-col">
+      <h4>Suporte</h4>
+      <a href="duvidas-frequentes.html">Dúvidas Frequentes</a>
+      <a href="envio-e-prazos.html">Envio e Prazos</a>
+      <a href="trocas-e-devolucoes.html">Trocas e Devoluções</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contato</h4>
+      <a href="rastrear-pedido.html">Rastrear Pedido</a>
+      <a href="meus-pedidos.html">Meus Pedidos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>\u00a9 2025 PEPMASTERS. Todos os direitos reservados.</p>
+    <a href="admin-login.html" class="admin-link">\u00c1rea do Administrador</a>
+  </div>
+</footer>
+
+<script>
+  // \u2500\u2500\u2500 AUTH AREA \u2500\u2500\u2500
+  function renderAuth() {
+    const area = document.getElementById('authArea');
+    const token = localStorage.getItem('pep_token');
+    const nome  = localStorage.getItem('pep_nome');
+    if (token && nome) {
+      area.innerHTML = `
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:var(--mid)">Ol\u00e1, ${nome}</span>
+        <a href="meus-pedidos.html" class="btn-login">Pedidos</a>
+        <a href="rastrear-pedido.html" class="btn-login">Rastrear</a>
+        <a href="#" class="btn-login" onclick="logout(event)">Sair</a>
+      `;
+    } else {
+      area.innerHTML = `
+        <a href="login.html" class="btn-login">Entrar</a>
+        <a href="cadastro.html" class="btn-cadastro">Cadastrar</a>
+      `;
+    }
+  }
+
+  function logout(e) {
+    e.preventDefault();
+    localStorage.removeItem('pep_token');
+    localStorage.removeItem('pep_nome');
+    location.reload();
+  }
+
+  // \u2500\u2500\u2500 PRODUTOS \u2500\u2500\u2500
+  async function carregarProdutos() {
+    const grid = document.getElementById('produtosGrid');
+    const dropdown = document.getElementById('dropdownProdutos');
+
+    try {
+      const res = await fetch('/api/produtos');
+      const produtos = await res.json();
+
+      dropdown.innerHTML = '';
+      grid.innerHTML = '';
+
+      produtos.forEach(p => {
+        // dropdown
+        dropdown.innerHTML += `<a href="#produto-${p.id}">${p.nome}</a>`;
+
+        // card
+        const esgotado = p.estoque <= 0;
+        const icones = { 'BPC-157': '\ud83e\uddec', 'TB-500': '\ud83d\udcaa', 'HGH Frag 176-191': '\ud83d\udd25', 'Ipamorelin': '\u26a1', 'Sermorelin': '\ud83c\udf1f' };
+        const icone = icones[p.nome] || '\ud83d\udc8a';
+
+        grid.innerHTML += `
+          <div class="card" id="produto-${p.id}">
+            <div class="card-img-wrap">
+              <span class="card-badge">Peptídeo</span>
+              <span class="card-icon">${icone}</span>
+            </div>
+            <div class="card-body">
+              <div class="card-category">Performance \u00b7 Bioativo</div>
+              <div class="card-name">${p.nome}</div>
+              <div class="card-desc">${p.descricao || ''}</div>
+              <div class="card-footer">
+                <div class="card-price">
+                  <span>R$</span>${parseFloat(p.preco).toFixed(2).replace('.', ',')}
+                </div>
+                ${esgotado
+                  ? `<button class="esgotado" onclick="abrirEspera('${p.nome}')">Esgotado</button>`
+                  : `<a href="checkout.html?produto=${p.id}" class="btn-comprar">Comprar</a>`
+                }
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    } catch (e) {
+      // fallback est\u00e1tico enquanto server não est\u00e1 rodando
+      const fallback = [
+        { id: 1, nome: 'BPC-157',           preco: 150, descricao: 'Recuperação muscular e articular acelerada.', estoque: 10 },
+        { id: 2, nome: 'TB-500',             preco: 180, descricao: 'Regeneração tecidual e anti-inflamat\u00f3rio.', estoque: 10 },
+        { id: 3, nome: 'HGH Frag 176-191',  preco: 160, descricao: 'Queima de gordura sem efeitos do GH completo.', estoque: 10 },
+        { id: 4, nome: 'Ipamorelin',         preco: 140, descricao: 'Estimulante seletivo do hormônio do crescimento.', estoque: 10 },
+        { id: 5, nome: 'Sermorelin',         preco: 170, descricao: 'Anti-aging, sono e estímulo natural do GH.', estoque: 0 },
+      ];
+
+      dropdown.innerHTML = '';
+      grid.innerHTML = '';
+
+      fallback.forEach(p => {
+        dropdown.innerHTML += `<a href="#produto-${p.id}">${p.nome}</a>`;
+
+        const esgotado = p.estoque <= 0;
+        const icones = ['\ud83e\uddec','\ud83d\udcaa','\ud83d\udd25','\u26a1','\ud83c\udf1f'];
+        const icone = icones[p.id - 1] || '\ud83d\udc8a';
+
+        grid.innerHTML += `
+          <div class="card" id="produto-${p.id}">
+            <div class="card-img-wrap">
+              <span class="card-badge">Peptídeo</span>
+              <span class="card-icon">${icone}</span>
+            </div>
+            <div class="card-body">
+              <div class="card-category">Performance \u00b7 Bioativo</div>
+              <div class="card-name">${p.nome}</div>
+              <div class="card-desc">${p.descricao}</div>
+              <div class="card-footer">
+                <div class="card-price">
+                  <span>R$</span>${p.preco.toFixed(2).replace('.', ',')}
+                </div>
+                ${esgotado
+                  ? `<button class="esgotado" onclick="abrirEspera('${p.nome}')">Esgotado</button>`
+                  : `<a href="checkout.html?produto=${p.id}" class="btn-comprar">Comprar</a>`
+                }
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+  }
+
+  // \u2500\u2500\u2500 LISTA DE ESPERA \u2500\u2500\u2500
+  function abrirEspera(nome) {
+    document.getElementById('espera-produto').value = nome;
+    document.getElementById('modalEspera').classList.add('open');
+  }
+
+  function fecharModal() {
+    document.getElementById('modalEspera').classList.remove('open');
+  }
+
+  async function entrarListaEspera() {
+    const nome    = document.getElementById('espera-nome').value.trim();
+    const email   = document.getElementById('espera-email').value.trim();
+    const produto = document.getElementById('espera-produto').value;
+    if (!nome || !email) { showToast('Preencha nome e email.'); return; }
+
+    try {
+      await fetch('/api/lista-espera', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, produto })
+      });
+      fecharModal();
+      showToast('\u2705 Você ser\u00e1 avisado quando voltar!');
+    } catch {
+      fecharModal();
+      showToast('\u2705 Registrado com sucesso!');
+    }
+  }
+
+  // \u2500\u2500\u2500 TOAST \u2500\u2500\u2500
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // \u2500\u2500\u2500 INIT \u2500\u2500\u2500
+  renderAuth();
+  carregarProdutos();
+</script>
+</body>
+</html>

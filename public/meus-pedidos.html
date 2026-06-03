@@ -1,4 +1,42 @@
-<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n  <title>Meus Pedidos \u2014 PEPMASTERS</title>\n  <link href=\"https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap\" rel=\"stylesheet\" />\n  <style>\n    :root { --amber: #FFB300; --red: #E8220A; --orange: #FF6B00; --cream: #FFF8F0; --warm-white: #FFFDF9; --dark: #1C0A00; --mid: #3D1A00; --muted: #7A4A2A; --border: #FFD580; }\n    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }\n    body { font-family: 'Barlow', sans-serif; background: var(--cream); min-height: 100vh; display: flex; flex-direction: column; }\n    header { background: var(--warm-white); border-bottom: 3px solid var(--amber); padding: 0 24px; height: 68px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 20px rgba(255,179,0,0.2); }\n    .logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }\n    .logo-wrap img { height: 40px; width: 40px; object-fit: contain; }\n    .logo-text { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.5rem; background: linear-gradient(135deg, var(--red), var(--orange), var(--amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }\n    .back-link { margin-left: auto; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); text-decoration: none; }\n    .back-link:hover { color: var(--orange); }\n    main { flex: 1; max-width: 900px; margin: 0 auto; padding: 40px 24px; width: 100%; }\n    h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2rem; text-transform: uppercase; color: var(--dark); margin-bottom: 28px; }\n    .pedido-card { background: #fff; border-radius: 14px; padding: 22px 24px; margin-bottom: 16px; border: 1px solid #FFE5B0; box-shadow: 0 3px 14px rgba(255,179,0,0.08); }\n    .pedido-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }\n    .pedido-id { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.15rem; color: var(--dark); }\n    .pedido-data { font-size: 0.82rem; color: var(--muted); }\n    .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }\n    .badge-pago     { background: #DCFCE7; color: #16a34a; }\n    .badge-pendente { background: #FEF9C3; color: #854d0e; }\n    .badge-enviado  { background: #DBEAFE; color: #1d4ed8; }\n    .badge-entregue { background: #F3E8FF; color: #7c3aed; }\n    .badge-cancelado{ background: #FEE2E2; color: #b91c1c; }\n    .pedido-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }\n    .info-item label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 3px; }\n    .info-item span { font-size: 0.9rem; color: var(--dark); }\n    .rastrear-btn { margin-top: 14px; display: inline-block; padding: 8px 18px; border: 2px solid var(--amber); border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid); text-decoration: none; transition: all 0.2s; }\n    .rastrear-btn:hover { background: var(--amber); color: var(--dark); }\n    .empty { text-align: center; padding: 60px 20px; color: var(--muted); }\n    .empty h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; margin-bottom: 10px; }\n    footer { background: var(--dark); color: rgba(255,255,255,0.4); text-align: center; padding: 16px; font-size: 0.8rem; }\n    footer a { color: rgba(255,179,0,0.5); text-decoration: none; }\n      header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0;height:68px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(255,179,0,.2)}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meus Pedidos — PEPMASTERS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --amber: #FFB300; --red: #E8220A; --orange: #FF6B00; --cream: #FFF8F0; --warm-white: #FFFDF9; --dark: #1C0A00; --mid: #3D1A00; --muted: #7A4A2A; --border: #FFD580; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Barlow', sans-serif; background: var(--cream); min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: var(--warm-white); border-bottom: 3px solid var(--amber); padding: 0 24px; height: 68px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 20px rgba(255,179,0,0.2); }
+    .logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-wrap img { height: 40px; width: 40px; object-fit: contain; }
+    .logo-text { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.5rem; background: linear-gradient(135deg, var(--red), var(--orange), var(--amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .back-link { margin-left: auto; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); text-decoration: none; }
+    .back-link:hover { color: var(--orange); }
+    main { flex: 1; max-width: 900px; margin: 0 auto; padding: 40px 24px; width: 100%; }
+    h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2rem; text-transform: uppercase; color: var(--dark); margin-bottom: 28px; }
+    .pedido-card { background: #fff; border-radius: 14px; padding: 22px 24px; margin-bottom: 16px; border: 1px solid #FFE5B0; box-shadow: 0 3px 14px rgba(255,179,0,0.08); }
+    .pedido-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+    .pedido-id { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.15rem; color: var(--dark); }
+    .pedido-data { font-size: 0.82rem; color: var(--muted); }
+    .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    .badge-pago     { background: #DCFCE7; color: #16a34a; }
+    .badge-pendente { background: #FEF9C3; color: #854d0e; }
+    .badge-enviado  { background: #DBEAFE; color: #1d4ed8; }
+    .badge-entregue { background: #F3E8FF; color: #7c3aed; }
+    .badge-cancelado{ background: #FEE2E2; color: #b91c1c; }
+    .pedido-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+    .info-item label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 3px; }
+    .info-item span { font-size: 0.9rem; color: var(--dark); }
+    .rastrear-btn { margin-top: 14px; display: inline-block; padding: 8px 18px; border: 2px solid var(--amber); border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid); text-decoration: none; transition: all 0.2s; }
+    .rastrear-btn:hover { background: var(--amber); color: var(--dark); }
+    .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .empty h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; margin-bottom: 10px; }
+    footer { background: var(--dark); color: rgba(255,255,255,0.4); text-align: center; padding: 16px; font-size: 0.8rem; }
+    footer a { color: rgba(255,179,0,0.5); text-decoration: none; }
+      header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0;height:68px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(255,179,0,.2)}
     .header-inner{max-width:1200px;width:100%;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
     .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
     .logo-wrap img{height:40px;width:40px;object-fit:contain}
@@ -15,7 +53,10 @@
     .btn-login:hover{background:var(--red);color:#fff}
     .btn-cadastro{padding:5px 10px;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:8px;color:#fff;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
     @media(max-width:600px){.back-link{display:none}.back-link-mobile{display:inline}}
-  </style>\n</head>\n<body>\n<header>
+  </style>
+</head>
+<body>
+<header>
   <div class="header-inner">
     <a href="index.html" class="back-link-mobile">←</a>
     <a href="index.html" class="logo-wrap">
@@ -32,7 +73,62 @@
       </button>
     </div>
   </div>
-</header>\n<main>\n  <h1>\ud83d\udce6 Meus Pedidos</h1>\n  <div id=\"listaPedidos\"></div>\n</main>\n<footer>\u00a9 2025 PEPMASTERS \u2014 <a href=\"index.html\">Voltar \u00e0 loja</a></footer>\n<script>\n  const statusLabels = { pago:'Pago', pix_pending:'Aguardando PIX', enviado:'Enviado', entregue:'Entregue', cancelado:'Cancelado' };\n  const statusClass  = { pago:'badge-pago', pix_pending:'badge-pendente', enviado:'badge-enviado', entregue:'badge-entregue', cancelado:'badge-cancelado' };\n\n  async function init() {\n    const token = localStorage.getItem('pep_token');\n    if (!token) { location.href = 'login.html?redirect=meus-pedidos.html'; return; }\n\n    const lista = document.getElementById('listaPedidos');\n\n    try {\n      const res  = await fetch('/api/meus-pedidos', { headers: { Authorization: 'Bearer ' + token } });\n      const data = await res.json();\n\n      if (!data.length) {\n        lista.innerHTML = '<div class=\"empty\"><h2>Nenhum pedido encontrado</h2><p>Voc\u00ea ainda n\u00e3o fez nenhum pedido.</p></div>';\n        return;\n      }\n\n      data.forEach(p => {\n        const sl = statusLabels[p.status] || p.status;\n        const sc = statusClass[p.status] || 'badge-pendente';\n        const data_fmt = new Date(p.criado_em).toLocaleDateString('pt-BR');\n        lista.innerHTML += `\n          <div class=\"pedido-card\">\n            <div class=\"pedido-header\">\n              <div>\n                <div class=\"pedido-id\">Pedido #${p.id}</div>\n                <div class=\"pedido-data\">${data_fmt}</div>\n              </div>\n              <span class=\"badge ${sc}\">${sl}</span>\n            </div>\n            <div class=\"pedido-info\">\n              <div class=\"info-item\"><label>Produto</label><span>${p.produto_nome || '\u2014'}</span></div>\n              <div class=\"info-item\"><label>Total</label><span>R$ ${parseFloat(p.total || 0).toFixed(2).replace('.',',')}</span></div>\n              <div class=\"info-item\"><label>Pagamento</label><span>${p.pagamento === 'pix' ? 'PIX' : 'Cart\u00e3o'}</span></div>\n              ${p.codigo_rastreio ? '<div class=\"info-item\"><label>Rastreio</label><span>' + p.codigo_rastreio + '</span></div>' : ''}\n            </div>\n            ${p.codigo_rastreio ? '<a href=\"rastrear-pedido.html?codigo=' + p.codigo_rastreio + '\" class=\"rastrear-btn\">\ud83d\udccd Rastrear</a>' : ''}\n          </div>\n        `;\n      });\n    } catch {\n      lista.innerHTML = '<div class=\"empty\"><h2>Erro ao carregar pedidos</h2><p>Tente novamente mais tarde.</p></div>';\n    }\n  }\n\n  init();\n</script>\n
+</header>
+<main>
+  <h1>📦 Meus Pedidos</h1>
+  <div id="listaPedidos"></div>
+</main>
+<footer>\u00a9 2025 PEPMASTERS — <a href="index.html">Voltar à loja</a></footer>
+<script>
+  const statusLabels = { pago:'Pago', pix_pending:'Aguardando PIX', enviado:'Enviado', entregue:'Entregue', cancelado:'Cancelado' };
+  const statusClass  = { pago:'badge-pago', pix_pending:'badge-pendente', enviado:'badge-enviado', entregue:'badge-entregue', cancelado:'badge-cancelado' };
+
+  async function init() {
+    const token = localStorage.getItem('pep_token');
+    if (!token) { location.href = 'login.html?redirect=meus-pedidos.html'; return; }
+
+    const lista = document.getElementById('listaPedidos');
+
+    try {
+      const res  = await fetch('/api/meus-pedidos', { headers: { Authorization: 'Bearer ' + token } });
+      const data = await res.json();
+
+      if (!data.length) {
+        lista.innerHTML = '<div class="empty"><h2>Nenhum pedido encontrado</h2><p>Você ainda não fez nenhum pedido.</p></div>';
+        return;
+      }
+
+      data.forEach(p => {
+        const sl = statusLabels[p.status] || p.status;
+        const sc = statusClass[p.status] || 'badge-pendente';
+        const data_fmt = new Date(p.criado_em).toLocaleDateString('pt-BR');
+        lista.innerHTML += `
+          <div class="pedido-card">
+            <div class="pedido-header">
+              <div>
+                <div class="pedido-id">Pedido #${p.id}</div>
+                <div class="pedido-data">${data_fmt}</div>
+              </div>
+              <span class="badge ${sc}">${sl}</span>
+            </div>
+            <div class="pedido-info">
+              <div class="info-item"><label>Produto</label><span>${p.produto_nome || '—'}</span></div>
+              <div class="info-item"><label>Total</label><span>R$ ${parseFloat(p.total || 0).toFixed(2).replace('.',',')}</span></div>
+              <div class="info-item"><label>Pagamento</label><span>${p.pagamento === 'pix' ? 'PIX' : 'Cartão'}</span></div>
+              ${p.codigo_rastreio ? '<div class="info-item"><label>Rastreio</label><span>' + p.codigo_rastreio + '</span></div>' : ''}
+            </div>
+            ${p.codigo_rastreio ? '<a href="rastrear-pedido.html?codigo=' + p.codigo_rastreio + '" class="rastrear-btn">📍 Rastrear</a>' : ''}
+          </div>
+        `;
+      });
+    } catch {
+      lista.innerHTML = '<div class="empty"><h2>Erro ao carregar pedidos</h2><p>Tente novamente mais tarde.</p></div>';
+    }
+  }
+
+  init();
+</script>
+
 <script src="i18n.js"></script>
 <script src="i18n-init.js"></script>
 <script>
@@ -47,7 +143,7 @@ function renderAuth(){
   var l=localStorage.getItem('pep_lang')||'en';
   var tr=function(k){return(d[k]&&(d[k][l]||d[k]['en']))||k;};
   if(token&&nome){
-    area.innerHTML='<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.78rem;color:var(--muted);white-space:nowrap">'+tr('nav.hello')+', '+nome.split(' ')[0]+'</span>'+
+    area.innerHTML='<span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;color:var(--muted);white-space:nowrap">'+tr('nav.hello')+', '+nome.split(' ')[0]+'</span>'+
       '<a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a>'+
       '<a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>';
   } else {
@@ -65,4 +161,5 @@ function updateCartCount(){
 }
 window.addEventListener('DOMContentLoaded',function(){renderAuth();updateCartCount();});
 </script>
-</body>\n</html>
+</body>
+</html>
