@@ -44,9 +44,17 @@
     .auth-footer a{color:var(--orange);text-decoration:none;font-weight:600}
     .auth-footer a:hover{color:var(--red)}
     #msgErro{background:#fff0ee;border-left:4px solid var(--red);padding:10px 14px;border-radius:8px;font-size:.88rem;color:var(--red);margin-bottom:18px;display:none}
-    footer{background:var(--dark);color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:.8rem}
-    footer a{color:rgba(255,179,0,.5);text-decoration:none}
-    footer a:hover{color:var(--amber)}
+    .top-sellers-scroll .card .card-footer{flex-direction:column;align-items:stretch;gap:6px}
+      .cat-grid-2col .card-footer{flex-direction:column;align-items:stretch;gap:6px}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    footer{background:var(--dark);color:#fff;padding:52px 24px 0;margin-top:60px}
+    .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;padding-bottom:44px;border-bottom:1px solid rgba(255,179,0,.2)}
+    .footer-brand p{font-size:.84rem;color:rgba(255,255,255,.5);line-height:1.7;margin-top:12px;max-width:260px}
+    .footer-col h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+    .footer-col a{display:block;font-size:.86rem;color:rgba(255,255,255,.6);text-decoration:none;margin-bottom:8px;transition:color .2s}
+    .footer-col a:hover{color:var(--amber)}
+    .footer-bottom{max-width:1200px;margin:0 auto;padding:18px 0;text-align:center;font-size:.78rem;color:rgba(255,255,255,.3)}
+      .footer-grid{grid-template-columns:1fr 1fr}
   </style>
 </head>
 <body>
@@ -77,7 +85,39 @@
     </div>
   </div>
 </main>
-<footer>© 2025 PEPMASTERS — <a href="index.html">Voltar à loja</a></footer>
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="logo-wrap" style="margin-bottom:0">
+        <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain"/>
+        <span class="logo-text">PEPMASTERS</span>
+      </a>
+      <p data-i18n="footer.desc"><span data-i18n="footer.desc">Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</span></p>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer.institutional">Institucional</h4>
+      <a href="quem-somos.html" data-i18n="footer.about">Quem Somos</a>
+      <a href="termos-de-uso.html" data-i18n="footer.terms">Termos de Uso</a>
+      <a href="politica-privacidade.html" data-i18n="footer.privacy">Política de Privacidade</a>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer.support">Suporte</h4>
+      <a href="duvidas-frequentes.html" data-i18n="footer.faq">Dúvidas Frequentes</a>
+      <a href="envio-e-prazos.html" data-i18n="footer.shipping">Envio e Prazos</a>
+      <a href="trocas-e-devolucoes.html" data-i18n="footer.returns">Trocas e Devoluções</a>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer.account">Minha Conta</h4>
+      <a href="meus-pedidos.html" data-i18n="footer.myorders">Meus Pedidos</a>
+      <a href="perfil.html" data-i18n="footer.profile">Meu Perfil</a>
+      <a href="rastrear-pedido.html" data-i18n="footer.trackorder">Rastrear Pedido</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 PEPMASTERS. <span data-i18n="footer.rights">Todos os direitos reservados.</span></p>
+    <a href="admin-login.html" class="admin-link" data-i18n="footer.admin">Área do Administrador</a>
+  </div>
+</footer>
 <script>
 async function fazerLogin(){
   var email=document.getElementById('email').value.trim();
