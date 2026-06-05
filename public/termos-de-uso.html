@@ -1,474 +1,286 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title>PEPMASTERS — High Performance Peptides</title>
-    <!-- SEO Meta Tags -->
-    <meta
-      name="description"
-      content="Bioactive peptides for recovery, muscle mass, fat loss and cognitive performance."
-    />
-    <meta name="robots" content="index, follow" />
-    <link
-      rel="canonical"
-      href="https://pepmasters.onrender.com/termos-de-uso.html"
-    />
-    <!-- Open Graph (WhatsApp, Facebook, LinkedIn) -->
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:title"
-      content="PEPMASTERS — High Performance Peptides"
-    />
-    <meta
-      property="og:description"
-      content="Bioactive peptides for recovery, muscle mass, fat loss and cognitive performance."
-    />
-    <meta
-      property="og:image"
-      content="https://pepmasters.onrender.com/Capturar.PNG"
-    />
-    <meta
-      property="og:url"
-      content="https://pepmasters.onrender.com/termos-de-uso.html"
-    />
-    <meta property="og:site_name" content="PEPMASTERS" />
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="PEPMASTERS — High Performance Peptides"
-    />
-    <meta
-      name="twitter:description"
-      content="Bioactive peptides for recovery, muscle mass, fat loss and cognitive performance."
-    />
-    <meta
-      name="twitter:image"
-      content="https://pepmasters.onrender.com/Capturar.PNG"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --amber: #ffb300;
-        --red: #e8220a;
-        --orange: #ff6b00;
-        --cream: #fff8f0;
-        --warm-white: #fffdf9;
-        --dark: #1c0a00;
-        --mid: #3d1a00;
-        --muted: #7a4a2a;
-        --border: #ffd580;
-      }
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: "Barlow", sans-serif;
-        background: var(--cream);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-      header {
-        background: var(--warm-white);
-        border-bottom: 3px solid var(--amber);
-        padding: 0 24px;
-        height: 68px;
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        box-shadow: 0 2px 20px rgba(255, 179, 0, 0.2);
-      }
-      .logo-wrap {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        text-decoration: none;
-      }
-      .logo-wrap img {
-        height: 40px;
-        width: 40px;
-        object-fit: contain;
-      }
-      .logo-text {
-        font-family: "Barlow Condensed", sans-serif;
-        font-weight: 900;
-        font-size: 1.5rem;
-        background: linear-gradient(
-          135deg,
-          var(--red),
-          var(--orange),
-          var(--amber)
-        );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      .back-link {
-        margin-left: auto;
-        font-family: "Barlow Condensed", sans-serif;
-        font-weight: 700;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: var(--muted);
-        text-decoration: none;
-      }
-      .back-link:hover {
-        color: var(--orange);
-      }
-      main {
-        flex: 1;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 52px 24px;
-        width: 100%;
-      }
-      .page-hero {
-        background: linear-gradient(135deg, #fff3d0, #ffe0a0);
-        border-radius: 20px;
-        padding: 44px 40px;
-        margin-bottom: 40px;
-        border-left: 6px solid var(--orange);
-      }
-      .page-hero h1 {
-        font-family: "Barlow Condensed", sans-serif;
-        font-weight: 900;
-        font-size: 2.4rem;
-        text-transform: uppercase;
-        color: var(--dark);
-        margin-bottom: 8px;
-      }
-      .page-hero p {
-        font-size: 0.9rem;
-        color: var(--muted);
-      }
-      .card {
-        background: #fff;
-        border-radius: 16px;
-        padding: 28px 32px;
-        border: 1px solid #ffe5b0;
-        box-shadow: 0 4px 20px rgba(255, 179, 0, 0.08);
-        margin-bottom: 20px;
-      }
-      .card h2 {
-        font-family: "Barlow Condensed", sans-serif;
-        font-weight: 800;
-        font-size: 1.1rem;
-        text-transform: uppercase;
-        color: var(--dark);
-        margin-bottom: 12px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid var(--border);
-      }
-      .card p {
-        font-size: 0.9rem;
-        color: var(--mid);
-        line-height: 1.75;
-        margin-bottom: 10px;
-      }
-      .card p:last-child {
-        margin-bottom: 0;
-      }
-      footer {
-        background: var(--dark);
-        color: rgba(255, 255, 255, 0.4);
-        text-align: center;
-        padding: 16px;
-        font-size: 0.8rem;
-      }
-      footer a {
-        color: rgba(255, 179, 0, 0.5);
-        text-decoration: none;
-      }
-
-      /* FOOTER */
-      footer {
-        background: var(--dark);
-        color: #fff;
-        padding: 52px 24px 0;
-        margin-top: 60px;
-      }
-      .footer-grid {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1fr;
-        gap: 36px;
-        padding-bottom: 44px;
-        border-bottom: 1px solid rgba(255, 179, 0, 0.2);
-      }
-      .footer-brand p {
-        font-size: 0.84rem;
-        color: rgba(255, 255, 255, 0.5);
-        line-height: 1.7;
-        margin-top: 12px;
-        max-width: 260px;
-      }
-      .footer-col h4 {
-        font-family: "Barlow Condensed", sans-serif;
-        font-weight: 700;
-        font-size: 0.78rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: var(--amber);
-        margin-bottom: 14px;
-      }
-      .footer-col a {
-        display: block;
-        font-size: 0.86rem;
-        color: rgba(255, 255, 255, 0.6);
-        text-decoration: none;
-        margin-bottom: 8px;
-        transition: color 0.2s;
-      }
-      .footer-col a:hover {
-        color: var(--amber);
-      }
-      .footer-bottom {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 18px 0;
-        text-align: center;
-        font-size: 0.78rem;
-        color: rgba(255, 255, 255, 0.3);
-      }
-      .admin-link {
-        display: block;
-        text-align: center;
-        padding: 8px;
-        font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.15);
-        text-decoration: none;
-      }
-      .admin-link:hover {
-        color: var(--amber);
-      }
-      @media (max-width: 768px) {
-        .footer-grid {
-          grid-template-columns: 1fr 1fr;
-        }
-      }
-    </style>
-    <!-- Google Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-XXXXXXXXXX");
-    </script>
-    <!-- v1779920875 -->
-  </head>
-  <body>
-    <header>
-      <a href="index.html" class="logo-wrap"
-        ><img src="Capturar.PNG" alt="Logo" /><span class="logo-text"
-          >PEPMASTERS</span
-        ></a
-      >
-      <a href="index.html" class="back-link"
-        >← <span data-i18n="nav.store">Início</span></a
-      >
-    </header>
-    <main>
-      <div class="page-hero">
-        <h1 data-i18n="terms.title">Termos de Uso</h1>
-        <p>
-          <span data-i18n="terms.subtitle"
-            >Última atualização: Janeiro de 2025</span
-          >
-        </p>
-      </div>
-
-      <div class="card">
-        <h2 data-i18n="terms.s1.title">1. Aceitação dos Termos</h2>
-        <p data-i18n="terms.s1.text">
-          Ao acessar e utilizar o site da PEPMASTERS, você concorda com estes
-          Termos de Uso. Caso não concorde com qualquer parte destes termos,
-          solicitamos que não utilize nossos serviços.
-        </p>
-      </div>
-      <div class="card">
-        <h2 data-i18n="terms.s2.title">2. Uso dos Produtos</h2>
-        <p data-i18n="terms.s2.text">
-          Os peptídeos comercializados pela PEPMASTERS são destinados a fins de
-          pesquisa. O uso em humanos deve ser acompanhado por um profissional de
-          saúde qualificado. A PEPMASTERS não se responsabiliza pelo uso
-          inadequado dos produtos.
-        </p>
-      </div>
-      <div class="card">
-        <h2 data-i18n="terms.s3.title">3. Cadastro e Responsabilidade</h2>
-        <p data-i18n="terms.s3.text">
-          O usuário é responsável pelas informações fornecidas no cadastro e
-          pela confidencialidade de sua senha. Em caso de uso não autorizado de
-          sua conta, notifique-nos imediatamente.
-        </p>
-      </div>
-      <div class="card">
-        <h2 data-i18n="terms.s4.title">4. Pedidos e Pagamentos</h2>
-        <p data-i18n="terms.s4.text">
-          Todos os pedidos estão sujeitos à disponibilidade de estoque e
-          confirmação de pagamento. A PEPMASTERS reserva o direito de cancelar
-          pedidos em caso de suspeita de fraude ou erro de preço.
-        </p>
-      </div>
-      <div class="card">
-        <h2 data-i18n="terms.s5.title">5. Propriedade Intelectual</h2>
-        <p data-i18n="terms.s5.text">
-          Todo o conteúdo do site — textos, imagens, logotipos e layouts — é de
-          propriedade exclusiva da PEPMASTERS e não pode ser reproduzido sem
-          autorização prévia.
-        </p>
-      </div>
-      <div class="card">
-        <h2 data-i18n="terms.s6.title">6. Alterações</h2>
-        <p data-i18n="terms.s6.text">
-          Estes termos podem ser atualizados a qualquer momento. O uso
-          continuado do site após alterações implica na aceitação dos novos
-          termos. Recomendamos revisão periódica desta página.
-        </p>
-      </div>
-    </main>
-    <footer>
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <a href="index.html" class="logo-wrap" style="margin-bottom: 0">
-            <img
-              src="Capturar.PNG"
-              alt="Logo"
-              style="height: 36px; width: 36px; object-fit: contain"
-            />
-            <span class="logo-text">PEPMASTERS</span>
-          </a>
-          <p>
-            <span data-i18n="footer.desc"
-              >Performance através da ciência. Peptídeos bioativos com qualidade
-              e segurança para atletas e entusiastas.</span
-            >
-          </p>
-        </div>
-        <div class="footer-col">
-          <h4 data-i18n="footer.institutional">Institucional</h4>
-          <a href="quem-somos.html" data-i18n="footer.about">Quem Somos</a>
-          <a href="termos-de-uso.html" data-i18n="footer.terms"
-            >Termos de Uso</a
-          >
-          <a href="politica-privacidade.html" data-i18n="footer.privacy"
-            >Política de Privacidade</a
-          >
-        </div>
-        <div class="footer-col">
-          <h4 data-i18n="footer.support">Suporte</h4>
-          <a href="duvidas-frequentes.html" data-i18n="footer.faq"
-            >Dúvidas Frequentes</a
-          >
-          <a href="envio-e-prazos.html" data-i18n="footer.shipping"
-            >Envio e Prazos</a
-          >
-          <a href="trocas-e-devolucoes.html" data-i18n="footer.returns"
-            >Trocas e Devoluções</a
-          >
-        </div>
-        <div class="footer-col">
-          <h4 data-i18n="footer.account">Minha Conta</h4>
-          <a href="meus-pedidos.html" data-i18n="footer.myorders"
-            >Meus Pedidos</a
-          >
-          <a href="perfil.html" data-i18n="footer.profile">Meu Perfil</a>
-          <a href="rastrear-pedido.html" data-i18n="footer.trackorder"
-            >Rastrear Pedido</a
-          >
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>
-          © 2025 PEPMASTERS.
-          <span data-i18n="footer.rights">Todos os direitos reservados.</span>
-        </p>
-        <a href="admin-login.html" class="admin-link" data-i18n="footer.admin"
-          >Área do Administrador</a
-        >
-      </div>
-    </footer>
-    <script src="i18n.js"></script>
-    <script src="i18n-init.js"></script>
-
-    <script>
-      // Forçar reaplicação de traduções
-      (function () {
-        function applyNow() {
-          var d = window.PEPMASTERS_I18N;
-          var l = localStorage.getItem("pep_lang") || "en";
-          if (!d) return;
-          document.querySelectorAll("[data-i18n]").forEach(function (el) {
-            var val = d[el.getAttribute("data-i18n")];
-            val = val && (val[l] || val["en"]);
-            if (!val) return;
-            if (el.tagName === "INPUT" || el.tagName === "TEXTAREA")
-              el.placeholder = val;
-            else el.textContent = val;
-          });
-          document
-            .querySelectorAll("[data-i18n-placeholder]")
-            .forEach(function (el) {
-              var val = d[el.getAttribute("data-i18n-placeholder")];
-              val = val && (val[l] || val["en"]);
-              if (val) el.placeholder = val;
-            });
-        }
-        // Tentar imediatamente e após delays
-        applyNow();
-        setTimeout(applyNow, 100);
-        setTimeout(applyNow, 500);
-        window.addEventListener("load", applyNow);
-      })();
-    </script>
-
-    <!-- WhatsApp Button -->
-    <a
-      href="https://wa.me/5512991217552"
-      target="_blank"
-      rel="noopener"
-      style="
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        width: 56px;
-        height: 56px;
-        background: #25d366;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
-        z-index: 9999;
-        transition: transform 0.2s;
-        text-decoration: none;
-      "
-      onmouseover="this.style.transform = 'scale(1.1)'"
-      onmouseout="this.style.transform = 'scale(1)'"
-      aria-label="WhatsApp"
-    >
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-        <path
-          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
-        />
-      </svg>
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Termos de Uso — PEPMASTERS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:var(--cream);min-height:100vh;display:flex;flex-direction:column}
+    /* HEADER */
+    header{position:sticky;top:0;z-index:1000;background:var(--warm-white);border-bottom:3px solid var(--amber);box-shadow:0 2px 20px rgba(255,179,0,.25)}
+    .header-inner{max-width:1200px;margin:0 auto;padding:0 12px;height:68px;display:flex;align-items:center;gap:6px}
+    .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+    .logo-wrap img{height:40px;width:40px;object-fit:contain}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .header-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+    .back-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none;white-space:nowrap}
+    .back-link:hover{color:var(--orange)}
+    #authArea{display:flex;align-items:center;gap:8px}
+    .btn-login{padding:5px 10px;border:2px solid var(--red);border-radius:8px;color:var(--red);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;text-transform:uppercase;transition:all .2s;white-space:nowrap}
+    .btn-login:hover{background:var(--red);color:#fff}
+    .btn-cadastro{padding:5px 10px;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:8px;color:#fff;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;text-transform:uppercase;white-space:nowrap}
+    /* CART BTN */
+    .cart-btn{background:none;border:2px solid var(--border);border-radius:10px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;color:var(--mid);transition:all .2s;white-space:nowrap}
+    .cart-btn:hover{border-color:var(--orange);color:var(--orange)}
+    .cart-count{background:var(--red);color:#fff;border-radius:50%;width:20px;height:20px;font-size:.65rem;font-weight:800;display:none;align-items:center;justify-content:center;margin-left:2px}
+    .cart-count.show{display:flex}
+    /* DRAWER */
+    .cart-overlay{position:fixed;inset:0;background:rgba(28,10,0,.5);z-index:2000;opacity:0;pointer-events:none;transition:opacity .3s}
+    .cart-overlay.open{opacity:1;pointer-events:all}
+    .cart-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:95vw;background:var(--warm-white);z-index:2001;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,.2)}
+    .cart-drawer.open{transform:translateX(0)}
+    .cart-head{padding:20px 24px;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .cart-head h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;text-transform:uppercase;color:var(--dark)}
+    .cart-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted);line-height:1;padding:4px}
+    .cart-close:hover{color:var(--red)}
+    .cart-items{flex:1;overflow-y:auto;padding:16px 24px}
+    .cart-empty{text-align:center;padding:60px 20px;color:var(--muted)}
+    .cart-empty p{font-size:.9rem;line-height:1.6}
+    .cart-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #FFE5B0;align-items:center}
+    .cart-item:last-child{border:none}
+    .cart-item-img{width:58px;height:58px;background:linear-gradient(135deg,#FFF3D0,#FFE0A0);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+    .cart-item-img img{width:48px;height:48px;object-fit:contain}
+    .cart-item-info{flex:1;min-width:0}
+    .cart-item-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.98rem;color:var(--dark);margin-bottom:4px}
+    .cart-item-controls{display:flex;align-items:center;gap:7px}
+    .qty-btn{width:25px;height:25px;border-radius:6px;border:2px solid var(--border);background:none;cursor:pointer;font-size:.95rem;font-weight:700;color:var(--mid);display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .qty-btn:hover{border-color:var(--orange);color:var(--orange)}
+    .qty-val{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.98rem;color:var(--dark);min-width:18px;text-align:center}
+    .cart-item-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+    .cart-item-price{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.05rem;color:var(--red)}
+    .cart-item-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:1rem;padding:2px;transition:color .2s}
+    .cart-item-del:hover{color:var(--red)}
+    .cart-foot{padding:20px 24px;border-top:2px solid var(--border);background:#fff}
+    .cart-subtotal{display:flex;justify-content:space-between;font-size:.88rem;color:var(--muted);margin-bottom:6px}
+    .cart-total-row{display:flex;justify-content:space-between;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;color:var(--dark);margin-bottom:16px}
+    .cart-total-row span:last-child{color:var(--red)}
+    .btn-checkout{display:block;width:100%;padding:14px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:12px;cursor:pointer;text-align:center;text-decoration:none}
+    .btn-checkout:hover{opacity:.9}
+    .btn-limpar{display:block;text-align:center;margin-top:10px;font-size:.82rem;color:var(--muted);cursor:pointer;background:none;border:none;text-decoration:underline}
+    /* CONTEÚDO */
+    main{flex:1;max-width:800px;margin:0 auto;padding:52px 24px;width:100%}
+    .page-hero{background:linear-gradient(135deg,#FFF3D0,#FFE0A0);border-radius:20px;padding:44px 40px;margin-bottom:40px;border-left:6px solid var(--orange)}
+    .page-hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.4rem;text-transform:uppercase;color:var(--dark);margin-bottom:8px}
+    .page-hero p{font-size:1rem;color:var(--mid);line-height:1.6}
+    .card{background:#fff;border-radius:16px;padding:28px 32px;border:1px solid #FFE5B0;box-shadow:0 4px 20px rgba(255,179,0,.08);margin-bottom:20px}
+    .card h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;text-transform:uppercase;color:var(--dark);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+    .card p{font-size:.93rem;color:var(--mid);line-height:1.75;margin-bottom:10px}
+    .card p:last-child{margin-bottom:0}
+    .step{display:flex;gap:14px;margin-bottom:16px;align-items:flex-start}
+    .step-num{min-width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;display:flex;align-items:center;justify-content:center}
+    .step p{margin:0;font-size:.9rem;color:var(--mid);line-height:1.65;padding-top:4px}
+    /* FOOTER */
+    footer{background:var(--dark);color:#fff;padding:52px 24px 0;margin-top:60px}
+    .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;padding-bottom:44px;border-bottom:1px solid rgba(255,179,0,.2)}
+    .footer-brand p{font-size:.84rem;color:rgba(255,255,255,.5);line-height:1.7;margin-top:12px;max-width:260px}
+    .footer-col h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+    .footer-col a{display:block;font-size:.86rem;color:rgba(255,255,255,.6);text-decoration:none;margin-bottom:8px;transition:color .2s}
+    .footer-col a:hover{color:var(--amber)}
+    .footer-bottom{max-width:1200px;margin:0 auto;padding:18px 0;text-align:center;font-size:.78rem;color:rgba(255,255,255,.3)}
+    .admin-link{display:block;text-align:center;padding:8px;font-size:.75rem;color:rgba(255,255,255,.15);text-decoration:none}
+    .admin-link:hover{color:var(--amber)}
+    @media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:600px){.back-link span{display:none}}
+    @media(max-width:768px){#authArea{display:none}#cartLabel{display:none}.back-link-arrow{display:inline!important}}
+    .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0}
+    .hamburger span{display:block;width:22px;height:2px;background:var(--dark);border-radius:2px;transition:all .3s}
+    .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .hamburger.open span:nth-child(2){opacity:0}
+    .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    @media(max-width:768px){.hamburger{display:flex}}
+    .mobile-menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998}
+    .mobile-menu-overlay.open{display:block}
+    .mobile-menu{display:block;position:fixed;top:0;left:0;bottom:0;width:80%;max-width:300px;background:#fff;border-right:2px solid var(--amber);z-index:9999;padding:80px 20px 24px;box-shadow:4px 0 24px rgba(0,0,0,.15);overflow-y:auto;transform:translateX(-110%);transition:transform .3s ease;visibility:hidden}
+    .mobile-menu.open{transform:translateX(0);visibility:visible}
+    .mobile-menu a{display:block;padding:12px 8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;color:var(--dark);text-decoration:none;border-bottom:1px solid var(--border);letter-spacing:.04em;text-transform:uppercase}
+    .mob-auth{display:flex;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+    .mob-auth a{flex:1;padding:10px 0;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;text-decoration:none;border-radius:30px}
+    .mob-auth .btn-login{border:2px solid var(--border);color:var(--dark)}
+    .mob-auth .btn-cadastro{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff}
+  </style>
+</head>
+<body>
+<!-- DRAWER CARRINHO -->
+<div class="cart-overlay" id="cartOverlay" onclick="fecharCarrinho()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-head">
+    <h2 data-i18n="cart.title">Carrinho</h2>
+    <button class="cart-close" onclick="fecharCarrinho()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot" id="cartFoot" style="display:none">
+    <div class="cart-subtotal"><span data-i18n="cart.subtotal">Subtotal</span><span id="cartSubtotal">R$ 0,00</span></div>
+    <div class="cart-total-row"><span data-i18n="cart.total">Total</span><span id="cartTotal">R$ 0,00</span></div>
+    <a href="checkout.html" class="btn-checkout" onclick="fecharCarrinho()" data-i18n="cart.checkout">Finalizar Pedido</a>
+    <button class="btn-limpar" onclick="limparCarrinho()" data-i18n="cart.clear">Limpar carrinho</button>
+  </div>
+</div>
+<div class="mobile-menu-overlay" id="menuOverlay" onclick="toggleMobileMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" data-i18n="nav.home">Início</a>
+  <a href="quem-somos.html" data-i18n="nav.about">Quem Somos</a>
+  <a href="duvidas-frequentes.html" data-i18n="nav.faq">Dúvidas</a>
+  <a href="rastrear-pedido.html" data-i18n="nav.track">Rastrear</a>
+  <div class="mob-auth" id="mobileAuth"></div>
+</div>
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="back-link-arrow" style="font-size:1.1rem;color:var(--muted);text-decoration:none;display:none;padding:0 2px">←</a>
+    <a href="index.html" class="logo-wrap" title="Início">
+      <img src="Capturar.PNG" alt="Logo"/>
+      <span class="logo-text">PEPMASTERS</span>
     </a>
-  </body>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
+    <div class="header-right">
+      <div id="authArea"></div>
+      <button class="cart-btn" onclick="abrirCarrinho()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.98-1.61L23 6H6"/></svg>
+        <span id="cartLabel" data-i18n="nav.cart">Cart</span>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="page-hero">
+    <h1 data-i18n="terms.title">Termos de Uso</h1>
+    <p data-i18n="terms.subtitle">Última atualização: Janeiro de 2025</p>
+  </div>
+  <div class="card">
+    <h2 data-i18n="terms.s1.title">1. Aceitação dos Termos</h2>
+    <p data-i18n="terms.s1.text">Ao acessar e utilizar o site da PEPMASTERS, você concorda com estes Termos de Uso. Caso não concorde com qualquer parte destes termos, solicitamos que não utilize nossos serviços.</p>
+  </div>
+  <div class="card">
+    <h2 data-i18n="terms.s2.title">2. Uso dos Produtos</h2>
+    <p data-i18n="terms.s2.text">Os peptídeos comercializados pela PEPMASTERS são destinados a fins de pesquisa. O uso em humanos deve ser acompanhado por um profissional de saúde qualificado.</p>
+  </div>
+  <div class="card">
+    <h2 data-i18n="terms.s3.title">3. Cadastro e Responsabilidade</h2>
+    <p data-i18n="terms.s3.text">O usuário é responsável pelas informações fornecidas no cadastro e pela confidencialidade de sua senha. Em caso de uso não autorizado de sua conta, notifique-nos imediatamente.</p>
+  </div>
+  <div class="card">
+    <h2 data-i18n="terms.s4.title">4. Pedidos e Pagamentos</h2>
+    <p data-i18n="terms.s4.text">Todos os pedidos estão sujeitos à disponibilidade de estoque e confirmação de pagamento. A PEPMASTERS reserva o direito de cancelar pedidos em caso de suspeita de fraude ou erro de preço.</p>
+  </div>
+  <div class="card">
+    <h2 data-i18n="terms.s5.title">5. Propriedade Intelectual</h2>
+    <p data-i18n="terms.s5.text">Todo o conteúdo do site — textos, imagens, logotipos e layouts — é de propriedade exclusiva da PEPMASTERS e não pode ser reproduzido sem autorização prévia.</p>
+  </div>
+  <div class="card">
+    <h2 data-i18n="terms.s6.title">6. Alterações</h2>
+    <p data-i18n="terms.s6.text">Estes termos podem ser atualizados a qualquer momento. O uso continuado do site após alterações implica na aceitação dos novos termos.</p>
+  </div>
+</main>
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="logo-wrap" style="margin-bottom:0">
+        <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain"/>
+        <span class="logo-text">PEPMASTERS</span>
+      </a>
+      <p data-i18n="footer.desc">Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</p>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer.institutional">Institucional</h4>
+      <a href="quem-somos.html" data-i18n="footer.about">Quem Somos</a>
+      <a href="termos-de-uso.html" data-i18n="footer.terms">Termos de Uso</a>
+      <a href="politica-privacidade.html" data-i18n="footer.privacy">Política de Privacidade</a>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer.support">Suporte</h4>
+      <a href="duvidas-frequentes.html" data-i18n="footer.faq">Dúvidas Frequentes</a>
+      <a href="envio-e-prazos.html" data-i18n="footer.shipping">Envio e Prazos</a>
+      <a href="termos-de-uso.html" data-i18n="footer.returns">Trocas e Devoluções</a>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer.account">Minha Conta</h4>
+      <a href="meus-pedidos.html" data-i18n="footer.myorders">Meus Pedidos</a>
+      <a href="perfil.html" data-i18n="footer.profile">Meu Perfil</a>
+      <a href="rastrear-pedido.html" data-i18n="footer.trackorder">Rastrear Pedido</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 PEPMASTERS. <span data-i18n="footer.rights">Todos os direitos reservados.</span></p>
+    <a href="admin-login.html" class="admin-link" data-i18n="footer.admin">Área do Administrador</a>
+  </div>
+</footer>
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
+<script>
+// CARRINHO
+function getCarrinho(){try{return JSON.parse(localStorage.getItem('pep_carrinho')||'[]')}catch{return[]}}
+function setCarrinho(c){localStorage.setItem('pep_carrinho',JSON.stringify(c));atualizarBadge()}
+function atualizarBadge(){
+  var c=getCarrinho();var tot=c.reduce(function(s,i){return s+i.quantidade},0);
+  var badge=document.getElementById('cartCount');var label=document.getElementById('cartLabel');
+  var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';
+  var cartWord=(d['nav.cart']&&(d['nav.cart'][l]||d['nav.cart']['en']))||'Cart';
+  if(tot>0){badge.textContent=tot;badge.classList.add('show');label.textContent=cartWord+' ('+tot+')'}
+  else{badge.classList.remove('show');label.textContent=cartWord}
+}
+function abrirCarrinho(){renderCarrinho();document.getElementById('cartDrawer').classList.add('open');document.getElementById('cartOverlay').classList.add('open');document.body.style.overflow='hidden'}
+function fecharCarrinho(){document.getElementById('cartDrawer').classList.remove('open');document.getElementById('cartOverlay').classList.remove('open');document.body.style.overflow=''}
+function alterarQtd(id,delta){var c=getCarrinho();var idx=c.findIndex(function(i){return i.id===id});if(idx<0)return;var nova=c[idx].quantidade+delta;if(nova<=0){c.splice(idx,1)}else{c[idx].quantidade=nova}setCarrinho(c);renderCarrinho()}
+function removerDoCarrinho(id){setCarrinho(getCarrinho().filter(function(i){return i.id!==id}));renderCarrinho()}
+function limparCarrinho(){setCarrinho([]);renderCarrinho()}
+function renderCarrinho(){
+  var c=getCarrinho();var itemsEl=document.getElementById('cartItems');var footEl=document.getElementById('cartFoot');
+  if(!c.length){itemsEl.innerHTML='<div class="cart-empty"><p>Seu carrinho está vazio.</p></div>';footEl.style.display='none';return}
+  footEl.style.display='block';
+  var subtotal=c.reduce(function(s,i){return s+i.preco*i.quantidade},0);
+  itemsEl.innerHTML=c.map(function(item){return'<div class="cart-item"><div class="cart-item-img"><img src="'+item.img+'" alt="'+item.nome+'" onerror="this.style.display=\'none\'"/></div><div class="cart-item-info"><div class="cart-item-name">'+item.nome+'</div><div class="cart-item-controls"><button class="qty-btn" onclick="alterarQtd(\''+item.id+'\',-1)">−</button><span class="qty-val">'+item.quantidade+'</span><button class="qty-btn" onclick="alterarQtd(\''+item.id+'\',1)">+</button></div></div><div class="cart-item-right"><div class="cart-item-price">R$ '+(item.preco*item.quantidade).toFixed(2).replace('.',',')+'</div><button class="cart-item-del" onclick="removerDoCarrinho(\''+item.id+'\')">✕</button></div></div>'}).join('');
+  document.getElementById('cartSubtotal').textContent='R$ '+subtotal.toFixed(2).replace('.',',');
+  document.getElementById('cartTotal').textContent='R$ '+subtotal.toFixed(2).replace('.',',');
+}
+// MENU MOBILE
+function toggleMobileMenu(){
+  var menu=document.getElementById('mobileMenu');
+  var btn=document.getElementById('hamburger');
+  var overlay=document.getElementById('menuOverlay');
+  menu.classList.toggle('open');
+  btn.classList.toggle('open');
+  if(overlay)overlay.classList.toggle('open',menu.classList.contains('open'));
+}
+function renderMobileAuth(){
+  var area=document.getElementById('mobileAuth');if(!area)return;
+  var token=localStorage.getItem('pep_token');var nome=localStorage.getItem('pep_nome');
+  var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';
+  var tr=function(k){return(d[k]&&(d[k][l]||d[k]['en']))||k;};
+  if(token&&nome){
+    area.innerHTML='<a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a>'+
+      '<a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>';
+  }else{
+    area.innerHTML='<a href="login.html" class="btn-login">'+tr('nav.login')+'</a>'+
+      '<a href="cadastro.html" class="btn-cadastro">'+tr('nav.register')+'</a>';
+  }
+}
+// AUTH
+function renderAuth(){
+  var area=document.getElementById('authArea');if(!area)return;
+  var token=localStorage.getItem('pep_token');var nome=localStorage.getItem('pep_nome');
+  var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';
+  var tr=function(k){return(d[k]&&(d[k][l]||d[k]['en']))||k;};
+  if(token&&nome){
+    area.innerHTML='<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.78rem;color:var(--muted);white-space:nowrap">'+tr('nav.hello')+', '+nome.split(' ')[0]+'</span>'+
+      '<a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a>'+
+      '<a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>';
+  }else{
+    area.innerHTML='<a href="login.html" class="btn-login">'+tr('nav.login')+'</a>'+
+      '<a href="cadastro.html" class="btn-cadastro">'+tr('nav.register')+'</a>';
+  }
+}
+function logout(e){e.preventDefault();localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');location.reload()}
+window.addEventListener('DOMContentLoaded',function(){atualizarBadge();});
+(function waitInit(){
+  if(window.PEPMASTERS_I18N&&window.PEP_LANG){renderAuth();renderMobileAuth();atualizarBadge();}
+  else{setTimeout(waitInit,50);}
+})();
+</script>
+<!-- WhatsApp -->
+<a href="https://wa.me/5512991217552" target="_blank" rel="noopener" style="position:fixed;bottom:24px;right:24px;width:56px;height:56px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,.4);z-index:9999;text-decoration:none" aria-label="WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+</body>
 </html>
