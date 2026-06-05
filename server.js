@@ -150,6 +150,52 @@ async function initDB() {
     await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS estoque INT DEFAULT 0`);
     await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS alerta_minimo INT DEFAULT 3`);
 
+    // ── MEMBROS ──────────────────────────────────
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_membros (
+        id            SERIAL PRIMARY KEY,
+        usuario_id    INT NOT NULL REFERENCES pep_usuarios(id),
+        plano         TEXT DEFAULT 'bronze',
+        status        TEXT DEFAULT 'pendente',
+        membro_ate    TIMESTAMPTZ,
+        codigo_ref    TEXT UNIQUE,
+        nivel         TEXT DEFAULT 'bronze',
+        vendas_total  NUMERIC(10,2) DEFAULT 0,
+        credito       NUMERIC(10,2) DEFAULT 0,
+        criado_em     TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+    await client.query(`ALTER TABLE pep_membros ADD COLUMN IF NOT EXISTS mensalidade NUMERIC(10,2) DEFAULT 0`);
+    await client.query(`ALTER TABLE pep_membros ADD COLUMN IF NOT EXISTS pagamento TEXT DEFAULT 'cripto'`);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_pagamentos_membros (
+        id          SERIAL PRIMARY KEY,
+        membro_id   INT NOT NULL REFERENCES pep_membros(id),
+        valor       NUMERIC(10,2),
+        pagamento   TEXT,
+        status      TEXT DEFAULT 'pendente',
+        crypto_valor NUMERIC(18,6) DEFAULT 0,
+        crypto_token TEXT,
+        referencia  TEXT,
+        criado_em   TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_vendas_afiliado (
+        id          SERIAL PRIMARY KEY,
+        membro_id   INT NOT NULL REFERENCES pep_membros(id),
+        pedido_id   INT,
+        valor       NUMERIC(10,2),
+        comissao    NUMERIC(10,2),
+        criado_em   TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+
+    // Coluna ref_code em pedidos para rastrear afiliado
+    await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS ref_code TEXT`).catch(() => {});
+
     // Lista de espera
     await client.query(`
       CREATE TABLE IF NOT EXISTS pep_lista_espera (
@@ -1135,6 +1181,212 @@ app.get('/api/pedido/:id/crypto-status', async (req, res) => {
     res.json({ pago: false, status: 'pix_pending' });
   }
 });
+
+// ─────────────────────────────────────────────
+//  MEMBROS
+// ─────────────────────────────────────────────
+
+// Níveis por volume de vendas
+function calcularNivel(vendas) {
+  if (vendas >= 5000) return 'diamante';
+  if (vendas >= 2000) return 'ouro';
+  if (vendas >= 500)  return 'prata';
+  return 'bronze';
+}
+
+// Percentual de comissão por nível
+function comissaoPorNivel(nivel) {
+  const tabela = { bronze: 0.05, prata: 0.08, ouro: 0.12, diamante: 0.15 };
+  return tabela[nivel] || 0.05;
+}
+
+// Rastrear clique em link de afiliado (redireciona para index)
+app.get('/ref/:codigo', async (req, res) => {
+  const { codigo } = req.params;
+  try {
+    await pool.query(`UPDATE pep_membros SET vendas_total = vendas_total WHERE codigo_ref = $1`, [codigo]);
+    res.cookie('pep_ref', codigo, { maxAge: 7 * 24 * 3600 * 1000, httpOnly: false });
+  } catch {}
+  res.redirect('/');
+});
+
+// Assinar plano de membros
+app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
+  const { pagamento, valor } = req.body;
+  const usuario_id = req.user.id;
+  try {
+    // Verificar se já é membro
+    const existing = await pool.query(`SELECT id FROM pep_membros WHERE usuario_id = $1`, [usuario_id]);
+
+    // Gerar código de afiliado único
+    const codigo_ref = 'PEP' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    let membro_id;
+    if (existing.rows.length > 0) {
+      membro_id = existing.rows[0].id;
+      await pool.query(`UPDATE pep_membros SET mensalidade=$1, pagamento=$2 WHERE id=$3`, [valor || 0, pagamento, membro_id]);
+    } else {
+      const res2 = await pool.query(
+        `INSERT INTO pep_membros (usuario_id, mensalidade, pagamento, codigo_ref, status) VALUES ($1,$2,$3,$4,'pendente') RETURNING id`,
+        [usuario_id, valor || 0, pagamento, codigo_ref]
+      );
+      membro_id = res2.rows[0].id;
+    }
+
+    // Registrar pagamento pendente
+    const pag = await pool.query(
+      `INSERT INTO pep_pagamentos_membros (membro_id, valor, pagamento, status) VALUES ($1,$2,$3,'pendente') RETURNING id`,
+      [membro_id, valor || 0, pagamento]
+    );
+
+    // Se for cripto, calcular valor em USDT
+    let cryptoValor = 0;
+    if (pagamento === 'cripto' && valor) {
+      try {
+        const cotacao = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=brl');
+        const cj = await cotacao.json();
+        const rate = cj?.tether?.brl || 5.5;
+        cryptoValor = parseFloat((valor / rate).toFixed(6));
+        await pool.query(`UPDATE pep_pagamentos_membros SET crypto_valor=$1 WHERE id=$2`, [cryptoValor, pag.rows[0].id]);
+      } catch {}
+    }
+
+    res.json({ ok: true, membro_id, pagamento_id: pag.rows[0].id, crypto_valor: cryptoValor });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// Confirmar pagamento (admin)
+app.post('/api/membros/confirmar', adminMiddleware, async (req, res) => {
+  const { pagamento_id, membro_id } = req.body;
+  try {
+    const membro_ate = new Date();
+    membro_ate.setDate(membro_ate.getDate() + 30);
+
+    await pool.query(`UPDATE pep_membros SET status='ativo', membro_ate=$1, nivel=nivel WHERE id=$2`, [membro_ate, membro_id]);
+    await pool.query(`UPDATE pep_pagamentos_membros SET status='pago' WHERE id=$1`, [pagamento_id]);
+
+    // Buscar dados do membro para email
+    const m = await pool.query(
+      `SELECT u.email, u.nome, m.codigo_ref FROM pep_membros m JOIN pep_usuarios u ON u.id=m.usuario_id WHERE m.id=$1`,
+      [membro_id]
+    );
+    if (m.rows.length > 0) {
+      const { email, nome, codigo_ref } = m.rows[0];
+      await sendEmail(email, '✅ Acesso liberado — PEPMASTERS Members', `
+        <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
+          <h2 style="color:#1C0A00">Bem-vindo ao PEPMASTERS Members, ${nome}!</h2>
+          <p>Seu pagamento foi confirmado. Acesso liberado por <strong>30 dias</strong>.</p>
+          <p>Seu link de afiliado: <strong>${BASE_URL}/ref/${codigo_ref}</strong></p>
+          <p>Acesse sua área: <strong>${BASE_URL}/members.html</strong></p>
+          <hr/>
+          <p style="font-size:.85rem;color:#999">PEPMASTERS — Performance através da ciência.</p>
+        </div>
+      `);
+    }
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// Painel do membro
+app.get('/api/membros/painel', authMiddleware, async (req, res) => {
+  const usuario_id = req.user.id;
+  try {
+    const m = await pool.query(
+      `SELECT m.*, u.nome, u.email FROM pep_membros m JOIN pep_usuarios u ON u.id=m.usuario_id WHERE m.usuario_id=$1`,
+      [usuario_id]
+    );
+    if (!m.rows.length) return res.status(404).json({ erro: 'Não é membro.' });
+
+    const membro = m.rows[0];
+
+    // Vendas do afiliado
+    const vendas = await pool.query(
+      `SELECT COUNT(*) as total_vendas, COALESCE(SUM(valor),0) as volume, COALESCE(SUM(comissao),0) as comissao_total
+       FROM pep_vendas_afiliado WHERE membro_id=$1`,
+      [membro.id]
+    );
+
+    // Histórico de pagamentos
+    const pagamentos = await pool.query(
+      `SELECT * FROM pep_pagamentos_membros WHERE membro_id=$1 ORDER BY criado_em DESC LIMIT 5`,
+      [membro.id]
+    );
+
+    const v = vendas.rows[0];
+    const nivel = calcularNivel(parseFloat(v.volume));
+
+    // Atualizar nível se mudou
+    if (nivel !== membro.nivel) {
+      await pool.query(`UPDATE pep_membros SET nivel=$1, vendas_total=$2 WHERE id=$3`, [nivel, v.volume, membro.id]);
+    }
+
+    // Abatimento na mensalidade baseado em comissão
+    const abatimento = Math.min(parseFloat(v.comissao_total || 0), parseFloat(membro.mensalidade || 0));
+    const mensalidade_devida = Math.max(0, parseFloat(membro.mensalidade || 0) - abatimento);
+
+    res.json({
+      nome: membro.nome,
+      email: membro.email,
+      status: membro.status,
+      nivel,
+      membro_ate: membro.membro_ate,
+      codigo_ref: membro.codigo_ref,
+      link_afiliado: BASE_URL + '/ref/' + membro.codigo_ref,
+      total_vendas: parseInt(v.total_vendas),
+      volume_vendas: parseFloat(v.volume),
+      comissao_total: parseFloat(v.comissao_total),
+      mensalidade: parseFloat(membro.mensalidade || 0),
+      abatimento,
+      mensalidade_devida,
+      pagamentos: pagamentos.rows
+    });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// Listar membros pendentes (admin)
+app.get('/api/membros/admin', adminMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT m.*, u.nome, u.email, u.telefone,
+             pm.id as pag_id, pm.valor as pag_valor, pm.pagamento as pag_tipo, pm.status as pag_status, pm.criado_em as pag_criado
+      FROM pep_membros m
+      JOIN pep_usuarios u ON u.id = m.usuario_id
+      LEFT JOIN pep_pagamentos_membros pm ON pm.membro_id = m.id AND pm.status = 'pendente'
+      ORDER BY m.criado_em DESC
+    `);
+    res.json(r.rows);
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// Registrar venda via afiliado (chamado internamente ao criar pedido)
+async function registrarVendaAfiliado(ref_code, pedido_id, valor) {
+  try {
+    if (!ref_code) return;
+    const m = await pool.query(`SELECT id, nivel FROM pep_membros WHERE codigo_ref=$1 AND status='ativo'`, [ref_code]);
+    if (!m.rows.length) return;
+    const membro = m.rows[0];
+    const comissao = parseFloat((valor * comissaoPorNivel(membro.nivel)).toFixed(2));
+    await pool.query(
+      `INSERT INTO pep_vendas_afiliado (membro_id, pedido_id, valor, comissao) VALUES ($1,$2,$3,$4)`,
+      [membro.id, pedido_id, valor, comissao]
+    );
+    // Atualizar volume total e crédito
+    await pool.query(
+      `UPDATE pep_membros SET vendas_total=vendas_total+$1, credito=credito+$2 WHERE id=$3`,
+      [valor, comissao, membro.id]
+    );
+  } catch (e) {
+    console.error('[Afiliado] Erro:', e.message);
+  }
+}
 
 // ─────────────────────────────────────────────
 //  404 FALLBACK (SPA)
