@@ -1366,6 +1366,14 @@ app.get('/api/membros/admin', adminMiddleware, async (req, res) => {
   }
 });
 
+// Bloquear membro (admin)
+app.put('/api/admin/membro/:id/bloquear', adminMiddleware, async (req, res) => {
+  try {
+    await pool.query(`UPDATE pep_membros SET status='expirado', membro_ate=NOW() WHERE id=$1`, [req.params.id]);
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
 // Registrar venda via afiliado (chamado internamente ao criar pedido)
 async function registrarVendaAfiliado(ref_code, pedido_id, valor) {
   try {

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin — Membros PEPMASTERS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580;--bronze:#cd7f32;--prata:#C0C0C0;--ouro:#FFD700;--diamante:#b9f2ff}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:#0f0800;color:#fff;min-height:100vh}
+    header{background:#1a0c00;border-bottom:2px solid var(--amber);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .admin-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;background:rgba(255,179,0,.15);color:var(--amber);border:1px solid rgba(255,179,0,.3);padding:3px 10px;border-radius:20px;margin-left:8px}
+    .nav-links{display:flex;gap:16px}
+    .nav-links a{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;letter-spacing:.06em;transition:color .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--amber)}
+    main{max-width:1200px;margin:0 auto;padding:32px 24px}
+    h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;text-transform:uppercase;color:var(--amber);margin-bottom:24px}
+    /* STATS */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+    .stat-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,179,0,.1);border-radius:12px;padding:18px}
+    .stat-card .label{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px}
+    .stat-card .value{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;color:var(--amber)}
+    /* FILTROS */
+    .filtros{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+    .filtro-btn{padding:6px 16px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:none;color:rgba(255,255,255,.5);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;cursor:pointer;transition:all .2s}
+    .filtro-btn:hover,.filtro-btn.active{border-color:var(--amber);color:var(--amber)}
+    /* TABELA */
+    .table-wrap{background:rgba(255,255,255,.03);border:1px solid rgba(255,179,0,.1);border-radius:14px;overflow:hidden}
+    table{width:100%;border-collapse:collapse}
+    th{text-align:left;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.2)}
+    td{padding:14px 16px;font-size:.88rem;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.04)}
+    tr:last-child td{border:none}
+    tr:hover td{background:rgba(255,255,255,.02)}
+    .badge{padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .badge-ativo{background:rgba(34,197,94,.15);color:#22c55e}
+    .badge-pendente{background:rgba(234,179,8,.15);color:#eab308}
+    .badge-expirado{background:rgba(239,68,68,.15);color:#ef4444}
+    .nivel-bronze{color:var(--bronze)}
+    .nivel-prata{color:var(--prata)}
+    .nivel-ouro{color:var(--ouro)}
+    .nivel-diamante{color:var(--diamante)}
+    .btn-confirmar{padding:6px 14px;background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;text-transform:uppercase;border:none;border-radius:8px;cursor:pointer;transition:opacity .2s;white-space:nowrap}
+    .btn-confirmar:hover{opacity:.85}
+    .btn-bloquear{padding:6px 14px;background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;text-transform:uppercase;border-radius:8px;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .btn-bloquear:hover{background:rgba(239,68,68,.25)}
+    .empty{text-align:center;padding:48px;color:rgba(255,255,255,.3)}
+    #toast{position:fixed;bottom:24px;right:24px;background:#1a0c00;color:#fff;padding:12px 18px;border-radius:10px;font-size:.85rem;border-left:3px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(20px);opacity:0;transition:all .3s;z-index:5000;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:768px){.stats-grid{grid-template-columns:1fr 1fr}.nav-links{display:none}}
+  </style>
+</head>
+<body>
+<header>
+  <div style="display:flex;align-items:center">
+    <span class="logo-text">PEPMASTERS</span>
+    <span class="admin-badge">Admin</span>
+  </div>
+  <nav class="nav-links">
+    <a href="admin.html">Pedidos</a>
+    <a href="admin-membros.html" class="active">Membros</a>
+    <a href="admin-cupons.html">Cupons</a>
+    <a href="admin-estoque.html">Estoque</a>
+    <a href="admin-usuarios.html">Usuários</a>
+    <a href="#" onclick="sair(event)">Sair</a>
+  </nav>
+</header>
+
+<main>
+  <h1>Gestão de Membros</h1>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="label">Total de Membros</div><div class="value" id="statTotal">—</div></div>
+    <div class="stat-card"><div class="label">Membros Ativos</div><div class="value" id="statAtivos">—</div></div>
+    <div class="stat-card"><div class="label">Pagamentos Pendentes</div><div class="value" id="statPendentes">—</div></div>
+    <div class="stat-card"><div class="label">Receita Mensal</div><div class="value" id="statReceita">—</div></div>
+  </div>
+
+  <div class="filtros">
+    <button class="filtro-btn active" onclick="filtrar('todos',this)">Todos</button>
+    <button class="filtro-btn" onclick="filtrar('pendente',this)">Pendentes</button>
+    <button class="filtro-btn" onclick="filtrar('ativo',this)">Ativos</button>
+    <button class="filtro-btn" onclick="filtrar('expirado',this)">Expirados</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Membro</th>
+          <th>Nível</th>
+          <th>Status</th>
+          <th>Mensalidade</th>
+          <th>Pagamento</th>
+          <th>Válido até</th>
+          <th>Vendas</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaMembros"></tbody>
+    </table>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+var todosMembros = [];
+var filtroAtivo = 'todos';
+var adminToken = localStorage.getItem('pep_admin_token');
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+
+function sair(e) {
+  e.preventDefault();
+  localStorage.removeItem('pep_admin_token');
+  location.href = 'admin-login.html';
+}
+
+function filtrar(tipo, btn) {
+  filtroAtivo = tipo;
+  document.querySelectorAll('.filtro-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderTabela();
+}
+
+function nivelIcon(nivel) {
+  return { bronze:'🥉', prata:'🥈', ouro:'🥇', diamante:'💎' }[nivel] || '🥉';
+}
+
+function renderTabela() {
+  var tbody = document.getElementById('tabelaMembros');
+  var lista = todosMembros.filter(function(m) {
+    if (filtroAtivo === 'todos') return true;
+    if (filtroAtivo === 'pendente') return m.pag_status === 'pendente';
+    var agora = new Date();
+    var ate = m.membro_ate ? new Date(m.membro_ate) : null;
+    if (filtroAtivo === 'ativo') return m.status === 'ativo' && ate && ate > agora;
+    if (filtroAtivo === 'expirado') return !ate || ate <= agora;
+    return true;
+  });
+
+  if (!lista.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty">Nenhum membro encontrado</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = lista.map(function(m) {
+    var agora = new Date();
+    var ate = m.membro_ate ? new Date(m.membro_ate) : null;
+    var ativo = m.status === 'ativo' && ate && ate > agora;
+    var statusClass = ativo ? 'badge-ativo' : (m.pag_status === 'pendente' ? 'badge-pendente' : 'badge-expirado');
+    var statusLabel = ativo ? 'Ativo' : (m.pag_status === 'pendente' ? 'Pendente' : 'Expirado');
+    var nivel = m.nivel || 'bronze';
+    var ateStr = ate ? ate.toLocaleDateString('pt-BR') : '—';
+
+    var acoes = '';
+    if (m.pag_status === 'pendente' && m.pag_id) {
+      acoes += '<button class="btn-confirmar" onclick="confirmarPagamento(' + m.id + ',' + m.pag_id + ')">✓ Confirmar</button> ';
+    }
+    if (ativo) {
+      acoes += '<button class="btn-bloquear" onclick="bloquearMembro(' + m.id + ')">Bloquear</button>';
+    }
+
+    return '<tr>' +
+      '<td><div style="font-weight:600">' + (m.nome||'—') + '</div><div style="font-size:.75rem;color:rgba(255,255,255,.4)">' + (m.email||'') + '</div></td>' +
+      '<td><span class="nivel-' + nivel + '">' + nivelIcon(nivel) + ' ' + nivel.charAt(0).toUpperCase()+nivel.slice(1) + '</span></td>' +
+      '<td><span class="badge ' + statusClass + '">' + statusLabel + '</span></td>' +
+      '<td>R$ ' + parseFloat(m.mensalidade||0).toFixed(2).replace('.',',') + '</td>' +
+      '<td>' + (m.pagamento||'—') + '</td>' +
+      '<td>' + ateStr + '</td>' +
+      '<td>R$ ' + parseFloat(m.vendas_total||0).toFixed(2).replace('.',',') + '</td>' +
+      '<td style="display:flex;gap:6px;flex-wrap:wrap">' + (acoes || '—') + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+async function confirmarPagamento(membro_id, pagamento_id) {
+  if (!confirm('Confirmar pagamento e liberar acesso por 30 dias?')) return;
+  try {
+    var res = await fetch('/api/membros/confirmar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + adminToken },
+      body: JSON.stringify({ membro_id, pagamento_id })
+    });
+    var data = await res.json();
+    if (!res.ok) { showToast(data.erro || 'Erro.'); return; }
+    showToast('Acesso liberado! Email enviado ao membro.');
+    carregarMembros();
+  } catch { showToast('Erro de conexão.'); }
+}
+
+async function bloquearMembro(membro_id) {
+  if (!confirm('Bloquear acesso deste membro?')) return;
+  try {
+    var res = await fetch('/api/admin/membro/' + membro_id + '/bloquear', {
+      method: 'PUT',
+      headers: { Authorization: 'Bearer ' + adminToken }
+    });
+    if (!res.ok) { showToast('Erro ao bloquear.'); return; }
+    showToast('Membro bloqueado.');
+    carregarMembros();
+  } catch { showToast('Erro de conexão.'); }
+}
+
+async function carregarMembros() {
+  try {
+    var res = await fetch('/api/membros/admin', { headers: { Authorization: 'Bearer ' + adminToken } });
+    if (res.status === 401) { location.href = 'admin-login.html'; return; }
+    todosMembros = await res.json();
+
+    var total = todosMembros.length;
+    var agora = new Date();
+    var ativos = todosMembros.filter(function(m){ var ate=m.membro_ate?new Date(m.membro_ate):null; return m.status==='ativo'&&ate&&ate>agora; }).length;
+    var pendentes = todosMembros.filter(function(m){ return m.pag_status==='pendente'; }).length;
+    var receita = todosMembros.filter(function(m){ var ate=m.membro_ate?new Date(m.membro_ate):null; return m.status==='ativo'&&ate&&ate>agora; }).reduce(function(s,m){ return s+parseFloat(m.mensalidade||0); }, 0);
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statAtivos').textContent = ativos;
+    document.getElementById('statPendentes').textContent = pendentes;
+    document.getElementById('statReceita').textContent = 'R$ ' + receita.toFixed(2).replace('.',',');
+
+    renderTabela();
+  } catch { showToast('Erro ao carregar membros.'); }
+}
+
+if (!adminToken) { location.href = 'admin-login.html'; }
+else { carregarMembros(); }
+</script>
+</body>
+</html>
