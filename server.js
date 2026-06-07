@@ -1239,10 +1239,18 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
       membro_id = res2.rows[0].id;
     }
 
-    // Registrar pagamento pendente
+    // Se plano gratuito (Bronze), liberar automaticamente
+    const isGratis = !valor || parseFloat(valor) === 0;
+    if (isGratis) {
+      const membro_ate = new Date();
+      membro_ate.setFullYear(membro_ate.getFullYear() + 10); // 10 anos = vitalício
+      await pool.query(`UPDATE pep_membros SET status='ativo', membro_ate=$1 WHERE id=$2`, [membro_ate, membro_id]);
+    }
+
+    // Registrar pagamento
     const pag = await pool.query(
-      `INSERT INTO pep_pagamentos_membros (membro_id, valor, pagamento, status) VALUES ($1,$2,$3,'pendente') RETURNING id`,
-      [membro_id, valor || 0, pagamento]
+      `INSERT INTO pep_pagamentos_membros (membro_id, valor, pagamento, status) VALUES ($1,$2,$3,$4) RETURNING id`,
+      [membro_id, valor || 0, pagamento, isGratis ? 'pago' : 'pendente']
     );
 
     // Se for cripto, calcular valor em USDT
