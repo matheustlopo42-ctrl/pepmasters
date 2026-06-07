@@ -318,6 +318,7 @@
 
       <button class="btn-assinar" onclick="assinar()" id="btnAssinar">Assinar agora</button>
       <button class="btn-whatsapp-assinar" onclick="assinarWhatsApp()" id="btnWpp">📱 Assinar via WhatsApp</button>
+    <button class="btn-assinar" onclick="ativarGratis()" id="btnGratis" style="display:none;background:linear-gradient(135deg,#15803d,#22c55e)">✅ Ativar gratuitamente</button>
     </div>
   </div>
 
@@ -356,7 +357,16 @@ function selecionarPlano(el, valor) {
   el.classList.add('selecionado');
   valorSelecionado = valor;
   var nome = el.querySelector('.plano-nome').textContent;
-  document.getElementById('planoSelecionadoNome').textContent = nome + ' — R$ ' + valor + '/mês';
+  var precoLabel = valor === 0 ? 'Grátis' : 'R$ ' + valor + '/mês';
+  document.getElementById('planoSelecionadoNome').textContent = nome + ' — ' + precoLabel;
+
+  // Mostrar/ocultar opções de pagamento
+  var isGratis = valor === 0;
+  document.querySelector('.payment-tabs').style.display = isGratis ? 'none' : 'flex';
+  document.getElementById('infoCripto').style.display = isGratis ? 'none' : (pagamentoSelecionado === 'cripto' ? 'block' : 'none');
+  document.getElementById('btnAssinar').style.display = isGratis ? 'none' : (pagamentoSelecionado === 'cripto' ? 'block' : 'none');
+  document.getElementById('btnWpp').style.display = isGratis ? 'none' : (pagamentoSelecionado === 'whatsapp' ? 'block' : 'none');
+  document.getElementById('btnGratis').style.display = isGratis ? 'block' : 'none';
 }
 
 function selecionarPagamento(tipo, el) {
@@ -394,6 +404,22 @@ function assinarWhatsApp() {
     body: JSON.stringify({ pagamento: 'whatsapp', valor: valorSelecionado })
   });
   window.open('https://wa.me/5512991217552?text=' + encodeURIComponent(msg), '_blank');
+}
+
+async function ativarGratis() {
+  var token = localStorage.getItem('pep_token');
+  if (!token) { location.href = 'login.html?redirect=members.html'; return; }
+  try {
+    var res = await fetch('/api/membros/assinar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ pagamento: 'gratis', valor: 0 })
+    });
+    var data = await res.json();
+    if (!res.ok) { showToast(data.erro || 'Erro ao ativar.'); return; }
+    showToast('Conta ativada! Carregando painel...');
+    setTimeout(function(){ location.reload(); }, 1500);
+  } catch { showToast('Erro de conexão.'); }
 }
 
 function copiarLink() {
