@@ -1515,21 +1515,6 @@ app.get('/api/membros/admin', adminMiddleware, async (req, res) => {
   }
 });
 
-// Rota de teste — inserir venda fake para afiliado
-app.post('/api/membros/teste-venda', authMiddleware, async (req, res) => {
-  const usuario_id = req.usuario.id;
-  try {
-    const m = await pool.query(`SELECT id, nivel FROM pep_membros WHERE usuario_id=$1`, [usuario_id]);
-    if (!m.rows.length) return res.status(404).json({ erro: 'Não é membro.' });
-    const membro = m.rows[0];
-    const valor = 150.00;
-    const comissao = parseFloat((valor * 0.05).toFixed(2));
-    await pool.query(`INSERT INTO pep_vendas_afiliado (membro_id, pedido_id, valor, comissao) VALUES ($1,$2,$3,$4)`, [membro.id, 999, valor, comissao]);
-    await pool.query(`UPDATE pep_membros SET vendas_total=vendas_total+$1, credito=credito+$2 WHERE id=$3`, [valor, comissao, membro.id]);
-    res.json({ ok: true, venda: valor, comissao });
-  } catch (err) { res.status(500).json({ erro: err.message }); }
-});
-
 // Bloquear membro (admin)
 app.put('/api/admin/membro/:id/bloquear', adminMiddleware, async (req, res) => {
   try {
