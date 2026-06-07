@@ -196,6 +196,29 @@ async function initDB() {
     // Coluna ref_code em pedidos para rastrear afiliado
     await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS ref_code TEXT`).catch(() => {});
 
+    // ── FÓRUM ─────────────────────────────────────
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_forum_topicos (
+        id          SERIAL PRIMARY KEY,
+        membro_id   INT NOT NULL REFERENCES pep_membros(id),
+        titulo      TEXT NOT NULL,
+        conteudo    TEXT NOT NULL,
+        categoria   TEXT DEFAULT 'geral',
+        views       INT DEFAULT 0,
+        fixado      BOOLEAN DEFAULT FALSE,
+        criado_em   TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_forum_respostas (
+        id          SERIAL PRIMARY KEY,
+        topico_id   INT NOT NULL REFERENCES pep_forum_topicos(id) ON DELETE CASCADE,
+        membro_id   INT NOT NULL REFERENCES pep_membros(id),
+        conteudo    TEXT NOT NULL,
+        criado_em   TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+
     // Lista de espera
     await client.query(`
       CREATE TABLE IF NOT EXISTS pep_lista_espera (
@@ -1186,6 +1209,118 @@ app.get('/api/pedido/:id/crypto-status', async (req, res) => {
     console.error('[Crypto] Erro ao verificar:', err.message);
     res.json({ pago: false, status: 'pix_pending' });
   }
+});
+
+// ─────────────────────────────────────────────
+//  FÓRUM DE MEMBROS
+// ─────────────────────────────────────────────
+
+// Middleware que verifica se é membro ativo
+async function membroMiddleware(req, res, next) {
+  const header = req.headers['authorization'] || '';
+  const token = header.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ erro: 'Não autenticado.' });
+  try {
+    const user = jwt.verify(token, JWT_SECRET);
+    const m = await pool.query(
+      `SELECT id, nivel FROM pep_membros WHERE usuario_id=$1 AND status='ativo' AND membro_ate > NOW()`,
+      [user.id]
+    );
+    if (!m.rows.length) return res.status(403).json({ erro: 'Acesso restrito a membros ativos.' });
+    req.usuario = user;
+    req.membro = m.rows[0];
+    next();
+  } catch {
+    res.status(401).json({ erro: 'Token inválido.' });
+  }
+}
+
+// Listar tópicos
+app.get('/api/forum/topicos', membroMiddleware, async (req, res) => {
+  const { categoria } = req.query;
+  try {
+    let q = `
+      SELECT t.*, u.nome as autor_nome, m.nivel as autor_nivel,
+             COUNT(r.id) as total_respostas,
+             MAX(r.criado_em) as ultima_resposta
+      FROM pep_forum_topicos t
+      JOIN pep_membros m ON m.id = t.membro_id
+      JOIN pep_usuarios u ON u.id = m.usuario_id
+      LEFT JOIN pep_forum_respostas r ON r.topico_id = t.id
+    `;
+    const params = [];
+    if (categoria && categoria !== 'todos') {
+      q += ` WHERE t.categoria = $1`;
+      params.push(categoria);
+    }
+    q += ` GROUP BY t.id, u.nome, m.nivel ORDER BY t.fixado DESC, COALESCE(MAX(r.criado_em), t.criado_em) DESC`;
+    const r = await pool.query(q, params);
+    res.json(r.rows);
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Criar tópico
+app.post('/api/forum/topicos', membroMiddleware, async (req, res) => {
+  const { titulo, conteudo, categoria } = req.body;
+  if (!titulo?.trim() || !conteudo?.trim()) return res.status(400).json({ erro: 'Título e conteúdo são obrigatórios.' });
+  try {
+    const r = await pool.query(
+      `INSERT INTO pep_forum_topicos (membro_id, titulo, conteudo, categoria) VALUES ($1,$2,$3,$4) RETURNING id`,
+      [req.membro.id, titulo.trim(), conteudo.trim(), categoria || 'geral']
+    );
+    res.json({ ok: true, id: r.rows[0].id });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Ver tópico + respostas
+app.get('/api/forum/topicos/:id', membroMiddleware, async (req, res) => {
+  try {
+    // Incrementar views
+    await pool.query(`UPDATE pep_forum_topicos SET views=views+1 WHERE id=$1`, [req.params.id]);
+    const t = await pool.query(`
+      SELECT t.*, u.nome as autor_nome, m.nivel as autor_nivel
+      FROM pep_forum_topicos t
+      JOIN pep_membros m ON m.id = t.membro_id
+      JOIN pep_usuarios u ON u.id = m.usuario_id
+      WHERE t.id = $1
+    `, [req.params.id]);
+    if (!t.rows.length) return res.status(404).json({ erro: 'Tópico não encontrado.' });
+
+    const r = await pool.query(`
+      SELECT r.*, u.nome as autor_nome, m.nivel as autor_nivel
+      FROM pep_forum_respostas r
+      JOIN pep_membros m ON m.id = r.membro_id
+      JOIN pep_usuarios u ON u.id = m.usuario_id
+      WHERE r.topico_id = $1
+      ORDER BY r.criado_em ASC
+    `, [req.params.id]);
+
+    res.json({ topico: t.rows[0], respostas: r.rows });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Responder tópico
+app.post('/api/forum/topicos/:id/responder', membroMiddleware, async (req, res) => {
+  const { conteudo } = req.body;
+  if (!conteudo?.trim()) return res.status(400).json({ erro: 'Conteúdo obrigatório.' });
+  try {
+    await pool.query(
+      `INSERT INTO pep_forum_respostas (topico_id, membro_id, conteudo) VALUES ($1,$2,$3)`,
+      [req.params.id, req.membro.id, conteudo.trim()]
+    );
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Deletar tópico (próprio ou admin)
+app.delete('/api/forum/topicos/:id', membroMiddleware, async (req, res) => {
+  try {
+    const t = await pool.query(`SELECT membro_id FROM pep_forum_topicos WHERE id=$1`, [req.params.id]);
+    if (!t.rows.length) return res.status(404).json({ erro: 'Não encontrado.' });
+    if (t.rows[0].membro_id !== req.membro.id) return res.status(403).json({ erro: 'Sem permissão.' });
+    await pool.query(`DELETE FROM pep_forum_topicos WHERE id=$1`, [req.params.id]);
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
 // ─────────────────────────────────────────────

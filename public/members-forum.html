@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Fórum — PEPMASTERS Members</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580;--bronze:#cd7f32;--prata:#C0C0C0;--ouro:#FFD700;--diamante:#b9f2ff}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:#0f0800;color:#fff;min-height:100vh;display:flex;flex-direction:column}
+    header{background:rgba(28,10,0,.95);border-bottom:2px solid var(--amber);padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .members-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;background:linear-gradient(135deg,var(--amber),var(--orange));color:#000;padding:3px 10px;border-radius:20px;margin-left:8px}
+    .header-right{display:flex;align-items:center;gap:16px}
+    .nav-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s}
+    .nav-link:hover,.nav-link.active{color:var(--amber)}
+    main{flex:1;max-width:900px;margin:0 auto;padding:32px 24px;width:100%}
+    /* VIEWS */
+    #viewLista,#viewTopico,#viewNovo{display:none}
+    /* CATEGORIAS */
+    .categorias{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+    .cat-btn{padding:6px 16px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:none;color:rgba(255,255,255,.5);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;cursor:pointer;transition:all .2s}
+    .cat-btn:hover,.cat-btn.active{border-color:var(--amber);color:var(--amber);background:rgba(255,179,0,.06)}
+    /* HEADER DA LISTA */
+    .lista-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .lista-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;text-transform:uppercase;color:var(--amber)}
+    .btn-novo{padding:10px 22px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s}
+    .btn-novo:hover{opacity:.85}
+    /* TÓPICOS */
+    .topico-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,179,0,.08);border-radius:12px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:all .2s;display:flex;gap:16px;align-items:center}
+    .topico-item:hover{border-color:rgba(255,179,0,.25);background:rgba(255,255,255,.05)}
+    .topico-fixado{border-color:rgba(255,179,0,.3);background:rgba(255,179,0,.04)}
+    .topico-icon{font-size:1.8rem;flex-shrink:0}
+    .topico-info{flex:1;min-width:0}
+    .topico-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .topico-meta{font-size:.78rem;color:rgba(255,255,255,.4);display:flex;gap:12px;flex-wrap:wrap}
+    .topico-stats{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+    .topico-respostas{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;color:var(--amber)}
+    .topico-respostas-label{font-size:.7rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em}
+    .cat-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+    .cat-geral{background:rgba(255,179,0,.1);color:var(--amber)}
+    .cat-vendas{background:rgba(34,197,94,.1);color:#22c55e}
+    .cat-produtos{background:rgba(59,130,246,.1);color:#60a5fa}
+    .cat-duvidas{background:rgba(168,85,247,.1);color:#c084fc}
+    .cat-resultados{background:rgba(249,115,22,.1);color:#fb923c}
+    .nivel-bronze{color:var(--bronze)}.nivel-prata{color:var(--prata)}.nivel-ouro{color:var(--ouro)}.nivel-diamante{color:var(--diamante)}
+    .pin-icon{color:var(--amber);font-size:.85rem}
+    /* TÓPICO INDIVIDUAL */
+    .topico-page-header{margin-bottom:24px}
+    .btn-voltar{background:none;border:none;color:rgba(255,255,255,.5);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:16px;padding:0;transition:color .2s}
+    .btn-voltar:hover{color:var(--amber)}
+    .post-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,179,0,.1);border-radius:14px;padding:24px;margin-bottom:12px}
+    .post-card.original{border-color:rgba(255,179,0,.2)}
+    .post-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .post-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1rem;flex-shrink:0}
+    .post-autor{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;color:#fff}
+    .post-data{font-size:.75rem;color:rgba(255,255,255,.3)}
+    .post-conteudo{font-size:.92rem;color:rgba(255,255,255,.8);line-height:1.7;white-space:pre-wrap}
+    .topico-titulo-grande{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;color:#fff;margin-bottom:8px}
+    /* RESPONDER */
+    .responder-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,179,0,.1);border-radius:14px;padding:20px;margin-top:20px}
+    .responder-box h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+    textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;color:#fff;font-family:'Barlow',sans-serif;font-size:.9rem;line-height:1.6;resize:vertical;min-height:100px;outline:none;transition:border-color .2s}
+    textarea:focus{border-color:var(--amber)}
+    .btn-enviar{margin-top:10px;padding:10px 24px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s}
+    .btn-enviar:hover{opacity:.85}
+    /* NOVO TÓPICO */
+    .novo-form{background:rgba(255,255,255,.03);border:1px solid rgba(255,179,0,.1);border-radius:14px;padding:28px}
+    .novo-form h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;text-transform:uppercase;color:var(--amber);margin-bottom:20px}
+    .form-group{margin-bottom:16px}
+    .form-group label{display:block;font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px}
+    input[type=text]{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;color:#fff;font-family:'Barlow',sans-serif;font-size:.93rem;outline:none;transition:border-color .2s}
+    input[type=text]:focus{border-color:var(--amber)}
+    select{width:100%;background:#1a0c00;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;color:#fff;font-family:'Barlow',sans-serif;font-size:.93rem;outline:none;cursor:pointer}
+    .empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,.3)}
+    .empty p{font-size:.9rem;margin-top:8px}
+    #toast{position:fixed;bottom:24px;right:24px;background:#1a0c00;color:#fff;padding:12px 18px;border-radius:10px;font-size:.85rem;border-left:3px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(20px);opacity:0;transition:all .3s;z-index:5000;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:600px){.topico-stats{display:none}.topico-item{padding:12px 14px}}
+  </style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;gap:8px">
+    <a href="index.html" style="text-decoration:none"><span class="logo-text">PEPMASTERS</span></a>
+    <span class="members-badge">Members</span>
+  </div>
+  <div class="header-right">
+    <a href="members.html" class="nav-link">Painel</a>
+    <a href="members-forum.html" class="nav-link active">Fórum</a>
+    <a href="#" class="nav-link" onclick="sair(event)">Sair</a>
+  </div>
+</header>
+
+<main>
+  <!-- LISTA DE TÓPICOS -->
+  <div id="viewLista">
+    <div class="lista-header">
+      <h1>💬 Fórum</h1>
+      <button class="btn-novo" onclick="mostrarNovo()">+ Novo Tópico</button>
+    </div>
+    <div class="categorias">
+      <button class="cat-btn active" onclick="filtrarCat('todos',this)">Todos</button>
+      <button class="cat-btn" onclick="filtrarCat('geral',this)">Geral</button>
+      <button class="cat-btn" onclick="filtrarCat('vendas',this)">Vendas</button>
+      <button class="cat-btn" onclick="filtrarCat('produtos',this)">Produtos</button>
+      <button class="cat-btn" onclick="filtrarCat('duvidas',this)">Dúvidas</button>
+      <button class="cat-btn" onclick="filtrarCat('resultados',this)">Resultados</button>
+    </div>
+    <div id="listaTopicos"></div>
+  </div>
+
+  <!-- TÓPICO INDIVIDUAL -->
+  <div id="viewTopico">
+    <button class="btn-voltar" onclick="voltarLista()">← Voltar ao fórum</button>
+    <div id="conteudoTopico"></div>
+    <div class="responder-box">
+      <h3>✍️ Sua resposta</h3>
+      <textarea id="txtResposta" placeholder="Escreva sua resposta..."></textarea>
+      <button class="btn-enviar" onclick="enviarResposta()">Enviar resposta</button>
+    </div>
+  </div>
+
+  <!-- NOVO TÓPICO -->
+  <div id="viewNovo">
+    <button class="btn-voltar" onclick="voltarLista()">← Voltar ao fórum</button>
+    <div class="novo-form">
+      <h2>📝 Novo Tópico</h2>
+      <div class="form-group">
+        <label>Título</label>
+        <input type="text" id="novoTitulo" placeholder="Descreva seu tópico em poucas palavras"/>
+      </div>
+      <div class="form-group">
+        <label>Categoria</label>
+        <select id="novaCategoria">
+          <option value="geral">💬 Geral</option>
+          <option value="vendas">💰 Vendas</option>
+          <option value="produtos">🧬 Produtos</option>
+          <option value="duvidas">❓ Dúvidas</option>
+          <option value="resultados">🏆 Resultados</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Conteúdo</label>
+        <textarea id="novoConteudo" style="min-height:160px" placeholder="Escreva o conteúdo do seu tópico..."></textarea>
+      </div>
+      <button class="btn-enviar" onclick="criarTopico()">Publicar tópico</button>
+    </div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+var token = localStorage.getItem('pep_token');
+var topicoAtualId = null;
+var catAtual = 'todos';
+
+var catIcons = {geral:'💬', vendas:'💰', produtos:'🧬', duvidas:'❓', resultados:'🏆'};
+var nivelIcons = {bronze:'🥉', prata:'🥈', ouro:'🥇', diamante:'💎'};
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+
+function sair(e) {
+  e.preventDefault();
+  localStorage.removeItem('pep_token');
+  localStorage.removeItem('pep_nome');
+  location.href = 'index.html';
+}
+
+function timeAgo(dateStr) {
+  var diff = (Date.now() - new Date(dateStr)) / 1000;
+  if (diff < 60) return 'agora';
+  if (diff < 3600) return Math.floor(diff/60) + 'm atrás';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h atrás';
+  return Math.floor(diff/86400) + 'd atrás';
+}
+
+function mostrarView(id) {
+  ['viewLista','viewTopico','viewNovo'].forEach(function(v){
+    document.getElementById(v).style.display = v === id ? 'block' : 'none';
+  });
+}
+
+function voltarLista() {
+  topicoAtualId = null;
+  mostrarView('viewLista');
+  carregarTopicos(catAtual);
+}
+
+function mostrarNovo() {
+  mostrarView('viewNovo');
+  document.getElementById('novoTitulo').focus();
+}
+
+function filtrarCat(cat, btn) {
+  catAtual = cat;
+  document.querySelectorAll('.cat-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  carregarTopicos(cat);
+}
+
+async function carregarTopicos(cat) {
+  var url = '/api/forum/topicos' + (cat && cat !== 'todos' ? '?categoria=' + cat : '');
+  try {
+    var res = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
+    if (res.status === 401 || res.status === 403) { location.href = 'login.html?redirect=members-forum.html'; return; }
+    var lista = await res.json();
+    var container = document.getElementById('listaTopicos');
+    if (!lista.length) {
+      container.innerHTML = '<div class="empty"><div style="font-size:2.5rem">💬</div><p>Nenhum tópico ainda. Seja o primeiro a postar!</p></div>';
+      return;
+    }
+    container.innerHTML = lista.map(function(t) {
+      var icon = catIcons[t.categoria] || '💬';
+      var pin = t.fixado ? '<span class="pin-icon">📌 </span>' : '';
+      return '<div class="topico-item ' + (t.fixado ? 'topico-fixado' : '') + '" onclick="abrirTopico(' + t.id + ')">' +
+        '<div class="topico-icon">' + icon + '</div>' +
+        '<div class="topico-info">' +
+          '<div class="topico-titulo">' + pin + t.titulo + '</div>' +
+          '<div class="topico-meta">' +
+            '<span class="nivel-' + t.autor_nivel + '">' + (nivelIcons[t.autor_nivel]||'🥉') + ' ' + t.autor_nome + '</span>' +
+            '<span class="cat-tag cat-' + t.categoria + '">' + t.categoria + '</span>' +
+            '<span>' + timeAgo(t.criado_em) + '</span>' +
+            (t.ultima_resposta ? '<span>última resposta ' + timeAgo(t.ultima_resposta) + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="topico-stats">' +
+          '<div class="topico-respostas">' + (t.total_respostas || 0) + '</div>' +
+          '<div class="topico-respostas-label">respostas</div>' +
+          '<div style="font-size:.72rem;color:rgba(255,255,255,.3)">' + (t.views||0) + ' views</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch(e) { showToast('Erro ao carregar tópicos.'); }
+}
+
+async function abrirTopico(id) {
+  topicoAtualId = id;
+  mostrarView('viewTopico');
+  document.getElementById('txtResposta').value = '';
+  try {
+    var res = await fetch('/api/forum/topicos/' + id, { headers: { Authorization: 'Bearer ' + token } });
+    var data = await res.json();
+    if (!res.ok) { showToast(data.erro); return; }
+    var t = data.topico;
+    var respostas = data.respostas;
+
+    var html = '<div class="topico-page-header">' +
+      '<span class="cat-tag cat-' + t.categoria + '">' + (catIcons[t.categoria]||'💬') + ' ' + t.categoria + '</span>' +
+      '<h2 class="topico-titulo-grande" style="margin-top:10px">' + t.titulo + '</h2>' +
+    '</div>';
+
+    // Post original
+    html += '<div class="post-card original">' + renderPost(t.autor_nome, t.autor_nivel, t.criado_em, t.conteudo) + '</div>';
+
+    // Respostas
+    respostas.forEach(function(r) {
+      html += '<div class="post-card">' + renderPost(r.autor_nome, r.autor_nivel, r.criado_em, r.conteudo) + '</div>';
+    });
+
+    if (!respostas.length) {
+      html += '<div class="empty"><p>Nenhuma resposta ainda. Seja o primeiro!</p></div>';
+    }
+
+    document.getElementById('conteudoTopico').innerHTML = html;
+  } catch { showToast('Erro ao carregar tópico.'); }
+}
+
+function renderPost(nome, nivel, data, conteudo) {
+  var inicial = (nome || 'U')[0].toUpperCase();
+  return '<div class="post-header">' +
+    '<div class="post-avatar">' + inicial + '</div>' +
+    '<div>' +
+      '<div class="post-autor nivel-' + nivel + '">' + (nivelIcons[nivel]||'🥉') + ' ' + nome + '</div>' +
+      '<div class="post-data">' + new Date(data).toLocaleString('pt-BR') + '</div>' +
+    '</div>' +
+  '</div>' +
+  '<div class="post-conteudo">' + conteudo + '</div>';
+}
+
+async function enviarResposta() {
+  var conteudo = document.getElementById('txtResposta').value.trim();
+  if (!conteudo) { showToast('Escreva sua resposta.'); return; }
+  try {
+    var res = await fetch('/api/forum/topicos/' + topicoAtualId + '/responder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ conteudo })
+    });
+    var data = await res.json();
+    if (!res.ok) { showToast(data.erro || 'Erro.'); return; }
+    document.getElementById('txtResposta').value = '';
+    showToast('Resposta enviada!');
+    abrirTopico(topicoAtualId);
+  } catch { showToast('Erro de conexão.'); }
+}
+
+async function criarTopico() {
+  var titulo = document.getElementById('novoTitulo').value.trim();
+  var conteudo = document.getElementById('novoConteudo').value.trim();
+  var categoria = document.getElementById('novaCategoria').value;
+  if (!titulo || !conteudo) { showToast('Preencha título e conteúdo.'); return; }
+  try {
+    var res = await fetch('/api/forum/topicos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ titulo, conteudo, categoria })
+    });
+    var data = await res.json();
+    if (!res.ok) { showToast(data.erro || 'Erro.'); return; }
+    document.getElementById('novoTitulo').value = '';
+    document.getElementById('novoConteudo').value = '';
+    showToast('Tópico criado!');
+    voltarLista();
+  } catch { showToast('Erro de conexão.'); }
+}
+
+if (!token) {
+  location.href = 'login.html?redirect=members-forum.html';
+} else {
+  mostrarView('viewLista');
+  carregarTopicos('todos');
+}
+</script>
+</body>
+</html>
