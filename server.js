@@ -415,7 +415,8 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     nome, email, cpf, telefone,
     endereco, carrinho, pagamento, cupom, total: totalFront,
     crypto_valor, crypto_token,
-    token: userToken
+    token: userToken,
+    ref_code
   } = req.body;
 
   if (!nome || !email || !pagamento || !carrinho || !carrinho.length) {
@@ -467,8 +468,8 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       `INSERT INTO pep_pedidos
          (usuario_id,nome,email,cpf,telefone,cep,rua,numero,bairro,cidade,complemento,
           produto_id,produto_nome,preco_unitario,desconto,total,pagamento,cupom,status,
-          crypto_valor,crypto_token)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
+          crypto_valor,crypto_token,ref_code)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)
        RETURNING id`,
       [
         usuarioId, nome, email.toLowerCase(), cpf || null, telefone || null,
@@ -476,10 +477,15 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
         endereco?.bairro || null, endereco?.cidade || null, endereco?.complemento || null,
         produto_id, produto_nome, subtotal.toFixed(2), desconto.toFixed(2), total.toFixed(2),
         pagamento, cupomId ? cupom.toUpperCase() : null, statusInicial,
-        crypto_valor || null, crypto_token || null
+        crypto_valor || null, crypto_token || null, ref_code || null
       ]
     );
     const pedidoId = pedRows[0].id;
+
+    // Registrar venda de afiliado se vier com ref_code
+    if (ref_code) {
+      registrarVendaAfiliado(ref_code, pedidoId, total).catch(() => {});
+    }
 
     // baixar estoque de cada item do carrinho
     for (const item of carrinho) {

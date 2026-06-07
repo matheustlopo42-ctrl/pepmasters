@@ -572,6 +572,8 @@
     // Criar pedido no banco e enviar email
     try {
       const token = localStorage.getItem('pep_token') || '';
+      const refCode = document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('pep_ref='));
+      const refValue = refCode ? refCode.split('=')[1] : null;
       await fetch('/api/pedido', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -579,7 +581,7 @@
           nome, email, telefone,
           endereco: { cep, rua, numero, bairro, cidade, complemento },
           carrinho, pagamento: 'whatsapp', cupom: cupomAplicado || '',
-          token
+          token, ref_code: refValue
         })
       });
     } catch(e) { console.warn('Pedido não registrado:', e); }
@@ -622,6 +624,10 @@
     }
     const total = subtotal - desconto;
 
+    // Ler cookie de afiliado
+    const refCode = document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('pep_ref='));
+    const refValue = refCode ? refCode.split('=')[1] : null;
+
     const pedido = {
       nome, email, cpf, telefone,
       endereco: { cep, rua, numero, bairro, cidade, complemento },
@@ -631,7 +637,8 @@
       total:         total.toFixed(2),
       crypto_valor:  pagAtual === 'cripto' ? cryptoValor : null,
       crypto_token:  pagAtual === 'cripto' ? cryptoToken : null,
-      token:         localStorage.getItem('pep_token')
+      token:         localStorage.getItem('pep_token'),
+      ref_code:      refValue
     };
 
     try {
