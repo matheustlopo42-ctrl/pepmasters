@@ -133,19 +133,19 @@
       <img src="Capturar.PNG" alt="Logo" onerror="this.style.display='none'"/>
       <span class="logo-text">PEPMASTERS</span>
     </a>
-    <span class="members-badge">Members</span>
+    <span class="members-badge" data-i18n="members.badge">Members</span>
   </div>
   <div class="header-right">
     <span id="headerNome" style="font-size:.82rem;color:rgba(255,255,255,.5)"></span>
-    <a href="members-forum.html" class="btn-sair">💬 Fórum</a>
-    <a href="index.html" class="btn-sair">← Loja</a>
-    <a href="#" class="btn-sair" onclick="sair(event)">Sair</a>
+    <a href="members-forum.html" class="btn-sair" data-i18n="members.nav.forum">💬 Fórum</a>
+    <a href="index.html" class="btn-sair" data-i18n="members.nav.store">← Loja</a>
+    <a href="#" class="btn-sair" onclick="sair(event)" data-i18n="members.nav.logout">Sair</a>
   </div>
 </header>
 
 <div class="hero-members">
   <h1>PEPMASTERS <span>Members</span></h1>
-  <p>Seja um distribuidor oficial. Ganhe comissões, abata na mensalidade e cresça de nível.</p>
+  <p data-i18n="members.hero.subtitle">Seja um distribuidor oficial. Ganhe comissões, abata na mensalidade e cresça de nível.</p>
 </div>
 
 <main>
@@ -157,7 +157,7 @@
         <div class="nivel-card" id="nivelCard">
           <div class="nivel-icon" id="nivelIcon">🥉</div>
           <div class="nivel-nome" id="nivelNome">Bronze</div>
-          <div class="nivel-comissao" id="nivelComissao">5% de comissão</div>
+          <div class="nivel-comissao" id="nivelComissao" data-i18n="members.level.commission">5% de comissão</div>
           <span class="status-badge" id="statusBadge">Ativo</span>
           <div class="expira-em" id="expiraEm"></div>
           <div class="nivel-progress">
@@ -171,11 +171,11 @@
 
         <!-- MENSALIDADE -->
         <div class="mensalidade-card">
-          <h3>💳 Mensalidade</h3>
-          <div class="mensalidade-row"><span>Valor base</span><span class="valor" id="msgBase">—</span></div>
-          <div class="mensalidade-row"><span>Abatimento (comissões)</span><span class="desconto" id="msgAbatimento">— 0,00</span></div>
-          <div class="mensalidade-row"><span>Total a pagar</span><span class="valor" id="msgDevida">—</span></div>
-          <button class="btn-renovar" onclick="renovar()">Renovar Assinatura</button>
+          <h3>💳 <span data-i18n="members.membership">Mensalidade</span></h3>
+          <div class="mensalidade-row"><span data-i18n="members.base.value">Valor base</span><span class="valor" id="msgBase">—</span></div>
+          <div class="mensalidade-row"><span data-i18n="members.discount">Abatimento (comissões)</span><span class="desconto" id="msgAbatimento">— 0,00</span></div>
+          <div class="mensalidade-row"><span data-i18n="members.total.pay">Total a pagar</span><span class="valor" id="msgDevida">—</span></div>
+          <button class="btn-renovar" onclick="renovar()" data-i18n="members.renew">Renovar Assinatura</button>
         </div>
       </div>
 
@@ -184,42 +184,42 @@
         <!-- STATS -->
         <div class="stats-grid">
           <div class="stat-card">
-            <div class="label">Vendas realizadas</div>
+            <div class="label" data-i18n="members.sales">Vendas realizadas</div>
             <div class="value amber" id="statVendas">0</div>
           </div>
           <div class="stat-card">
-            <div class="label">Volume de vendas</div>
+            <div class="label" data-i18n="members.volume">Volume de vendas</div>
             <div class="value amber" id="statVolume">R$ 0</div>
           </div>
           <div class="stat-card">
-            <div class="label">Comissão acumulada</div>
+            <div class="label" data-i18n="members.commission.total">Comissão acumulada</div>
             <div class="value green" id="statComissao">R$ 0</div>
           </div>
           <div class="stat-card">
-            <div class="label">Crédito disponível</div>
+            <div class="label" data-i18n="members.credit">Crédito disponível</div>
             <div class="value green" id="statCredito">R$ 0</div>
           </div>
         </div>
 
         <!-- LINK DE AFILIADO -->
         <div class="ref-card">
-          <h3>🔗 Seu Link de Afiliado</h3>
+          <h3>🔗 <span data-i18n="members.affiliate.link">Seu Link de Afiliado</span></h3>
           <div class="ref-link-box">
             <span id="linkAfiliado">—</span>
-            <button class="btn-copiar" onclick="copiarLink()">Copiar</button>
+            <button class="btn-copiar" onclick="copiarLink()" data-i18n="members.affiliate.copy">Copiar</button>
           </div>
-          <p class="ref-instrucoes">Compartilhe este link. Toda compra feita através dele é registrada automaticamente e a comissão é creditada na sua conta.</p>
+          <p class="ref-instrucoes" data-i18n="members.affiliate.info">Compartilhe este link. Toda compra feita através dele é registrada automaticamente e a comissão é creditada na sua conta.</p>
         </div>
 
         <!-- TABELA DE NÍVEIS -->
         <div class="comissoes-card">
-          <h3>📊 Tabela de Níveis</h3>
+          <h3>📊 <span data-i18n="members.levels.title">Tabela de Níveis</span></h3>
           <table class="niveis-table">
             <thead>
               <tr>
-                <th>Nível</th>
-                <th>Volume de Vendas</th>
-                <th>Comissão</th>
+                <th data-i18n="members.levels.level">Nível</th>
+                <th data-i18n="members.levels.volume">Volume de Vendas</th>
+                <th data-i18n="members.levels.commission">Comissão</th>
               </tr>
             </thead>
             <tbody id="tabelaNiveis">
@@ -237,8 +237,8 @@
   <!-- PÁGINA DE ASSINATURA -->
   <div id="paginaAssinar">
     <div class="assinar-hero">
-      <h2>Escolha seu plano</h2>
-      <p>Selecione o plano que melhor se encaixa no seu perfil de distribuidor.</p>
+      <h2 data-i18n="members.choose.plan">Escolha seu plano</h2>
+      <p data-i18n="members.choose.subtitle">Selecione o plano que melhor se encaixa no seu perfil de distribuidor.</p>
     </div>
 
     <div class="planos-grid">
@@ -317,17 +317,17 @@
         Carteira: <strong style="font-size:.78rem;word-break:break-all">0xDA95bb300C7be3E3347d449b14b834Dc3098deAD</strong>
       </div>
 
-      <button class="btn-assinar" onclick="assinar()" id="btnAssinar">Assinar agora</button>
-      <button class="btn-whatsapp-assinar" onclick="assinarWhatsApp()" id="btnWpp">📱 Assinar via WhatsApp</button>
-    <button class="btn-assinar" onclick="ativarGratis()" id="btnGratis" style="display:none;background:linear-gradient(135deg,#15803d,#22c55e)">✅ Ativar gratuitamente</button>
+      <button class="btn-assinar" onclick="assinar()" id="btnAssinar" data-i18n="members.subscribe.now">Assinar agora</button>
+      <button class="btn-whatsapp-assinar" onclick="assinarWhatsApp()" id="btnWpp" data-i18n="members.subscribe.wpp">📱 Assinar via WhatsApp</button>
+    <button class="btn-assinar" onclick="ativarGratis()" id="btnGratis" style="display:none;background:linear-gradient(135deg,#15803d,#22c55e)" data-i18n="members.activate.free">✅ Ativar gratuitamente</button>
     </div>
   </div>
 
   <!-- NÃO LOGADO -->
   <div id="paginaLogin" style="text-align:center;padding:80px 20px;display:none">
     <div style="font-size:3rem;margin-bottom:16px">🔐</div>
-    <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;text-transform:uppercase;margin-bottom:8px">Login necessário</h2>
-    <p style="color:rgba(255,255,255,.5);margin-bottom:28px">Faça login com sua conta PEPMASTERS para acessar a área de membros.</p>
+    <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;text-transform:uppercase;margin-bottom:8px" data-i18n="members.login.required">Login necessário</h2>
+    <p style="color:rgba(255,255,255,.5);margin-bottom:28px" data-i18n="members.login.desc">Faça login com sua conta PEPMASTERS para acessar a área de membros.</p>
     <a href="login.html?redirect=members.html" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;text-decoration:none;border-radius:10px">Fazer Login</a>
   </div>
 </main>

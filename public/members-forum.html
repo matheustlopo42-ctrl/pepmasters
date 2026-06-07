@@ -85,12 +85,12 @@
 <header>
   <div style="display:flex;align-items:center;gap:8px">
     <a href="index.html" style="text-decoration:none"><span class="logo-text">PEPMASTERS</span></a>
-    <span class="members-badge">Members</span>
+    <span class="members-badge" data-i18n="members.badge">Members</span>
   </div>
   <div class="header-right">
-    <a href="members.html" class="nav-link">Painel</a>
-    <a href="members-forum.html" class="nav-link active">Fórum</a>
-    <a href="#" class="nav-link" onclick="sair(event)">Sair</a>
+    <a href="members.html" class="nav-link" data-i18n="members.nav.panel">Painel</a>
+    <a href="members-forum.html" class="nav-link active" data-i18n="members.nav.forum">Fórum</a>
+    <a href="#" class="nav-link" onclick="sair(event)" data-i18n="members.nav.logout">Sair</a>
   </div>
 </header>
 
@@ -98,42 +98,42 @@
   <!-- LISTA DE TÓPICOS -->
   <div id="viewLista">
     <div class="lista-header">
-      <h1>💬 Fórum</h1>
-      <button class="btn-novo" onclick="mostrarNovo()">+ Novo Tópico</button>
+      <h1>💬 <span data-i18n="forum.title">Fórum</span></h1>
+      <button class="btn-novo" onclick="mostrarNovo()" data-i18n="forum.new.topic">+ Novo Tópico</button>
     </div>
     <div class="categorias">
-      <button class="cat-btn active" onclick="filtrarCat('todos',this)">Todos</button>
-      <button class="cat-btn" onclick="filtrarCat('geral',this)">Geral</button>
-      <button class="cat-btn" onclick="filtrarCat('vendas',this)">Vendas</button>
-      <button class="cat-btn" onclick="filtrarCat('produtos',this)">Produtos</button>
-      <button class="cat-btn" onclick="filtrarCat('duvidas',this)">Dúvidas</button>
-      <button class="cat-btn" onclick="filtrarCat('resultados',this)">Resultados</button>
+      <button class="cat-btn active" onclick="filtrarCat('todos',this)" data-i18n="forum.cat.all">Todos</button>
+      <button class="cat-btn" onclick="filtrarCat('geral',this)" data-i18n="forum.cat.general">Geral</button>
+      <button class="cat-btn" onclick="filtrarCat('vendas',this)" data-i18n="forum.cat.sales">Vendas</button>
+      <button class="cat-btn" onclick="filtrarCat('produtos',this)" data-i18n="forum.cat.products">Produtos</button>
+      <button class="cat-btn" onclick="filtrarCat('duvidas',this)" data-i18n="forum.cat.questions">Dúvidas</button>
+      <button class="cat-btn" onclick="filtrarCat('resultados',this)" data-i18n="forum.cat.results">Resultados</button>
     </div>
     <div id="listaTopicos"></div>
   </div>
 
   <!-- TÓPICO INDIVIDUAL -->
   <div id="viewTopico">
-    <button class="btn-voltar" onclick="voltarLista()">← Voltar ao fórum</button>
+    <button class="btn-voltar" onclick="voltarLista()" data-i18n="forum.back">← Voltar ao fórum</button>
     <div id="conteudoTopico"></div>
     <div class="responder-box">
-      <h3>✍️ Sua resposta</h3>
+      <h3 data-i18n="forum.reply">✍️ Sua resposta</h3>
       <textarea id="txtResposta" placeholder="Escreva sua resposta..."></textarea>
-      <button class="btn-enviar" onclick="enviarResposta()">Enviar resposta</button>
+      <button class="btn-enviar" onclick="enviarResposta()" data-i18n="forum.send.reply">Enviar resposta</button>
     </div>
   </div>
 
   <!-- NOVO TÓPICO -->
   <div id="viewNovo">
-    <button class="btn-voltar" onclick="voltarLista()">← Voltar ao fórum</button>
+    <button class="btn-voltar" onclick="voltarLista()" data-i18n="forum.back">← Voltar ao fórum</button>
     <div class="novo-form">
-      <h2>📝 Novo Tópico</h2>
+      <h2 data-i18n="forum.new.title">📝 Novo Tópico</h2>
       <div class="form-group">
-        <label>Título</label>
+        <label data-i18n="forum.topic.title">Título</label>
         <input type="text" id="novoTitulo" placeholder="Descreva seu tópico em poucas palavras"/>
       </div>
       <div class="form-group">
-        <label>Categoria</label>
+        <label data-i18n="forum.topic.category">Categoria</label>
         <select id="novaCategoria">
           <option value="geral">💬 Geral</option>
           <option value="vendas">💰 Vendas</option>
@@ -143,10 +143,10 @@
         </select>
       </div>
       <div class="form-group">
-        <label>Conteúdo</label>
+        <label data-i18n="forum.topic.content">Conteúdo</label>
         <textarea id="novoConteudo" style="min-height:160px" placeholder="Escreva o conteúdo do seu tópico..."></textarea>
       </div>
-      <button class="btn-enviar" onclick="criarTopico()">Publicar tópico</button>
+      <button class="btn-enviar" onclick="criarTopico()" data-i18n="forum.publish">Publicar tópico</button>
     </div>
   </div>
 </main>
