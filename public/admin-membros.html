@@ -186,7 +186,7 @@ async function confirmarPagamento(membro_id, pagamento_id) {
   try {
     var res = await fetch('/api/membros/confirmar', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + adminToken },
+      headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + adminToken },
       body: JSON.stringify({ membro_id, pagamento_id })
     });
     var data = await res.json();
@@ -201,7 +201,7 @@ async function bloquearMembro(membro_id) {
   try {
     var res = await fetch('/api/admin/membro/' + membro_id + '/bloquear', {
       method: 'PUT',
-      headers: { Authorization: 'Bearer ' + adminToken }
+      headers: { Authorization: 'Basic ' + adminToken }
     });
     if (!res.ok) { showToast('Erro ao bloquear.'); return; }
     showToast('Membro bloqueado.');
@@ -211,7 +211,7 @@ async function bloquearMembro(membro_id) {
 
 async function carregarMembros() {
   try {
-    var res = await fetch('/api/membros/admin', { headers: { Authorization: 'Bearer ' + adminToken } });
+    var res = await fetch('/api/membros/admin', { headers: { Authorization: 'Basic ' + adminToken } });
     if (res.status === 401) { location.href = 'admin-login.html'; return; }
     todosMembros = await res.json();
 
