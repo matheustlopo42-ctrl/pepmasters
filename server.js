@@ -1219,7 +1219,7 @@ app.get('/ref/:codigo', async (req, res) => {
 // Assinar plano de membros
 app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
   const { pagamento, valor } = req.body;
-  const usuario_id = req.user.id;
+  const usuario_id = req.usuario.id;
   try {
     // Verificar se já é membro
     const existing = await pool.query(`SELECT id FROM pep_membros WHERE usuario_id = $1`, [usuario_id]);
@@ -1307,7 +1307,7 @@ app.post('/api/membros/confirmar', adminMiddleware, async (req, res) => {
 
 // Painel do membro
 app.get('/api/membros/painel', authMiddleware, async (req, res) => {
-  const usuario_id = req.user.id;
+  const usuario_id = req.usuario.id;
   try {
     const m = await pool.query(
       `SELECT m.*, u.nome, u.email FROM pep_membros m JOIN pep_usuarios u ON u.id=m.usuario_id WHERE m.usuario_id=$1`,
