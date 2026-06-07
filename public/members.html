@@ -334,7 +334,7 @@
 
 <script>
 var pagamentoSelecionado = 'cripto';
-var valorSelecionado = 0;
+var valorSelecionado = null;
 var planoBronze = 97, plataPreco = 197, ouroPreco = 397, diamantePreco = 797;
 
 function showToast(msg) {
@@ -369,7 +369,7 @@ function selecionarPagamento(tipo, el) {
 }
 
 async function assinar() {
-  if (!valorSelecionado) { showToast('Selecione um plano primeiro.'); return; }
+  if (valorSelecionado === undefined || valorSelecionado === null) { showToast('Selecione um plano primeiro.'); return; }
   var token = localStorage.getItem('pep_token');
   try {
     var res = await fetch('/api/membros/assinar', {
@@ -384,7 +384,7 @@ async function assinar() {
 }
 
 function assinarWhatsApp() {
-  if (!valorSelecionado) { showToast('Selecione um plano primeiro.'); return; }
+  if (valorSelecionado === undefined || valorSelecionado === null) { showToast('Selecione um plano primeiro.'); return; }
   var nome = localStorage.getItem('pep_nome') || '';
   var plano = document.getElementById('planoSelecionadoNome').textContent;
   var msg = 'Olá! Quero assinar o plano PEPMASTERS Members.\n\nNome: ' + nome + '\nPlano: ' + plano + '\n\nAguardo instruções para pagamento.';
