@@ -251,7 +251,7 @@ function renderTabela() {
       '<td>' + (m.pagamento||'—') + '</td>' +
       '<td>' + ateStr + '</td>' +
       '<td>R$ ' + parseFloat(m.vendas_total||0).toFixed(2).replace('.',',') + '</td>' +
-      '<td style="display:flex;gap:6px;flex-wrap:wrap">' + (acoes || '—') + ' <button class="filtro-btn" style="padding:4px 10px;font-size:.72rem" onclick="verExtrato(' + m.id + ',\"' + (m.nome||'') + '\")">📊 Extrato</button>' + '</td>' +
+      '<td style="display:flex;gap:6px;flex-wrap:wrap">' + (acoes || '—') + ' <button class="filtro-btn" style="padding:4px 10px;font-size:.72rem" data-mid="' + m.id + '" data-nome="' + (m.nome||'').replace(/"/g,'') + '" onclick="verExtrato(this.dataset.mid,this.dataset.nome)">📊 Extrato</button>' + '</td>' +
     '</tr>';
   }).join('');
 }
