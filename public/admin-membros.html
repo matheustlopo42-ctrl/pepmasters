@@ -60,6 +60,8 @@
   <nav class="nav-links">
     <a href="admin.html">Pedidos</a>
     <a href="admin-membros.html" class="active">Membros</a>
+    <a href="#" onclick="mostrarAba('membros',event)">Membros</a>
+    <a href="#" onclick="mostrarAba('forum',event)">💬 Fórum</a>
     <a href="admin-cupons.html">Cupons</a>
     <a href="admin-estoque.html">Estoque</a>
     <a href="admin-usuarios.html">Usuários</a>
@@ -68,6 +70,12 @@
 </header>
 
 <main>
+  <div style="display:flex;gap:12px;margin-bottom:24px">
+    <button class="filtro-btn active" id="tabMembros" onclick="mostrarAba('membros',event)">👥 Membros</button>
+    <button class="filtro-btn" id="tabForum" onclick="mostrarAba('forum',event)">💬 Fórum</button>
+  </div>
+
+  <div id="abaMembros">
   <h1>Gestão de Membros</h1>
 
   <div class="stats-grid">
@@ -102,6 +110,27 @@
     </table>
   </div>
 </main>
+
+</div><!-- /abaMembros -->
+
+  <div id="abaForum" style="display:none">
+    <h1>Moderação do Fórum</h1>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tópico</th>
+            <th>Autor</th>
+            <th>Categoria</th>
+            <th>Respostas</th>
+            <th>Data</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaForum"></tbody>
+      </table>
+    </div>
+  </div>
 
 <div id="toast"></div>
 
@@ -232,6 +261,75 @@ async function carregarMembros() {
 
 if (!adminToken) { location.href = 'admin-login.html?redirect=admin-membros.html'; }
 else { carregarMembros(); }
+
+function mostrarAba(aba, e) {
+  if (e) e.preventDefault();
+  document.getElementById('abaMembros').style.display = aba === 'membros' ? 'block' : 'none';
+  document.getElementById('abaForum').style.display = aba === 'forum' ? 'block' : 'none';
+  document.getElementById('tabMembros').classList.toggle('active', aba === 'membros');
+  document.getElementById('tabForum').classList.toggle('active', aba === 'forum');
+  if (aba === 'forum') carregarForum();
+}
+
+var catIcons = {geral:'💬', vendas:'💰', produtos:'🧬', duvidas:'❓', resultados:'🏆'};
+
+async function carregarForum() {
+  try {
+    var res = await fetch('/api/admin/forum', { headers: { Authorization: 'Basic ' + adminToken } });
+    var lista = await res.json();
+    var tbody = document.getElementById('tabelaForum');
+    if (!lista.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty">Nenhum tópico no fórum</td></tr>';
+      return;
+    }
+    tbody.innerHTML = lista.map(function(t) {
+      var icon = catIcons[t.categoria] || '💬';
+      var pinLabel = t.fixado ? '📌 ' : '';
+      return '<tr>' +
+        '<td><div style="font-weight:600;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + pinLabel + t.titulo + '</div>' +
+          '<div style="font-size:.75rem;color:rgba(255,255,255,.3)">' + (t.views||0) + ' views</div></td>' +
+        '<td><div style="font-size:.85rem">' + (t.autor_nome||'—') + '</div>' +
+          '<div style="font-size:.72rem;color:rgba(255,255,255,.3)">' + (t.autor_nivel||'') + '</div></td>' +
+        '<td>' + icon + ' ' + t.categoria + '</td>' +
+        '<td style="text-align:center">' + (t.total_respostas||0) + '</td>' +
+        '<td style="font-size:.78rem;color:rgba(255,255,255,.4)">' + new Date(t.criado_em).toLocaleDateString('pt-BR') + '</td>' +
+        '<td style="display:flex;gap:6px">' +
+          '<button class="filtro-btn" style="padding:4px 10px;font-size:.72rem" onclick="fixarTopico(' + t.id + ',' + (t.fixado?'true':'false') + ')">' +
+            (t.fixado ? '📌 Desafixar' : '📌 Fixar') + '</button>' +
+          '<button class="btn-bloquear" style="padding:4px 10px;font-size:.72rem" onclick="deletarTopico(' + t.id + ')">🗑 Deletar</button>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+  } catch { showToast('Erro ao carregar fórum.'); }
+}
+
+async function fixarTopico(id, fixado) {
+  var acao = fixado ? 'Desafixar' : 'Fixar';
+  if (!confirm(acao + ' este tópico?')) return;
+  try {
+    var res = await fetch('/api/admin/forum/' + id + '/fixar', {
+      method: 'PUT',
+      headers: { Authorization: 'Basic ' + adminToken }
+    });
+    var data = await res.json();
+    if (!res.ok) { showToast(data.erro || 'Erro.'); return; }
+    showToast(data.fixado ? 'Tópico fixado!' : 'Tópico desafixado!');
+    carregarForum();
+  } catch { showToast('Erro de conexão.'); }
+}
+
+async function deletarTopico(id) {
+  if (!confirm('Deletar este tópico e todas as suas respostas?')) return;
+  try {
+    var res = await fetch('/api/admin/forum/' + id, {
+      method: 'DELETE',
+      headers: { Authorization: 'Basic ' + adminToken }
+    });
+    if (!res.ok) { showToast('Erro ao deletar.'); return; }
+    showToast('Tópico deletado.');
+    carregarForum();
+  } catch { showToast('Erro de conexão.'); }
+}
 </script>
 </body>
 </html>

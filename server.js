@@ -1515,6 +1515,50 @@ app.get('/api/membros/admin', adminMiddleware, async (req, res) => {
   }
 });
 
+// Admin — listar tópicos do fórum
+app.get('/api/admin/forum', adminMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT t.*, u.nome as autor_nome, m.nivel as autor_nivel,
+             COUNT(r.id) as total_respostas
+      FROM pep_forum_topicos t
+      JOIN pep_membros m ON m.id = t.membro_id
+      JOIN pep_usuarios u ON u.id = m.usuario_id
+      LEFT JOIN pep_forum_respostas r ON r.topico_id = t.id
+      GROUP BY t.id, u.nome, m.nivel
+      ORDER BY t.fixado DESC, t.criado_em DESC
+    `);
+    res.json(r.rows);
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Admin — fixar/desafixar tópico
+app.put('/api/admin/forum/:id/fixar', adminMiddleware, async (req, res) => {
+  try {
+    const t = await pool.query(`SELECT fixado FROM pep_forum_topicos WHERE id=$1`, [req.params.id]);
+    if (!t.rows.length) return res.status(404).json({ erro: 'Não encontrado.' });
+    const novoStatus = !t.rows[0].fixado;
+    await pool.query(`UPDATE pep_forum_topicos SET fixado=$1 WHERE id=$2`, [novoStatus, req.params.id]);
+    res.json({ ok: true, fixado: novoStatus });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Admin — deletar tópico
+app.delete('/api/admin/forum/:id', adminMiddleware, async (req, res) => {
+  try {
+    await pool.query(`DELETE FROM pep_forum_topicos WHERE id=$1`, [req.params.id]);
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Admin — deletar resposta
+app.delete('/api/admin/forum/resposta/:id', adminMiddleware, async (req, res) => {
+  try {
+    await pool.query(`DELETE FROM pep_forum_respostas WHERE id=$1`, [req.params.id]);
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
 // Bloquear membro (admin)
 app.put('/api/admin/membro/:id/bloquear', adminMiddleware, async (req, res) => {
   try {
