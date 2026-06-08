@@ -46,6 +46,19 @@
     .btn-bloquear{padding:6px 14px;background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;text-transform:uppercase;border-radius:8px;cursor:pointer;transition:all .2s;white-space:nowrap}
     .btn-bloquear:hover{background:rgba(239,68,68,.25)}
     .empty{text-align:center;padding:48px;color:rgba(255,255,255,.3)}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:3000;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#1a0c00;border:1px solid rgba(255,179,0,.2);border-radius:16px;padding:28px;max-width:700px;width:100%;margin:auto}
+    .modal-box h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;text-transform:uppercase;color:var(--amber);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+    .modal-box table{width:100%;border-collapse:collapse}
+    .modal-box th{text-align:left;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .modal-box td{padding:9px 12px;font-size:.85rem;color:rgba(255,255,255,.75);border-bottom:1px solid rgba(255,255,255,.04)}
+    .modal-box tr:last-child td{border:none}
+    .modal-stats{display:flex;gap:20px;margin-bottom:18px}
+    .modal-stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,179,0,.1);border-radius:10px;padding:12px 18px}
+    .modal-stat .ml{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.4);margin-bottom:4px}
+    .modal-stat .mv{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:var(--amber)}
+    .valor-comissao{color:#22c55e;font-weight:700}
     #toast{position:fixed;bottom:24px;right:24px;background:#1a0c00;color:#fff;padding:12px 18px;border-radius:10px;font-size:.85rem;border-left:3px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(20px);opacity:0;transition:all .3s;z-index:5000;pointer-events:none}
     #toast.show{transform:translateY(0);opacity:1}
     @media(max-width:768px){.stats-grid{grid-template-columns:1fr 1fr}.nav-links{display:none}}
@@ -151,6 +164,20 @@
     </div>
   </div>
 
+<div class="modal-overlay" id="modalExtrato">
+  <div class="modal-box">
+    <h3>
+      <span id="modalExtratoTitulo">Extrato do Membro</span>
+      <button onclick="fecharExtrato()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:1.4rem;cursor:pointer">×</button>
+    </h3>
+    <div class="modal-stats">
+      <div class="modal-stat"><div class="ml">Volume Total</div><div class="mv" id="exVolume">—</div></div>
+      <div class="modal-stat"><div class="ml">Comissão Total</div><div class="mv" id="exComissao">—</div></div>
+      <div class="modal-stat"><div class="ml">Vendas</div><div class="mv" id="exVendas">—</div></div>
+    </div>
+    <div id="extratoTabela"></div>
+  </div>
+</div>
 <div id="toast"></div>
 
 <script>
@@ -224,7 +251,7 @@ function renderTabela() {
       '<td>' + (m.pagamento||'—') + '</td>' +
       '<td>' + ateStr + '</td>' +
       '<td>R$ ' + parseFloat(m.vendas_total||0).toFixed(2).replace('.',',') + '</td>' +
-      '<td style="display:flex;gap:6px;flex-wrap:wrap">' + (acoes || '—') + '</td>' +
+      '<td style="display:flex;gap:6px;flex-wrap:wrap">' + (acoes || '—') + ' <button class="filtro-btn" style="padding:4px 10px;font-size:.72rem" onclick="verExtrato(' + m.id + ',\"' + (m.nome||'') + '\")">📊 Extrato</button>' + '</td>' +
     '</tr>';
   }).join('');
 }
@@ -294,6 +321,43 @@ function mostrarAba(aba, e) {
 }
 
 var catIcons = {geral:'💬', vendas:'💰', produtos:'🧬', duvidas:'❓', resultados:'🏆'};
+
+function fecharExtrato() {
+  document.getElementById('modalExtrato').classList.remove('open');
+}
+document.getElementById('modalExtrato').addEventListener('click', function(e){
+  if (e.target === this) fecharExtrato();
+});
+
+async function verExtrato(membro_id, nome) {
+  document.getElementById('modalExtratoTitulo').textContent = 'Extrato — ' + nome;
+  document.getElementById('exVolume').textContent = '...';
+  document.getElementById('exComissao').textContent = '...';
+  document.getElementById('exVendas').textContent = '...';
+  document.getElementById('extratoTabela').innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,.3)">Carregando...</div>';
+  document.getElementById('modalExtrato').classList.add('open');
+  try {
+    var res = await fetch('/api/admin/membro/' + membro_id + '/extrato', {
+      headers: { Authorization: 'Basic ' + adminToken }
+    });
+    var data = await res.json();
+    if (!res.ok) { document.getElementById('extratoTabela').innerHTML = '<div style="text-align:center;padding:20px;color:#ef4444">'+( data.erro||'Erro')+'</div>'; return; }
+    document.getElementById('exVolume').textContent = 'R$ ' + parseFloat(data.total_volume||0).toFixed(2).replace('.',',');
+    document.getElementById('exComissao').textContent = 'R$ ' + parseFloat(data.total_comissao||0).toFixed(2).replace('.',',');
+    document.getElementById('exVendas').textContent = data.vendas.length;
+    if (!data.vendas.length) {
+      document.getElementById('extratoTabela').innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,.3)">Nenhuma venda registrada.</div>';
+      return;
+    }
+    document.getElementById('extratoTabela').innerHTML = '<table><thead><tr><th>Data</th><th>Produto</th><th>Valor</th><th>Comissão</th></tr></thead><tbody>' +
+    data.vendas.map(function(v){
+      return '<tr><td>'+new Date(v.criado_em).toLocaleDateString('pt-BR')+'</td>' +
+        '<td>'+(v.produto_nome||'—')+'</td>' +
+        '<td>R$ '+parseFloat(v.valor||0).toFixed(2).replace('.',',')+'</td>' +
+        '<td class="valor-comissao">+R$ '+parseFloat(v.comissao||0).toFixed(2).replace('.',',')+'</td></tr>';
+    }).join('') + '</tbody></table>';
+  } catch { document.getElementById('extratoTabela').innerHTML = '<div style="text-align:center;padding:20px;color:#ef4444">Erro de conexão.</div>'; }
+}
 
 async function carregarDenuncias() {
   try {

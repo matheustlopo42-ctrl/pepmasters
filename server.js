@@ -1772,6 +1772,24 @@ app.get('/api/membros/painel', authMiddleware, async (req, res) => {
   }
 });
 
+// Admin — extrato de um membro específico
+app.get('/api/admin/membro/:id/extrato', adminMiddleware, async (req, res) => {
+  try {
+    const vendas = await pool.query(`
+      SELECT va.*, p.produto_nome
+      FROM pep_vendas_afiliado va
+      LEFT JOIN pep_pedidos p ON p.id = va.pedido_id
+      WHERE va.membro_id = $1
+      ORDER BY va.criado_em DESC LIMIT 100
+    `, [req.params.id]);
+    const totais = await pool.query(`
+      SELECT COALESCE(SUM(comissao),0) as total_comissao, COALESCE(SUM(valor),0) as total_volume
+      FROM pep_vendas_afiliado WHERE membro_id=$1
+    `, [req.params.id]);
+    res.json({ vendas: vendas.rows, total_comissao: parseFloat(totais.rows[0].total_comissao), total_volume: parseFloat(totais.rows[0].total_volume) });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
 // Listar membros pendentes (admin)
 app.get('/api/membros/admin', adminMiddleware, async (req, res) => {
   try {
