@@ -610,11 +610,12 @@ async function carregarNotificacoes() {
       var cls = n.lida ? '' : ' nao-lida';
       var t = new Date(n.criado_em);
       var timeStr = t.toLocaleDateString('pt-BR') + ' ' + t.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-      return '<div class="notif-item'+cls+'" onclick="irParaNotif(''+n.link+'')">'+n.mensagem+'<div class="notif-data">'+timeStr+'</div></div>';
+      return '<div class="notif-item'+cls+'" onclick="irParaNotif(this)" data-link="'+(n.link||'')+'">'+n.mensagem+'<div class="notif-data">'+timeStr+'</div></div>';
     }).join('');
   } catch {}
 }
-function irParaNotif(link) {
+function irParaNotif(el) {
+  var link = el.getAttribute('data-link');
   if (link) location.href = link;
   document.getElementById('notifPanel').style.display = 'none';
 }
