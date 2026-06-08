@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Conteúdo Exclusivo — PEPMASTERS Members</title>
+  <title>Exclusive Content — PEPMASTERS Members</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
   <style>
     :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580}
@@ -82,16 +82,16 @@
 
 <div class="hero">
   <h1>Conteúdo <span>Exclusivo</span></h1>
-  <p>Protocolos, materiais de divulgação e guias para distribuidores.</p>
+  <p data-i18n="content.hero.subtitle">Protocolos, materiais de divulgação e guias para distribuidores.</p>
 </div>
 
 <main>
   <div class="cat-tabs">
-    <button class="cat-tab active" onclick="filtrar('todos',this)">Todos</button>
-    <button class="cat-tab" onclick="filtrar('protocolo',this)">🧬 Protocolos</button>
-    <button class="cat-tab" onclick="filtrar('material',this)">📢 Materiais</button>
-    <button class="cat-tab" onclick="filtrar('guia',this)">📖 Guias</button>
-    <button class="cat-tab" onclick="filtrar('desconto',this)">💰 Descontos</button>
+    <button class="cat-tab active" onclick="filtrar('todos',this)" data-i18n="forum.cat.all">Todos</button>
+    <button class="cat-tab" onclick="filtrar('protocolo',this)" data-i18n="content.cat.protocols">🧬 Protocolos</button>
+    <button class="cat-tab" onclick="filtrar('material',this)" data-i18n="content.cat.materials">📢 Materiais</button>
+    <button class="cat-tab" onclick="filtrar('guia',this)" data-i18n="content.cat.guides">📖 Guias</button>
+    <button class="cat-tab" onclick="filtrar('desconto',this)" data-i18n="content.cat.discounts">💰 Descontos</button>
   </div>
   <div class="content-grid" id="contentGrid"></div>
 </main>
@@ -213,7 +213,7 @@ var conteudos = [
     corpo: {
       intro: 'Use esses scripts como base. Adapte para sua linguagem e público.',
       secoes: [
-        { titulo:'Story — Awareness', items:['"Você sabia que peptídeos bioativos já são usados por atletas de elite para recuperação? A PEPMASTERS traz isso pro Brasil com qualidade e transparência. 🧬 Link na bio!"'] },
+        { titulo:'Story — Awareness', items:['"Você sabia que peptídeos bioativos já são usados por atletas de elite para recuperação? A PEPMASTERS traz isso com qualidade e transparência para você. 🧬 Link na bio!"'] },
         { titulo:'Feed — Conversão', items:['"Performance não é sorte. É ciência. Conheça os peptídeos bioativos que estão transformando a recuperação e composição corporal de atletas. PEPMASTERS — link na bio!"'] },
         { titulo:'DM — Abordagem', items:['"Oi [nome]! Vi que você treina sério. Quero te apresentar algo que tem feito diferença na minha recuperação. Posso te mandar mais informações?"'] },
       ],
@@ -312,24 +312,24 @@ function renderGrid(){
     return catAtual === 'todos' || c.tipo === catAtual;
   });
 
+  var d = window.PEPMASTERS_I18N || {};
+  var l = localStorage.getItem('pep_lang') || 'en';
+  var tr = function(k){ return (d[k] && (d[k][l] || d[k]['en'])) || k; };
+
   grid.innerHTML = lista.map(function(c){
     var temAcesso = true;
-    var nivelLabel = {bronze:'Bronze',prata:'Prata',ouro:'Ouro',diamante:'Diamante'}[c.nivel];
+    var nivelLabel = {bronze:'Bronze',prata:tr('members.level.prata'),ouro:tr('members.level.ouro'),diamante:tr('members.level.diamante')}[c.nivel];
+    var tipoLabel = tr('content.tipo.' + c.tipo);
     return '<div class="content-card" onclick="abrirConteudo('+c.id+')">' +
       '<div class="card-header">' +
-        '<div class="card-icon">' + (temAcesso ? c.icon : '🔒') + '</div>' +
+        '<div class="card-icon">' + c.icon + '</div>' +
         '<div>' +
-          '<div class="card-tipo">' + c.tipo + '</div>' +
+          '<div class="card-tipo">' + tipoLabel + '</div>' +
           '<div class="card-titulo">' + c.titulo + '</div>' +
         '</div>' +
       '</div>' +
       '<div class="card-body">' +
         '<div class="card-desc">' + c.desc + '</div>' +
-        '<div class="card-meta">' +
-          '<span class="nivel-required nivel-'+c.nivel+'">'+
-            ({bronze:'🥉',prata:'🥈',ouro:'🥇',diamante:'💎'}[c.nivel])+' '+nivelLabel+'+' +
-          '</span>' +
-        '</div>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -355,7 +355,10 @@ function abrirConteudo(id){
       body += '</ul>';
     });
     if (c.corpo.estudos && c.corpo.estudos.length) {
-      body += '<h3>📚 Estudos e Referências</h3><ul>';
+      var d2 = window.PEPMASTERS_I18N || {};
+      var l2 = localStorage.getItem('pep_lang') || 'en';
+      var studiesLabel = (d2['content.studies'] && (d2['content.studies'][l2] || d2['content.studies']['en'])) || '📚 Studies & References';
+      body += '<h3>' + studiesLabel + '</h3><ul>';
       c.corpo.estudos.forEach(function(e){
         body += '<li><a href="' + e.url + '" target="_blank" rel="noopener" style="color:var(--amber);text-decoration:none;border-bottom:1px solid rgba(255,179,0,.3)">' + e.texto + ' ↗</a></li>';
       });
@@ -390,6 +393,22 @@ async function init(){
 }
 
 init();
+</script>
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
+<script>
+(function(){
+  function applyNow(){
+    var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';if(!d)return;
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var val=d[el.getAttribute('data-i18n')];val=val&&(val[l]||val['en']);
+      if(!val)return;el.textContent=val;
+    });
+  }
+  applyNow();setTimeout(applyNow,100);setTimeout(applyNow,500);
+  window.addEventListener('pep_lang_change',applyNow);
+  window.addEventListener('load',applyNow);
+})();
 </script>
 </body>
 </html>

@@ -416,6 +416,17 @@ window.PEPMASTERS_I18N = {
   "members.login.required": { en:"Login required",   pt:"Login necessário",  es:"Inicio de sesión requerido", de:"Anmeldung erforderlich", fr:"Connexion requise" },
   "members.login.desc":     { en:"Log in with your PEPMASTERS account to access the members area.", pt:"Faça login com sua conta PEPMASTERS para acessar a área de membros.", es:"Inicia sesión con tu cuenta PEPMASTERS.", de:"Melde dich mit deinem PEPMASTERS-Konto an.", fr:"Connectez-vous avec votre compte PEPMASTERS." },
   "members.login.btn":      { en:"Login",            pt:"Fazer Login",       es:"Iniciar sesión",    de:"Anmelden",          fr:"Se connecter" },
+  // CONTEÚDO EXCLUSIVO
+  "content.hero.subtitle":   { en:"Protocols, marketing materials and guides for distributors.", pt:"Protocolos, materiais de divulgação e guias para distribuidores.", es:"Protocolos, materiales y guías para distribuidores.", de:"Protokolle, Materialien und Leitfäden für Distributoren.", fr:"Protocoles, matériaux et guides pour les distributeurs." },
+  "content.cat.protocols":   { en:"🧬 Protocols",    pt:"🧬 Protocolos",  es:"🧬 Protocolos",  de:"🧬 Protokolle",  fr:"🧬 Protocoles" },
+  "content.cat.materials":   { en:"📢 Materials",    pt:"📢 Materiais",   es:"📢 Materiales",  de:"📢 Materialien", fr:"📢 Matériaux" },
+  "content.cat.guides":      { en:"📖 Guides",       pt:"📖 Guias",       es:"📖 Guías",       de:"📖 Leitfäden",   fr:"📖 Guides" },
+  "content.cat.discounts":   { en:"💰 Discounts",    pt:"💰 Descontos",   es:"💰 Descuentos",  de:"💰 Rabatte",     fr:"💰 Remises" },
+  "content.studies":         { en:"📚 Studies & References", pt:"📚 Estudos e Referências", es:"📚 Estudios y Referencias", de:"📚 Studien & Referenzen", fr:"📚 Études et Références" },
+  "content.tipo.protocolo":  { en:"protocol",        pt:"protocolo",      es:"protocolo",      de:"Protokoll",      fr:"protocole" },
+  "content.tipo.material":   { en:"material",        pt:"material",       es:"material",       de:"Material",       fr:"matériau" },
+  "content.tipo.guia":       { en:"guide",           pt:"guia",           es:"guía",           de:"Leitfaden",      fr:"guide" },
+  "content.tipo.desconto":   { en:"discount",        pt:"desconto",       es:"descuento",      de:"Rabatt",         fr:"remise" },
   // FORUM
   "forum.title":            { en:"Forum",            pt:"Fórum",             es:"Foro",              de:"Forum",             fr:"Forum" },
   "forum.new.topic":        { en:"+ New Topic",      pt:"+ Novo Tópico",     es:"+ Nuevo Tema",      de:"+ Neues Thema",     fr:"+ Nouveau sujet" },
