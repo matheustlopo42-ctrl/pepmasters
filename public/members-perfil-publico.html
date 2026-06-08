@@ -64,52 +64,52 @@
     <span class="members-badge">Members</span>
   </div>
   <div class="header-right">
-    <a href="members.html" class="nav-link">Painel</a>
-    <a href="members-perfil-publico.html" class="nav-link active">Perfil</a>
-    <a href="members-ranking.html" class="nav-link">Ranking</a>
-    <a href="members-forum.html" class="nav-link">Fórum</a>
-    <a href="#" class="nav-link" onclick="sair(event)">Sair</a>
+    <a href="members.html" class="nav-link" data-i18n="members.nav.panel">Painel</a>
+    <a href="members-perfil-publico.html" class="nav-link active" data-i18n="perfil.title">Perfil</a>
+    <a href="members-ranking.html" class="nav-link" data-i18n="ranking.title">Ranking</a>
+    <a href="members-forum.html" class="nav-link" data-i18n="members.nav.forum">Fórum</a>
+    <a href="#" class="nav-link" onclick="sair(event)" data-i18n="members.nav.logout">Sair</a>
   </div>
 </header>
 
 <main>
   <!-- FORMULÁRIO -->
   <div class="card">
-    <h2>✏️ Editar Perfil Público</h2>
+    <h2 data-i18n="perfil.title">✏️ Editar Perfil Público</h2>
     <div id="msgOk"></div>
     <div id="msgErro"></div>
 
     <div class="form-group">
-      <label>URL do perfil (slug)</label>
+      <label data-i18n="perfil.slug">URL do perfil (slug)</label>
       <input type="text" id="slug" placeholder="ex: joao-silva" oninput="atualizarPreview()"/>
       <div class="slug-preview" id="slugPreview"></div>
     </div>
     <div class="form-group">
-      <label>Bio</label>
-      <textarea id="bio" placeholder="Conte um pouco sobre você..." oninput="atualizarPreview()"></textarea>
+      <label data-i18n="perfil.bio.label">Bio</label>
+      <textarea id="bio" data-i18n-placeholder="perfil.bio.placeholder" placeholder="Conte um pouco sobre você..." oninput="atualizarPreview()"></textarea>
     </div>
     <div class="form-group">
-      <label>Instagram (sem @)</label>
+      <label data-i18n="perfil.instagram">Instagram (sem @)</label>
       <input type="text" id="instagram" placeholder="seuperfil" oninput="atualizarPreview()"/>
     </div>
     <div class="form-group">
-      <label>WhatsApp</label>
+      <label data-i18n="perfil.whatsapp">WhatsApp</label>
       <input type="text" id="whatsapp" placeholder="5511999999999"/>
     </div>
     <div class="toggle-row">
-      <span class="toggle-label">Perfil público ativo</span>
+      <span class="toggle-label" data-i18n="perfil.public.toggle">Perfil público ativo</span>
       <label class="toggle">
         <input type="checkbox" id="perfilPublico" onchange="atualizarPreview()"/>
         <span class="slider"></span>
       </label>
     </div>
-    <button class="btn-salvar" onclick="salvar()">💾 Salvar perfil</button>
+    <button class="btn-salvar" onclick="salvar()" data-i18n="perfil.save">💾 Salvar perfil</button>
   </div>
 
   <!-- PREVIEW + BADGES -->
   <div>
     <div class="card" style="margin-bottom:16px">
-      <h2>👁 Preview</h2>
+      <h2 data-i18n="perfil.preview">👁 Preview</h2>
       <div class="preview-card">
         <div class="preview-avatar" id="prevAvatar">?</div>
         <div class="preview-nome" id="prevNome">Seu Nome</div>
@@ -125,7 +125,7 @@
     </div>
 
     <div class="card">
-      <h2>🏅 Suas Conquistas</h2>
+      <h2 data-i18n="perfil.badges">🏅 Suas Conquistas</h2>
       <div class="badges-grid" id="badgesGrid">
         <div style="color:rgba(255,255,255,.3);font-size:.85rem">Carregando badges...</div>
       </div>
@@ -153,6 +153,9 @@ function atualizarPreview() {
   document.getElementById('prevBio').textContent = bio || 'Sua bio aparece aqui...';
   document.getElementById('prevInsta').textContent = insta ? '📸 @' + insta : '';
   document.getElementById('prevLinkAfil').href = dadosMembro.link_afiliado || '#';
+    var _pdb=window.PEPMASTERS_I18N||{};var _plb=localStorage.getItem('pep_lang')||'en';
+    var _ptr=function(k){return(_pdb[k]&&(_pdb[k][_plb]||_pdb[k]['en']))||k;};
+    document.getElementById('prevLinkAfil').textContent = _ptr('perfil.buy.link');
 }
 
 async function salvar() {
@@ -174,7 +177,8 @@ async function salvar() {
     });
     var data = await res.json();
     if (!res.ok) { err.textContent = data.erro || 'Erro ao salvar.'; err.style.display = 'block'; return; }
-    ok.textContent = '✅ Perfil salvo com sucesso!';
+    var _dp=window.PEPMASTERS_I18N||{};var _lp=localStorage.getItem('pep_lang')||'en';var _trp=function(k){return(_dp[k]&&(_dp[k][_lp]||_dp[k]['en']))||k;};
+    ok.textContent = _trp('perfil.saved');
     ok.style.display = 'block';
   } catch { err.textContent = 'Erro de conexão.'; err.style.display = 'block'; }
 }
@@ -193,6 +197,9 @@ async function init() {
     document.getElementById('prevVendas').textContent = dadosMembro.total_vendas || 0;
     document.getElementById('prevVolume').textContent = fmt(dadosMembro.volume_vendas);
     document.getElementById('prevLinkAfil').href = dadosMembro.link_afiliado || '#';
+    var _pdb=window.PEPMASTERS_I18N||{};var _plb=localStorage.getItem('pep_lang')||'en';
+    var _ptr=function(k){return(_pdb[k]&&(_pdb[k][_plb]||_pdb[k]['en']))||k;};
+    document.getElementById('prevLinkAfil').textContent = _ptr('perfil.buy.link');
 
     // Carregar perfil atual
     var perfRes = await fetch('/api/membros/painel', {headers:{Authorization:'Bearer '+token}});
@@ -204,7 +211,8 @@ async function init() {
     var badges = await badgeRes.json();
     var grid = document.getElementById('badgesGrid');
     if (!badges.length) {
-      grid.innerHTML = '<div style="color:rgba(255,255,255,.3);font-size:.85rem">Nenhuma conquista ainda. Continue vendendo!</div>';
+      var _db=window.PEPMASTERS_I18N||{};var _lb=localStorage.getItem('pep_lang')||'en';var _trb=function(k){return(_db[k]&&(_db[k][_lb]||_db[k]['en']))||k;};
+      grid.innerHTML = '<div style="color:rgba(255,255,255,.3);font-size:.85rem">'+_trb('perfil.no.badges')+'</div>';
     } else {
       grid.innerHTML = badges.map(function(b){
         return '<div class="badge-item"><span class="bi">'+b.icone+'</span><div><div class="bn">'+b.nome+'</div><div class="bd">'+b.desc+'</div></div></div>';

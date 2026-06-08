@@ -63,16 +63,16 @@
     <span class="members-badge">Members</span>
   </div>
   <div class="header-right">
-    <a href="members.html" class="nav-link">Painel</a>
-    <a href="members-ranking.html" class="nav-link active">Ranking</a>
-    <a href="members-extrato.html" class="nav-link">Extrato</a>
-    <a href="members-forum.html" class="nav-link">Fórum</a>
-    <a href="#" class="nav-link" onclick="sair(event)">Sair</a>
+    <a href="members.html" class="nav-link" data-i18n="members.nav.panel">Painel</a>
+    <a href="members-ranking.html" class="nav-link active" data-i18n="ranking.title">Ranking</a>
+    <a href="members-extrato.html" class="nav-link" data-i18n="extrato.title">Extrato</a>
+    <a href="members-forum.html" class="nav-link" data-i18n="members.nav.forum">Fórum</a>
+    <a href="#" class="nav-link" onclick="sair(event)" data-i18n="members.nav.logout">Sair</a>
   </div>
 </header>
 
 <div class="hero">
-  <h1>🏆 Ranking <span>Mensal</span></h1>
+  <h1>🏆 <span data-i18n="ranking.title">Ranking Mensal</span></h1>
   <p id="periodoLabel"></p>
 </div>
 
@@ -99,8 +99,16 @@ function fmt(v){ return 'R$ ' + parseFloat(v||0).toFixed(2).replace('.',','); }
 async function init() {
   if (!token) { location.href = 'login.html?redirect=members-ranking.html'; return; }
   var agora = new Date();
-  document.getElementById('mesLabel').textContent = meses[agora.getMonth()] + ' ' + agora.getFullYear();
-  document.getElementById('periodoLabel').textContent = 'Top distribuidores de ' + meses[agora.getMonth()];
+  document.getElementById('mesLabel').textContent = mesTrad + ' ' + agora.getFullYear();
+  var _d=window.PEPMASTERS_I18N||{};var _l=localStorage.getItem('pep_lang')||'en';
+  var _tr=function(k){return(_d[k]&&(_d[k][_l]||_d[k]['en']))||k;};
+  var mesesEn=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var mesesEs=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  var mesesDe=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  var mesesFr=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  var mesMap={en:mesesEn,pt:meses,es:mesesEs,de:mesesDe,fr:mesesFr};
+  var mesTrad=(mesMap[_l]||meses)[agora.getMonth()];
+  document.getElementById('periodoLabel').textContent = _tr('ranking.subtitle') + ' ' + mesTrad;
 
   try {
     var res = await fetch('/api/membros/ranking', {headers:{Authorization:'Bearer '+token}});
@@ -120,7 +128,7 @@ async function init() {
     var posIcons = ['🥇','🥈','🥉'];
 
     if (top3.length === 0) {
-      podio.innerHTML = '<div class="empty">Nenhuma venda este mês ainda. Seja o primeiro!</div>';
+      podio.innerHTML = '<div class="empty">'+_tr('ranking.empty')+'</div>';
     } else {
       var podioHtml = ordem.map(function(idx) {
         var p = top3[idx];
@@ -139,7 +147,7 @@ async function init() {
 
     // Lista completa
     var lista_el = document.getElementById('listaRanking');
-    if (!lista.length) { lista_el.innerHTML = '<div class="empty">Nenhuma venda registrada este mês.</div>'; return; }
+    if (!lista.length) { lista_el.innerHTML = '<div class="empty">'+_tr('ranking.no.sales')+'</div>'; return; }
 
     lista_el.innerHTML = lista.map(function(p, i) {
       var ini = (p.nome||'?')[0].toUpperCase();
@@ -149,12 +157,12 @@ async function init() {
         '<div class="rank-pos">'+(i+1)+'</div>' +
         '<div class="rank-avatar">'+ini+'</div>' +
         '<div class="rank-info">' +
-          '<div class="rank-nome">'+p.nome+(p.codigo_ref===meuRef?' <span style="color:var(--amber);font-size:.75rem">(você)</span>':'')+'</div>' +
+          '<div class="rank-nome">'+p.nome+(p.codigo_ref===meuRef?' <span style="color:var(--amber);font-size:.75rem">'+_tr('ranking.you')+'</span>':'')+'</div>' +
           '<div class="rank-nivel nivel-'+nivel+'">'+nivelIcons[nivel]+' '+nivel.charAt(0).toUpperCase()+nivel.slice(1)+'</div>' +
         '</div>' +
         '<div class="rank-stats">' +
           '<div class="rank-volume">'+fmt(p.volume_mes)+'</div>' +
-          '<div class="rank-vendas">'+p.vendas_mes+' vendas</div>' +
+          '<div class="rank-vendas">'+p.vendas_mes+' '+_tr('ranking.sales')+'</div>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -165,5 +173,21 @@ init();
 </script>
 <script src="i18n.js"></script>
 <script src="i18n-init.js"></script>
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
+<script>
+(function(){
+  function applyNow(){
+    var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';if(!d)return;
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var val=d[el.getAttribute('data-i18n')];val=val&&(val[l]||val['en']);
+      if(!val)return;el.textContent=val;
+    });
+  }
+  applyNow();setTimeout(applyNow,100);setTimeout(applyNow,500);
+  window.addEventListener('pep_lang_change',applyNow);
+  window.addEventListener('load',applyNow);
+})();
+</script>
 </body>
 </html>

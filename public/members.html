@@ -155,8 +155,8 @@
       🔔<span class="notif-badge" id="notifBadge">0</span>
     </button>
     <div class="notif-panel" id="notifPanel">
-      <div class="notif-header"><span>Notificações</span><button onclick="marcarLidas()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:.75rem;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase">Marcar lidas</button></div>
-      <div id="notifLista"><div class="notif-empty">Sem notificações</div></div>
+      <div class="notif-header"><span data-i18n="notif.title">Notificações</span><button onclick="marcarLidas()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:.75rem;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase" data-i18n="notif.mark.read">Marcar lidas</button></div>
+      <div id="notifLista"><div class="notif-empty" data-i18n="notif.empty">Sem notificações</div></div>
     </div>
     <a href="members-conteudo.html" class="btn-sair" data-i18n="content.nav.content">📚 Conteúdo</a>
     <a href="members-forum.html" class="btn-sair" data-i18n="members.nav.forum">💬 Fórum</a>
@@ -605,7 +605,7 @@ async function carregarNotificacoes() {
       badge.textContent = data.nao_lidas;
       badge.style.display = 'flex';
     }
-    if (!data.notificacoes.length) { lista.innerHTML = '<div class="notif-empty">Sem notificações</div>'; return; }
+    if (!data.notificacoes.length) { lista.innerHTML = '<div class="notif-empty" data-i18n="notif.empty">Sem notificações</div>'; return; }
     lista.innerHTML = data.notificacoes.map(function(n){
       var cls = n.lida ? '' : ' nao-lida';
       var t = new Date(n.criado_em);

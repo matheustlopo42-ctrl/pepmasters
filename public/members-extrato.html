@@ -47,25 +47,25 @@
     <span class="members-badge">Members</span>
   </div>
   <div class="header-right">
-    <a href="members.html" class="nav-link">Painel</a>
-    <a href="members-ranking.html" class="nav-link">Ranking</a>
-    <a href="members-extrato.html" class="nav-link active">Extrato</a>
-    <a href="members-forum.html" class="nav-link">Fórum</a>
-    <a href="#" class="nav-link" onclick="sair(event)">Sair</a>
+    <a href="members.html" class="nav-link" data-i18n="members.nav.panel">Painel</a>
+    <a href="members-ranking.html" class="nav-link" data-i18n="ranking.title">Ranking</a>
+    <a href="members-extrato.html" class="nav-link active" data-i18n="extrato.title">Extrato</a>
+    <a href="members-forum.html" class="nav-link" data-i18n="members.nav.forum">Fórum</a>
+    <a href="#" class="nav-link" onclick="sair(event)" data-i18n="members.nav.logout">Sair</a>
   </div>
 </header>
 
 <main>
-  <h1>💳 Extrato</h1>
+  <h1>💳 <span data-i18n="extrato.title">Extrato</span></h1>
   <div class="stats-grid">
-    <div class="stat-card"><div class="label">Volume Total</div><div class="value" id="statVolume">—</div></div>
-    <div class="stat-card"><div class="label">Comissão Total</div><div class="value" id="statComissao">—</div></div>
-    <div class="stat-card"><div class="label">Total de Vendas</div><div class="value" id="statVendas">—</div></div>
+    <div class="stat-card"><div class="label" data-i18n="extrato.volume">Volume Total</div><div class="value" id="statVolume">—</div></div>
+    <div class="stat-card"><div class="label" data-i18n="extrato.commission">Comissão Total</div><div class="value" id="statComissao">—</div></div>
+    <div class="stat-card"><div class="label" data-i18n="extrato.sales">Total de Vendas</div><div class="value" id="statVendas">—</div></div>
   </div>
   <div class="tabs">
-    <button class="tab-btn active" onclick="mostrarTab('vendas',this)">💰 Vendas</button>
-    <button class="tab-btn" onclick="mostrarTab('pagamentos',this)">📋 Mensalidades</button>
-    <button class="tab-btn" onclick="mostrarTab('links',this)">🔗 Links por Produto</button>
+    <button class="tab-btn active" onclick="mostrarTab('vendas',this)" data-i18n="extrato.tab.sales">💰 Vendas</button>
+    <button class="tab-btn" onclick="mostrarTab('pagamentos',this)" data-i18n="extrato.tab.payments">📋 Mensalidades</button>
+    <button class="tab-btn" onclick="mostrarTab('links',this)" data-i18n="extrato.tab.links">🔗 Links por Produto</button>
   </div>
   <div id="tabVendas"></div>
   <div id="tabPagamentos" style="display:none"></div>
@@ -93,7 +93,9 @@ function mostrarTab(tab, btn) {
 }
 
 function copiarLink(txt) {
-  navigator.clipboard.writeText(txt).then(function(){ showToast('Link copiado!'); });
+  var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';
+  var tr=function(k){return(d[k]&&(d[k][l]||d[k]['en']))||k;};
+  navigator.clipboard.writeText(txt).then(function(){ showToast(tr('extrato.link.copied')); });
 }
 
 async function carregarLinks() {
@@ -101,7 +103,7 @@ async function carregarLinks() {
     var res = await fetch('/api/membros/links', {headers:{Authorization:'Bearer '+token}});
     var lista = await res.json();
     var el = document.getElementById('tabLinks');
-    if (!lista.length) { el.innerHTML = '<div class="empty">Nenhum produto disponível.</div>'; return; }
+    if (!lista.length) { el.innerHTML = '<div class="empty">No products available.</div>'; return; }
     dadosLinks = lista;
     el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Produto</th><th>Link de Afiliado</th><th></th></tr></thead><tbody>' +
     lista.map(function(l){
@@ -130,9 +132,10 @@ async function init() {
     // Tab vendas
     var vendas_el = document.getElementById('tabVendas');
     if (!data.vendas.length) {
-      vendas_el.innerHTML = '<div class="empty">Nenhuma venda registrada ainda.</div>';
+      var _de=window.PEPMASTERS_I18N||{};var _le=localStorage.getItem('pep_lang')||'en';var _tre=function(k){return(_de[k]&&(_de[k][_le]||_de[k]['en']))||k;};
+    vendas_el.innerHTML = '<div class="empty">'+_tre('extrato.empty.sales')+'</div>';
     } else {
-      vendas_el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Data</th><th>Produto</th><th>Valor Venda</th><th>Comissão</th></tr></thead><tbody>' +
+      vendas_el.innerHTML = (function(){var d2=window.PEPMASTERS_I18N||{};var l2=localStorage.getItem('pep_lang')||'en';var tr2=function(k){return(d2[k]&&(d2[k][l2]||d2[k]['en']))||k;};return '<div class="table-wrap"><table><thead><tr><th>'+tr2('extrato.date')+'</th><th>'+tr2('extrato.product')+'</th><th>'+tr2('extrato.value')+'</th><th>'+tr2('extrato.commission.col')+'</th></tr></thead><tbody>';})() +
       data.vendas.map(function(v){
         return '<tr>' +
           '<td>'+new Date(v.criado_em).toLocaleDateString('pt-BR')+'</td>' +
@@ -147,9 +150,10 @@ async function init() {
     // Tab pagamentos
     var pag_el = document.getElementById('tabPagamentos');
     if (!data.pagamentos.length) {
-      pag_el.innerHTML = '<div class="empty">Nenhum pagamento registrado.</div>';
+      var _dp=window.PEPMASTERS_I18N||{};var _lp=localStorage.getItem('pep_lang')||'en';var _trp=function(k){return(_dp[k]&&(_dp[k][_lp]||_dp[k]['en']))||k;};
+    pag_el.innerHTML = '<div class="empty">'+_trp('extrato.empty.payments')+'</div>';
     } else {
-      pag_el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Data</th><th>Valor</th><th>Forma</th><th>Status</th></tr></thead><tbody>' +
+      pag_el.innerHTML = (function(){var dp=window.PEPMASTERS_I18N||{};var lp=localStorage.getItem('pep_lang')||'en';var trp=function(k){return(dp[k]&&(dp[k][lp]||dp[k]['en']))||k;};return '<div class="table-wrap"><table><thead><tr><th>'+trp('extrato.date')+'</th><th>'+trp('extrato.value')+'</th><th>'+trp('extrato.method')+'</th><th>'+trp('extrato.status')+'</th></tr></thead><tbody>';})() +
       data.pagamentos.map(function(p){
         var statusClass = p.status === 'pago' ? 'badge-pago' : 'badge-pendente';
         return '<tr>' +
@@ -168,5 +172,21 @@ init();
 </script>
 <script src="i18n.js"></script>
 <script src="i18n-init.js"></script>
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
+<script>
+(function(){
+  function applyNow(){
+    var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';if(!d)return;
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var val=d[el.getAttribute('data-i18n')];val=val&&(val[l]||val['en']);
+      if(!val)return;el.textContent=val;
+    });
+  }
+  applyNow();setTimeout(applyNow,100);setTimeout(applyNow,500);
+  window.addEventListener('pep_lang_change',function(){applyNow();renderTabs();});
+  window.addEventListener('load',applyNow);
+})();
+</script>
 </body>
 </html>
