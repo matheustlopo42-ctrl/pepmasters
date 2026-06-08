@@ -174,20 +174,27 @@ async function init() {
 <script src="i18n-init.js"></script>
 <script>
 (function waitI18n(){
-  if(window.PEPMASTERS_I18N){init();}
-  else{setTimeout(waitI18n,50);}
-})();
-(function(){
-  function applyNow(){
-    var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';if(!d)return;
+  if(window.PEPMASTERS_I18N){
+    // Traduzir elementos data-i18n
+    var d=window.PEPMASTERS_I18N;
+    var l=localStorage.getItem('pep_lang')||'en';
     document.querySelectorAll('[data-i18n]').forEach(function(el){
-      var val=d[el.getAttribute('data-i18n')];val=val&&(val[l]||val['en']);
-      if(!val)return;el.textContent=val;
+      var val=d[el.getAttribute('data-i18n')];
+      val=val&&(val[l]||val['en']);
+      if(val) el.textContent=val;
     });
+    // Re-traduzir ao mudar idioma
+    window.addEventListener('pep_lang_change',function(){
+      var d2=window.PEPMASTERS_I18N;var l2=localStorage.getItem('pep_lang')||'en';
+      document.querySelectorAll('[data-i18n]').forEach(function(el){
+        var val=d2[el.getAttribute('data-i18n')];val=val&&(val[l2]||val['en']);
+        if(val) el.textContent=val;
+      });
+    });
+    init();
+  } else {
+    setTimeout(waitI18n,50);
   }
-  applyNow();setTimeout(applyNow,100);setTimeout(applyNow,500);
-  window.addEventListener('pep_lang_change',function(){applyNow();});
-  window.addEventListener('load',applyNow);
 })();
 </script>
 </body>
