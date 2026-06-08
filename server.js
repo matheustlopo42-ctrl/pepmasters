@@ -196,6 +196,19 @@ async function initDB() {
     // Coluna ref_code em pedidos para rastrear afiliado
     await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS ref_code TEXT`).catch(() => {});
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_forum_denuncias (
+        id          SERIAL PRIMARY KEY,
+        topico_id   INT REFERENCES pep_forum_topicos(id) ON DELETE CASCADE,
+        resposta_id INT REFERENCES pep_forum_respostas(id) ON DELETE CASCADE,
+        membro_id   INT NOT NULL REFERENCES pep_membros(id),
+        motivo      TEXT,
+        status      TEXT DEFAULT 'pendente',
+        criado_em   TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+    await client.query(`ALTER TABLE pep_forum_respostas ADD COLUMN IF NOT EXISTS denuncias INT DEFAULT 0`).catch(()=>{});
+
     // ── FÓRUM ─────────────────────────────────────
     await client.query(`
       CREATE TABLE IF NOT EXISTS pep_forum_topicos (
@@ -1513,6 +1526,76 @@ app.get('/api/membros/admin', adminMiddleware, async (req, res) => {
   } catch (err) {
     res.status(500).json({ erro: err.message });
   }
+});
+
+// Denunciar tópico ou resposta
+app.post('/api/forum/denunciar', membroMiddleware, async (req, res) => {
+  const { topico_id, resposta_id, motivo } = req.body;
+  if (!topico_id && !resposta_id) return res.status(400).json({ erro: 'Informe o tópico ou resposta.' });
+  try {
+    // Verificar se já denunciou
+    const existing = await pool.query(
+      `SELECT id FROM pep_forum_denuncias WHERE membro_id=$1 AND (topico_id=$2 OR resposta_id=$3)`,
+      [req.membro.id, topico_id || null, resposta_id || null]
+    );
+    if (existing.rows.length) return res.status(400).json({ erro: 'Você já denunciou este conteúdo.' });
+
+    await pool.query(
+      `INSERT INTO pep_forum_denuncias (topico_id, resposta_id, membro_id, motivo) VALUES ($1,$2,$3,$4)`,
+      [topico_id || null, resposta_id || null, req.membro.id, motivo || null]
+    );
+    if (resposta_id) {
+      await pool.query(`UPDATE pep_forum_respostas SET denuncias=denuncias+1 WHERE id=$1`, [resposta_id]);
+    }
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Admin — listar denúncias
+app.get('/api/admin/forum/denuncias', adminMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT d.*, 
+             u.nome as denunciante,
+             t.titulo as topico_titulo,
+             resp.conteudo as resposta_conteudo,
+             ua.nome as autor_nome
+      FROM pep_forum_denuncias d
+      JOIN pep_membros md ON md.id = d.membro_id
+      JOIN pep_usuarios u ON u.id = md.usuario_id
+      LEFT JOIN pep_forum_topicos t ON t.id = d.topico_id
+      LEFT JOIN pep_forum_respostas resp ON resp.id = d.resposta_id
+      LEFT JOIN pep_membros ma ON ma.id = resp.membro_id
+      LEFT JOIN pep_usuarios ua ON ua.id = ma.usuario_id
+      WHERE d.status = 'pendente'
+      ORDER BY d.criado_em DESC
+    `);
+    res.json(r.rows);
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Admin — resolver denúncia
+app.put('/api/admin/forum/denuncias/:id', adminMiddleware, async (req, res) => {
+  const { acao } = req.body; // 'ignorar' ou 'deletar'
+  try {
+    const d = await pool.query(`SELECT * FROM pep_forum_denuncias WHERE id=$1`, [req.params.id]);
+    if (!d.rows.length) return res.status(404).json({ erro: 'Não encontrado.' });
+    const denuncia = d.rows[0];
+
+    if (acao === 'deletar') {
+      if (denuncia.resposta_id) {
+        await pool.query(`DELETE FROM pep_forum_respostas WHERE id=$1`, [denuncia.resposta_id]);
+      } else if (denuncia.topico_id) {
+        await pool.query(`DELETE FROM pep_forum_topicos WHERE id=$1`, [denuncia.topico_id]);
+      }
+    }
+    // Marcar todas denúncias do mesmo conteúdo como resolvidas
+    await pool.query(
+      `UPDATE pep_forum_denuncias SET status='resolvido' WHERE (topico_id=$1 OR resposta_id=$2)`,
+      [denuncia.topico_id || null, denuncia.resposta_id || null]
+    );
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
 // Admin — listar tópicos do fórum

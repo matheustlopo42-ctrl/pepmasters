@@ -73,6 +73,7 @@
   <div style="display:flex;gap:12px;margin-bottom:24px">
     <button class="filtro-btn active" id="tabMembros" onclick="mostrarAba('membros',event)">👥 Membros</button>
     <button class="filtro-btn" id="tabForum" onclick="mostrarAba('forum',event)">💬 Fórum</button>
+    <button class="filtro-btn" id="tabDenuncias" onclick="mostrarAba('denuncias',event)">🚩 Denúncias <span id="badgeDenuncias" style="background:var(--red);color:#fff;border-radius:50%;width:18px;height:18px;font-size:.65rem;display:inline-flex;align-items:center;justify-content:center;margin-left:4px;display:none">0</span></button>
   </div>
 
   <div id="abaMembros">
@@ -112,6 +113,24 @@
 </main>
 
 </div><!-- /abaMembros -->
+
+  <div id="abaDenuncias" style="display:none">
+    <h1>🚩 Denúncias Pendentes</h1>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Conteúdo</th>
+            <th>Denunciante</th>
+            <th>Motivo</th>
+            <th>Data</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaDenuncias"></tbody>
+      </table>
+    </div>
+  </div>
 
   <div id="abaForum" style="display:none">
     <h1>Moderação do Fórum</h1>
@@ -260,18 +279,67 @@ async function carregarMembros() {
 }
 
 if (!adminToken) { location.href = 'admin-login.html?redirect=admin-membros.html'; }
-else { carregarMembros(); }
+else { carregarMembros(); carregarDenuncias(); }
 
 function mostrarAba(aba, e) {
   if (e) e.preventDefault();
   document.getElementById('abaMembros').style.display = aba === 'membros' ? 'block' : 'none';
   document.getElementById('abaForum').style.display = aba === 'forum' ? 'block' : 'none';
+  document.getElementById('abaDenuncias').style.display = aba === 'denuncias' ? 'block' : 'none';
   document.getElementById('tabMembros').classList.toggle('active', aba === 'membros');
   document.getElementById('tabForum').classList.toggle('active', aba === 'forum');
+  document.getElementById('tabDenuncias').classList.toggle('active', aba === 'denuncias');
   if (aba === 'forum') carregarForum();
+  if (aba === 'denuncias') carregarDenuncias();
 }
 
 var catIcons = {geral:'💬', vendas:'💰', produtos:'🧬', duvidas:'❓', resultados:'🏆'};
+
+async function carregarDenuncias() {
+  try {
+    var res = await fetch('/api/admin/forum/denuncias', { headers: { Authorization: 'Basic ' + adminToken } });
+    var lista = await res.json();
+    var badge = document.getElementById('badgeDenuncias');
+    badge.textContent = lista.length;
+    badge.style.display = lista.length > 0 ? 'inline-flex' : 'none';
+    var tbody = document.getElementById('tabelaDenuncias');
+    if (!lista.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty">Nenhuma denúncia pendente 🎉</td></tr>';
+      return;
+    }
+    tbody.innerHTML = lista.map(function(d) {
+      var conteudo = d.resposta_conteudo
+        ? '<div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:2px">Resposta em: ' + (d.topico_titulo||'—') + '</div>' +
+          '<div style="max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (d.resposta_conteudo||'') + '</div>'
+        : '<div style="font-weight:600">' + (d.topico_titulo||'—') + '</div><div style="font-size:.75rem;color:rgba(255,255,255,.3)">Tópico completo</div>';
+      return '<tr>' +
+        '<td>' + conteudo + '</td>' +
+        '<td style="font-size:.85rem">' + (d.denunciante||'—') + '</td>' +
+        '<td><span class="badge badge-pendente">' + (d.motivo||'—') + '</span></td>' +
+        '<td style="font-size:.78rem;color:rgba(255,255,255,.4)">' + new Date(d.criado_em).toLocaleDateString('pt-BR') + '</td>' +
+        '<td style="display:flex;gap:6px">' +
+          '<button class="btn-confirmar" style="font-size:.75rem;padding:5px 10px" onclick="resolverDenuncia(' + d.id + ','ignorar')">Ignorar</button>' +
+          '<button class="btn-bloquear" style="font-size:.75rem;padding:5px 10px" onclick="resolverDenuncia(' + d.id + ','deletar')">🗑 Deletar</button>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+  } catch { showToast('Erro ao carregar denúncias.'); }
+}
+
+async function resolverDenuncia(id, acao) {
+  var msg = acao === 'deletar' ? 'Deletar o conteúdo denunciado?' : 'Ignorar esta denúncia?';
+  if (!confirm(msg)) return;
+  try {
+    var res = await fetch('/api/admin/forum/denuncias/' + id, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + adminToken },
+      body: JSON.stringify({ acao })
+    });
+    if (!res.ok) { showToast('Erro.'); return; }
+    showToast(acao === 'deletar' ? 'Conteúdo deletado.' : 'Denúncia ignorada.');
+    carregarDenuncias();
+  } catch { showToast('Erro de conexão.'); }
+}
 
 async function carregarForum() {
   try {

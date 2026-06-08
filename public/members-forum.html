@@ -78,6 +78,17 @@
     #toast{position:fixed;bottom:24px;right:24px;background:#1a0c00;color:#fff;padding:12px 18px;border-radius:10px;font-size:.85rem;border-left:3px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(20px);opacity:0;transition:all .3s;z-index:5000;pointer-events:none}
     #toast.show{transform:translateY(0);opacity:1}
     @media(max-width:600px){.topico-stats{display:none}.topico-item{padding:12px 14px}}
+      .btn-denunciar{background:none;border:1px solid rgba(239,68,68,.2);color:rgba(239,68,68,.5);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;text-transform:uppercase;padding:4px 10px;border-radius:8px;cursor:pointer;transition:all .2s;margin-top:8px}
+    .btn-denunciar:hover{border-color:rgba(239,68,68,.6);color:#ef4444}
+    /* Modal denúncia */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:3000;align-items:center;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#1a0c00;border:1px solid rgba(255,179,0,.2);border-radius:16px;padding:28px;max-width:400px;width:90%}
+    .modal-box h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.2rem;text-transform:uppercase;color:var(--amber);margin-bottom:16px}
+    .modal-box select{width:100%;background:#0f0800;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px;color:#fff;font-family:'Barlow',sans-serif;font-size:.9rem;margin-bottom:14px;outline:none}
+    .modal-actions{display:flex;gap:10px;margin-top:4px}
+    .btn-cancel-modal{flex:1;padding:10px;background:none;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:rgba(255,255,255,.5);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;cursor:pointer}
+    .btn-confirm-modal{flex:2;padding:10px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;border:none;border-radius:8px;cursor:pointer}
   </style>
 </head>
 <body>
@@ -151,6 +162,25 @@
   </div>
 </main>
 
+<div class="modal-overlay" id="modalDenuncia">
+  <div class="modal-box">
+    <h3>🚩 Denunciar conteúdo</h3>
+    <input type="hidden" id="denunciaTopicoId"/>
+    <input type="hidden" id="denunciaRespostaId"/>
+    <select id="denunciaMotivoSelect">
+      <option value="">Selecione o motivo...</option>
+      <option value="spam">Spam</option>
+      <option value="ofensivo">Conteúdo ofensivo</option>
+      <option value="falso">Informação falsa</option>
+      <option value="inadequado">Conteúdo inadequado</option>
+      <option value="outro">Outro</option>
+    </select>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="fecharDenuncia()">Cancelar</button>
+      <button class="btn-confirm-modal" onclick="enviarDenuncia()">Denunciar</button>
+    </div>
+  </div>
+</div>
 <div id="toast"></div>
 
 <script>
@@ -259,11 +289,11 @@ async function abrirTopico(id) {
     '</div>';
 
     // Post original
-    html += '<div class="post-card original">' + renderPost(t.autor_nome, t.autor_nivel, t.criado_em, t.conteudo) + '</div>';
+    html += '<div class="post-card original">' + renderPost(t.autor_nome, t.autor_nivel, t.criado_em, t.conteudo, t.id, 'topico') + '</div>';
 
     // Respostas
     respostas.forEach(function(r) {
-      html += '<div class="post-card">' + renderPost(r.autor_nome, r.autor_nivel, r.criado_em, r.conteudo) + '</div>';
+      html += '<div class="post-card">' + renderPost(r.autor_nome, r.autor_nivel, r.criado_em, r.conteudo, r.id, 'resposta') + '</div>';
     });
 
     if (!respostas.length) {
@@ -274,8 +304,11 @@ async function abrirTopico(id) {
   } catch { showToast('Erro ao carregar tópico.'); }
 }
 
-function renderPost(nome, nivel, data, conteudo) {
+function renderPost(nome, nivel, data, conteudo, id, tipo) {
   var inicial = (nome || 'U')[0].toUpperCase();
+  var denunciarBtn = tipo === 'resposta' && id
+    ? '<button class="btn-denunciar" onclick="abrirDenuncia(null,'+id+')">🚩 Denunciar</button>'
+    : '<button class="btn-denunciar" onclick="abrirDenuncia('+id+',null)">🚩 Denunciar</button>';
   return '<div class="post-header">' +
     '<div class="post-avatar">' + inicial + '</div>' +
     '<div>' +
@@ -283,7 +316,38 @@ function renderPost(nome, nivel, data, conteudo) {
       '<div class="post-data">' + new Date(data).toLocaleString('pt-BR') + '</div>' +
     '</div>' +
   '</div>' +
-  '<div class="post-conteudo">' + conteudo + '</div>';
+  '<div class="post-conteudo">' + conteudo + '</div>' +
+  denunciarBtn;
+}
+
+function abrirDenuncia(topicoId, respostaId) {
+  document.getElementById('denunciaTopicoId').value = topicoId || '';
+  document.getElementById('denunciaRespostaId').value = respostaId || '';
+  document.getElementById('denunciaMotivoSelect').value = '';
+  document.getElementById('modalDenuncia').classList.add('open');
+}
+function fecharDenuncia() {
+  document.getElementById('modalDenuncia').classList.remove('open');
+}
+async function enviarDenuncia() {
+  var topicoId = document.getElementById('denunciaTopicoId').value;
+  var respostaId = document.getElementById('denunciaRespostaId').value;
+  var motivo = document.getElementById('denunciaMotivoSelect').value;
+  if (!motivo) { showToast('Selecione um motivo.'); return; }
+  try {
+    var res = await fetch('/api/forum/denunciar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({
+        topico_id: topicoId ? parseInt(topicoId) : null,
+        resposta_id: respostaId ? parseInt(respostaId) : null,
+        motivo
+      })
+    });
+    var data = await res.json();
+    fecharDenuncia();
+    showToast(res.ok ? 'Denúncia enviada! O admin irá analisar.' : (data.erro || 'Erro.'));
+  } catch { showToast('Erro de conexão.'); }
 }
 
 async function enviarResposta() {
