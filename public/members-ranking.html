@@ -191,6 +191,25 @@ async function init() {
         if(val) el.textContent=val;
       });
     });
+    // Aplicar traduções diretas
+    var _nav_keys = {
+      'members.nav.panel': {en:'Panel',pt:'Painel',es:'Panel',de:'Panel',fr:'Panneau'},
+      'members.nav.forum': {en:'Forum',pt:'Fórum',es:'Foro',de:'Forum',fr:'Forum'},
+      'members.nav.logout': {en:'Logout',pt:'Sair',es:'Salir',de:'Abmelden',fr:'Déconnexion'},
+      'ranking.title': {en:'Ranking',pt:'Ranking',es:'Ranking',de:'Ranking',fr:'Classement'},
+      'extrato.title': {en:'Statement',pt:'Extrato',es:'Extracto',de:'Auszug',fr:'Relevé'},
+      'extrato.tab.sales': {en:'💰 Sales',pt:'💰 Vendas',es:'💰 Ventas',de:'💰 Verkäufe',fr:'💰 Ventes'},
+      'extrato.tab.payments': {en:'📋 Memberships',pt:'📋 Mensalidades',es:'📋 Membresías',de:'📋 Mitgliedschaften',fr:'📋 Abonnements'},
+      'extrato.tab.links': {en:'🔗 Links by Product',pt:'🔗 Links por Produto',es:'🔗 Links por Producto',de:'🔗 Links nach Produkt',fr:'🔗 Liens par Produit'},
+      'extrato.volume': {en:'Total Volume',pt:'Volume Total',es:'Volumen Total',de:'Gesamtvolumen',fr:'Volume Total'},
+      'extrato.commission': {en:'Total Commission',pt:'Comissão Total',es:'Comisión Total',de:'Gesamtprovision',fr:'Commission Totale'},
+      'extrato.sales': {en:'Total Sales',pt:'Total de Vendas',es:'Total de Ventas',de:'Gesamtverkäufe',fr:'Total des ventes'},
+    };
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var key = el.getAttribute('data-i18n');
+      var map = d[key] || _nav_keys[key];
+      if(map){ var v=map[l]||map['en']; if(v) el.textContent=v; }
+    });
     init();
   } else {
     setTimeout(waitI18n,50);
