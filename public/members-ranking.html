@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Ranking — PEPMASTERS Members</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--dark:#1C0A00;--bronze:#cd7f32;--prata:#C0C0C0;--ouro:#FFD700;--diamante:#b9f2ff}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:#0f0800;color:#fff;min-height:100vh;display:flex;flex-direction:column}
+    header{background:rgba(28,10,0,.95);border-bottom:2px solid var(--amber);padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .members-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;background:linear-gradient(135deg,var(--amber),var(--orange));color:#000;padding:3px 10px;border-radius:20px;margin-left:8px}
+    .header-right{display:flex;align-items:center;gap:16px}
+    .nav-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s}
+    .nav-link:hover,.nav-link.active{color:var(--amber)}
+    .hero{padding:40px 24px;text-align:center;border-bottom:1px solid rgba(255,179,0,.1)}
+    .hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.4rem;text-transform:uppercase;margin-bottom:6px}
+    .hero h1 span{background:linear-gradient(135deg,var(--amber),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero p{color:rgba(255,255,255,.4);font-size:.88rem}
+    main{flex:1;max-width:760px;margin:0 auto;padding:32px 24px;width:100%}
+    .periodo{text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:24px;background:rgba(255,179,0,.06);border:1px solid rgba(255,179,0,.15);border-radius:20px;padding:6px 18px;display:inline-block}
+    /* PÓDIO */
+    .podio{display:flex;justify-content:center;align-items:flex-end;gap:16px;margin-bottom:40px}
+    .podio-item{display:flex;flex-direction:column;align-items:center;gap:8px}
+    .podio-avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem;background:linear-gradient(135deg,var(--red),var(--orange))}
+    .pos-1 .podio-avatar{width:72px;height:72px;font-size:1.6rem;box-shadow:0 0 30px rgba(255,215,0,.4);border:3px solid var(--ouro)}
+    .pos-2 .podio-avatar{width:56px;height:56px;border:2px solid var(--prata)}
+    .pos-3 .podio-avatar{width:48px;height:48px;border:2px solid var(--bronze)}
+    .podio-base{width:100%;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:center}
+    .pos-1 .podio-base{height:80px;background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,179,0,.1));border:1px solid rgba(255,215,0,.3)}
+    .pos-2 .podio-base{height:60px;background:rgba(192,192,192,.08);border:1px solid rgba(192,192,192,.2)}
+    .pos-3 .podio-base{height:44px;background:rgba(205,127,50,.08);border:1px solid rgba(205,127,50,.2)}
+    .podio-pos{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem}
+    .pos-1 .podio-pos{color:var(--ouro)}
+    .pos-2 .podio-pos{color:var(--prata)}
+    .pos-3 .podio-pos{color:var(--bronze)}
+    .podio-nome{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.9rem;color:#fff;text-align:center;max-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .podio-valor{font-size:.78rem;color:var(--amber)}
+    /* LISTA */
+    .ranking-item{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,179,0,.07);border-radius:12px;padding:14px 16px;margin-bottom:8px;transition:border-color .2s}
+    .ranking-item.eu{border-color:rgba(255,179,0,.3);background:rgba(255,179,0,.05)}
+    .rank-pos{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;color:rgba(255,255,255,.3);width:28px;text-align:center;flex-shrink:0}
+    .rank-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1rem;flex-shrink:0}
+    .rank-info{flex:1;min-width:0}
+    .rank-nome{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;color:#fff}
+    .rank-nivel{font-size:.72rem;color:rgba(255,255,255,.3)}
+    .rank-stats{text-align:right}
+    .rank-volume{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:var(--amber)}
+    .rank-vendas{font-size:.72rem;color:rgba(255,255,255,.3)}
+    .nivel-bronze{color:var(--bronze)}.nivel-prata{color:var(--prata)}.nivel-ouro{color:var(--ouro)}.nivel-diamante{color:var(--diamante)}
+    .empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,.3)}
+    #toast{position:fixed;bottom:24px;right:24px;background:#1a0c00;color:#fff;padding:12px 18px;border-radius:10px;font-size:.85rem;border-left:3px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(20px);opacity:0;transition:all .3s;z-index:5000;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:500px){.podio{gap:8px}.pos-1 .podio-avatar{width:58px;height:58px}}
+  </style>
+</head>
+<body>
+<header>
+  <div style="display:flex;align-items:center;gap:8px">
+    <a href="index.html" style="text-decoration:none"><span class="logo-text">PEPMASTERS</span></a>
+    <span class="members-badge">Members</span>
+  </div>
+  <div class="header-right">
+    <a href="members.html" class="nav-link">Painel</a>
+    <a href="members-ranking.html" class="nav-link active">Ranking</a>
+    <a href="members-extrato.html" class="nav-link">Extrato</a>
+    <a href="members-forum.html" class="nav-link">Fórum</a>
+    <a href="#" class="nav-link" onclick="sair(event)">Sair</a>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>🏆 Ranking <span>Mensal</span></h1>
+  <p id="periodoLabel"></p>
+</div>
+
+<main>
+  <div style="text-align:center;margin-bottom:28px">
+    <span class="periodo" id="mesLabel"></span>
+  </div>
+  <div class="podio" id="podio"></div>
+  <div id="listaRanking"></div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+var token = localStorage.getItem('pep_token');
+var nivelIcons = {bronze:'🥉',prata:'🥈',ouro:'🥇',diamante:'💎'};
+var meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
+function sair(e){e.preventDefault();localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');location.href='index.html';}
+
+function fmt(v){ return 'R$ ' + parseFloat(v||0).toFixed(2).replace('.',','); }
+
+async function init() {
+  if (!token) { location.href = 'login.html?redirect=members-ranking.html'; return; }
+  var agora = new Date();
+  document.getElementById('mesLabel').textContent = meses[agora.getMonth()] + ' ' + agora.getFullYear();
+  document.getElementById('periodoLabel').textContent = 'Top distribuidores de ' + meses[agora.getMonth()];
+
+  try {
+    var res = await fetch('/api/membros/ranking', {headers:{Authorization:'Bearer '+token}});
+    if (res.status === 401) { location.href = 'login.html?redirect=members-ranking.html'; return; }
+    if (res.status === 403) { location.href = 'members.html?msg=assine'; return; }
+    var lista = await res.json();
+
+    // Pegar meu código para destacar
+    var meuRes = await fetch('/api/membros/painel', {headers:{Authorization:'Bearer '+token}});
+    var meuDado = await meuRes.json();
+    var meuRef = meuDado.codigo_ref || '';
+
+    // Pódio (top 3)
+    var podio = document.getElementById('podio');
+    var top3 = lista.slice(0, 3);
+    var ordem = top3.length >= 3 ? [1, 0, 2] : (top3.length === 2 ? [1, 0] : [0]);
+    var posIcons = ['🥇','🥈','🥉'];
+
+    if (top3.length === 0) {
+      podio.innerHTML = '<div class="empty">Nenhuma venda este mês ainda. Seja o primeiro!</div>';
+    } else {
+      var podioHtml = ordem.map(function(idx) {
+        var p = top3[idx];
+        if (!p) return '';
+        var ini = (p.nome||'?')[0].toUpperCase();
+        var posClass = 'pos-' + (idx+1);
+        return '<div class="podio-item '+posClass+'">' +
+          '<div class="podio-avatar">'+ini+'</div>' +
+          '<div class="podio-nome">'+p.nome.split(' ')[0]+'</div>' +
+          '<div class="podio-valor">'+fmt(p.volume_mes)+'</div>' +
+          '<div class="podio-base"><span class="podio-pos">'+(idx+1)+'</span></div>' +
+        '</div>';
+      }).join('');
+      podio.innerHTML = podioHtml;
+    }
+
+    // Lista completa
+    var lista_el = document.getElementById('listaRanking');
+    if (!lista.length) { lista_el.innerHTML = '<div class="empty">Nenhuma venda registrada este mês.</div>'; return; }
+
+    lista_el.innerHTML = lista.map(function(p, i) {
+      var ini = (p.nome||'?')[0].toUpperCase();
+      var nivel = p.nivel || 'bronze';
+      var euClass = p.codigo_ref === meuRef ? ' eu' : '';
+      return '<div class="ranking-item'+euClass+'">' +
+        '<div class="rank-pos">'+(i+1)+'</div>' +
+        '<div class="rank-avatar">'+ini+'</div>' +
+        '<div class="rank-info">' +
+          '<div class="rank-nome">'+p.nome+(p.codigo_ref===meuRef?' <span style="color:var(--amber);font-size:.75rem">(você)</span>':'')+'</div>' +
+          '<div class="rank-nivel nivel-'+nivel+'">'+nivelIcons[nivel]+' '+nivel.charAt(0).toUpperCase()+nivel.slice(1)+'</div>' +
+        '</div>' +
+        '<div class="rank-stats">' +
+          '<div class="rank-volume">'+fmt(p.volume_mes)+'</div>' +
+          '<div class="rank-vendas">'+p.vendas_mes+' vendas</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch(e) { showToast('Erro ao carregar ranking.'); }
+}
+
+init();
+</script>
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
+</body>
+</html>

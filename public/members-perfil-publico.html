@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Perfil Público — PEPMASTERS Members</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--dark:#1C0A00;--bronze:#cd7f32;--prata:#C0C0C0;--ouro:#FFD700;--diamante:#b9f2ff}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:#0f0800;color:#fff;min-height:100vh;display:flex;flex-direction:column}
+    header{background:rgba(28,10,0,.95);border-bottom:2px solid var(--amber);padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .members-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;background:linear-gradient(135deg,var(--amber),var(--orange));color:#000;padding:3px 10px;border-radius:20px;margin-left:8px}
+    .header-right{display:flex;align-items:center;gap:16px}
+    .nav-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s}
+    .nav-link:hover,.nav-link.active{color:var(--amber)}
+    main{flex:1;max-width:860px;margin:0 auto;padding:32px 24px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+    h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;text-transform:uppercase;color:var(--amber);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid rgba(255,179,0,.15)}
+    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,179,0,.1);border-radius:16px;padding:24px}
+    .form-group{margin-bottom:14px}
+    .form-group label{display:block;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:5px}
+    input[type=text],textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 13px;color:#fff;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s}
+    input[type=text]:focus,textarea:focus{border-color:var(--amber)}
+    textarea{min-height:80px;resize:vertical}
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+    .toggle-label{font-size:.88rem;color:rgba(255,255,255,.7)}
+    .toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+    .toggle input{opacity:0;width:0;height:0}
+    .slider{position:absolute;inset:0;background:rgba(255,255,255,.1);border-radius:24px;cursor:pointer;transition:.3s}
+    .slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}
+    input:checked + .slider{background:linear-gradient(135deg,var(--orange),var(--amber))}
+    input:checked + .slider:before{transform:translateX(20px)}
+    .btn-salvar{width:100%;margin-top:16px;padding:12px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s}
+    .btn-salvar:hover{opacity:.85}
+    /* PREVIEW */
+    .preview-card{background:linear-gradient(135deg,#1C0A00,#3D1A00);border:1px solid rgba(255,179,0,.2);border-radius:20px;padding:28px;text-align:center}
+    .preview-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;margin:0 auto 14px;box-shadow:0 4px 20px rgba(232,34,10,.3)}
+    .preview-nome{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:#fff;margin-bottom:4px}
+    .preview-nivel{font-size:.8rem;margin-bottom:12px}
+    .preview-bio{font-size:.88rem;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:16px;min-height:20px}
+    .preview-stats{display:flex;justify-content:center;gap:24px;margin-bottom:16px}
+    .preview-stat label{font-size:.7rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:2px}
+    .preview-stat span{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.2rem;color:var(--amber)}
+    .preview-link{display:block;padding:10px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;text-transform:uppercase;text-decoration:none;border-radius:10px;transition:opacity .2s}
+    .preview-link:hover{opacity:.85}
+    /* BADGES */
+    .badges-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .badge-item{background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.15);border-radius:10px;padding:8px 14px;display:flex;align-items:center;gap:8px;font-size:.82rem}
+    .badge-item .bi{font-size:1.2rem}
+    .badge-item .bn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;color:#fff}
+    .badge-item .bd{font-size:.72rem;color:rgba(255,255,255,.4)}
+    .slug-preview{font-size:.75rem;color:rgba(255,255,255,.3);margin-top:4px}
+    #msgOk{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#22c55e;padding:10px 14px;border-radius:8px;font-size:.85rem;margin-bottom:12px;display:none}
+    #msgErro{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#ef4444;padding:10px 14px;border-radius:8px;font-size:.85rem;margin-bottom:12px;display:none}
+    .nivel-bronze{color:var(--bronze)}.nivel-prata{color:var(--prata)}.nivel-ouro{color:var(--ouro)}.nivel-diamante{color:var(--diamante)}
+    @media(max-width:640px){main{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <div style="display:flex;align-items:center;gap:8px">
+    <a href="index.html" style="text-decoration:none"><span class="logo-text">PEPMASTERS</span></a>
+    <span class="members-badge">Members</span>
+  </div>
+  <div class="header-right">
+    <a href="members.html" class="nav-link">Painel</a>
+    <a href="members-perfil-publico.html" class="nav-link active">Perfil</a>
+    <a href="members-ranking.html" class="nav-link">Ranking</a>
+    <a href="members-forum.html" class="nav-link">Fórum</a>
+    <a href="#" class="nav-link" onclick="sair(event)">Sair</a>
+  </div>
+</header>
+
+<main>
+  <!-- FORMULÁRIO -->
+  <div class="card">
+    <h2>✏️ Editar Perfil Público</h2>
+    <div id="msgOk"></div>
+    <div id="msgErro"></div>
+
+    <div class="form-group">
+      <label>URL do perfil (slug)</label>
+      <input type="text" id="slug" placeholder="ex: joao-silva" oninput="atualizarPreview()"/>
+      <div class="slug-preview" id="slugPreview"></div>
+    </div>
+    <div class="form-group">
+      <label>Bio</label>
+      <textarea id="bio" placeholder="Conte um pouco sobre você..." oninput="atualizarPreview()"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Instagram (sem @)</label>
+      <input type="text" id="instagram" placeholder="seuperfil" oninput="atualizarPreview()"/>
+    </div>
+    <div class="form-group">
+      <label>WhatsApp</label>
+      <input type="text" id="whatsapp" placeholder="5511999999999"/>
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-label">Perfil público ativo</span>
+      <label class="toggle">
+        <input type="checkbox" id="perfilPublico" onchange="atualizarPreview()"/>
+        <span class="slider"></span>
+      </label>
+    </div>
+    <button class="btn-salvar" onclick="salvar()">💾 Salvar perfil</button>
+  </div>
+
+  <!-- PREVIEW + BADGES -->
+  <div>
+    <div class="card" style="margin-bottom:16px">
+      <h2>👁 Preview</h2>
+      <div class="preview-card">
+        <div class="preview-avatar" id="prevAvatar">?</div>
+        <div class="preview-nome" id="prevNome">Seu Nome</div>
+        <div class="preview-nivel" id="prevNivel"></div>
+        <div class="preview-bio" id="prevBio">Sua bio aparece aqui...</div>
+        <div class="preview-stats">
+          <div class="preview-stat"><label>Vendas</label><span id="prevVendas">0</span></div>
+          <div class="preview-stat"><label>Volume</label><span id="prevVolume">R$ 0</span></div>
+        </div>
+        <a href="#" class="preview-link" id="prevLinkAfil">🛒 Comprar via meu link</a>
+        <div id="prevInsta" style="margin-top:10px;font-size:.82rem;color:rgba(255,255,255,.4)"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🏅 Suas Conquistas</h2>
+      <div class="badges-grid" id="badgesGrid">
+        <div style="color:rgba(255,255,255,.3);font-size:.85rem">Carregando badges...</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+var token = localStorage.getItem('pep_token');
+var dadosMembro = null;
+var nivelIcons = {bronze:'🥉',prata:'🥈',ouro:'🥇',diamante:'💎'};
+var BASE = location.origin;
+
+function sair(e){e.preventDefault();localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');location.href='index.html';}
+function fmt(v){return 'R$ '+parseFloat(v||0).toFixed(2).replace('.',',');}
+
+function atualizarPreview() {
+  if (!dadosMembro) return;
+  var slug = document.getElementById('slug').value.trim();
+  var bio = document.getElementById('bio').value.trim();
+  var insta = document.getElementById('instagram').value.trim();
+  var ativo = document.getElementById('perfilPublico').checked;
+
+  document.getElementById('slugPreview').textContent = slug ? BASE + '/distribuidor/' + slug : '';
+  document.getElementById('prevBio').textContent = bio || 'Sua bio aparece aqui...';
+  document.getElementById('prevInsta').textContent = insta ? '📸 @' + insta : '';
+  document.getElementById('prevLinkAfil').href = dadosMembro.link_afiliado || '#';
+}
+
+async function salvar() {
+  var ok = document.getElementById('msgOk');
+  var err = document.getElementById('msgErro');
+  ok.style.display = 'none'; err.style.display = 'none';
+
+  var slug = document.getElementById('slug').value.trim();
+  var bio = document.getElementById('bio').value.trim();
+  var instagram = document.getElementById('instagram').value.trim();
+  var whatsapp = document.getElementById('whatsapp').value.trim();
+  var perfil_publico = document.getElementById('perfilPublico').checked;
+
+  try {
+    var res = await fetch('/api/membros/perfil', {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json', Authorization:'Bearer '+token},
+      body: JSON.stringify({bio, instagram, whatsapp, perfil_publico, slug})
+    });
+    var data = await res.json();
+    if (!res.ok) { err.textContent = data.erro || 'Erro ao salvar.'; err.style.display = 'block'; return; }
+    ok.textContent = '✅ Perfil salvo com sucesso!';
+    ok.style.display = 'block';
+  } catch { err.textContent = 'Erro de conexão.'; err.style.display = 'block'; }
+}
+
+async function init() {
+  if (!token) { location.href = 'login.html?redirect=members-perfil-publico.html'; return; }
+  try {
+    var res = await fetch('/api/membros/painel', {headers:{Authorization:'Bearer '+token}});
+    if (!res.ok) { location.href = 'members.html?msg=assine'; return; }
+    dadosMembro = await res.json();
+
+    var nivel = dadosMembro.nivel || 'bronze';
+    document.getElementById('prevAvatar').textContent = (dadosMembro.nome||'U')[0].toUpperCase();
+    document.getElementById('prevNome').textContent = dadosMembro.nome || '—';
+    document.getElementById('prevNivel').innerHTML = '<span class="nivel-'+nivel+'">'+nivelIcons[nivel]+' '+nivel.charAt(0).toUpperCase()+nivel.slice(1)+'</span>';
+    document.getElementById('prevVendas').textContent = dadosMembro.total_vendas || 0;
+    document.getElementById('prevVolume').textContent = fmt(dadosMembro.volume_vendas);
+    document.getElementById('prevLinkAfil').href = dadosMembro.link_afiliado || '#';
+
+    // Carregar perfil atual
+    var perfRes = await fetch('/api/membros/painel', {headers:{Authorization:'Bearer '+token}});
+    // Usar dados do painel para preencher formulário
+    // (backend retorna bio/instagram etc se já salvos)
+
+    // Carregar badges
+    var badgeRes = await fetch('/api/membros/badges', {headers:{Authorization:'Bearer '+token}});
+    var badges = await badgeRes.json();
+    var grid = document.getElementById('badgesGrid');
+    if (!badges.length) {
+      grid.innerHTML = '<div style="color:rgba(255,255,255,.3);font-size:.85rem">Nenhuma conquista ainda. Continue vendendo!</div>';
+    } else {
+      grid.innerHTML = badges.map(function(b){
+        return '<div class="badge-item"><span class="bi">'+b.icone+'</span><div><div class="bn">'+b.nome+'</div><div class="bd">'+b.desc+'</div></div></div>';
+      }).join('');
+    }
+  } catch(e) { console.error(e); }
+}
+
+init();
+</script>
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
+</body>
+</html>

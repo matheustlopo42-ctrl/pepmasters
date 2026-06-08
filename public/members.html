@@ -123,6 +123,20 @@
     @media(max-width:480px){
       .stats-grid{grid-template-columns:1fr}
     }
+      /* NOTIFICAÇÕES */
+    .notif-btn{position:relative;background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer;padding:4px;transition:color .2s}
+    .notif-btn:hover{color:var(--amber)}
+    .notif-badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:.6rem;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;display:none}
+    .notif-panel{position:fixed;top:72px;right:16px;width:320px;background:#1a0c00;border:1px solid rgba(255,179,0,.2);border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.6);z-index:500;display:none;max-height:400px;overflow-y:auto}
+    .notif-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.06);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;color:var(--amber);display:flex;justify-content:space-between;align-items:center}
+    .notif-item{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.82rem;color:rgba(255,255,255,.7);line-height:1.5;cursor:pointer;transition:background .2s}
+    .notif-item:hover{background:rgba(255,255,255,.04)}
+    .notif-item.nao-lida{border-left:3px solid var(--amber);background:rgba(255,179,0,.04)}
+    .notif-empty{padding:20px;text-align:center;color:rgba(255,255,255,.3);font-size:.85rem}
+    .notif-data{font-size:.72rem;color:rgba(255,255,255,.3);margin-top:2px}
+    /* BADGES NO PAINEL */
+    .badges-mini{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+    .badge-mini{background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.15);border-radius:20px;padding:3px 10px;font-size:.78rem;display:flex;align-items:center;gap:4px}
   </style>
 </head>
 <body>
@@ -137,8 +151,18 @@
   </div>
   <div class="header-right">
     <span id="headerNome" style="font-size:.82rem;color:rgba(255,255,255,.5)"></span>
+    <button class="notif-btn" onclick="toggleNotif()" id="notifBtn" title="Notificações">
+      🔔<span class="notif-badge" id="notifBadge">0</span>
+    </button>
+    <div class="notif-panel" id="notifPanel">
+      <div class="notif-header"><span>Notificações</span><button onclick="marcarLidas()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:.75rem;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase">Marcar lidas</button></div>
+      <div id="notifLista"><div class="notif-empty">Sem notificações</div></div>
+    </div>
     <a href="members-conteudo.html" class="btn-sair" data-i18n="content.nav.content">📚 Conteúdo</a>
     <a href="members-forum.html" class="btn-sair" data-i18n="members.nav.forum">💬 Fórum</a>
+    <a href="members-ranking.html" class="btn-sair">🏆 Ranking</a>
+    <a href="members-extrato.html" class="btn-sair">💳 Extrato</a>
+    <a href="members-perfil-publico.html" class="btn-sair">👤 Perfil</a>
     <a href="index.html" class="btn-sair" data-i18n="members.nav.store">← Loja</a>
     <a href="#" class="btn-sair" onclick="sair(event)" data-i18n="members.nav.logout">Sair</a>
   </div>
@@ -161,6 +185,7 @@
           <div class="nivel-comissao" id="nivelComissao" data-i18n="members.level.commission">5% de comissão</div>
           <span class="status-badge" id="statusBadge">Ativo</span>
           <div class="expira-em" id="expiraEm"></div>
+        <div class="badges-mini" id="badgesMini"></div>
           <div class="nivel-progress">
             <div class="nivel-progress-label">
               <span id="progressLabel">Próximo nível</span>
@@ -561,9 +586,65 @@ async function init() {
     _dadosPainel = data;
     document.getElementById('painelMembro').style.display = 'block';
     renderPainel(data);
+    carregarNotificacoes();
+    carregarBadgesMini();
   } catch {
     document.getElementById('paginaAssinar').style.display = 'block';
   }
+}
+
+// Notificações
+async function carregarNotificacoes() {
+  try {
+    var res = await fetch('/api/membros/notificacoes', {headers:{Authorization:'Bearer '+localStorage.getItem('pep_token')}});
+    if (!res.ok) return;
+    var data = await res.json();
+    var badge = document.getElementById('notifBadge');
+    var lista = document.getElementById('notifLista');
+    if (data.nao_lidas > 0) {
+      badge.textContent = data.nao_lidas;
+      badge.style.display = 'flex';
+    }
+    if (!data.notificacoes.length) { lista.innerHTML = '<div class="notif-empty">Sem notificações</div>'; return; }
+    lista.innerHTML = data.notificacoes.map(function(n){
+      var cls = n.lida ? '' : ' nao-lida';
+      var t = new Date(n.criado_em);
+      var timeStr = t.toLocaleDateString('pt-BR') + ' ' + t.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      return '<div class="notif-item'+cls+'" onclick="irParaNotif(''+n.link+'')">'+n.mensagem+'<div class="notif-data">'+timeStr+'</div></div>';
+    }).join('');
+  } catch {}
+}
+function irParaNotif(link) {
+  if (link) location.href = link;
+  document.getElementById('notifPanel').style.display = 'none';
+}
+function toggleNotif() {
+  var p = document.getElementById('notifPanel');
+  p.style.display = p.style.display === 'block' ? 'none' : 'block';
+}
+async function marcarLidas() {
+  await fetch('/api/membros/notificacoes/ler', {method:'PUT', headers:{Authorization:'Bearer '+localStorage.getItem('pep_token')}});
+  document.getElementById('notifBadge').style.display = 'none';
+  document.querySelectorAll('.notif-item.nao-lida').forEach(function(el){el.classList.remove('nao-lida');});
+}
+document.addEventListener('click', function(e) {
+  var panel = document.getElementById('notifPanel');
+  var btn = document.getElementById('notifBtn');
+  if (panel && !panel.contains(e.target) && !btn.contains(e.target)) panel.style.display = 'none';
+});
+
+// Badges mini no painel
+async function carregarBadgesMini() {
+  try {
+    var res = await fetch('/api/membros/badges', {headers:{Authorization:'Bearer '+localStorage.getItem('pep_token')}});
+    if (!res.ok) return;
+    var badges = await res.json();
+    var el = document.getElementById('badgesMini');
+    if (!el || !badges.length) return;
+    el.innerHTML = badges.slice(0,4).map(function(b){
+      return '<span class="badge-mini">'+b.icone+' '+b.nome+'</span>';
+    }).join('');
+  } catch {}
 }
 
 // Iniciar com pagamento cripto selecionado

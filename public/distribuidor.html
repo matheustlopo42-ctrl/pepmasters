@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Distribuidor PEPMASTERS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--dark:#1C0A00;--bronze:#cd7f32;--prata:#C0C0C0;--ouro:#FFD700;--diamante:#b9f2ff}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:#0f0800;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+    .card{background:linear-gradient(135deg,#1C0A00,#2a1200);border:1px solid rgba(255,179,0,.2);border-radius:24px;padding:40px 32px;max-width:400px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+    .logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px;display:block}
+    .avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.2rem;margin:0 auto 16px;box-shadow:0 4px 20px rgba(232,34,10,.3)}
+    .nome{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;color:#fff;margin-bottom:4px}
+    .nivel{font-size:.88rem;margin-bottom:16px}
+    .bio{font-size:.9rem;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:20px;min-height:20px}
+    .stats{display:flex;justify-content:center;gap:28px;margin-bottom:24px;padding:16px 0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+    .stat label{font-size:.7rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:4px}
+    .stat span{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:var(--amber)}
+    .badges-row{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+    .badge-chip{background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.15);border-radius:20px;padding:4px 12px;font-size:.8rem;display:flex;align-items:center;gap:4px}
+    .btn-comprar{display:block;padding:14px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;border-radius:12px;margin-bottom:10px;transition:opacity .2s;box-shadow:0 4px 20px rgba(232,34,10,.3)}
+    .btn-comprar:hover{opacity:.85}
+    .btn-insta,.btn-wpp{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;text-transform:uppercase;text-decoration:none;transition:opacity .2s;margin-bottom:8px}
+    .btn-insta{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff}
+    .btn-wpp{background:#25D366;color:#fff}
+    .btn-insta:hover,.btn-wpp:hover{opacity:.85}
+    .not-found{text-align:center;color:rgba(255,255,255,.4)}
+    .nivel-bronze{color:var(--bronze)}.nivel-prata{color:var(--prata)}.nivel-ouro{color:var(--ouro)}.nivel-diamante{color:var(--diamante)}
+  </style>
+</head>
+<body>
+<div id="cardPerfil" style="display:none" class="card">
+  <a href="index.html" class="logo">PEPMASTERS Members</a>
+  <div class="avatar" id="pAvatar">?</div>
+  <div class="nome" id="pNome">—</div>
+  <div class="nivel" id="pNivel"></div>
+  <div class="bio" id="pBio"></div>
+  <div class="stats">
+    <div class="stat"><label>Vendas</label><span id="pVendas">0</span></div>
+    <div class="stat"><label>Badges</label><span id="pBadges">0</span></div>
+  </div>
+  <div class="badges-row" id="pBadgesRow"></div>
+  <a href="#" class="btn-comprar" id="pLink">🛒 Comprar com meu link</a>
+  <a href="#" class="btn-insta" id="pInsta" style="display:none">📸 Instagram</a>
+  <a href="#" class="btn-wpp" id="pWpp" style="display:none">💬 WhatsApp</a>
+</div>
+<div id="cardNotFound" style="display:none" class="card not-found">
+  <div style="font-size:3rem;margin-bottom:16px">🔍</div>
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:900;margin-bottom:8px">Perfil não encontrado</div>
+  <a href="index.html" style="color:var(--amber);text-decoration:none;font-size:.88rem">← Voltar à loja</a>
+</div>
+
+<script>
+var nivelIcons = {bronze:'🥉',prata:'🥈',ouro:'🥇',diamante:'💎'};
+var slug = location.pathname.split('/distribuidor/')[1] || new URLSearchParams(location.search).get('slug');
+
+async function init() {
+  if (!slug) { document.getElementById('cardNotFound').style.display = 'block'; return; }
+  try {
+    var res = await fetch('/api/membros/perfil/' + slug);
+    if (!res.ok) { document.getElementById('cardNotFound').style.display = 'block'; return; }
+    var d = await res.json();
+    var nivel = d.nivel || 'bronze';
+    document.getElementById('pAvatar').textContent = (d.nome||'?')[0].toUpperCase();
+    document.getElementById('pNome').textContent = d.nome;
+    document.getElementById('pNivel').innerHTML = '<span class="nivel-'+nivel+'">'+nivelIcons[nivel]+' Distribuidor '+nivel.charAt(0).toUpperCase()+nivel.slice(1)+'</span>';
+    document.getElementById('pBio').textContent = d.bio || '';
+    document.getElementById('pVendas').textContent = d.total_vendas || 0;
+    document.getElementById('pBadges').textContent = d.total_badges || 0;
+    document.getElementById('pLink').href = location.origin + '/ref/' + d.codigo_ref;
+
+    if (d.instagram) {
+      var el = document.getElementById('pInsta');
+      el.href = 'https://instagram.com/' + d.instagram;
+      el.style.display = 'flex';
+      el.innerHTML = '📸 @' + d.instagram;
+    }
+    if (d.whatsapp) {
+      var wpp = document.getElementById('pWpp');
+      wpp.href = 'https://wa.me/' + d.whatsapp;
+      wpp.style.display = 'flex';
+    }
+    document.title = d.nome + ' — Distribuidor PEPMASTERS';
+    document.getElementById('cardPerfil').style.display = 'block';
+  } catch { document.getElementById('cardNotFound').style.display = 'block'; }
+}
+init();
+</script>
+</body>
+</html>

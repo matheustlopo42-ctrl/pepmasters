@@ -209,6 +209,37 @@ async function initDB() {
     `);
     await client.query(`ALTER TABLE pep_forum_respostas ADD COLUMN IF NOT EXISTS denuncias INT DEFAULT 0`).catch(()=>{});
 
+    // ── BADGES & CONQUISTAS ───────────────────────
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_badges (
+        id          SERIAL PRIMARY KEY,
+        membro_id   INT NOT NULL REFERENCES pep_membros(id),
+        tipo        TEXT NOT NULL,
+        criado_em   TIMESTAMPTZ DEFAULT NOW(),
+        UNIQUE(membro_id, tipo)
+      )
+    `);
+
+    // ── NOTIFICAÇÕES ──────────────────────────────
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_notificacoes (
+        id          SERIAL PRIMARY KEY,
+        membro_id   INT NOT NULL REFERENCES pep_membros(id),
+        tipo        TEXT NOT NULL,
+        mensagem    TEXT NOT NULL,
+        link        TEXT,
+        lida        BOOLEAN DEFAULT FALSE,
+        criado_em   TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+
+    // ── PERFIL PÚBLICO ────────────────────────────
+    await client.query(`ALTER TABLE pep_membros ADD COLUMN IF NOT EXISTS bio TEXT`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_membros ADD COLUMN IF NOT EXISTS instagram TEXT`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_membros ADD COLUMN IF NOT EXISTS whatsapp TEXT`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_membros ADD COLUMN IF NOT EXISTS perfil_publico BOOLEAN DEFAULT FALSE`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_membros ADD COLUMN IF NOT EXISTS slug TEXT UNIQUE`).catch(()=>{});
+
     // ── FÓRUM ─────────────────────────────────────
     await client.query(`
       CREATE TABLE IF NOT EXISTS pep_forum_topicos (
@@ -1225,8 +1256,201 @@ app.get('/api/pedido/:id/crypto-status', async (req, res) => {
 });
 
 // ─────────────────────────────────────────────
-//  FÓRUM DE MEMBROS
+//  RANKING, BADGES, NOTIFICAÇÕES, EXTRATO, PERFIL
 // ─────────────────────────────────────────────
+
+// Definição de badges
+const BADGES_DEF = {
+  'primeira_venda':    { nome: 'First Sale',       icone: '🎯', desc: 'Made the first sale' },
+  'vendas_10':         { nome: '10 Sales',          icone: '🔥', desc: 'Reached 10 sales' },
+  'vendas_50':         { nome: '50 Sales',          icone: '💪', desc: 'Reached 50 sales' },
+  'vendas_100':        { nome: '100 Sales',         icone: '🏆', desc: 'Reached 100 sales' },
+  'nivel_prata':       { nome: 'Silver',            icone: '🥈', desc: 'Reached Silver level' },
+  'nivel_ouro':        { nome: 'Gold',              icone: '🥇', desc: 'Reached Gold level' },
+  'nivel_diamante':    { nome: 'Diamond',           icone: '💎', desc: 'Reached Diamond level' },
+  'forum_100':         { nome: 'Community',         icone: '💬', desc: '100 forum posts' },
+  'volume_1000':       { nome: 'R$ 1K',             icone: '💰', desc: 'R$ 1.000 in sales volume' },
+  'volume_10000':      { nome: 'R$ 10K',            icone: '🚀', desc: 'R$ 10.000 in sales volume' },
+};
+
+// Verificar e atribuir badges automaticamente
+async function verificarBadges(membro_id) {
+  try {
+    const m = await pool.query(`
+      SELECT m.nivel, m.vendas_total,
+             COUNT(DISTINCT va.id) as total_vendas,
+             COUNT(DISTINCT fr.id) as total_posts
+      FROM pep_membros m
+      LEFT JOIN pep_vendas_afiliado va ON va.membro_id = m.id
+      LEFT JOIN pep_forum_respostas fr ON fr.membro_id = m.id
+      WHERE m.id = $1
+      GROUP BY m.id
+    `, [membro_id]);
+    if (!m.rows.length) return;
+    const { nivel, vendas_total, total_vendas, total_posts } = m.rows[0];
+
+    const checks = [];
+    if (parseInt(total_vendas) >= 1)   checks.push('primeira_venda');
+    if (parseInt(total_vendas) >= 10)  checks.push('vendas_10');
+    if (parseInt(total_vendas) >= 50)  checks.push('vendas_50');
+    if (parseInt(total_vendas) >= 100) checks.push('vendas_100');
+    if (['prata','ouro','diamante'].includes(nivel)) checks.push('nivel_prata');
+    if (['ouro','diamante'].includes(nivel))         checks.push('nivel_ouro');
+    if (nivel === 'diamante')                        checks.push('nivel_diamante');
+    if (parseInt(total_posts) >= 100)  checks.push('forum_100');
+    if (parseFloat(vendas_total) >= 1000)  checks.push('volume_1000');
+    if (parseFloat(vendas_total) >= 10000) checks.push('volume_10000');
+
+    for (const tipo of checks) {
+      const exists = await pool.query(`SELECT id FROM pep_badges WHERE membro_id=$1 AND tipo=$2`, [membro_id, tipo]);
+      if (!exists.rows.length) {
+        await pool.query(`INSERT INTO pep_badges (membro_id, tipo) VALUES ($1,$2)`, [membro_id, tipo]);
+        const b = BADGES_DEF[tipo];
+        await criarNotificacao(membro_id, 'badge', `${b.icone} Badge desbloqueado: ${b.nome}!`, '/members.html');
+      }
+    }
+  } catch (e) { console.error('[Badges]', e.message); }
+}
+
+// Criar notificação
+async function criarNotificacao(membro_id, tipo, mensagem, link) {
+  try {
+    await pool.query(`INSERT INTO pep_notificacoes (membro_id, tipo, mensagem, link) VALUES ($1,$2,$3,$4)`, [membro_id, tipo, mensagem, link]);
+  } catch (e) { console.error('[Notif]', e.message); }
+}
+
+// GET notificações
+app.get('/api/membros/notificacoes', membroMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(`SELECT * FROM pep_notificacoes WHERE membro_id=$1 ORDER BY criado_em DESC LIMIT 20`, [req.membro.id]);
+    const naoLidas = r.rows.filter(n => !n.lida).length;
+    res.json({ notificacoes: r.rows, nao_lidas: naoLidas });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Marcar notificações como lidas
+app.put('/api/membros/notificacoes/ler', membroMiddleware, async (req, res) => {
+  try {
+    await pool.query(`UPDATE pep_notificacoes SET lida=TRUE WHERE membro_id=$1`, [req.membro.id]);
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Ranking mensal
+app.get('/api/membros/ranking', membroMiddleware, async (req, res) => {
+  try {
+    const mes = new Date();
+    mes.setDate(1); mes.setHours(0,0,0,0);
+    const r = await pool.query(`
+      SELECT m.id, m.nivel, m.codigo_ref, u.nome,
+             COALESCE(SUM(va.valor),0) as volume_mes,
+             COALESCE(SUM(va.comissao),0) as comissao_mes,
+             COUNT(va.id) as vendas_mes
+      FROM pep_membros m
+      JOIN pep_usuarios u ON u.id = m.usuario_id
+      LEFT JOIN pep_vendas_afiliado va ON va.membro_id = m.id AND va.criado_em >= $1
+      WHERE m.status = 'ativo'
+      GROUP BY m.id, u.nome
+      ORDER BY volume_mes DESC
+      LIMIT 20
+    `, [mes]);
+    res.json(r.rows);
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Extrato de comissões
+app.get('/api/membros/extrato', membroMiddleware, async (req, res) => {
+  try {
+    const vendas = await pool.query(`
+      SELECT va.*, p.produto_nome, p.criado_em as pedido_data
+      FROM pep_vendas_afiliado va
+      LEFT JOIN pep_pedidos p ON p.id = va.pedido_id
+      WHERE va.membro_id = $1
+      ORDER BY va.criado_em DESC
+      LIMIT 50
+    `, [req.membro.id]);
+
+    const pagamentos = await pool.query(`
+      SELECT * FROM pep_pagamentos_membros WHERE membro_id=$1 ORDER BY criado_em DESC LIMIT 12
+    `, [req.membro.id]);
+
+    const totais = await pool.query(`
+      SELECT COALESCE(SUM(comissao),0) as total_comissao,
+             COALESCE(SUM(valor),0) as total_volume
+      FROM pep_vendas_afiliado WHERE membro_id=$1
+    `, [req.membro.id]);
+
+    res.json({
+      vendas: vendas.rows,
+      pagamentos: pagamentos.rows,
+      total_comissao: parseFloat(totais.rows[0].total_comissao),
+      total_volume: parseFloat(totais.rows[0].total_volume)
+    });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Links por produto específico
+app.get('/api/membros/links', membroMiddleware, async (req, res) => {
+  try {
+    const produtos = await pool.query(`SELECT id, produto_id, nome FROM pep_estoque WHERE estoque > 0 ORDER BY nome`);
+    const links = produtos.rows.map(p => ({
+      produto_id: p.produto_id,
+      nome: p.nome,
+      link: `${BASE_URL}/produto.html?id=${p.produto_id}&ref=${req.membro.codigo_ref || ''}`
+    }));
+    res.json(links);
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Badges do membro
+app.get('/api/membros/badges', membroMiddleware, async (req, res) => {
+  try {
+    await verificarBadges(req.membro.id);
+    const r = await pool.query(`SELECT tipo, criado_em FROM pep_badges WHERE membro_id=$1 ORDER BY criado_em DESC`, [req.membro.id]);
+    const badges = r.rows.map(b => ({ ...b, ...BADGES_DEF[b.tipo] }));
+    res.json(badges);
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Perfil público — ver
+app.get('/api/membros/perfil/:slug', async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT m.nivel, m.vendas_total, m.codigo_ref, m.bio, m.instagram, m.whatsapp, m.slug,
+             u.nome,
+             COUNT(DISTINCT va.id) as total_vendas,
+             (SELECT COUNT(*) FROM pep_badges WHERE membro_id=m.id) as total_badges
+      FROM pep_membros m
+      JOIN pep_usuarios u ON u.id = m.usuario_id
+      LEFT JOIN pep_vendas_afiliado va ON va.membro_id = m.id
+      WHERE m.slug=$1 AND m.perfil_publico=TRUE AND m.status='ativo'
+      GROUP BY m.id, u.nome
+    `, [req.params.slug]);
+    if (!r.rows.length) return res.status(404).json({ erro: 'Perfil não encontrado.' });
+    res.json(r.rows[0]);
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Atualizar perfil público
+app.put('/api/membros/perfil', membroMiddleware, async (req, res) => {
+  const { bio, instagram, whatsapp, perfil_publico, slug } = req.body;
+  try {
+    if (slug) {
+      const slugLimpo = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 40);
+      const existing = await pool.query(`SELECT id FROM pep_membros WHERE slug=$1 AND id!=$2`, [slugLimpo, req.membro.id]);
+      if (existing.rows.length) return res.status(400).json({ erro: 'Slug já em uso.' });
+      await pool.query(`UPDATE pep_membros SET bio=$1, instagram=$2, whatsapp=$3, perfil_publico=$4, slug=$5 WHERE id=$6`,
+        [bio||null, instagram||null, whatsapp||null, perfil_publico||false, slugLimpo, req.membro.id]);
+    } else {
+      await pool.query(`UPDATE pep_membros SET bio=$1, instagram=$2, whatsapp=$3, perfil_publico=$4 WHERE id=$5`,
+        [bio||null, instagram||null, whatsapp||null, perfil_publico||false, req.membro.id]);
+    }
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Chamar verificarBadges ao registrar venda
+
 
 // Middleware que verifica se é membro ativo
 async function membroMiddleware(req, res, next) {
@@ -1704,10 +1928,18 @@ async function registrarVendaAfiliado(ref_code, pedido_id, valor) {
       `UPDATE pep_membros SET vendas_total=vendas_total+$1, credito=credito+$2 WHERE id=$3`,
       [valor, comissao, membro.id]
     );
+    // Verificar badges e criar notificação de nova venda
+    verificarBadges(membro.id).catch(() => {});
+    criarNotificacao(membro.id, 'venda', `💰 Nova venda: R$ ${parseFloat(valor).toFixed(2)} — comissão R$ ${comissao.toFixed(2)}`, '/members.html').catch(() => {});
   } catch (e) {
     console.error('[Afiliado] Erro:', e.message);
   }
 }
+
+// Página pública do distribuidor
+app.get('/distribuidor/:slug', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'distribuidor.html'));
+});
 
 // ─────────────────────────────────────────────
 //  404 FALLBACK (SPA)

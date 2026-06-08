@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Extrato — PEPMASTERS Members</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--dark:#1C0A00}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:#0f0800;color:#fff;min-height:100vh;display:flex;flex-direction:column}
+    header{background:rgba(28,10,0,.95);border-bottom:2px solid var(--amber);padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .members-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;background:linear-gradient(135deg,var(--amber),var(--orange));color:#000;padding:3px 10px;border-radius:20px;margin-left:8px}
+    .header-right{display:flex;align-items:center;gap:16px}
+    .nav-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s}
+    .nav-link:hover,.nav-link.active{color:var(--amber)}
+    main{flex:1;max-width:860px;margin:0 auto;padding:32px 24px;width:100%}
+    h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;text-transform:uppercase;color:var(--amber);margin-bottom:24px}
+    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+    .stat-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,179,0,.1);border-radius:12px;padding:18px}
+    .stat-card .label{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px}
+    .stat-card .value{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;color:var(--amber)}
+    /* TABS */
+    .tabs{display:flex;gap:8px;margin-bottom:20px}
+    .tab-btn{padding:8px 20px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:none;color:rgba(255,255,255,.5);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;cursor:pointer;transition:all .2s}
+    .tab-btn.active{border-color:var(--amber);color:var(--amber);background:rgba(255,179,0,.06)}
+    /* TABELA */
+    .table-wrap{background:rgba(255,255,255,.03);border:1px solid rgba(255,179,0,.08);border-radius:14px;overflow:hidden}
+    table{width:100%;border-collapse:collapse}
+    th{text-align:left;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.2)}
+    td{padding:12px 16px;font-size:.88rem;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.04)}
+    tr:last-child td{border:none}
+    .badge-pago{background:rgba(34,197,94,.15);color:#22c55e;padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;text-transform:uppercase}
+    .badge-pendente{background:rgba(234,179,8,.15);color:#eab308;padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;text-transform:uppercase}
+    .valor-comissao{color:#22c55e;font-weight:700}
+    .empty{text-align:center;padding:40px;color:rgba(255,255,255,.3)}
+    #toast{position:fixed;bottom:24px;right:24px;background:#1a0c00;color:#fff;padding:12px 18px;border-radius:10px;font-size:.85rem;border-left:3px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(20px);opacity:0;transition:all .3s;z-index:5000;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:600px){.stats-grid{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <div style="display:flex;align-items:center;gap:8px">
+    <a href="index.html" style="text-decoration:none"><span class="logo-text">PEPMASTERS</span></a>
+    <span class="members-badge">Members</span>
+  </div>
+  <div class="header-right">
+    <a href="members.html" class="nav-link">Painel</a>
+    <a href="members-ranking.html" class="nav-link">Ranking</a>
+    <a href="members-extrato.html" class="nav-link active">Extrato</a>
+    <a href="members-forum.html" class="nav-link">Fórum</a>
+    <a href="#" class="nav-link" onclick="sair(event)">Sair</a>
+  </div>
+</header>
+
+<main>
+  <h1>💳 Extrato</h1>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="label">Volume Total</div><div class="value" id="statVolume">—</div></div>
+    <div class="stat-card"><div class="label">Comissão Total</div><div class="value" id="statComissao">—</div></div>
+    <div class="stat-card"><div class="label">Total de Vendas</div><div class="value" id="statVendas">—</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="mostrarTab('vendas',this)">💰 Vendas</button>
+    <button class="tab-btn" onclick="mostrarTab('pagamentos',this)">📋 Mensalidades</button>
+    <button class="tab-btn" onclick="mostrarTab('links',this)">🔗 Links por Produto</button>
+  </div>
+  <div id="tabVendas"></div>
+  <div id="tabPagamentos" style="display:none"></div>
+  <div id="tabLinks" style="display:none"></div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+var token = localStorage.getItem('pep_token');
+var dadosExtrato = null;
+var dadosLinks = null;
+
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
+function sair(e){e.preventDefault();localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');location.href='index.html';}
+function fmt(v){ return 'R$ ' + parseFloat(v||0).toFixed(2).replace('.',','); }
+
+function mostrarTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('tabVendas').style.display = tab === 'vendas' ? 'block' : 'none';
+  document.getElementById('tabPagamentos').style.display = tab === 'pagamentos' ? 'block' : 'none';
+  document.getElementById('tabLinks').style.display = tab === 'links' ? 'block' : 'none';
+  if (tab === 'links' && !dadosLinks) carregarLinks();
+}
+
+function copiarLink(txt) {
+  navigator.clipboard.writeText(txt).then(function(){ showToast('Link copiado!'); });
+}
+
+async function carregarLinks() {
+  try {
+    var res = await fetch('/api/membros/links', {headers:{Authorization:'Bearer '+token}});
+    var lista = await res.json();
+    var el = document.getElementById('tabLinks');
+    if (!lista.length) { el.innerHTML = '<div class="empty">Nenhum produto disponível.</div>'; return; }
+    dadosLinks = lista;
+    el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Produto</th><th>Link de Afiliado</th><th></th></tr></thead><tbody>' +
+    lista.map(function(l){
+      return '<tr><td style="font-weight:600">'+l.nome+'</td>' +
+        '<td style="font-size:.78rem;color:rgba(255,255,255,.4);max-width:300px;word-break:break-all">'+l.link+'</td>' +
+        '<td><button onclick="copiarLink(\''+l.link+'\')" style="padding:5px 12px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:.75rem;text-transform:uppercase;border:none;border-radius:8px;cursor:pointer">Copiar</button></td>' +
+      '</tr>';
+    }).join('') +
+    '</tbody></table></div>';
+  } catch { showToast('Erro ao carregar links.'); }
+}
+
+async function init() {
+  if (!token) { location.href = 'login.html?redirect=members-extrato.html'; return; }
+  try {
+    var res = await fetch('/api/membros/extrato', {headers:{Authorization:'Bearer '+token}});
+    if (res.status === 401) { location.href = 'login.html?redirect=members-extrato.html'; return; }
+    if (res.status === 403) { location.href = 'members.html?msg=assine'; return; }
+    var data = await res.json();
+    dadosExtrato = data;
+
+    document.getElementById('statVolume').textContent = fmt(data.total_volume);
+    document.getElementById('statComissao').textContent = fmt(data.total_comissao);
+    document.getElementById('statVendas').textContent = data.vendas.length;
+
+    // Tab vendas
+    var vendas_el = document.getElementById('tabVendas');
+    if (!data.vendas.length) {
+      vendas_el.innerHTML = '<div class="empty">Nenhuma venda registrada ainda.</div>';
+    } else {
+      vendas_el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Data</th><th>Produto</th><th>Valor Venda</th><th>Comissão</th></tr></thead><tbody>' +
+      data.vendas.map(function(v){
+        return '<tr>' +
+          '<td>'+new Date(v.criado_em).toLocaleDateString('pt-BR')+'</td>' +
+          '<td>'+(v.produto_nome||'—')+'</td>' +
+          '<td>'+fmt(v.valor)+'</td>' +
+          '<td class="valor-comissao">+'+fmt(v.comissao)+'</td>' +
+        '</tr>';
+      }).join('') +
+      '</tbody></table></div>';
+    }
+
+    // Tab pagamentos
+    var pag_el = document.getElementById('tabPagamentos');
+    if (!data.pagamentos.length) {
+      pag_el.innerHTML = '<div class="empty">Nenhum pagamento registrado.</div>';
+    } else {
+      pag_el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Data</th><th>Valor</th><th>Forma</th><th>Status</th></tr></thead><tbody>' +
+      data.pagamentos.map(function(p){
+        var statusClass = p.status === 'pago' ? 'badge-pago' : 'badge-pendente';
+        return '<tr>' +
+          '<td>'+new Date(p.criado_em).toLocaleDateString('pt-BR')+'</td>' +
+          '<td>'+fmt(p.valor)+'</td>' +
+          '<td>'+(p.pagamento||'—')+'</td>' +
+          '<td><span class="'+statusClass+'">'+p.status+'</span></td>' +
+        '</tr>';
+      }).join('') +
+      '</tbody></table></div>';
+    }
+  } catch(e) { showToast('Erro ao carregar extrato.'); }
+}
+
+init();
+</script>
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
+</body>
+</html>
