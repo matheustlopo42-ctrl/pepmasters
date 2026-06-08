@@ -366,6 +366,10 @@ window.PEPMASTERS_I18N = {
   "checkout.modal.back":           { en:"← Back to store", pt:"← Voltar à loja", es:"← Volver a la tienda", de:"← Zurück zum Shop", fr:"← Retour à la boutique" },
 
   // MEMBERS
+  "members.level.bronze":   { en:"Bronze",  pt:"Bronze",  es:"Bronce",  de:"Bronze",  fr:"Bronze" },
+  "members.level.prata":    { en:"Silver",  pt:"Prata",   es:"Plata",   de:"Silber",  fr:"Argent" },
+  "members.level.ouro":     { en:"Gold",    pt:"Ouro",    es:"Oro",     de:"Gold",    fr:"Or" },
+  "members.level.diamante": { en:"Diamond", pt:"Diamante",es:"Diamante",de:"Diamant", fr:"Diamant" },
   "members.badge":          { en:"Members",          pt:"Members",           es:"Members",           de:"Members",           fr:"Members" },
   "members.hero.title":     { en:"PEPMASTERS",       pt:"PEPMASTERS",        es:"PEPMASTERS",        de:"PEPMASTERS",        fr:"PEPMASTERS" },
   "members.hero.subtitle":  { en:"Be an official distributor. Earn commissions, offset your membership and level up.", pt:"Seja um distribuidor oficial. Ganhe comissões, abata na mensalidade e cresça de nível.", es:"Sé un distribuidor oficial. Gana comisiones y sube de nivel.", de:"Sei ein offizieller Distributor. Verdiene Provisionen und steige auf.", fr:"Soyez un distributeur officiel. Gagnez des commissions et montez de niveau." },

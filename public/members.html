@@ -440,10 +440,21 @@ var nivelMeta = { bronze: 500, prata: 2000, ouro: 5000, diamante: 99999 };
 
 function renderPainel(data) {
   var nivel = data.nivel || 'bronze';
+  var d = window.PEPMASTERS_I18N || {};
+  var l = localStorage.getItem('pep_lang') || 'en';
+  var tr = function(k){ return (d[k] && (d[k][l] || d[k]['en'])) || k; };
+
+  var nivelNomes = {
+    bronze: tr('members.level.bronze') || 'Bronze',
+    prata:  tr('members.level.prata')  || 'Prata',
+    ouro:   tr('members.level.ouro')   || 'Ouro',
+    diamante: tr('members.level.diamante') || 'Diamante'
+  };
+
   document.getElementById('nivelIcon').textContent = nivelIcons[nivel] || '🥉';
-  document.getElementById('nivelNome').textContent = nivel.charAt(0).toUpperCase() + nivel.slice(1);
-  document.getElementById('nivelComissao').textContent = nivelComissoes[nivel] + ' de comissão';
-  document.getElementById('headerNome').textContent = 'Olá, ' + data.nome.split(' ')[0];
+  document.getElementById('nivelNome').textContent = nivelNomes[nivel] || nivel.charAt(0).toUpperCase() + nivel.slice(1);
+  document.getElementById('nivelComissao').textContent = nivelComissoes[nivel] + ' ' + tr('members.level.commission');
+  document.getElementById('headerNome').textContent = tr('nav.hello') + ', ' + data.nome.split(' ')[0];
 
   // Card de nível
   var card = document.getElementById('nivelCard');
@@ -459,8 +470,8 @@ function renderPainel(data) {
 
   if (ate) {
     document.getElementById('expiraEm').textContent = ativo
-      ? 'Válido até ' + ate.toLocaleDateString('pt-BR')
-      : 'Expirou em ' + ate.toLocaleDateString('pt-BR');
+      ? tr('members.valid.until') + ' ' + ate.toLocaleDateString('pt-BR')
+      : tr('members.expired.on') + ' ' + ate.toLocaleDateString('pt-BR');
   }
 
   // Progresso para próximo nível
@@ -473,7 +484,13 @@ function renderPainel(data) {
   var pct = nivel === 'diamante' ? 100 : Math.min(100, Math.round(((vol - base) / (meta - base)) * 100));
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressPct').textContent = pct + '%';
-  document.getElementById('progressLabel').textContent = nivel === 'diamante' ? 'Nível máximo!' : 'Para ' + prox.charAt(0).toUpperCase()+prox.slice(1);
+  var nivelNomesProgress = {
+    bronze: tr('members.level.bronze') || 'Bronze',
+    prata:  tr('members.level.prata')  || 'Prata',
+    ouro:   tr('members.level.ouro')   || 'Ouro',
+    diamante: tr('members.level.diamante') || 'Diamante'
+  };
+  document.getElementById('progressLabel').textContent = nivel === 'diamante' ? tr('members.max.level') : tr('members.next.level') + ': ' + (nivelNomesProgress[prox] || prox);
 
   // Stats
   document.getElementById('statVendas').textContent = data.total_vendas || 0;
