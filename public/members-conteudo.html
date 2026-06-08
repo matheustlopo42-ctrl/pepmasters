@@ -81,7 +81,7 @@
 </header>
 
 <div class="hero">
-  <h1>Conteúdo <span>Exclusivo</span></h1>
+  <h1><span data-i18n="content.hero.title1">Conteúdo</span> <span data-i18n="content.hero.title2" style="background:linear-gradient(135deg,var(--amber),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Exclusivo</span></h1>
   <p data-i18n="content.hero.subtitle">Protocolos, materiais de divulgação e guias para distribuidores.</p>
 </div>
 
@@ -283,6 +283,19 @@ var conteudos = [
   },
 ];
 
+var conteudoKeys = {
+  1: { titulo:'content.titulo.bpc',    desc:'content.desc.bpc'    },
+  2: { titulo:'content.titulo.ipa',    desc:'content.desc.ipa'    },
+  3: { titulo:'content.titulo.semax',  desc:'content.desc.semax'  },
+  4: { titulo:'content.titulo.aod',    desc:'content.desc.aod'    },
+  5: { titulo:'content.titulo.tb500',  desc:'content.desc.tb500'  },
+  6: { titulo:'content.titulo.scripts',desc:'content.desc.scripts'},
+  7: { titulo:'content.titulo.objecoes',desc:'content.desc.objecoes'},
+  8: { titulo:'content.titulo.inicio', desc:'content.desc.inicio' },
+  9: { titulo:'content.titulo.escalar',desc:'content.desc.escalar'},
+  10:{ titulo:'content.titulo.desconto',desc:'content.desc.desconto'},
+};
+
 var nivelOrder = ['bronze','prata','ouro','diamante'];
 
 function nivelIndex(n){ return nivelOrder.indexOf(n); }
@@ -318,18 +331,20 @@ function renderGrid(){
 
   grid.innerHTML = lista.map(function(c){
     var temAcesso = true;
-    var nivelLabel = {bronze:'Bronze',prata:tr('members.level.prata'),ouro:tr('members.level.ouro'),diamante:tr('members.level.diamante')}[c.nivel];
     var tipoLabel = tr('content.tipo.' + c.tipo);
+    var keys = conteudoKeys[c.id] || {};
+    var titulo = keys.titulo ? tr(keys.titulo) : c.titulo;
+    var desc = keys.desc ? tr(keys.desc) : c.desc;
     return '<div class="content-card" onclick="abrirConteudo('+c.id+')">' +
       '<div class="card-header">' +
         '<div class="card-icon">' + c.icon + '</div>' +
         '<div>' +
           '<div class="card-tipo">' + tipoLabel + '</div>' +
-          '<div class="card-titulo">' + c.titulo + '</div>' +
+          '<div class="card-titulo">' + titulo + '</div>' +
         '</div>' +
       '</div>' +
       '<div class="card-body">' +
-        '<div class="card-desc">' + c.desc + '</div>' +
+        '<div class="card-desc">' + desc + '</div>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -406,7 +421,10 @@ init();
     });
   }
   applyNow();setTimeout(applyNow,100);setTimeout(applyNow,500);
-  window.addEventListener('pep_lang_change',applyNow);
+  window.addEventListener('pep_lang_change', function(){
+    renderGrid();
+    applyNow();
+  });
   window.addEventListener('load',applyNow);
 })();
 </script>
