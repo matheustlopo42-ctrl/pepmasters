@@ -176,9 +176,6 @@ async function init() {
   if(window.PEPMASTERS_I18N){init();}
   else{setTimeout(waitI18n,50);}
 })();
-<script src="i18n.js"></script>
-<script src="i18n-init.js"></script>
-<script>
 (function(){
   function applyNow(){
     var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';if(!d)return;
@@ -188,7 +185,7 @@ async function init() {
     });
   }
   applyNow();setTimeout(applyNow,100);setTimeout(applyNow,500);
-  window.addEventListener('pep_lang_change',function(){applyNow();renderTabs();});
+  window.addEventListener('pep_lang_change',function(){applyNow();});
   window.addEventListener('load',applyNow);
 })();
 </script>
