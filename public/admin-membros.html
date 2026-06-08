@@ -316,17 +316,18 @@ async function carregarDenuncias() {
         '<td><span class="badge badge-pendente">' + (d.motivo||'—') + '</span></td>' +
         '<td style="font-size:.78rem;color:rgba(255,255,255,.4)">' + new Date(d.criado_em).toLocaleDateString('pt-BR') + '</td>' +
         '<td style="display:flex;gap:6px">' +
-          '<button class="btn-confirmar" style="font-size:.75rem;padding:5px 10px" onclick="resolverDenuncia(' + d.id + ',\"ignorar\")">Ignorar</button>' +
-          '<button class="btn-bloquear" style="font-size:.75rem;padding:5px 10px" onclick="resolverDenuncia(' + d.id + ',\"deletar\")">🗑 Deletar</button>' +
+          '<button class="btn-confirmar" style="font-size:.75rem;padding:5px 10px" onclick="resolverDenuncia(' + d.id + ', false)">Ignorar</button>' +
+          '<button class="btn-bloquear" style="font-size:.75rem;padding:5px 10px" onclick="resolverDenuncia(' + d.id + ', true)">🗑 Deletar</button>' +
         '</td>' +
       '</tr>';
     }).join('');
   } catch { showToast('Erro ao carregar denúncias.'); }
 }
 
-async function resolverDenuncia(id, acao) {
-  var msg = acao === 'deletar' ? 'Deletar o conteúdo denunciado?' : 'Ignorar esta denúncia?';
+async function resolverDenuncia(id, deletar) {
+  var msg = deletar ? 'Deletar o conteúdo denunciado?' : 'Ignorar esta denúncia?';
   if (!confirm(msg)) return;
+  var acao = deletar ? 'deletar' : 'ignorar';
   try {
     var res = await fetch('/api/admin/forum/denuncias/' + id, {
       method: 'PUT',
@@ -334,7 +335,7 @@ async function resolverDenuncia(id, acao) {
       body: JSON.stringify({ acao })
     });
     if (!res.ok) { showToast('Erro.'); return; }
-    showToast(acao === 'deletar' ? 'Conteúdo deletado.' : 'Denúncia ignorada.');
+    showToast(deletar ? 'Conteúdo deletado.' : 'Denúncia ignorada.');
     carregarDenuncias();
   } catch { showToast('Erro de conexão.'); }
 }
