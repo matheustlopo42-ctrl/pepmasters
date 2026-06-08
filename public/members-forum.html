@@ -78,7 +78,10 @@
     #toast{position:fixed;bottom:24px;right:24px;background:#1a0c00;color:#fff;padding:12px 18px;border-radius:10px;font-size:.85rem;border-left:3px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(20px);opacity:0;transition:all .3s;z-index:5000;pointer-events:none}
     #toast.show{transform:translateY(0);opacity:1}
     @media(max-width:600px){.topico-stats{display:none}.topico-item{padding:12px 14px}}
-      .btn-denunciar{background:none;border:1px solid rgba(239,68,68,.2);color:rgba(239,68,68,.5);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;text-transform:uppercase;padding:4px 10px;border-radius:8px;cursor:pointer;transition:all .2s;margin-top:8px}
+      .btn-traduzir{background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.3);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;text-transform:uppercase;padding:4px 10px;border-radius:8px;cursor:pointer;transition:all .2s;margin-top:8px;margin-right:6px}
+    .btn-traduzir:hover{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.6)}
+    .translate-warning{font-size:.72rem;color:rgba(255,255,255,.3);font-style:italic;margin-top:6px;display:none}
+    .btn-denunciar{background:none;border:1px solid rgba(239,68,68,.2);color:rgba(239,68,68,.5);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;text-transform:uppercase;padding:4px 10px;border-radius:8px;cursor:pointer;transition:all .2s;margin-top:8px}
     .btn-denunciar:hover{border-color:rgba(239,68,68,.6);color:#ef4444}
     /* Modal denúncia */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:3000;align-items:center;justify-content:center}
@@ -310,6 +313,9 @@ function renderPost(nome, nivel, data, conteudo, id, tipo) {
   var denunciarBtn = tipo === 'resposta' && id
     ? '<button class="btn-denunciar" onclick="abrirDenuncia(null,'+id+')">🚩 Denunciar</button>'
     : '<button class="btn-denunciar" onclick="abrirDenuncia('+id+',null)">🚩 Denunciar</button>';
+  var uid = 'post-' + tipo + '-' + (id||'0');
+  var traduzirBtn = '<button class="btn-traduzir" onclick="traduzirPost(''+uid+'',this)">🌐 Traduzir</button>' +
+    '<div class="translate-warning" id="warn-'+uid+'">⚠️ Tradução automática — pode perder o significado original.</div>';
   return '<div class="post-header">' +
     '<div class="post-avatar">' + inicial + '</div>' +
     '<div>' +
@@ -317,8 +323,28 @@ function renderPost(nome, nivel, data, conteudo, id, tipo) {
       '<div class="post-data">' + new Date(data).toLocaleString('pt-BR') + '</div>' +
     '</div>' +
   '</div>' +
-  '<div class="post-conteudo">' + conteudo + '</div>' +
-  denunciarBtn;
+  '<div class="post-conteudo" id="'+uid+'">' + conteudo + '</div>' +
+  '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-top:8px">' + traduzirBtn + denunciarBtn + '</div>';
+}
+
+function traduzirPost(uid, btn) {
+  var el = document.getElementById(uid);
+  if (!el) return;
+  var texto = el.textContent.trim();
+  var lang = localStorage.getItem('pep_lang') || 'en';
+  var langMap = {en:'en',pt:'pt',es:'es',de:'de',fr:'fr'};
+  var target = langMap[lang] || 'en';
+  // Mostrar aviso
+  var warn = document.getElementById('warn-' + uid);
+  if (warn) warn.style.display = 'block';
+  // Abrir Google Translate
+  var url = 'https://translate.google.com/?sl=auto&tl=' + target + '&text=' + encodeURIComponent(texto) + '&op=translate';
+  window.open(url, '_blank');
+  // Mudar botão
+  btn.textContent = '✓ Traduzido';
+  btn.style.color = 'rgba(255,179,0,.6)';
+  btn.style.borderColor = 'rgba(255,179,0,.3)';
+  btn.onclick = null;
 }
 
 function abrirDenuncia(topicoId, respostaId) {
