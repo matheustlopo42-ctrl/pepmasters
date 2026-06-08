@@ -120,11 +120,16 @@ var conteudos = [
     desc:'Guia completo de uso do BPC-157 para recuperação muscular e articular.',
     nivel:'bronze',
     corpo: {
-      intro: 'O BPC-157 (Body Protection Compound) é um peptídeo com ampla evidência em estudos pré-clínicos para recuperação de tecidos.',
+      intro: 'O BPC-157 (Body Protection Compound) é um pentadecapeptídeo com ampla evidência em modelos pré-clínicos para regeneração tecidual.',
       secoes: [
         { titulo:'Aplicação', items:['Subcutânea ou intramuscular próximo à área lesionada','Pode ser aplicado sistemicamente (subcutâneo abdominal)'] },
         { titulo:'Dosagem em estudos', items:['250mcg a 500mcg por aplicação','1 a 2x ao dia dependendo do objetivo','Ciclos de 4 a 8 semanas'] },
         { titulo:'Objetivos comuns', items:['Recuperação de tendões e ligamentos','Saúde gastrointestinal','Anti-inflamatório sistêmico'] },
+      ],
+      estudos: [
+        { texto:'Sikiric et al. (2018) — BPC-157 e regeneração tendínea', url:'https://pubmed.ncbi.nlm.nih.gov/29449233/' },
+        { texto:'Gwyer et al. (2019) — Revisão de BPC-157 em tecidos', url:'https://pubmed.ncbi.nlm.nih.gov/30580095/' },
+        { texto:'Chang et al. (2011) — BPC-157 e sistema gastrointestinal', url:'https://pubmed.ncbi.nlm.nih.gov/22024540/' },
       ],
       aviso: '⚠️ Este conteúdo é baseado em estudos pré-clínicos. Peptídeos são substâncias para pesquisa. Não constitui orientação médica.'
     }
@@ -132,12 +137,17 @@ var conteudos = [
   {
     id:2, tipo:'protocolo', icon:'💪', titulo:'Protocolo Ipamorelin + CJC-1295',
     desc:'Combinação para estimulo de GH — recuperação, composição corporal e sono.',
-    nivel:'prata',
+    nivel:'bronze',
     corpo: {
-      intro: 'A combinação Ipamorelin + CJC-1295 é uma das mais estudadas para estimulo fisiológico de GH.',
+      intro: 'A combinação Ipamorelin + CJC-1295 é uma das mais estudadas para estimulo fisiológico de GH sem os efeitos do GHRH exógeno.',
       secoes: [
-        { titulo:'Dosagem em estudos', items:['Ipamorelin: 200-300mcg','CJC-1295 DAC: 2mg semanais ou CJC-1295 sem DAC: 100-200mcg junto ao Ipamorelin','Aplicação noturna para aproveitar pico de GH'] },
-        { titulo:'Benefícios relatados em estudos', items:['Melhora da composição corporal','Qualidade de sono','Recuperação muscular','Anti-envelhecimento'] },
+        { titulo:'Dosagem em estudos', items:['Ipamorelin: 200-300mcg','CJC-1295 DAC: 2mg semanais ou sem DAC: 100-200mcg junto ao Ipamorelin','Aplicação noturna para aproveitar pico natural de GH'] },
+        { titulo:'Benefícios relatados em estudos', items:['Melhora da composição corporal','Qualidade de sono','Recuperação muscular','Efeitos anti-envelhecimento'] },
+      ],
+      estudos: [
+        { texto:'Raun et al. (1998) — Ipamorelin, novo GHSP seletivo', url:'https://pubmed.ncbi.nlm.nih.gov/9849822/' },
+        { texto:'Teichman et al. (2006) — CJC-1295 e liberação prolongada de GH', url:'https://pubmed.ncbi.nlm.nih.gov/16352683/' },
+        { texto:'Alba et al. (2006) — Estimulação do eixo GH/IGF-1', url:'https://pubmed.ncbi.nlm.nih.gov/16690809/' },
       ],
       aviso: '⚠️ Este conteúdo é baseado em estudos pré-clínicos. Peptídeos são substâncias para pesquisa. Não constitui orientação médica.'
     }
@@ -145,64 +155,107 @@ var conteudos = [
   {
     id:3, tipo:'protocolo', icon:'🧠', titulo:'Protocolo Semax + Selank',
     desc:'Peptídeos nootropics para foco, cognição e controle de ansiedade.',
-    nivel:'ouro',
+    nivel:'bronze',
     corpo: {
       intro: 'Semax e Selank são peptídeos de origem soviética com estudos focados em performance cognitiva e modulação do humor.',
       secoes: [
         { titulo:'Semax — Dosagem', items:['300-600mcg intranasal','1-2x ao dia','Ciclos de 2-4 semanas'] },
-        { titulo:'Selank — Dosagem', items:['250-500mcg intranasal','Pode ser usado diariamente','Bom para períodos de estresse'] },
-        { titulo:'Benefícios em estudos', items:['Aumento de BDNF','Foco e memória de trabalho','Modulação ansiolítica sem sedação'] },
+        { titulo:'Selank — Dosagem', items:['250-500mcg intranasal','Pode ser usado diariamente','Bom para períodos de alto estresse'] },
+        { titulo:'Benefícios em estudos', items:['Aumento de BDNF (fator neurotrófico)','Foco e memória de trabalho','Modulação ansiolítica sem sedação'] },
+      ],
+      estudos: [
+        { texto:'Eremin et al. (2005) — Semax e neuroproteção', url:'https://pubmed.ncbi.nlm.nih.gov/15751517/' },
+        { texto:'Semenova et al. (2010) — Selank e ansiedade', url:'https://pubmed.ncbi.nlm.nih.gov/20804854/' },
+        { texto:'Dolotov et al. (2006) — Semax e expressão de BDNF', url:'https://pubmed.ncbi.nlm.nih.gov/16774778/' },
       ],
       aviso: '⚠️ Este conteúdo é baseado em estudos pré-clínicos. Peptídeos são substâncias para pesquisa. Não constitui orientação médica.'
     }
   },
   {
-    id:4, tipo:'material', icon:'📱', titulo:'Scripts para Instagram',
+    id:4, tipo:'protocolo', icon:'🔥', titulo:'Protocolo AOD-9604',
+    desc:'Fragmento de GH focado em lipólise e redução de gordura corporal.',
+    nivel:'bronze',
+    corpo: {
+      intro: 'O AOD-9604 é um fragmento da molécula de GH (aminoácidos 176-191) desenvolvido para efeitos lipolíticos sem impacto no IGF-1.',
+      secoes: [
+        { titulo:'Dosagem em estudos', items:['250-500mcg por dia','Aplicação subcutânea preferencialmente em jejum','Ciclos de 8-12 semanas'] },
+        { titulo:'Mecanismo', items:['Estimula beta-3 adrenoceptores no tecido adiposo','Inibe lipogênese','Não eleva glicemia (diferente do GH)'] },
+      ],
+      estudos: [
+        { texto:'Heffernan et al. (2001) — AOD-9604 e metabolismo lipídico', url:'https://pubmed.ncbi.nlm.nih.gov/11739421/' },
+        { texto:'Stier et al. (2013) — Segurança e tolerabilidade do AOD-9604', url:'https://pubmed.ncbi.nlm.nih.gov/23601675/' },
+      ],
+      aviso: '⚠️ Este conteúdo é baseado em estudos pré-clínicos. Peptídeos são substâncias para pesquisa. Não constitui orientação médica.'
+    }
+  },
+  {
+    id:5, tipo:'protocolo', icon:'❤️', titulo:'Protocolo TB-500',
+    desc:'Thymosin Beta-4 para recuperação acelerada e cicatrização.',
+    nivel:'bronze',
+    corpo: {
+      intro: 'O TB-500 (fragmento da Thymosin Beta-4) é estudado por sua capacidade de promover angiogênese, migração celular e regeneração.',
+      secoes: [
+        { titulo:'Dosagem em estudos', items:['2-2.5mg por semana na fase de carga (4-6 semanas)','1-2mg por mês na fase de manutenção','Subcutâneo ou intramuscular'] },
+        { titulo:'Aplicações estudadas', items:['Recuperação de lesões musculares','Cicatrização de feridas','Saúde cardiovascular','Ação anti-inflamatória'] },
+      ],
+      estudos: [
+        { texto:'Goldstein et al. (2012) — TB-500 e reparo tecidual', url:'https://pubmed.ncbi.nlm.nih.gov/22409343/' },
+        { texto:'Philp et al. (2004) — Thymosin Beta-4 e regeneração muscular', url:'https://pubmed.ncbi.nlm.nih.gov/15322257/' },
+        { texto:'Smart et al. (2007) — TB-500 e proteção cardíaca', url:'https://pubmed.ncbi.nlm.nih.gov/17308261/' },
+      ],
+      aviso: '⚠️ Este conteúdo é baseado em estudos pré-clínicos. Peptídeos são substâncias para pesquisa. Não constitui orientação médica.'
+    }
+  },
+  {
+    id:6, tipo:'material', icon:'📱', titulo:'Scripts para Instagram',
     desc:'Textos prontos para stories, feed e DM focados em conversão.',
     nivel:'bronze',
     corpo: {
       intro: 'Use esses scripts como base. Adapte para sua linguagem e público.',
       secoes: [
         { titulo:'Story — Awareness', items:['"Você sabia que peptídeos bioativos já são usados por atletas de elite para recuperação? A PEPMASTERS traz isso pro Brasil com qualidade e transparência. 🧬 Link na bio!"'] },
-        { titulo:'Feed — Conversão', items:['"Performance não é sorte. É ciência. Conheça os peptídeos bioativos que estão transformando a recuperação e composição corporal de atletas e praticantes. PEPMASTERS — link na bio. Use meu código e ganhe desconto!"'] },
+        { titulo:'Feed — Conversão', items:['"Performance não é sorte. É ciência. Conheça os peptídeos bioativos que estão transformando a recuperação e composição corporal de atletas. PEPMASTERS — link na bio!"'] },
         { titulo:'DM — Abordagem', items:['"Oi [nome]! Vi que você treina sério. Quero te apresentar algo que tem feito diferença na minha recuperação. Posso te mandar mais informações?"'] },
       ],
+      estudos:[],
       aviso: '💡 Sempre inclua seu link de afiliado pessoal para rastrear as vendas.'
     }
   },
   {
-    id:5, tipo:'material', icon:'🎯', titulo:'Objeções mais comuns',
+    id:7, tipo:'material', icon:'🎯', titulo:'Objeções mais comuns',
     desc:'Como responder dúvidas e objeções dos seus clientes com segurança.',
     nivel:'bronze',
     corpo: {
       intro: 'Estar preparado para objeções aumenta muito sua taxa de conversão.',
       secoes: [
-        { titulo:'"É seguro?"', items:['"Os peptídeos PEPMASTERS são para fins de pesquisa e uso responsável. Cada produto vem com informações detalhadas e nossa equipe está disponível para tirar dúvidas."'] },
-        { titulo:'"É caro."', items:['"O custo por uso é menor do que muitos suplementos convencionais. E os resultados em recuperação e performance são bem documentados em estudos."'] },
-        { titulo:'"Nunca ouvi falar."', items:['"A maioria dos atletas de elite já usa há anos. Ainda é algo de nicho no Brasil, por isso é uma grande oportunidade agora."'] },
-        { titulo:'"Preciso de receita?"', items:['"São substâncias para pesquisa. Nossa plataforma é transparente sobre isso."'] },
+        { titulo:'"É seguro?"', items:['"Os peptídeos PEPMASTERS são para fins de pesquisa e uso responsável. Cada produto vem com informações detalhadas."'] },
+        { titulo:'"É caro."', items:['"O custo por uso é menor do que muitos suplementos convencionais, com resultados bem documentados em estudos."'] },
+        { titulo:'"Nunca ouvi falar."', items:['"A maioria dos atletas de elite já usa há anos. Ainda é nicho no Brasil — por isso é uma grande oportunidade agora."'] },
+        { titulo:'"Preciso de receita?"', items:['"São substâncias para pesquisa. Nossa plataforma é transparente sobre isso e fornece toda a documentação."'] },
       ],
+      estudos:[],
       aviso: '💡 Seja sempre honesto e nunca faça promessas médicas.'
     }
   },
   {
-    id:6, tipo:'guia', icon:'📖', titulo:'Guia de Início Rápido',
+    id:8, tipo:'guia', icon:'📖', titulo:'Guia de Início Rápido',
     desc:'Tudo que você precisa saber para começar a vender nos primeiros 7 dias.',
     nivel:'bronze',
     corpo: {
       intro: 'Bem-vindo ao PEPMASTERS Members! Siga esses passos para começar com o pé direito.',
       secoes: [
-        { titulo:'Dia 1-2: Setup', items:['Copie seu link de afiliado no painel','Configure uma bio no Instagram com seu link','Consuma os protocolos para entender os produtos'] },
+        { titulo:'Dia 1-2: Setup', items:['Copie seu link de afiliado no painel','Configure uma bio no Instagram com seu link','Estude os protocolos para entender os produtos'] },
         { titulo:'Dia 3-4: Conteúdo', items:['Poste 1 story apresentando os peptídeos','Use os scripts da seção Materiais','Responda dúvidas nos comentários'] },
         { titulo:'Dia 5-7: Conversão', items:['Aborde contatos que demonstraram interesse','Ofereça informações detalhadas','Feche as primeiras vendas e acompanhe no painel'] },
       ],
+      estudos:[],
       aviso: '🎯 Meta sugerida para a primeira semana: 3 a 5 vendas.'
     }
   },
   {
-    id:7, tipo:'guia', icon:'📊', titulo:'Como escalar suas vendas',
-    desc:'Estratégias avançadas para distribuidores Prata e acima.',
-    nivel:'prata',
+    id:9, tipo:'guia', icon:'📊', titulo:'Como escalar suas vendas',
+    desc:'Estratégias avançadas para aumentar seu volume e subir de nível.',
+    nivel:'bronze',
     corpo: {
       intro: 'Depois das primeiras vendas, é hora de escalar. Aqui estão as estratégias que mais funcionam.',
       secoes: [
@@ -210,20 +263,22 @@ var conteudos = [
         { titulo:'Amplie seu alcance', items:['Use grupos de fitness, crossfit, biohacking','Parcerias com personal trainers e nutricionistas','WhatsApp Business com catálogo'] },
         { titulo:'Fidelize clientes', items:['Follow-up após primeira compra','Sugira protocolos complementares','Crie um grupo de clientes no WhatsApp'] },
       ],
-      aviso: '💡 Distribuidores Prata+ têm acesso ao suporte prioritário para dúvidas de vendas.'
+      estudos:[],
+      aviso: '💡 Cada nível de membro tem comissões maiores. Foque em volume para subir!'
     }
   },
   {
-    id:8, tipo:'desconto', icon:'💰', titulo:'Tabela de Descontos por Nível',
+    id:10, tipo:'desconto', icon:'💰', titulo:'Tabela de Descontos por Nível',
     desc:'Seus descontos exclusivos na loja conforme seu nível de distribuidor.',
     nivel:'bronze',
     corpo: {
       intro: 'Como distribuidor PEPMASTERS, você tem descontos progressivos em todos os produtos.',
       secoes: [
         { titulo:'Descontos por nível', items:['🥉 Bronze: 10% em todos os produtos','🥈 Prata: 15% em todos os produtos','🥇 Ouro: 20% em todos os produtos','💎 Diamante: 25% em todos os produtos'] },
-        { titulo:'Como usar', items:['Seu desconto é aplicado automaticamente quando você está logado','Válido em todas as formas de pagamento','Cumulável com cupons sazonais em algumas promoções'] },
+        { titulo:'Como usar', items:['Seu desconto é aplicado automaticamente quando logado','Válido em todas as formas de pagamento'] },
       ],
-      aviso: '🎯 Quanto maior seu nível, mais você economiza para uso próprio e mais você ganha nas vendas.'
+      estudos:[],
+      aviso: '🎯 Quanto maior seu nível, mais você economiza e mais você ganha nas vendas.'
     }
   },
 ];
@@ -258,7 +313,7 @@ function renderGrid(){
   });
 
   grid.innerHTML = lista.map(function(c){
-    var temAcesso = nivelIndex(nivelAtual) >= nivelIndex(c.nivel);
+    var temAcesso = true;
     var nivelLabel = {bronze:'Bronze',prata:'Prata',ouro:'Ouro',diamante:'Diamante'}[c.nivel];
     return '<div class="content-card" onclick="abrirConteudo('+c.id+')">' +
       '<div class="card-header">' +
@@ -283,10 +338,10 @@ function renderGrid(){
 function abrirConteudo(id){
   var c = conteudos.find(function(x){return x.id===id;});
   if(!c) return;
-  var temAcesso = nivelIndex(nivelAtual) >= nivelIndex(c.nivel);
+  var temAcesso = true;
   document.getElementById('modalTitulo').textContent = c.icon + ' ' + c.titulo;
   var body = '';
-  if(!temAcesso){
+  if(false){
     var nivelLabel = {bronze:'Bronze',prata:'Prata',ouro:'Ouro',diamante:'Diamante'}[c.nivel];
     body = '<div class="locked-overlay">' +
       '<div class="lock-icon">🔒</div>' +
@@ -299,6 +354,13 @@ function abrirConteudo(id){
       s.items.forEach(function(i){ body += '<li>' + i + '</li>'; });
       body += '</ul>';
     });
+    if (c.corpo.estudos && c.corpo.estudos.length) {
+      body += '<h3>📚 Estudos e Referências</h3><ul>';
+      c.corpo.estudos.forEach(function(e){
+        body += '<li><a href="' + e.url + '" target="_blank" rel="noopener" style="color:var(--amber);text-decoration:none;border-bottom:1px solid rgba(255,179,0,.3)">' + e.texto + ' ↗</a></li>';
+      });
+      body += '</ul>';
+    }
     body += '<div class="aviso">' + c.corpo.aviso + '</div>';
   }
   document.getElementById('modalBody').innerHTML = '<div class="modal-content">' + body + '</div>';
@@ -317,7 +379,7 @@ async function init(){
   if(!token){ location.href='login.html?redirect=members-conteudo.html'; return; }
   try {
     var res = await fetch('/api/membros/painel', {headers:{Authorization:'Bearer '+token}});
-    if(!res.ok){ location.href='members.html'; return; }
+    if(!res.ok){ location.href='members.html?msg=assine'; return; }
     var data = await res.json();
     nivelAtual = data.nivel || 'bronze';
     renderGrid();

@@ -568,6 +568,12 @@ async function init() {
 
 // Iniciar com pagamento cripto selecionado
 document.getElementById('btnWpp').style.display = 'none';
+// Mostrar mensagem se vier de página restrita
+if (new URLSearchParams(location.search).get('msg') === 'assine') {
+  setTimeout(function(){
+    showToast('Ative sua conta Members para acessar esse conteúdo!');
+  }, 800);
+}
 </script>
 <script src="i18n.js"></script>
 <script src="i18n-init.js"></script>

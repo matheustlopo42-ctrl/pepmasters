@@ -241,7 +241,8 @@ async function carregarTopicos(cat) {
   var url = '/api/forum/topicos' + (cat && cat !== 'todos' ? '?categoria=' + cat : '');
   try {
     var res = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
-    if (res.status === 401 || res.status === 403) { location.href = 'login.html?redirect=members-forum.html'; return; }
+    if (res.status === 401) { location.href = 'login.html?redirect=members-forum.html'; return; }
+    if (res.status === 403) { location.href = 'members.html?msg=assine'; return; }
     var lista = await res.json();
     var container = document.getElementById('listaTopicos');
     if (!lista.length) {
