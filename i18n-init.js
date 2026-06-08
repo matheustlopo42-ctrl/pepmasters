@@ -22,6 +22,7 @@
     if (typeof window.carregarProdutos === 'function') window.carregarProdutos();
     if (typeof window.renderAuth === 'function') window.renderAuth();
     if (typeof window.atualizarBadge === 'function') window.atualizarBadge();
+    window.dispatchEvent(new Event('pep_lang_change'));
   }
 
   function apply(lang) {
