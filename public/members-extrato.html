@@ -47,20 +47,20 @@
     <span class="members-badge">Members</span>
   </div>
   <div class="header-right">
-    <a href="members.html" class="nav-link" data-i18n="members.nav.panel">Painel</a>
-    <a href="members-ranking.html" class="nav-link" data-i18n="ranking.title">Ranking</a>
-    <a href="members-extrato.html" class="nav-link active" data-i18n="extrato.title">Extrato</a>
-    <a href="members-forum.html" class="nav-link" data-i18n="members.nav.forum">Fórum</a>
-    <a href="#" class="nav-link" onclick="sair(event)" data-i18n="members.nav.logout">Sair</a>
+    <a href="members.html" class="nav-link" data-nav="panel">Painel</a>
+    <a href="members-ranking.html" class="nav-link" data-nav="ranking">Ranking</a>
+    <a href="members-extrato.html" class="nav-link active" data-nav="extrato">Extrato</a>
+    <a href="members-forum.html" class="nav-link" data-nav="forum">Fórum</a>
+    <a href="#" class="nav-link" onclick="sair(event)" data-nav="logout">Sair</a>
   </div>
 </header>
 
 <main>
-  <h1>💳 <span data-i18n="extrato.title">Extrato</span></h1>
+  <h1>💳 <span data-nav="extrato">Extrato</span></h1>
   <div class="stats-grid">
-    <div class="stat-card"><div class="label" data-i18n="extrato.volume">Volume Total</div><div class="value" id="statVolume">—</div></div>
-    <div class="stat-card"><div class="label" data-i18n="extrato.commission">Comissão Total</div><div class="value" id="statComissao">—</div></div>
-    <div class="stat-card"><div class="label" data-i18n="extrato.sales">Total de Vendas</div><div class="value" id="statVendas">—</div></div>
+    <div class="stat-card"><div class="label" data-nav="vol">Volume Total</div><div class="value" id="statVolume">—</div></div>
+    <div class="stat-card"><div class="label" data-nav="com">Comissão Total</div><div class="value" id="statComissao">—</div></div>
+    <div class="stat-card"><div class="label" data-nav="sal">Total de Vendas</div><div class="value" id="statVendas">—</div></div>
   </div>
   <div class="tabs">
     <button class="tab-btn active" onclick="mostrarTab('vendas',this)" data-i18n="extrato.tab.sales">💰 Vendas</button>
@@ -116,7 +116,45 @@ async function carregarLinks() {
   } catch { showToast('Erro ao carregar links.'); }
 }
 
+
+// Traduzir navegação diretamente
+function traduzirNav() {
+  var l = localStorage.getItem('pep_lang') || 'en';
+  var nav = {
+    en:{panel:'Panel',ranking:'Ranking',extrato:'Statement',forum:'Forum',logout:'Logout',content:'Content'},
+    pt:{panel:'Painel',ranking:'Ranking',extrato:'Extrato',forum:'Fórum',logout:'Sair',content:'Conteúdo'},
+    es:{panel:'Panel',ranking:'Ranking',extrato:'Extracto',forum:'Foro',logout:'Salir',content:'Contenido'},
+    de:{panel:'Panel',ranking:'Ranking',extrato:'Auszug',forum:'Forum',logout:'Abmelden',content:'Inhalt'},
+    fr:{panel:'Panneau',ranking:'Classement',extrato:'Relevé',forum:'Forum',logout:'Déconnexion',content:'Contenu',
+       vol:'Volume Total',com:'Commission Totale',sal:'Total des ventes',
+       tabs:'💰 Ventes|📋 Abonnements|🔗 Liens par Produit'},
+    extras:{
+      en:{vol:'Total Volume',com:'Total Commission',sal:'Total Sales',tabs:'💰 Sales|📋 Memberships|🔗 Links by Product'},
+      pt:{vol:'Volume Total',com:'Comissão Total',sal:'Total de Vendas',tabs:'💰 Vendas|📋 Mensalidades|🔗 Links por Produto'},
+      es:{vol:'Volumen Total',com:'Comisión Total',sal:'Total de Ventas',tabs:'💰 Ventas|📋 Membresías|🔗 Links por Producto'},
+      de:{vol:'Gesamtvolumen',com:'Gesamtprovision',sal:'Gesamtverkäufe',tabs:'💰 Verkäufe|📋 Mitgliedschaften|🔗 Links nach Produkt'},
+      fr:{vol:'Volume Total',com:'Commission Totale',sal:'Total des ventes',tabs:'💰 Ventes|📋 Abonnements|🔗 Liens par Produit'}
+    }
+  };
+  var t = nav[l] || nav['en'];
+  document.querySelectorAll('[data-nav]').forEach(function(el){
+    var k = el.getAttribute('data-nav');
+    var ext = nav.extras && nav.extras[l];
+    var val = t[k] || (ext && ext[k]);
+    if(val) el.textContent = val;
+  });
+  // Traduzir tabs
+  var tabs = document.querySelectorAll('.tab-btn');
+  var ext2 = nav.extras && nav.extras[l];
+  if(ext2 && ext2.tabs) {
+    var tabLabels = ext2.tabs.split('|');
+    tabs.forEach(function(tab, i){ if(tabLabels[i]) tab.textContent = tabLabels[i]; });
+  }
+}
+window.addEventListener('pep_lang_change', traduzirNav);
+
 async function init() {
+  traduzirNav();
   if (!token) { location.href = 'login.html?redirect=members-extrato.html'; return; }
   try {
     var res = await fetch('/api/membros/extrato', {headers:{Authorization:'Bearer '+token}});

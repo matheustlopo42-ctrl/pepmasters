@@ -63,16 +63,16 @@
     <span class="members-badge">Members</span>
   </div>
   <div class="header-right">
-    <a href="members.html" class="nav-link" data-i18n="members.nav.panel">Painel</a>
-    <a href="members-ranking.html" class="nav-link active" data-i18n="ranking.title">Ranking</a>
-    <a href="members-extrato.html" class="nav-link" data-i18n="extrato.title">Extrato</a>
-    <a href="members-forum.html" class="nav-link" data-i18n="members.nav.forum">Fórum</a>
-    <a href="#" class="nav-link" onclick="sair(event)" data-i18n="members.nav.logout">Sair</a>
+    <a href="members.html" class="nav-link" data-nav="panel">Painel</a>
+    <a href="members-ranking.html" class="nav-link active" data-nav="ranking">Ranking</a>
+    <a href="members-extrato.html" class="nav-link" data-nav="extrato">Extrato</a>
+    <a href="members-forum.html" class="nav-link" data-nav="forum">Fórum</a>
+    <a href="#" class="nav-link" onclick="sair(event)" data-nav="logout">Sair</a>
   </div>
 </header>
 
 <div class="hero">
-  <h1>🏆 <span data-i18n="ranking.title">Ranking Mensal</span></h1>
+  <h1>🏆 <span data-nav="ranking">Ranking Mensal</span></h1>
   <p id="periodoLabel"></p>
 </div>
 
@@ -96,7 +96,27 @@ function sair(e){e.preventDefault();localStorage.removeItem('pep_token');localSt
 
 function fmt(v){ return 'R$ ' + parseFloat(v||0).toFixed(2).replace('.',','); }
 
+
+// Traduzir navegação diretamente
+function traduzirNav() {
+  var l = localStorage.getItem('pep_lang') || 'en';
+  var nav = {
+    en:{panel:'Panel',ranking:'Ranking',extrato:'Statement',forum:'Forum',logout:'Logout',content:'Content'},
+    pt:{panel:'Painel',ranking:'Ranking',extrato:'Extrato',forum:'Fórum',logout:'Sair',content:'Conteúdo'},
+    es:{panel:'Panel',ranking:'Ranking',extrato:'Extracto',forum:'Foro',logout:'Salir',content:'Contenido'},
+    de:{panel:'Panel',ranking:'Ranking',extrato:'Auszug',forum:'Forum',logout:'Abmelden',content:'Inhalt'},
+    fr:{panel:'Panneau',ranking:'Classement',extrato:'Relevé',forum:'Forum',logout:'Déconnexion',content:'Contenu'}
+  };
+  var t = nav[l] || nav['en'];
+  document.querySelectorAll('[data-nav]').forEach(function(el){
+    var k = el.getAttribute('data-nav');
+    if(t[k]) el.textContent = t[k];
+  });
+}
+window.addEventListener('pep_lang_change', traduzirNav);
+
 async function init() {
+  traduzirNav();
   if (!token) { location.href = 'login.html?redirect=members-ranking.html'; return; }
   var agora = new Date();
   document.getElementById('mesLabel').textContent = mesTrad + ' ' + agora.getFullYear();
