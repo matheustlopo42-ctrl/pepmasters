@@ -314,7 +314,7 @@ function renderPost(nome, nivel, data, conteudo, id, tipo) {
     ? '<button class="btn-denunciar" onclick="abrirDenuncia(null,'+id+')">🚩 Denunciar</button>'
     : '<button class="btn-denunciar" onclick="abrirDenuncia('+id+',null)">🚩 Denunciar</button>';
   var uid = 'post-' + tipo + '-' + (id||'0');
-  var traduzirBtn = '<button class="btn-traduzir" onclick="traduzirPost(''+uid+'',this)">🌐 Traduzir</button>' +
+  var traduzirBtn = '<button class="btn-traduzir" onclick="traduzirPost(&quot;'+uid+'&quot;,this)">🌐 Traduzir</button>' +
     '<div class="translate-warning" id="warn-'+uid+'">⚠️ Tradução automática — pode perder o significado original.</div>';
   return '<div class="post-header">' +
     '<div class="post-avatar">' + inicial + '</div>' +
