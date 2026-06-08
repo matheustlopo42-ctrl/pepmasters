@@ -417,6 +417,9 @@ window.PEPMASTERS_I18N = {
   "members.login.desc":     { en:"Log in with your PEPMASTERS account to access the members area.", pt:"Faça login com sua conta PEPMASTERS para acessar a área de membros.", es:"Inicia sesión con tu cuenta PEPMASTERS.", de:"Melde dich mit deinem PEPMASTERS-Konto an.", fr:"Connectez-vous avec votre compte PEPMASTERS." },
   "members.login.btn":      { en:"Login",            pt:"Fazer Login",       es:"Iniciar sesión",    de:"Anmelden",          fr:"Se connecter" },
   // CONTEÚDO EXCLUSIVO
+  "members.nav.ranking":    { en:"🏆 Ranking",  pt:"🏆 Ranking",  es:"🏆 Ranking",  de:"🏆 Ranking",  fr:"🏆 Classement" },
+  "members.nav.extrato":    { en:"💳 Statement", pt:"💳 Extrato",  es:"💳 Extracto", de:"💳 Auszug",   fr:"💳 Relevé" },
+  "members.nav.perfil":     { en:"👤 Profile",   pt:"👤 Perfil",   es:"👤 Perfil",   de:"👤 Profil",   fr:"👤 Profil" },
   "content.nav.content":    { en:"Content",  pt:"Conteúdo",  es:"Contenido",  de:"Inhalt",   fr:"Contenu" },
   "content.hero.title1":     { en:"Exclusive",           pt:"Conteúdo",          es:"Contenido",          de:"Exklusiver",         fr:"Contenu" },
   "content.hero.title2":     { en:"Content",             pt:"Exclusivo",         es:"Exclusivo",          de:"Inhalt",             fr:"Exclusif" },
