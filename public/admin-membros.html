@@ -60,8 +60,6 @@
   <nav class="nav-links">
     <a href="admin.html">Pedidos</a>
     <a href="admin-membros.html" class="active">Membros</a>
-    <a href="#" onclick="mostrarAba('membros',event)">Membros</a>
-    <a href="#" onclick="mostrarAba('forum',event)">💬 Fórum</a>
     <a href="admin-cupons.html">Cupons</a>
     <a href="admin-estoque.html">Estoque</a>
     <a href="admin-usuarios.html">Usuários</a>
@@ -318,8 +316,8 @@ async function carregarDenuncias() {
         '<td><span class="badge badge-pendente">' + (d.motivo||'—') + '</span></td>' +
         '<td style="font-size:.78rem;color:rgba(255,255,255,.4)">' + new Date(d.criado_em).toLocaleDateString('pt-BR') + '</td>' +
         '<td style="display:flex;gap:6px">' +
-          '<button class="btn-confirmar" style="font-size:.75rem;padding:5px 10px" onclick="resolverDenuncia(' + d.id + ','ignorar')">Ignorar</button>' +
-          '<button class="btn-bloquear" style="font-size:.75rem;padding:5px 10px" onclick="resolverDenuncia(' + d.id + ','deletar')">🗑 Deletar</button>' +
+          '<button class="btn-confirmar" style="font-size:.75rem;padding:5px 10px" onclick="resolverDenuncia(' + d.id + ',\"ignorar\")">Ignorar</button>' +
+          '<button class="btn-bloquear" style="font-size:.75rem;padding:5px 10px" onclick="resolverDenuncia(' + d.id + ',\"deletar\")">🗑 Deletar</button>' +
         '</td>' +
       '</tr>';
     }).join('');
