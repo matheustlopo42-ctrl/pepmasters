@@ -506,10 +506,32 @@ function renderPainel(data) {
   document.getElementById('msgAbatimento').textContent = '- R$ ' + (data.abatimento||0).toFixed(2).replace('.',',');
   document.getElementById('msgDevida').textContent = 'R$ ' + (data.mensalidade_devida||0).toFixed(2).replace('.',',');
 
-  // Destacar nível atual na tabela
-  document.querySelectorAll('#tabelaNiveis tr').forEach(function(tr){
-    tr.classList.toggle('atual', tr.dataset.nivel === nivel);
-  });
+  // Renderizar tabela de níveis com traduções
+  var nivelCores = {bronze:'var(--bronze)',prata:'var(--prata)',ouro:'var(--ouro)',diamante:'var(--diamante)'};
+  var nivelRanges = {
+    bronze:   tr('members.table.bronze.range'),
+    prata:    tr('members.table.prata.range'),
+    ouro:     tr('members.table.ouro.range'),
+    diamante: tr('members.table.diamante.range')
+  };
+  var nivelPcts = {bronze:'5%',prata:'8%',ouro:'12%',diamante:'15%'};
+  var tbody = document.getElementById('tabelaNiveis');
+  if (tbody) {
+    var nivelOrder = ['bronze','prata','ouro','diamante'];
+    var nivelNomesTabela = {
+      bronze:   tr('members.level.bronze'),
+      prata:    tr('members.level.prata'),
+      ouro:     tr('members.level.ouro'),
+      diamante: tr('members.level.diamante')
+    };
+    tbody.innerHTML = nivelOrder.map(function(n){
+      return '<tr data-nivel="'+n+'" class="'+(n===nivel?'atual':'')+'">' +
+        '<td><span class="nivel-dot" style="background:'+nivelCores[n]+'"></span>'+nivelNomesTabela[n]+'</td>' +
+        '<td>'+nivelRanges[n]+'</td>' +
+        '<td>'+nivelPcts[n]+'</td>' +
+      '</tr>';
+    }).join('');
+  }
 }
 
 async function init() {
@@ -524,7 +546,10 @@ async function init() {
     if (res.status === 404) {
       // Não é membro ainda — mostrar página de assinatura
       document.getElementById('paginaAssinar').style.display = 'block';
-      document.getElementById('headerNome').textContent = 'Olá, ' + (localStorage.getItem('pep_nome')||'').split(' ')[0];
+      var _d2 = window.PEPMASTERS_I18N || {};
+      var _l2 = localStorage.getItem('pep_lang') || 'en';
+      var _tr2 = function(k){ return (_d2[k] && (_d2[k][_l2] || _d2[k]['en'])) || k; };
+      document.getElementById('headerNome').textContent = _tr2('nav.hello') + ', ' + (localStorage.getItem('pep_nome')||'').split(' ')[0];
       return;
     }
     var data = await res.json();

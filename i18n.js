@@ -366,6 +366,10 @@ window.PEPMASTERS_I18N = {
   "checkout.modal.back":           { en:"← Back to store", pt:"← Voltar à loja", es:"← Volver a la tienda", de:"← Zurück zum Shop", fr:"← Retour à la boutique" },
 
   // MEMBERS
+  "members.table.bronze.range":  { en:"Up to $500",          pt:"Até R$ 500",        es:"Hasta $500",         de:"Bis $500",          fr:"Jusqu'à 500$" },
+  "members.table.prata.range":   { en:"$500 – $2,000",         pt:"R$ 500 – R$ 2.000", es:"$500 – $2.000",      de:"$500 – $2.000",     fr:"500$ – 2.000$" },
+  "members.table.ouro.range":    { en:"$2,000 – $5,000",       pt:"R$ 2.000 – R$ 5.000", es:"$2.000 – $5.000",  de:"$2.000 – $5.000",   fr:"2.000$ – 5.000$" },
+  "members.table.diamante.range":{ en:"Above $5,000",          pt:"Acima de R$ 5.000", es:"Más de $5.000",      de:"Über $5.000",       fr:"Au-dessus de 5.000$" },
   "members.level.bronze":   { en:"Bronze",  pt:"Bronze",  es:"Bronce",  de:"Bronze",  fr:"Bronze" },
   "members.level.prata":    { en:"Silver",  pt:"Prata",   es:"Plata",   de:"Silber",  fr:"Argent" },
   "members.level.ouro":     { en:"Gold",    pt:"Ouro",    es:"Oro",     de:"Gold",    fr:"Or" },
