@@ -1321,6 +1321,43 @@ app.post('/api/forum/topicos/:id/responder', membroMiddleware, async (req, res) 
       `INSERT INTO pep_forum_respostas (topico_id, membro_id, conteudo) VALUES ($1,$2,$3)`,
       [req.params.id, req.membro.id, conteudo.trim()]
     );
+
+    // Notificar autor do tópico por email (se não for ele mesmo respondendo)
+    try {
+      const t = await pool.query(
+        `SELECT t.titulo, t.membro_id, u.email, u.nome
+         FROM pep_forum_topicos t
+         JOIN pep_membros m ON m.id = t.membro_id
+         JOIN pep_usuarios u ON u.id = m.usuario_id
+         WHERE t.id = $1`,
+        [req.params.id]
+      );
+      if (t.rows.length && t.rows[0].membro_id !== req.membro.id) {
+        const { email, nome, titulo } = t.rows[0];
+        // Buscar nome do respondente
+        const resp = await pool.query(
+          `SELECT u.nome FROM pep_usuarios u WHERE u.id = $1`,
+          [req.usuario.id]
+        );
+        const nomeResp = resp.rows[0]?.nome || 'Um membro';
+        await sendEmail(email, `💬 Nova resposta no seu tópico — PEPMASTERS Members`, `
+          <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#1C0A00;color:#fff;border-radius:12px">
+            <h2 style="color:#FFB300;font-family:sans-serif">Nova resposta no seu tópico</h2>
+            <p>Olá, <strong>${nome}</strong>!</p>
+            <p><strong>${nomeResp}</strong> respondeu ao seu tópico:</p>
+            <div style="background:rgba(255,255,255,.05);border-left:4px solid #FFB300;padding:12px 16px;border-radius:8px;margin:16px 0">
+              <strong style="color:#FFB300">${titulo}</strong>
+            </div>
+            <a href="${BASE_URL}/members-forum.html" style="display:inline-block;padding:12px 24px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;margin-top:8px">Ver resposta</a>
+            <hr style="border-color:rgba(255,255,255,.1);margin:20px 0"/>
+            <p style="font-size:.8rem;color:rgba(255,255,255,.4)">PEPMASTERS Members — Performance através da ciência.</p>
+          </div>
+        `);
+      }
+    } catch (emailErr) {
+      console.error('[Forum] Erro ao enviar email:', emailErr.message);
+    }
+
     res.json({ ok: true });
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Conteúdo Exclusivo — PEPMASTERS Members</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:#0f0800;color:#fff;min-height:100vh;display:flex;flex-direction:column}
+    header{background:rgba(28,10,0,.95);border-bottom:2px solid var(--amber);padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .members-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;background:linear-gradient(135deg,var(--amber),var(--orange));color:#000;padding:3px 10px;border-radius:20px;margin-left:8px}
+    .header-right{display:flex;align-items:center;gap:16px}
+    .nav-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s}
+    .nav-link:hover,.nav-link.active{color:var(--amber)}
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#1C0A00,#3D1A00,#1C0A00);padding:52px 24px;text-align:center;border-bottom:1px solid rgba(255,179,0,.15);position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,179,0,.12),transparent 60%)}
+    .hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.8rem,4vw,2.8rem);text-transform:uppercase;margin-bottom:10px;position:relative}
+    .hero h1 span{background:linear-gradient(135deg,var(--amber),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero p{color:rgba(255,255,255,.5);font-size:.95rem;position:relative}
+    /* MAIN */
+    main{flex:1;max-width:1000px;margin:0 auto;padding:40px 24px;width:100%}
+    /* CATEGORIAS */
+    .cat-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+    .cat-tab{padding:8px 18px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:none;color:rgba(255,255,255,.5);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;cursor:pointer;transition:all .2s}
+    .cat-tab:hover,.cat-tab.active{border-color:var(--amber);color:var(--amber);background:rgba(255,179,0,.06)}
+    /* CARDS DE CONTEÚDO */
+    .content-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+    .content-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,179,0,.1);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .2s}
+    .content-card:hover{border-color:rgba(255,179,0,.3);transform:translateY(-2px)}
+    .card-header{padding:20px;background:linear-gradient(135deg,rgba(255,107,0,.1),rgba(255,179,0,.05));display:flex;align-items:center;gap:14px}
+    .card-icon{font-size:2.2rem;flex-shrink:0}
+    .card-tipo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+    .card-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:#fff;line-height:1.2}
+    .card-body{padding:16px 20px}
+    .card-desc{font-size:.85rem;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:14px}
+    .card-meta{display:flex;gap:12px;align-items:center}
+    .nivel-required{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px}
+    .nivel-bronze{background:rgba(205,127,50,.15);color:#cd7f32}
+    .nivel-prata{background:rgba(192,192,192,.15);color:#C0C0C0}
+    .nivel-ouro{background:rgba(255,215,0,.15);color:#FFD700}
+    .nivel-diamante{background:rgba(185,242,255,.15);color:#b9f2ff}
+    /* MODAL CONTEÚDO */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:3000;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#1a0c00;border:1px solid rgba(255,179,0,.2);border-radius:18px;padding:32px;max-width:680px;width:100%;margin:auto}
+    .modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
+    .modal-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;color:#fff}
+    .btn-fechar{background:none;border:none;color:rgba(255,255,255,.4);font-size:1.5rem;cursor:pointer;transition:color .2s;padding:0}
+    .btn-fechar:hover{color:#fff}
+    .modal-content{font-size:.92rem;color:rgba(255,255,255,.75);line-height:1.8}
+    .modal-content h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;text-transform:uppercase;color:var(--amber);margin:20px 0 10px}
+    .modal-content ul{padding-left:20px;margin-bottom:12px}
+    .modal-content li{margin-bottom:6px}
+    .modal-content strong{color:#fff}
+    .modal-content .aviso{background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.2);border-radius:10px;padding:14px;margin:16px 0;font-size:.85rem;color:rgba(255,255,255,.6)}
+    /* LOCKED */
+    .locked-overlay{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center}
+    .locked-overlay .lock-icon{font-size:3rem;margin-bottom:16px}
+    .locked-overlay p{color:rgba(255,255,255,.4);font-size:.88rem;max-width:260px;line-height:1.6}
+    #toast{position:fixed;bottom:24px;right:24px;background:#1a0c00;color:#fff;padding:12px 18px;border-radius:10px;font-size:.85rem;border-left:3px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(20px);opacity:0;transition:all .3s;z-index:5000;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:600px){.content-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <div style="display:flex;align-items:center;gap:8px">
+    <a href="index.html" style="text-decoration:none"><span class="logo-text">PEPMASTERS</span></a>
+    <span class="members-badge">Members</span>
+  </div>
+  <div class="header-right">
+    <a href="members.html" class="nav-link">Painel</a>
+    <a href="members-conteudo.html" class="nav-link active">Conteúdo</a>
+    <a href="members-forum.html" class="nav-link">Fórum</a>
+    <a href="#" class="nav-link" onclick="sair(event)">Sair</a>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Conteúdo <span>Exclusivo</span></h1>
+  <p>Protocolos, materiais de divulgação e guias para distribuidores.</p>
+</div>
+
+<main>
+  <div class="cat-tabs">
+    <button class="cat-tab active" onclick="filtrar('todos',this)">Todos</button>
+    <button class="cat-tab" onclick="filtrar('protocolo',this)">🧬 Protocolos</button>
+    <button class="cat-tab" onclick="filtrar('material',this)">📢 Materiais</button>
+    <button class="cat-tab" onclick="filtrar('guia',this)">📖 Guias</button>
+    <button class="cat-tab" onclick="filtrar('desconto',this)">💰 Descontos</button>
+  </div>
+  <div class="content-grid" id="contentGrid"></div>
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-titulo" id="modalTitulo"></div>
+      <button class="btn-fechar" onclick="fecharModal()">×</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var token = localStorage.getItem('pep_token');
+var nivelAtual = 'bronze';
+var catAtual = 'todos';
+
+var conteudos = [
+  {
+    id:1, tipo:'protocolo', icon:'🧬', titulo:'Protocolo BPC-157',
+    desc:'Guia completo de uso do BPC-157 para recuperação muscular e articular.',
+    nivel:'bronze',
+    corpo: {
+      intro: 'O BPC-157 (Body Protection Compound) é um peptídeo com ampla evidência em estudos pré-clínicos para recuperação de tecidos.',
+      secoes: [
+        { titulo:'Aplicação', items:['Subcutânea ou intramuscular próximo à área lesionada','Pode ser aplicado sistemicamente (subcutâneo abdominal)'] },
+        { titulo:'Dosagem em estudos', items:['250mcg a 500mcg por aplicação','1 a 2x ao dia dependendo do objetivo','Ciclos de 4 a 8 semanas'] },
+        { titulo:'Objetivos comuns', items:['Recuperação de tendões e ligamentos','Saúde gastrointestinal','Anti-inflamatório sistêmico'] },
+      ],
+      aviso: '⚠️ Este conteúdo é baseado em estudos pré-clínicos. Peptídeos são substâncias para pesquisa. Não constitui orientação médica.'
+    }
+  },
+  {
+    id:2, tipo:'protocolo', icon:'💪', titulo:'Protocolo Ipamorelin + CJC-1295',
+    desc:'Combinação para estimulo de GH — recuperação, composição corporal e sono.',
+    nivel:'prata',
+    corpo: {
+      intro: 'A combinação Ipamorelin + CJC-1295 é uma das mais estudadas para estimulo fisiológico de GH.',
+      secoes: [
+        { titulo:'Dosagem em estudos', items:['Ipamorelin: 200-300mcg','CJC-1295 DAC: 2mg semanais ou CJC-1295 sem DAC: 100-200mcg junto ao Ipamorelin','Aplicação noturna para aproveitar pico de GH'] },
+        { titulo:'Benefícios relatados em estudos', items:['Melhora da composição corporal','Qualidade de sono','Recuperação muscular','Anti-envelhecimento'] },
+      ],
+      aviso: '⚠️ Este conteúdo é baseado em estudos pré-clínicos. Peptídeos são substâncias para pesquisa. Não constitui orientação médica.'
+    }
+  },
+  {
+    id:3, tipo:'protocolo', icon:'🧠', titulo:'Protocolo Semax + Selank',
+    desc:'Peptídeos nootropics para foco, cognição e controle de ansiedade.',
+    nivel:'ouro',
+    corpo: {
+      intro: 'Semax e Selank são peptídeos de origem soviética com estudos focados em performance cognitiva e modulação do humor.',
+      secoes: [
+        { titulo:'Semax — Dosagem', items:['300-600mcg intranasal','1-2x ao dia','Ciclos de 2-4 semanas'] },
+        { titulo:'Selank — Dosagem', items:['250-500mcg intranasal','Pode ser usado diariamente','Bom para períodos de estresse'] },
+        { titulo:'Benefícios em estudos', items:['Aumento de BDNF','Foco e memória de trabalho','Modulação ansiolítica sem sedação'] },
+      ],
+      aviso: '⚠️ Este conteúdo é baseado em estudos pré-clínicos. Peptídeos são substâncias para pesquisa. Não constitui orientação médica.'
+    }
+  },
+  {
+    id:4, tipo:'material', icon:'📱', titulo:'Scripts para Instagram',
+    desc:'Textos prontos para stories, feed e DM focados em conversão.',
+    nivel:'bronze',
+    corpo: {
+      intro: 'Use esses scripts como base. Adapte para sua linguagem e público.',
+      secoes: [
+        { titulo:'Story — Awareness', items:['"Você sabia que peptídeos bioativos já são usados por atletas de elite para recuperação? A PEPMASTERS traz isso pro Brasil com qualidade e transparência. 🧬 Link na bio!"'] },
+        { titulo:'Feed — Conversão', items:['"Performance não é sorte. É ciência. Conheça os peptídeos bioativos que estão transformando a recuperação e composição corporal de atletas e praticantes. PEPMASTERS — link na bio. Use meu código e ganhe desconto!"'] },
+        { titulo:'DM — Abordagem', items:['"Oi [nome]! Vi que você treina sério. Quero te apresentar algo que tem feito diferença na minha recuperação. Posso te mandar mais informações?"'] },
+      ],
+      aviso: '💡 Sempre inclua seu link de afiliado pessoal para rastrear as vendas.'
+    }
+  },
+  {
+    id:5, tipo:'material', icon:'🎯', titulo:'Objeções mais comuns',
+    desc:'Como responder dúvidas e objeções dos seus clientes com segurança.',
+    nivel:'bronze',
+    corpo: {
+      intro: 'Estar preparado para objeções aumenta muito sua taxa de conversão.',
+      secoes: [
+        { titulo:'"É seguro?"', items:['"Os peptídeos PEPMASTERS são para fins de pesquisa e uso responsável. Cada produto vem com informações detalhadas e nossa equipe está disponível para tirar dúvidas."'] },
+        { titulo:'"É caro."', items:['"O custo por uso é menor do que muitos suplementos convencionais. E os resultados em recuperação e performance são bem documentados em estudos."'] },
+        { titulo:'"Nunca ouvi falar."', items:['"A maioria dos atletas de elite já usa há anos. Ainda é algo de nicho no Brasil, por isso é uma grande oportunidade agora."'] },
+        { titulo:'"Preciso de receita?"', items:['"São substâncias para pesquisa. Nossa plataforma é transparente sobre isso."'] },
+      ],
+      aviso: '💡 Seja sempre honesto e nunca faça promessas médicas.'
+    }
+  },
+  {
+    id:6, tipo:'guia', icon:'📖', titulo:'Guia de Início Rápido',
+    desc:'Tudo que você precisa saber para começar a vender nos primeiros 7 dias.',
+    nivel:'bronze',
+    corpo: {
+      intro: 'Bem-vindo ao PEPMASTERS Members! Siga esses passos para começar com o pé direito.',
+      secoes: [
+        { titulo:'Dia 1-2: Setup', items:['Copie seu link de afiliado no painel','Configure uma bio no Instagram com seu link','Consuma os protocolos para entender os produtos'] },
+        { titulo:'Dia 3-4: Conteúdo', items:['Poste 1 story apresentando os peptídeos','Use os scripts da seção Materiais','Responda dúvidas nos comentários'] },
+        { titulo:'Dia 5-7: Conversão', items:['Aborde contatos que demonstraram interesse','Ofereça informações detalhadas','Feche as primeiras vendas e acompanhe no painel'] },
+      ],
+      aviso: '🎯 Meta sugerida para a primeira semana: 3 a 5 vendas.'
+    }
+  },
+  {
+    id:7, tipo:'guia', icon:'📊', titulo:'Como escalar suas vendas',
+    desc:'Estratégias avançadas para distribuidores Prata e acima.',
+    nivel:'prata',
+    corpo: {
+      intro: 'Depois das primeiras vendas, é hora de escalar. Aqui estão as estratégias que mais funcionam.',
+      secoes: [
+        { titulo:'Construa autoridade', items:['Crie conteúdo educativo sobre peptídeos','Mostre resultados reais (com permissão)','Torne-se a referência no assunto na sua rede'] },
+        { titulo:'Amplie seu alcance', items:['Use grupos de fitness, crossfit, biohacking','Parcerias com personal trainers e nutricionistas','WhatsApp Business com catálogo'] },
+        { titulo:'Fidelize clientes', items:['Follow-up após primeira compra','Sugira protocolos complementares','Crie um grupo de clientes no WhatsApp'] },
+      ],
+      aviso: '💡 Distribuidores Prata+ têm acesso ao suporte prioritário para dúvidas de vendas.'
+    }
+  },
+  {
+    id:8, tipo:'desconto', icon:'💰', titulo:'Tabela de Descontos por Nível',
+    desc:'Seus descontos exclusivos na loja conforme seu nível de distribuidor.',
+    nivel:'bronze',
+    corpo: {
+      intro: 'Como distribuidor PEPMASTERS, você tem descontos progressivos em todos os produtos.',
+      secoes: [
+        { titulo:'Descontos por nível', items:['🥉 Bronze: 10% em todos os produtos','🥈 Prata: 15% em todos os produtos','🥇 Ouro: 20% em todos os produtos','💎 Diamante: 25% em todos os produtos'] },
+        { titulo:'Como usar', items:['Seu desconto é aplicado automaticamente quando você está logado','Válido em todas as formas de pagamento','Cumulável com cupons sazonais em algumas promoções'] },
+      ],
+      aviso: '🎯 Quanto maior seu nível, mais você economiza para uso próprio e mais você ganha nas vendas.'
+    }
+  },
+];
+
+var nivelOrder = ['bronze','prata','ouro','diamante'];
+
+function nivelIndex(n){ return nivelOrder.indexOf(n); }
+
+function showToast(msg){
+  var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},3000);
+}
+
+function sair(e){
+  e.preventDefault();
+  localStorage.removeItem('pep_token');
+  localStorage.removeItem('pep_nome');
+  location.href='index.html';
+}
+
+function filtrar(cat, btn){
+  catAtual = cat;
+  document.querySelectorAll('.cat-tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function renderGrid(){
+  var grid = document.getElementById('contentGrid');
+  var lista = conteudos.filter(function(c){
+    return catAtual === 'todos' || c.tipo === catAtual;
+  });
+
+  grid.innerHTML = lista.map(function(c){
+    var temAcesso = nivelIndex(nivelAtual) >= nivelIndex(c.nivel);
+    var nivelLabel = {bronze:'Bronze',prata:'Prata',ouro:'Ouro',diamante:'Diamante'}[c.nivel];
+    return '<div class="content-card" onclick="abrirConteudo('+c.id+')">' +
+      '<div class="card-header">' +
+        '<div class="card-icon">' + (temAcesso ? c.icon : '🔒') + '</div>' +
+        '<div>' +
+          '<div class="card-tipo">' + c.tipo + '</div>' +
+          '<div class="card-titulo">' + c.titulo + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card-body">' +
+        '<div class="card-desc">' + c.desc + '</div>' +
+        '<div class="card-meta">' +
+          '<span class="nivel-required nivel-'+c.nivel+'">'+
+            ({bronze:'🥉',prata:'🥈',ouro:'🥇',diamante:'💎'}[c.nivel])+' '+nivelLabel+'+' +
+          '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function abrirConteudo(id){
+  var c = conteudos.find(function(x){return x.id===id;});
+  if(!c) return;
+  var temAcesso = nivelIndex(nivelAtual) >= nivelIndex(c.nivel);
+  document.getElementById('modalTitulo').textContent = c.icon + ' ' + c.titulo;
+  var body = '';
+  if(!temAcesso){
+    var nivelLabel = {bronze:'Bronze',prata:'Prata',ouro:'Ouro',diamante:'Diamante'}[c.nivel];
+    body = '<div class="locked-overlay">' +
+      '<div class="lock-icon">🔒</div>' +
+      '<p>Este conteúdo é exclusivo para membros <strong style="color:var(--amber)">' + nivelLabel + '+</strong>.<br/><br/>Aumente suas vendas para evoluir de nível e desbloquear!</p>' +
+    '</div>';
+  } else {
+    body = '<p style="color:rgba(255,255,255,.6);margin-bottom:20px">' + c.corpo.intro + '</p>';
+    c.corpo.secoes.forEach(function(s){
+      body += '<h3>' + s.titulo + '</h3><ul>';
+      s.items.forEach(function(i){ body += '<li>' + i + '</li>'; });
+      body += '</ul>';
+    });
+    body += '<div class="aviso">' + c.corpo.aviso + '</div>';
+  }
+  document.getElementById('modalBody').innerHTML = '<div class="modal-content">' + body + '</div>';
+  document.getElementById('modal').classList.add('open');
+}
+
+function fecharModal(){
+  document.getElementById('modal').classList.remove('open');
+}
+
+document.getElementById('modal').addEventListener('click', function(e){
+  if(e.target === this) fecharModal();
+});
+
+async function init(){
+  if(!token){ location.href='login.html?redirect=members-conteudo.html'; return; }
+  try {
+    var res = await fetch('/api/membros/painel', {headers:{Authorization:'Bearer '+token}});
+    if(!res.ok){ location.href='members.html'; return; }
+    var data = await res.json();
+    nivelAtual = data.nivel || 'bronze';
+    renderGrid();
+  } catch {
+    nivelAtual = 'bronze';
+    renderGrid();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
