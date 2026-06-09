@@ -393,6 +393,41 @@ var pagamentoSelecionado = 'cripto';
 var valorSelecionado = null;
 var planoBronze = 97, plataPreco = 197, ouroPreco = 397, diamantePreco = 797;
 
+// Funções de cripto
+var MBR_WALLET = '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
+var mbrCryptoToken = 'USDT';
+var mbrCryptoValorNum = 0;
+
+function mbrSelecionarToken(token) {
+  mbrCryptoToken = token;
+  document.getElementById('mbr-btn-usdt').classList.toggle('active', token === 'USDT');
+  document.getElementById('mbr-btn-usdc').classList.toggle('active', token === 'USDC');
+  mbrAtualizarCriptoUI();
+}
+
+function mbrAtualizarCriptoUI() {
+  if (!mbrCryptoValorNum) return;
+  var contratos = {
+    USDT: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+    USDC: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359'
+  };
+  var contrato = contratos[mbrCryptoToken];
+  var valorWei = Math.round(mbrCryptoValorNum * 1000000);
+  var eip681 = 'ethereum:' + contrato + '/transfer?address=' + MBR_WALLET + '&uint256=' + valorWei;
+  document.getElementById('mbrCryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(eip681);
+  document.getElementById('mbrCryptoAddr').textContent = MBR_WALLET;
+  document.getElementById('mbrCryptoValor').textContent = mbrCryptoValorNum;
+  document.getElementById('mbrCryptoToken').textContent = mbrCryptoToken;
+}
+
+function mbrCopiarEndereco() {
+  navigator.clipboard.writeText(MBR_WALLET).then(function(){ showToast('Endereço copiado!'); });
+}
+
+function mbrCopiarValor() {
+  navigator.clipboard.writeText(String(mbrCryptoValorNum)).then(function(){ showToast('Valor copiado: ' + mbrCryptoValorNum + ' ' + mbrCryptoToken); });
+}
+
 function showToast(msg) {
   var t = document.getElementById('toast');
   t.textContent = msg;
