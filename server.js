@@ -1931,7 +1931,7 @@ app.get('/api/admin/dashboard', adminMiddleware, async (req, res) => {
   try {
     const receita = await pool.query(`
       SELECT TO_CHAR(DATE_TRUNC('month', criado_em),'YYYY-MM') as mes,
-             COALESCE(SUM(valor_total),0) as receita
+             COALESCE(SUM(total),0) as receita
       FROM pep_pedidos WHERE status IN ('pago','confirmado','enviado','entregue')
         AND criado_em >= NOW() - INTERVAL '12 months'
       GROUP BY mes ORDER BY mes
@@ -1961,7 +1961,7 @@ app.get('/api/admin/dashboard', adminMiddleware, async (req, res) => {
         (SELECT COUNT(*) FROM pep_usuarios) as total_usuarios,
         (SELECT COUNT(*) FROM pep_membros WHERE status='ativo') as membros_ativos,
         (SELECT COUNT(*) FROM pep_pedidos WHERE status IN ('pago','confirmado','enviado','entregue')) as pedidos_pagos,
-        (SELECT COALESCE(SUM(valor_total),0) FROM pep_pedidos WHERE status IN ('pago','confirmado','enviado','entregue')) as receita_total,
+        (SELECT COALESCE(SUM(total),0) FROM pep_pedidos WHERE status IN ('pago','confirmado','enviado','entregue')) as receita_total,
         (SELECT COUNT(*) FROM pep_pedidos WHERE status='pendente') as pedidos_pendentes,
         (SELECT COUNT(*) FROM pep_membros WHERE status='pendente') as membros_pendentes
     `);
