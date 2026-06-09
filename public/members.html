@@ -439,7 +439,7 @@ function mbrCopiarValor() {
 }
 
 async function assinar() {
-  if (valorSelecionado === undefined || valorSelecionado === null) { showToast('Selecione um plano primeiro.'); return; }
+  if (valorSelecionado === undefined || valorSelecionado === null) { showToast((function(){var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';return(d['members.select.plan.first']&&(d['members.select.plan.first'][l]||d['members.select.plan.first']['en']))||'Selecione um plano primeiro.';})() ); return; }
   var token = localStorage.getItem('pep_token');
   if (!token) { location.href = 'login.html?redirect=members.html'; return; }
   try {
@@ -537,12 +537,12 @@ function mudouDeIdeia() {
   document.querySelector('.planos-grid').scrollIntoView({ behavior: 'smooth' });
   // Desmarcar plano selecionado
   document.querySelectorAll('.plano-card').forEach(function(c){ c.classList.remove('selecionado'); });
-  document.getElementById('planoSelecionadoNome').textContent = 'Selecione um plano acima';
+  document.getElementById('planoSelecionadoNome').textContent = (function(){var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';return(d['members.select.first']&&(d['members.select.first'][l]||d['members.select.first']['en']))||'Selecione um plano acima';})();
   valorSelecionado = null;
 }
 
 function assinarWhatsApp() {
-  if (valorSelecionado === undefined || valorSelecionado === null) { showToast('Selecione um plano primeiro.'); return; }
+  if (valorSelecionado === undefined || valorSelecionado === null) { showToast((function(){var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';return(d['members.select.plan.first']&&(d['members.select.plan.first'][l]||d['members.select.plan.first']['en']))||'Selecione um plano primeiro.';})() ); return; }
   var nome = localStorage.getItem('pep_nome') || '';
   var plano = document.getElementById('planoSelecionadoNome').textContent;
   var msg = 'Olá! Quero assinar o plano PEPMASTERS Members.\n\nNome: ' + nome + '\nPlano: ' + plano + '\n\nAguardo instruções para pagamento.';

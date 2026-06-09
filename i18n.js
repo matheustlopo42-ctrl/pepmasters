@@ -437,6 +437,7 @@ window.PEPMASTERS_I18N = {
   "members.per.month":        { en:"/month",          pt:"/mês",              es:"/mes",              de:"/Monat",            fr:"/mois" },
   "members.finalize":         { en:"Finalize Subscription", pt:"Finalizar Assinatura", es:"Finalizar Suscripción", de:"Abonnement abschließen", fr:"Finaliser l'abonnement" },
   "members.selected.plan.label": { en:"Selected plan", pt:"Plano selecionado", es:"Plan seleccionado", de:"Ausgewählter Plan", fr:"Plan sélectionné" },
+  "members.select.plan.first":  { en:"Select a plan first.", pt:"Selecione um plano primeiro.", es:"Seleccione un plan primero.", de:"Wählen Sie zuerst einen Plan.", fr:"Sélectionnez d'abord un plan." },
   "members.select.first":     { en:"Select a plan above", pt:"Selecione um plano acima", es:"Selecciona un plan arriba", de:"Wählen Sie oben einen Plan", fr:"Sélectionnez un plan ci-dessus" },
   "members.payment.form":     { en:"Payment method",  pt:"Forma de pagamento", es:"Forma de pago",    de:"Zahlungsmethode",   fr:"Mode de paiement" },
   "members.order.registered": { en:"✓ Order registered — send payment", pt:"✓ Pedido registrado — envie o pagamento", es:"✓ Pedido registrado — envíe el pago", de:"✓ Bestellung registriert — Zahlung senden", fr:"✓ Commande enregistrée — envoyez le paiement" },
