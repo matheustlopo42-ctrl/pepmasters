@@ -456,6 +456,7 @@ window.PEPMASTERS_I18N = {
   // FORUM
   "forum.title":            { en:"Forum",            pt:"Fórum",             es:"Foro",              de:"Forum",             fr:"Forum" },
   "forum.new.topic":        { en:"+ New Topic",      pt:"+ Novo Tópico",     es:"+ Nuevo Tema",      de:"+ Neues Thema",     fr:"+ Nouveau sujet" },
+  "forum.cat.favorites":    { en:"⭐ Favorites", pt:"⭐ Favoritos", es:"⭐ Favoritos", de:"⭐ Favoriten", fr:"⭐ Favoris" },
   "forum.cat.all":          { en:"All",              pt:"Todos",             es:"Todos",             de:"Alle",              fr:"Tous" },
   "forum.cat.general":      { en:"General",          pt:"Geral",             es:"General",           de:"Allgemein",         fr:"Général" },
   "forum.cat.sales":        { en:"Sales",            pt:"Vendas",            es:"Ventas",            de:"Verkauf",           fr:"Ventes" },
@@ -505,6 +506,9 @@ window.PEPMASTERS_I18N = {
   "perfil.title":           { en:"✏️ Edit Public Profile", pt:"✏️ Editar Perfil Público", es:"✏️ Editar Perfil Público", de:"✏️ Öffentliches Profil bearbeiten", fr:"✏️ Modifier le profil public" },
   "perfil.preview":         { en:"👁 Preview",          pt:"👁 Preview",        es:"👁 Vista previa",    de:"👁 Vorschau",          fr:"👁 Aperçu" },
   "perfil.badges":          { en:"🏅 Your Achievements", pt:"🏅 Suas Conquistas", es:"🏅 Tus Logros",    de:"🏅 Ihre Erfolge",     fr:"🏅 Vos Réalisations" },
+  "perfil.slug.placeholder": { en:"e.g. john-smith", pt:"ex: joao-silva", es:"ej: juan-garcia", de:"z.B. hans-mueller", fr:"ex: jean-dupont" },
+  "perfil.instagram.placeholder": { en:"yourprofile", pt:"seuperfil", es:"tuperfil", de:"ihrprofil", fr:"votreprofil" },
+  "perfil.whatsapp.placeholder": { en:"15551234567", pt:"5511999999999", es:"5215512345678", de:"4915112345678", fr:"33612345678" },
   "perfil.slug":            { en:"Profile URL (slug)", pt:"URL do perfil (slug)", es:"URL del perfil (slug)", de:"Profil-URL (Slug)", fr:"URL du profil (slug)" },
   "perfil.bio.label":       { en:"Bio",                pt:"Bio",               es:"Bio",                de:"Bio",                 fr:"Bio" },
   "perfil.bio.placeholder": { en:"Tell a bit about yourself...", pt:"Conte um pouco sobre você...", es:"Cuéntanos algo sobre ti...", de:"Erzählen Sie etwas über sich...", fr:"Dites-nous quelque chose sur vous..." },
