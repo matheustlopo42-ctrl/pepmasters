@@ -287,7 +287,7 @@
         </ul>
       </div>
       <div class="plano-card" onclick="selecionarPlano(this, 197)">
-        <div class="plano-popular">Mais popular</div>
+        <div class="plano-popular" data-i18n="members.popular">Mais popular</div>
         <div class="plano-icon">🥈</div>
         <div class="plano-nome" style="color:var(--prata)">Prata</div>
         <div class="plano-preco">R$ 197 <span>/mês</span></div>
@@ -329,14 +329,14 @@
     </div>
 
     <div class="assinar-form">
-      <h3>Finalizar Assinatura</h3>
+      <h3><span data-i18n="members.finalize">Finalizar Assinatura</span></h3>
       <div style="margin-bottom:16px">
-        <div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:4px">Plano selecionado</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.2rem;color:var(--amber)" id="planoSelecionadoNome">Selecione um plano acima</div>
+        <div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:4px" data-i18n="members.selected.plan.label">Plano selecionado</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.2rem;color:var(--amber)" id="planoSelecionadoNome" data-i18n="members.select.first">Selecione um plano acima</div>
       </div>
 
       <div style="margin-bottom:20px">
-        <div style="font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px">Forma de pagamento</div>
+        <div style="font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px" data-i18n="members.payment.form">Forma de pagamento</div>
         <div class="payment-tabs">
           <div class="pay-tab active" onclick="selecionarPagamento('cripto',this)">💎 Cripto</div>
           <div class="pay-tab" onclick="selecionarPagamento('whatsapp',this)">📱 WhatsApp</div>
@@ -454,7 +454,9 @@ async function assinar() {
     });
     var data = await res.json();
     if (!res.ok) { showToast(data.erro || 'Erro ao processar.'); return; }
-    document.getElementById('btnAssinar').textContent = '✓ Pedido registrado — envie o pagamento';
+    var _da=window.PEPMASTERS_I18N||{};var _la=localStorage.getItem('pep_lang')||'en';
+    var _tra=function(k){return(_da[k]&&(_da[k][_la]||_da[k]['en']))||k;};
+    document.getElementById('btnAssinar').textContent = _tra('members.order.registered');
     document.getElementById('btnAssinar').style.opacity = '0.7';
     // Mostrar botão "Mudou de ideia?"
     var btnMudou = document.getElementById('btnMudouDeIdeia');
@@ -468,7 +470,9 @@ function selecionarPlano(el, valor) {
   el.classList.add('selecionado');
   valorSelecionado = valor;
   var nome = el.querySelector('.plano-nome').textContent;
-  var precoLabel = valor === 0 ? 'Grátis' : 'R$ ' + valor + '/mês';
+  var _dp=window.PEPMASTERS_I18N||{};var _lp=localStorage.getItem('pep_lang')||'en';
+  var _trp=function(k){return(_dp[k]&&(_dp[k][_lp]||_dp[k]['en']))||k;};
+  var precoLabel = valor === 0 ? _trp('members.plan.free') : 'R$ ' + valor + ' ' + _trp('members.per.month');
   document.getElementById('planoSelecionadoNome').textContent = nome + ' — ' + precoLabel;
   var isGratis = valor === 0;
   document.querySelector('.payment-tabs').style.display = isGratis ? 'none' : 'flex';
@@ -482,7 +486,8 @@ function selecionarPlano(el, valor) {
     if (_dadosPainel && _dadosPainel.status === 'ativo' && valor > 0) {
       var ate = _dadosPainel.membro_ate ? new Date(_dadosPainel.membro_ate).toLocaleDateString('pt-BR') : '';
       avisoEl.style.display = 'block';
-      avisoEl.textContent = '⏳ Seu novo plano entrará em vigor após o vencimento do plano atual (' + ate + '). Você não perderá os dias já pagos.';
+      var avisoTxt = _trp('members.plan.change.warning').replace('{date}', ate);
+      avisoEl.textContent = avisoTxt;
     } else { avisoEl.style.display = 'none'; }
   }
 }
