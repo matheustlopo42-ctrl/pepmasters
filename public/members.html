@@ -393,10 +393,10 @@ var pagamentoSelecionado = 'cripto';
 var valorSelecionado = null;
 var planoBronze = 97, plataPreco = 197, ouroPreco = 397, diamantePreco = 797;
 
-// Funções de cripto
+// Cripto — igual ao checkout
 var MBR_WALLET = '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
 var mbrCryptoToken = 'USDT';
-var mbrCryptoValorNum = 0;
+var mbrCryptoValor = '0';
 
 function mbrSelecionarToken(token) {
   mbrCryptoToken = token;
@@ -405,21 +405,30 @@ function mbrSelecionarToken(token) {
   mbrAtualizarCriptoUI();
 }
 
-function mbrAtualizarCriptoUI(valor) {
-  var v = valor || mbrCryptoValorNum;
-  if (!v) return;
-  mbrCryptoValorNum = v;
+function mbrAtualizarCriptoUI() {
   var contratos = {
     USDT: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
     USDC: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359'
   };
-  var contrato = contratos[mbrCryptoToken];
-  var valorWei = Math.round(v * 1000000);
+  var contrato = contratos[mbrCryptoToken] || contratos.USDT;
+  var valorWei = Math.round(parseFloat(mbrCryptoValor) * 1000000);
   var eip681 = 'ethereum:' + contrato + '/transfer?address=' + MBR_WALLET + '&uint256=' + valorWei;
   document.getElementById('mbrCryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(eip681);
   document.getElementById('mbrCryptoAddr').textContent = MBR_WALLET;
-  document.getElementById('mbrCryptoValor').textContent = v;
+  document.getElementById('mbrCryptoValor').textContent = mbrCryptoValor;
   document.getElementById('mbrCryptoToken').textContent = mbrCryptoToken;
+  document.getElementById('infoCripto').style.display = 'block';
+}
+
+async function mbrCarregarCotacao() {
+  try {
+    var r = await fetch('/api/crypto/cotacao');
+    var data = await r.json();
+    mbrCryptoValor = (valorSelecionado * data.usdt_per_brl).toFixed(2);
+  } catch {
+    mbrCryptoValor = (valorSelecionado / 5.5).toFixed(2);
+  }
+  mbrAtualizarCriptoUI();
 }
 
 function mbrCopiarEndereco() {
@@ -427,72 +436,18 @@ function mbrCopiarEndereco() {
 }
 
 function mbrCopiarValor() {
-  navigator.clipboard.writeText(String(mbrCryptoValorNum)).then(function(){ showToast('Valor copiado: ' + mbrCryptoValorNum + ' ' + mbrCryptoToken); });
-}
-
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 3000);
-}
-
-function sair(e) {
-  e.preventDefault();
-  localStorage.removeItem('pep_token');
-  localStorage.removeItem('pep_nome');
-  location.href = 'index.html';
-}
-
-function selecionarPlano(el, valor) {
-  document.querySelectorAll('.plano-card').forEach(function(c){ c.classList.remove('selecionado'); });
-  el.classList.add('selecionado');
-  valorSelecionado = valor;
-  var nome = el.querySelector('.plano-nome').textContent;
-  var precoLabel = valor === 0 ? 'Grátis' : 'R$ ' + valor + '/mês';
-  document.getElementById('planoSelecionadoNome').textContent = nome + ' — ' + precoLabel;
-
-  // Mostrar aviso se tem plano ativo e está trocando para plano pago
-  var avisoEl = document.getElementById('avisoMudancaPlano');
-  if (avisoEl) {
-    if (_dadosPainel && _dadosPainel.status === 'ativo' && valor > 0) {
-      var ate = _dadosPainel.membro_ate ? new Date(_dadosPainel.membro_ate).toLocaleDateString('pt-BR') : '';
-      avisoEl.style.display = 'block';
-      avisoEl.textContent = '⏳ Seu novo plano entrará em vigor após o vencimento do plano atual (' + ate + '). Você não perderá os dias já pagos.';
-    } else {
-      avisoEl.style.display = 'none';
-    }
-  }
-
-  // Mostrar/ocultar opções de pagamento
-  var isGratis = valor === 0;
-  document.querySelector('.payment-tabs').style.display = isGratis ? 'none' : 'flex';
-  document.getElementById('infoCripto').style.display = isGratis ? 'none' : (pagamentoSelecionado === 'cripto' ? 'block' : 'none');
-  document.getElementById('btnAssinar').style.display = isGratis ? 'none' : (pagamentoSelecionado === 'cripto' ? 'block' : 'none');
-  document.getElementById('btnWpp').style.display = isGratis ? 'none' : (pagamentoSelecionado === 'whatsapp' ? 'block' : 'none');
-  document.getElementById('btnGratis').style.display = isGratis ? 'block' : 'none';
-}
-
-function selecionarPagamento(tipo, el) {
-  pagamentoSelecionado = tipo;
-  document.querySelectorAll('.pay-tab').forEach(function(t){ t.classList.remove('active'); });
-  el.classList.add('active');
-  document.getElementById('infoCripto').style.display = tipo === 'cripto' ? 'block' : 'none';
-  document.getElementById('btnAssinar').style.display = tipo === 'cripto' ? 'block' : 'none';
-  document.getElementById('btnWpp').style.display = tipo === 'whatsapp' ? 'block' : 'none';
+  navigator.clipboard.writeText(mbrCryptoValor).then(function(){ showToast('Valor copiado: ' + mbrCryptoValor + ' ' + mbrCryptoToken); });
 }
 
 async function assinar() {
   if (valorSelecionado === undefined || valorSelecionado === null) { showToast('Selecione um plano primeiro.'); return; }
   var token = localStorage.getItem('pep_token');
-  alert('Debug: valorSelecionado=' + valorSelecionado + ' token=' + (token ? 'ok' : 'null'));
+  if (!token) { location.href = 'login.html?redirect=members.html'; return; }
   try {
-    var taxaBRL = 5.5;
-    mbrCryptoValorNum = parseFloat((valorSelecionado / taxaBRL).toFixed(2));
-    alert('Debug: mbrCryptoValorNum=' + mbrCryptoValorNum);
-    document.getElementById('infoCripto').style.display = 'block';
-    mbrAtualizarCriptoUI(mbrCryptoValorNum);
+    // Calcular cotação e mostrar QR
+    await mbrCarregarCotacao();
 
+    // Registrar pedido
     var res = await fetch('/api/membros/assinar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
@@ -500,18 +455,11 @@ async function assinar() {
     });
     var data = await res.json();
     if (!res.ok) { showToast(data.erro || 'Erro ao processar.'); return; }
-
-    // Atualizar com valor exato do backend se disponível
-    if (data.crypto_valor && data.crypto_valor > 0) {
-      mbrCryptoValorNum = data.crypto_valor;
-      mbrAtualizarCriptoUI();
-    }
-
     document.getElementById('btnAssinar').textContent = '✓ Pedido registrado — envie o pagamento';
     document.getElementById('btnAssinar').style.opacity = '0.7';
     document.getElementById('btnAssinar').disabled = true;
     showToast('Pedido registrado! Envie o pagamento e aguarde confirmação em até 24h úteis.');
-  } catch { showToast('Erro de conexão.'); }
+  } catch(e) { showToast('Erro de conexão.'); }
 }
 
 function assinarWhatsApp() {
