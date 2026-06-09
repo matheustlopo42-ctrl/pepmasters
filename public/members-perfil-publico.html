@@ -192,11 +192,11 @@ async function init() {
   // Traduzir placeholders diretamente
   var l = localStorage.getItem('pep_lang') || 'en';
   var placeholders = {
-    en: { slug:'e.g. john-smith', instagram:'yourprofile', whatsapp:'15551234567' },
-    pt: { slug:'ex: joao-silva', instagram:'seuperfil', whatsapp:'5511999999999' },
-    es: { slug:'ej: juan-garcia', instagram:'tuperfil', whatsapp:'5215512345678' },
-    de: { slug:'z.B. hans-mueller', instagram:'ihrprofil', whatsapp:'4915112345678' },
-    fr: { slug:'ex: jean-dupont', instagram:'votreprofil', whatsapp:'33612345678' }
+    en: { slug:'e.g. john-smith', instagram:'your profile', whatsapp:'15551234567' },
+    pt: { slug:'ex: joao-silva', instagram:'seu perfil', whatsapp:'5511999999999' },
+    es: { slug:'ej: juan-garcia', instagram:'tu perfil', whatsapp:'5215512345678' },
+    de: { slug:'z.B. hans-mueller', instagram:'ihr profil', whatsapp:'4915112345678' },
+    fr: { slug:'ex: jean-dupont', instagram:'votre profil', whatsapp:'33612345678' }
   };
   var ph = placeholders[l] || placeholders['en'];
   document.getElementById('slug').placeholder = ph.slug;
