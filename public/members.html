@@ -527,7 +527,7 @@ function mudouDeIdeia() {
   showToast(_trm('members.change.toast'));
   // Reabilitar botão assinar
   var btn = document.getElementById('btnAssinar');
-  btn.textContent = 'Assinar agora';
+  btn.textContent = (function(){var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';return(d['members.subscribe.now']&&(d['members.subscribe.now'][l]||d['members.subscribe.now']['en']))||'Assinar agora';})();
   btn.style.opacity = '1';
   btn.disabled = false;
   // Esconder botão "Mudou de ideia?"
@@ -777,6 +777,13 @@ async function carregarBadgesMini() {
 
 function traduzirTodosCards() {
   var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';
+  // Traduzir data-i18n estáticos
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var val=d[el.getAttribute('data-i18n')];val=val&&(val[l]||val['en']);
+    if(!val)return;
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')el.placeholder=val;
+    else el.textContent=val;
+  });
   var tr=function(k){return(d[k]&&(d[k][l]||d[k]['en']))||k;};
   var allFeats = {
     0:   [tr('members.feat.commission5'),tr('members.feat.affiliate'),tr('members.feat.panel'),tr('members.feat.materials'),tr('members.feat.discount10')],
