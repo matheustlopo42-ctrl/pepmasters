@@ -343,10 +343,31 @@
         </div>
       </div>
 
-      <div id="infoCripto" class="crypto-info">
-        🔐 Pagamento em <strong>USDT ou USDC</strong> na rede <strong>Polygon</strong>.<br/>
-        Confirmação manual em até 24h úteis após o envio.<br/>
-        Carteira: <strong style="font-size:.78rem;word-break:break-all">0xDA95bb300C7be3E3347d449b14b834Dc3098deAD</strong>
+      <div id="infoCripto">
+        <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:16px;border:1px solid rgba(255,179,0,.2);margin-bottom:12px">
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <button id="mbr-btn-usdt" class="pay-tab active" style="flex:1;font-size:.85rem;padding:8px" onclick="mbrSelecionarToken('USDT')">USDT</button>
+            <button id="mbr-btn-usdc" class="pay-tab" style="flex:1;font-size:.85rem;padding:8px" onclick="mbrSelecionarToken('USDC')">USDC</button>
+          </div>
+          <p style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:12px">Rede: <strong>Polygon (MATIC)</strong> — taxas quase zero</p>
+          <div style="text-align:center;margin-bottom:12px">
+            <img id="mbrCryptoQR" src="" alt="QR Code" style="width:160px;height:160px;border-radius:10px;border:3px solid var(--amber);display:block;margin:0 auto 8px"/>
+          </div>
+          <div style="background:rgba(0,0,0,.3);border:1px solid rgba(255,179,0,.2);border-radius:8px;padding:10px 12px;margin-bottom:8px">
+            <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">Endereço da carteira</div>
+            <div id="mbrCryptoAddr" style="font-family:monospace;font-size:.72rem;word-break:break-all;color:rgba(255,255,255,.7)">0xDA95bb300C7be3E3347d449b14b834Dc3098deAD</div>
+            <div style="display:flex;gap:6px;margin-top:8px">
+              <button onclick="mbrCopiarEndereco()" style="padding:5px 12px;background:var(--amber);border:none;border-radius:6px;font-size:.75rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer;color:#000">Copiar endereço</button>
+              <button onclick="mbrCopiarValor()" style="padding:5px 12px;background:linear-gradient(135deg,var(--red),var(--orange));border:none;border-radius:6px;font-size:.75rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer;color:#fff">Copiar valor</button>
+            </div>
+          </div>
+          <div style="text-align:center;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border-radius:8px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem">
+            Envie exatamente: <span id="mbrCryptoValor">0</span> <span id="mbrCryptoToken">USDT</span>
+          </div>
+          <div style="margin-top:8px;padding:10px;background:rgba(255,179,0,.06);border:1px solid rgba(255,179,0,.2);border-radius:8px;font-size:.75rem;color:rgba(255,255,255,.6);line-height:1.5">
+            ⚠️ Envie o valor <strong>exato</strong>. Confirmação em até 24h úteis.
+          </div>
+        </div>
       </div>
 
       <div id="avisoMudancaPlano" style="display:none;background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.2);border-radius:10px;padding:12px 14px;font-size:.82rem;color:rgba(255,255,255,.7);margin-bottom:12px;line-height:1.6"></div>
@@ -435,7 +456,12 @@ async function assinar() {
     });
     var data = await res.json();
     if (!res.ok) { showToast(data.erro || 'Erro ao processar.'); return; }
-    showToast('Solicitação enviada! Envie o pagamento e aguarde a confirmação em até 24h úteis.');
+    // Mostrar QR code com valor em USDT
+    if (data.crypto_valor) {
+      mbrCryptoValorNum = data.crypto_valor;
+      mbrAtualizarCriptoUI();
+    }
+    showToast('Pedido registrado! Envie o pagamento e aguarde confirmação em até 24h úteis.');
   } catch { showToast('Erro de conexão.'); }
 }
 
