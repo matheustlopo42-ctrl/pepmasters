@@ -53,6 +53,10 @@
     .empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,.3)}
     #toast{position:fixed;bottom:24px;right:24px;background:#1a0c00;color:#fff;padding:12px 18px;border-radius:10px;font-size:.85rem;border-left:3px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(20px);opacity:0;transition:all .3s;z-index:5000;pointer-events:none}
     #toast.show{transform:translateY(0);opacity:1}
+    .periodo-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px}
+    .periodo-btn{background:none;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:rgba(255,255,255,.5);padding:6px 14px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;transition:all .2s}
+    .periodo-btn:hover{border-color:var(--amber);color:var(--amber)}
+    .periodo-btn:disabled{opacity:.3;cursor:not-allowed}
     @media(max-width:500px){.podio{gap:8px}.pos-1 .podio-avatar{width:58px;height:58px}}
   </style>
 </head>
@@ -80,8 +84,10 @@
 </div>
 
 <main>
-  <div style="text-align:center;margin-bottom:28px">
-    <span class="periodo" id="mesLabel"></span>
+  <div class="periodo-nav">
+    <button class="periodo-btn" onclick="mudarMes(-1)" id="btnAnterior">◀</button>
+    <span class="periodo" id="mesLabel" style="min-width:140px;text-align:center"></span>
+    <button class="periodo-btn" onclick="mudarMes(1)" id="btnProximo">▶</button>
   </div>
   <div class="podio" id="podio"></div>
   <div id="listaRanking"></div>
@@ -118,9 +124,23 @@ function traduzirNav() {
 }
 window.addEventListener('pep_lang_change', traduzirNav);
 
-async function init() {
-  traduzirNav();
-  if (!token) { location.href = 'login.html?redirect=members-ranking.html'; return; }
+var mesAtual = new Date().getMonth() + 1;
+var anoAtual = new Date().getFullYear();
+
+function mudarMes(dir) {
+  mesAtual += dir;
+  if (mesAtual > 12) { mesAtual = 1; anoAtual++; }
+  if (mesAtual < 1)  { mesAtual = 12; anoAtual--; }
+  // Não permitir futuro
+  var agora = new Date();
+  if (anoAtual > agora.getFullYear() || (anoAtual === agora.getFullYear() && mesAtual > agora.getMonth() + 1)) {
+    mesAtual -= dir; if (mesAtual > 12) { mesAtual = 1; anoAtual--; } if (mesAtual < 1) { mesAtual = 12; anoAtual++; }
+    return;
+  }
+  carregarRanking();
+}
+
+async function carregarRanking() {
   var agora = new Date();
   var _d=window.PEPMASTERS_I18N||{};var _l=localStorage.getItem('pep_lang')||'en';
   var _tr=function(k){return(_d[k]&&(_d[k][_l]||_d[k]['en']))||k;};
@@ -128,50 +148,42 @@ async function init() {
   var mesesEs=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   var mesesDe=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
   var mesesFr=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-  var mesMap={en:mesesEn,pt:meses,es:mesesEs,de:mesesDe,fr:mesesFr};
-  var mesTrad=(mesMap[_l]||meses)[agora.getMonth()];
-  document.getElementById('mesLabel').textContent = mesTrad + ' ' + agora.getFullYear();
+  var mesMap={en:mesesEn,pt:['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],es:mesesEs,de:mesesDe,fr:mesesFr};
+  var mesTrad=(mesMap[_l]||mesMap['pt'])[mesAtual-1];
+  document.getElementById('mesLabel').textContent = mesTrad + ' ' + anoAtual;
   document.getElementById('periodoLabel').textContent = _tr('ranking.subtitle') + ' ' + mesTrad;
+  // Desabilitar botão próximo se for mês atual
+  var btnProx = document.getElementById('btnProximo');
+  if (btnProx) btnProx.disabled = (anoAtual === agora.getFullYear() && mesAtual === agora.getMonth() + 1);
 
   try {
-    var res = await fetch('/api/membros/ranking', {headers:{Authorization:'Bearer '+token}});
+    var res = await fetch('/api/membros/ranking?mes='+mesAtual+'&ano='+anoAtual, {headers:{Authorization:'Bearer '+token}});
     if (res.status === 401) { location.href = 'login.html?redirect=members-ranking.html'; return; }
     if (res.status === 403) { location.href = 'members.html?msg=assine'; return; }
     var lista = await res.json();
-
-    // Pegar meu código para destacar
     var meuRes = await fetch('/api/membros/painel', {headers:{Authorization:'Bearer '+token}});
     var meuDado = await meuRes.json();
     var meuRef = meuDado.codigo_ref || '';
 
-    // Pódio (top 3)
     var podio = document.getElementById('podio');
     var top3 = lista.slice(0, 3);
     var ordem = top3.length >= 3 ? [1, 0, 2] : (top3.length === 2 ? [1, 0] : [0]);
-    var posIcons = ['🥇','🥈','🥉'];
-
     if (top3.length === 0) {
       podio.innerHTML = '<div class="empty">'+_tr('ranking.empty')+'</div>';
     } else {
-      var podioHtml = ordem.map(function(idx) {
-        var p = top3[idx];
-        if (!p) return '';
+      podio.innerHTML = ordem.map(function(idx) {
+        var p = top3[idx]; if (!p) return '';
         var ini = (p.nome||'?')[0].toUpperCase();
-        var posClass = 'pos-' + (idx+1);
-        return '<div class="podio-item '+posClass+'">' +
+        return '<div class="podio-item pos-'+(idx+1)+'">' +
           '<div class="podio-avatar">'+ini+'</div>' +
           '<div class="podio-nome">'+p.nome.split(' ')[0]+'</div>' +
           '<div class="podio-valor">'+fmt(p.volume_mes)+'</div>' +
           '<div class="podio-base"><span class="podio-pos">'+(idx+1)+'</span></div>' +
         '</div>';
       }).join('');
-      podio.innerHTML = podioHtml;
     }
-
-    // Lista completa
     var lista_el = document.getElementById('listaRanking');
     if (!lista.length) { lista_el.innerHTML = '<div class="empty">'+_tr('ranking.no.sales')+'</div>'; return; }
-
     lista_el.innerHTML = lista.map(function(p, i) {
       var ini = (p.nome||'?')[0].toUpperCase();
       var nivel = p.nivel || 'bronze';
@@ -190,6 +202,12 @@ async function init() {
       '</div>';
     }).join('');
   } catch(e) { showToast('Erro ao carregar ranking.'); }
+}
+
+async function init() {
+  traduzirNav();
+  if (!token) { location.href = 'login.html?redirect=members-ranking.html'; return; }
+  await carregarRanking();
 }
 
 </script>

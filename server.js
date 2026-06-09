@@ -1363,8 +1363,12 @@ app.put('/api/membros/notificacoes/ler', membroMiddleware, async (req, res) => {
 // Ranking mensal
 app.get('/api/membros/ranking', membroMiddleware, async (req, res) => {
   try {
-    const mes = new Date();
-    mes.setDate(1); mes.setHours(0,0,0,0);
+    const { mes, ano } = req.query;
+    const agora = new Date();
+    const mesNum = mes ? parseInt(mes) - 1 : agora.getMonth();
+    const anoNum = ano ? parseInt(ano) : agora.getFullYear();
+    const inicio = new Date(anoNum, mesNum, 1);
+    const fim = new Date(anoNum, mesNum + 1, 1);
     const r = await pool.query(`
       SELECT m.id, m.nivel, m.codigo_ref, u.nome,
              COALESCE(SUM(va.valor),0) as volume_mes,
@@ -1372,12 +1376,12 @@ app.get('/api/membros/ranking', membroMiddleware, async (req, res) => {
              COUNT(va.id) as vendas_mes
       FROM pep_membros m
       JOIN pep_usuarios u ON u.id = m.usuario_id
-      LEFT JOIN pep_vendas_afiliado va ON va.membro_id = m.id AND va.criado_em >= $1
+      LEFT JOIN pep_vendas_afiliado va ON va.membro_id = m.id AND va.criado_em >= $1 AND va.criado_em < $2
       WHERE m.status = 'ativo'
       GROUP BY m.id, u.nome
       ORDER BY volume_mes DESC
       LIMIT 20
-    `, [mes]);
+    `, [inicio, fim]);
     res.json(r.rows);
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });
