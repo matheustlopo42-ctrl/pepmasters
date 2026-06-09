@@ -456,8 +456,6 @@ async function assinar() {
     var data = await res.json();
     if (!res.ok) { showToast(data.erro || 'Erro ao processar.'); return; }
     document.getElementById('btnAssinar').textContent = '✓ Pedido registrado — envie o pagamento';
-    document.getElementById('btnAssinar').style.opacity = '0.7';
-    document.getElementById('btnAssinar').disabled = true;
     showToast('Pedido registrado! Envie o pagamento e aguarde confirmação em até 24h úteis.');
   } catch(e) { showToast('Erro de conexão.'); }
 }
