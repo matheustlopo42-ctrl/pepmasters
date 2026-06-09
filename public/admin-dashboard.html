@@ -93,9 +93,9 @@
 </main>
 
 <script>
-var adminToken = btoa(localStorage.getItem('admin_pass') || '');
+var adminToken = localStorage.getItem('pep_admin_token') || '';
 
-function sair(e) { e.preventDefault(); localStorage.removeItem('admin_pass'); location.href='admin-login.html'; }
+function sair(e) { e.preventDefault(); localStorage.removeItem('pep_admin_token'); location.href='admin-login.html'; }
 
 function fmt(v) { return 'R$ ' + parseFloat(v||0).toFixed(2).replace('.',','); }
 
@@ -134,9 +134,9 @@ var chartDefaults = {
 };
 
 async function init() {
-  var pass = localStorage.getItem('admin_pass');
-  if (!pass) { location.href = 'admin-login.html'; return; }
-  adminToken = btoa(pass);
+  var token = localStorage.getItem('pep_admin_token');
+  if (!token) { location.href = 'admin-login.html'; return; }
+  adminToken = token;
 
   var res = await fetch('/api/admin/dashboard', { headers: { Authorization: 'Basic ' + adminToken } });
   if (res.status === 401) { location.href = 'admin-login.html'; return; }
