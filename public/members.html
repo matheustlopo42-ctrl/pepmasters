@@ -345,11 +345,12 @@
 
       <div id="infoCripto" style="display:none">
         <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:16px;border:1px solid rgba(255,179,0,.2);margin-bottom:12px">
-          <div style="display:flex;gap:8px;margin-bottom:12px">
-            <button id="mbr-btn-usdt" class="pay-tab active" style="flex:1;font-size:.85rem;padding:8px" onclick="mbrSelecionarToken('USDT')">USDT</button>
-            <button id="mbr-btn-usdc" class="pay-tab" style="flex:1;font-size:.85rem;padding:8px" onclick="mbrSelecionarToken('USDC')">USDC</button>
+          <div style="display:flex;gap:6px;margin-bottom:10px">
+            <button id="mbr-btn-usdt" class="pay-tab active" style="flex:1;font-size:.78rem;padding:8px" onclick="mbrSelecionarToken('USDT')">USDT<br><span style="font-size:.62rem;opacity:.7">Polygon</span></button>
+            <button id="mbr-btn-usdc" class="pay-tab" style="flex:1;font-size:.78rem;padding:8px" onclick="mbrSelecionarToken('USDC')">USDC<br><span style="font-size:.62rem;opacity:.7">Polygon</span></button>
+            <button id="mbr-btn-tron" class="pay-tab" style="flex:1;font-size:.78rem;padding:8px" onclick="mbrSelecionarToken('TRON')">USDT<br><span style="font-size:.62rem;opacity:.7">Tron TRC-20</span></button>
           </div>
-          <p style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:12px" data-i18n="members.crypto.network">Rede: Polygon (MATIC) — taxas quase zero</p>
+          <p id="mbrNetworkInfo" style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:12px" data-i18n="members.crypto.network">Rede: Polygon (MATIC) — taxas quase zero</p>
           <div style="text-align:center;margin-bottom:12px">
             <img id="mbrCryptoQR" src="" alt="QR Code" style="width:160px;height:160px;border-radius:10px;border:3px solid var(--amber);display:block;margin:0 auto 8px"/>
           </div>
@@ -397,10 +398,18 @@ var MBR_WALLET = '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
 var mbrCryptoToken = 'USDT';
 var mbrCryptoValor = '0';
 
+var TRON_WALLET = 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB';
+
 function mbrSelecionarToken(token) {
   mbrCryptoToken = token;
   document.getElementById('mbr-btn-usdt').classList.toggle('active', token === 'USDT');
   document.getElementById('mbr-btn-usdc').classList.toggle('active', token === 'USDC');
+  document.getElementById('mbr-btn-tron').classList.toggle('active', token === 'TRON');
+  var netInfo = document.getElementById('mbrNetworkInfo');
+  if (netInfo) {
+    if (token === 'TRON') netInfo.textContent = 'Rede: Tron TRC-20 — TronLink, Binance. Taxas mínimas.';
+    else netInfo.textContent = 'Rede: Polygon (MATIC) — MetaMask, Trust Wallet. Taxas quase zero.';
+  }
   mbrAtualizarCriptoUI();
 }
 
@@ -431,7 +440,8 @@ async function mbrCarregarCotacao() {
 }
 
 function mbrCopiarEndereco() {
-  navigator.clipboard.writeText(MBR_WALLET).then(function(){ showToast('Endereço copiado!'); });
+  var addr = mbrCryptoToken === 'TRON' ? TRON_WALLET : MBR_WALLET;
+  navigator.clipboard.writeText(addr).then(function(){ showToast('Endereço copiado!'); });
 }
 
 function mbrCopiarValor() {

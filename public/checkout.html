@@ -199,11 +199,12 @@
           </div>
           <div id="cripto-info" style="display:none">
             <div style="background:var(--cream);border-radius:12px;padding:18px;border:1px solid var(--border);margin-bottom:14px">
-              <div style="display:flex;gap:10px;margin-bottom:14px">
-                <button id="btn-usdt" class="pay-tab active" style="flex:1;font-size:.85rem;padding:8px" onclick="selecionarToken('USDT')">USDT</button>
-                <button id="btn-usdc" class="pay-tab" style="flex:1;font-size:.85rem;padding:8px" onclick="selecionarToken('USDC')">USDC</button>
+              <div style="display:flex;gap:8px;margin-bottom:10px">
+                <button id="btn-usdt" class="pay-tab active" style="flex:1;font-size:.8rem;padding:8px" onclick="selecionarToken('USDT')">USDT<br><span style="font-size:.65rem;opacity:.7">Polygon</span></button>
+                <button id="btn-usdc" class="pay-tab" style="flex:1;font-size:.8rem;padding:8px" onclick="selecionarToken('USDC')">USDC<br><span style="font-size:.65rem;opacity:.7">Polygon</span></button>
+                <button id="btn-tron" class="pay-tab" style="flex:1;font-size:.8rem;padding:8px" onclick="selecionarToken('TRON')">USDT<br><span style="font-size:.65rem;opacity:.7">Tron TRC-20</span></button>
               </div>
-              <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px"><span data-i18n="checkout.crypto.network">Rede: <strong>Polygon (MATIC)</strong> — taxas quase zero</span></p>
+              <p id="cryptoNetworkInfo" style="font-size:.78rem;color:var(--muted);margin-bottom:12px"><span data-i18n="checkout.crypto.network">Rede: <strong>Polygon (MATIC)</strong> — taxas quase zero</span></p>
               <div style="text-align:center;margin-bottom:14px">
                 <img id="cryptoQR" src="" alt="QR Code Cripto" style="width:180px;height:180px;border-radius:10px;border:3px solid var(--amber);display:block;margin:0 auto 10px"/>
               </div>
@@ -416,30 +417,46 @@
     document.getElementById('cryptoToken').textContent = cryptoToken;
     document.getElementById('cryptoAddr').textContent  = WALLET;
 
-    // Contratos USDT e USDC na Polygon
-    const contratos = {
-      USDT: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-      USDC: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359'
-    };
-    const contrato = contratos[cryptoToken] || contratos.USDT;
-    // Valor em unidades do token (6 decimais para USDT/USDC)
-    const valorWei = Math.round(parseFloat(cryptoValor) * 1000000);
-    // EIP-681: formato padrão lido por MetaMask, Trust Wallet, etc
-    const eip681 = 'ethereum:' + contrato + '/transfer?address=' + WALLET + '&uint256=' + valorWei;
-    document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(eip681);
-    // Guardar para o botão de copiar
-    window._cryptoEip681 = eip681;
+    if (cryptoToken === 'TRON') {
+      // Tron TRC-20
+      document.getElementById('cryptoAddr').textContent = TRON_WALLET;
+      var tronData = 'tron:' + TRON_WALLET + '?amount=' + parseFloat(cryptoValor) + '&token=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
+      document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(TRON_WALLET);
+      window._cryptoEip681 = TRON_WALLET;
+    } else {
+      // Polygon
+      document.getElementById('cryptoAddr').textContent = WALLET;
+      const contratos = {
+        USDT: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+        USDC: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359'
+      };
+      const contrato = contratos[cryptoToken] || contratos.USDT;
+      const valorWei = Math.round(parseFloat(cryptoValor) * 1000000);
+      const eip681 = 'ethereum:' + contrato + '/transfer?address=' + WALLET + '&uint256=' + valorWei;
+      document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(eip681);
+      window._cryptoEip681 = eip681;
+    }
   }
+
+  var TRON_WALLET = 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB';
 
   function selecionarToken(token) {
     cryptoToken = token;
     document.getElementById('btn-usdt').classList.toggle('active', token === 'USDT');
     document.getElementById('btn-usdc').classList.toggle('active', token === 'USDC');
+    document.getElementById('btn-tron').classList.toggle('active', token === 'TRON');
+    // Atualizar info de rede
+    var netInfo = document.getElementById('cryptoNetworkInfo');
+    if (netInfo) {
+      if (token === 'TRON') netInfo.innerHTML = 'Rede: <strong>Tron TRC-20</strong> — TronLink, Binance. Taxas mínimas.';
+      else netInfo.innerHTML = 'Rede: <strong>Polygon (MATIC)</strong> — MetaMask, Trust Wallet. <span data-i18n="checkout.crypto.network"></span>';
+    }
     atualizarCriptoUI();
   }
 
   function copiarEndereco() {
-    navigator.clipboard.writeText(WALLET).then(() => {
+    var addr = cryptoToken === 'TRON' ? TRON_WALLET : WALLET;
+    navigator.clipboard.writeText(addr).then(() => {
       showCryptoMsg('Address copied!');
     });
   }
