@@ -208,6 +208,30 @@ async function initDB() {
       )
     `);
     await client.query(`ALTER TABLE pep_forum_respostas ADD COLUMN IF NOT EXISTS denuncias INT DEFAULT 0`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_forum_topicos ADD COLUMN IF NOT EXISTS likes INT DEFAULT 0`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_forum_respostas ADD COLUMN IF NOT EXISTS likes INT DEFAULT 0`).catch(()=>{});
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_forum_likes (
+        id          SERIAL PRIMARY KEY,
+        membro_id   INT NOT NULL REFERENCES pep_membros(id),
+        topico_id   INT REFERENCES pep_forum_topicos(id) ON DELETE CASCADE,
+        resposta_id INT REFERENCES pep_forum_respostas(id) ON DELETE CASCADE,
+        criado_em   TIMESTAMPTZ DEFAULT NOW(),
+        UNIQUE(membro_id, topico_id),
+        UNIQUE(membro_id, resposta_id)
+      )
+    `).catch(()=>{});
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_forum_favoritos (
+        id          SERIAL PRIMARY KEY,
+        membro_id   INT NOT NULL REFERENCES pep_membros(id),
+        topico_id   INT NOT NULL REFERENCES pep_forum_topicos(id) ON DELETE CASCADE,
+        criado_em   TIMESTAMPTZ DEFAULT NOW(),
+        UNIQUE(membro_id, topico_id)
+      )
+    `).catch(()=>{});
 
     // ── BADGES & CONQUISTAS ───────────────────────
     await client.query(`
@@ -1805,6 +1829,89 @@ app.get('/api/membros/admin', adminMiddleware, async (req, res) => {
   } catch (err) {
     res.status(500).json({ erro: err.message });
   }
+});
+
+// Curtir tópico ou resposta
+app.post('/api/forum/like', membroMiddleware, async (req, res) => {
+  const { topico_id, resposta_id } = req.body;
+  try {
+    if (topico_id) {
+      const exists = await pool.query(`SELECT id FROM pep_forum_likes WHERE membro_id=$1 AND topico_id=$2`, [req.membro.id, topico_id]);
+      if (exists.rows.length) {
+        await pool.query(`DELETE FROM pep_forum_likes WHERE membro_id=$1 AND topico_id=$2`, [req.membro.id, topico_id]);
+        await pool.query(`UPDATE pep_forum_topicos SET likes=GREATEST(0,likes-1) WHERE id=$1`, [topico_id]);
+        return res.json({ ok: true, liked: false });
+      }
+      await pool.query(`INSERT INTO pep_forum_likes (membro_id, topico_id) VALUES ($1,$2)`, [req.membro.id, topico_id]);
+      await pool.query(`UPDATE pep_forum_topicos SET likes=likes+1 WHERE id=$1`, [topico_id]);
+      return res.json({ ok: true, liked: true });
+    }
+    if (resposta_id) {
+      const exists = await pool.query(`SELECT id FROM pep_forum_likes WHERE membro_id=$1 AND resposta_id=$2`, [req.membro.id, resposta_id]);
+      if (exists.rows.length) {
+        await pool.query(`DELETE FROM pep_forum_likes WHERE membro_id=$1 AND resposta_id=$2`, [req.membro.id, resposta_id]);
+        await pool.query(`UPDATE pep_forum_respostas SET likes=GREATEST(0,likes-1) WHERE id=$1`, [resposta_id]);
+        return res.json({ ok: true, liked: false });
+      }
+      await pool.query(`INSERT INTO pep_forum_likes (membro_id, resposta_id) VALUES ($1,$2)`, [req.membro.id, resposta_id]);
+      await pool.query(`UPDATE pep_forum_respostas SET likes=likes+1 WHERE id=$1`, [resposta_id]);
+      return res.json({ ok: true, liked: true });
+    }
+    res.status(400).json({ erro: 'Informe topico_id ou resposta_id.' });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Favoritar / desfavoritar tópico
+app.post('/api/forum/favoritar', membroMiddleware, async (req, res) => {
+  const { topico_id } = req.body;
+  if (!topico_id) return res.status(400).json({ erro: 'topico_id obrigatório.' });
+  try {
+    const exists = await pool.query(`SELECT id FROM pep_forum_favoritos WHERE membro_id=$1 AND topico_id=$2`, [req.membro.id, topico_id]);
+    if (exists.rows.length) {
+      await pool.query(`DELETE FROM pep_forum_favoritos WHERE membro_id=$1 AND topico_id=$2`, [req.membro.id, topico_id]);
+      return res.json({ ok: true, favoritado: false });
+    }
+    await pool.query(`INSERT INTO pep_forum_favoritos (membro_id, topico_id) VALUES ($1,$2)`, [req.membro.id, topico_id]);
+    res.json({ ok: true, favoritado: true });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Listar favoritos do membro
+app.get('/api/forum/favoritos', membroMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT t.*, u.nome as autor_nome, m.nivel as autor_nivel,
+             COUNT(resp.id) as total_respostas
+      FROM pep_forum_favoritos f
+      JOIN pep_forum_topicos t ON t.id = f.topico_id
+      JOIN pep_membros m ON m.id = t.membro_id
+      JOIN pep_usuarios u ON u.id = m.usuario_id
+      LEFT JOIN pep_forum_respostas resp ON resp.topico_id = t.id
+      WHERE f.membro_id = $1
+      GROUP BY t.id, u.nome, m.nivel
+      ORDER BY f.criado_em DESC
+    `, [req.membro.id]);
+    res.json(r.rows);
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Verificar curtidas e favoritos do membro em um tópico
+app.get('/api/forum/topicos/:id/meu-status', membroMiddleware, async (req, res) => {
+  try {
+    const like = await pool.query(`SELECT id FROM pep_forum_likes WHERE membro_id=$1 AND topico_id=$2`, [req.membro.id, req.params.id]);
+    const fav = await pool.query(`SELECT id FROM pep_forum_favoritos WHERE membro_id=$1 AND topico_id=$2`, [req.membro.id, req.params.id]);
+    // Likes nas respostas
+    const respLikes = await pool.query(`
+      SELECT fl.resposta_id FROM pep_forum_likes fl
+      JOIN pep_forum_respostas fr ON fr.id = fl.resposta_id
+      WHERE fl.membro_id=$1 AND fr.topico_id=$2
+    `, [req.membro.id, req.params.id]);
+    res.json({
+      liked_topico: like.rows.length > 0,
+      favoritado: fav.rows.length > 0,
+      liked_respostas: respLikes.rows.map(r => r.resposta_id)
+    });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
 // Denunciar tópico ou resposta

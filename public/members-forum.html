@@ -81,6 +81,17 @@
       .btn-traduzir{background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.3);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;text-transform:uppercase;padding:4px 10px;border-radius:8px;cursor:pointer;transition:all .2s;margin-top:8px;margin-right:6px}
     .btn-traduzir:hover{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.6)}
     .translate-warning{font-size:.72rem;color:rgba(255,255,255,.3);font-style:italic;margin-top:6px;display:none}
+    .btn-like{background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;text-transform:uppercase;padding:4px 10px;border-radius:8px;cursor:pointer;transition:all .2s;margin-top:8px;margin-right:4px;display:inline-flex;align-items:center;gap:4px}
+    .btn-like:hover{border-color:rgba(239,68,68,.4);color:#ef4444}
+    .btn-like.liked{border-color:rgba(239,68,68,.5);color:#ef4444;background:rgba(239,68,68,.08)}
+    .btn-favoritar{background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;text-transform:uppercase;padding:4px 10px;border-radius:8px;cursor:pointer;transition:all .2s;margin-top:8px;margin-right:4px}
+    .btn-favoritar:hover{border-color:rgba(255,179,0,.4);color:var(--amber)}
+    .btn-favoritar.favoritado{border-color:rgba(255,179,0,.5);color:var(--amber);background:rgba(255,179,0,.08)}
+    .like-count{font-size:.7rem;color:rgba(255,255,255,.3)}
+    /* TAB favoritos */
+    .forum-tabs{display:flex;gap:8px;margin-bottom:20px}
+    .forum-tab{padding:6px 16px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:none;color:rgba(255,255,255,.5);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;text-transform:uppercase;cursor:pointer;transition:all .2s}
+    .forum-tab.active{border-color:var(--amber);color:var(--amber);background:rgba(255,179,0,.06)}
     .btn-denunciar{background:none;border:1px solid rgba(239,68,68,.2);color:rgba(239,68,68,.5);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;text-transform:uppercase;padding:4px 10px;border-radius:8px;cursor:pointer;transition:all .2s;margin-top:8px}
     .btn-denunciar:hover{border-color:rgba(239,68,68,.6);color:#ef4444}
     /* Modal denúncia */
@@ -127,6 +138,10 @@
       <button class="cat-btn" onclick="filtrarCat('produtos',this)" data-i18n="forum.cat.products">Produtos</button>
       <button class="cat-btn" onclick="filtrarCat('duvidas',this)" data-i18n="forum.cat.questions">Dúvidas</button>
       <button class="cat-btn" onclick="filtrarCat('resultados',this)" data-i18n="forum.cat.results">Resultados</button>
+    </div>
+    <div class="forum-tabs">
+      <button class="forum-tab active" onclick="trocarAba('todos',this)">Todos</button>
+      <button class="forum-tab" onclick="trocarAba('favoritos',this)">⭐ Favoritos</button>
     </div>
     <div id="listaTopicos"></div>
   </div>
@@ -292,9 +307,18 @@ async function abrirTopico(id) {
     var t = data.topico;
     var respostas = data.respostas;
 
+    // Buscar status de like/favorito
+    var statusRes = await fetch('/api/forum/topicos/' + id + '/meu-status', {headers:{Authorization:'Bearer '+token}});
+    var status = statusRes.ok ? await statusRes.json() : {liked_topico:false, favoritado:false, liked_respostas:[]};
+    topicoStatus = status;
+
     var html = '<div class="topico-page-header">' +
       '<span class="cat-tag cat-' + t.categoria + '">' + (catIcons[t.categoria]||'💬') + ' ' + t.categoria + '</span>' +
       '<h2 class="topico-titulo-grande" style="margin-top:10px">' + t.titulo + '</h2>' +
+      '<div style="display:flex;gap:6px;margin-top:10px">' +
+        '<button class="btn-like'+(status.liked_topico?' liked':'')+'" id="like-topico-'+t.id+'" onclick="likarTopico('+t.id+',this)">❤️ <span>'+(t.likes||0)+'</span></button>' +
+        '<button class="btn-favoritar'+(status.favoritado?' favoritado':'')+'" id="fav-'+t.id+'" onclick="favoritarTopico('+t.id+',this)">'+(status.favoritado?'⭐ Favoritado':'☆ Favoritar')+'</button>' +
+      '</div>' +
     '</div>';
 
     // Post original
@@ -302,7 +326,8 @@ async function abrirTopico(id) {
 
     // Respostas
     respostas.forEach(function(r) {
-      html += '<div class="post-card">' + renderPost(r.autor_nome, r.autor_nivel, r.criado_em, r.conteudo, r.id, 'resposta') + '</div>';
+      var jaLikei = status.liked_respostas && status.liked_respostas.includes(r.id);
+      html += '<div class="post-card">' + renderPost(r.autor_nome, r.autor_nivel, r.criado_em, r.conteudo, r.id, 'resposta', r.likes||0, jaLikei) + '</div>';
     });
 
     if (!respostas.length) {
@@ -313,7 +338,10 @@ async function abrirTopico(id) {
   } catch { showToast('Erro ao carregar tópico.'); }
 }
 
-function renderPost(nome, nivel, data, conteudo, id, tipo) {
+var topicoStatus = {};
+
+function renderPost(nome, nivel, data, conteudo, id, tipo, likes, jaLikei) {
+  likes = likes || 0;
   var inicial = (nome || 'U')[0].toUpperCase();
   var denunciarBtn = tipo === 'resposta' && id
     ? '<button class="btn-denunciar" onclick="abrirDenuncia(null,'+id+')">🚩 Denunciar</button>'
@@ -329,7 +357,10 @@ function renderPost(nome, nivel, data, conteudo, id, tipo) {
     '</div>' +
   '</div>' +
   '<div class="post-conteudo" id="'+uid+'">' + conteudo + '</div>' +
-  '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-top:8px">' + traduzirBtn + denunciarBtn + '</div>';
+  '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-top:8px">' +
+    (tipo === 'resposta' ? '<button class="btn-like'+(jaLikei?' liked':'')+'" onclick="likarResposta('+id+',this)">❤️ <span>'+likes+'</span></button>' : '') +
+    traduzirBtn + denunciarBtn +
+  '</div>';
 }
 
 function traduzirPost(uid, btn) {
@@ -350,6 +381,65 @@ function traduzirPost(uid, btn) {
   btn.style.color = 'rgba(255,179,0,.6)';
   btn.style.borderColor = 'rgba(255,179,0,.3)';
   btn.onclick = null;
+}
+
+async function likarTopico(id, btn) {
+  try {
+    var res = await fetch('/api/forum/like', {method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({topico_id:id})});
+    var data = await res.json();
+    if (!res.ok) { showToast(data.erro||'Erro'); return; }
+    btn.classList.toggle('liked', data.liked);
+    var span = btn.querySelector('span');
+    if (span) span.textContent = parseInt(span.textContent) + (data.liked ? 1 : -1);
+  } catch { showToast('Erro de conexão.'); }
+}
+
+async function likarResposta(id, btn) {
+  try {
+    var res = await fetch('/api/forum/like', {method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({resposta_id:id})});
+    var data = await res.json();
+    if (!res.ok) { showToast(data.erro||'Erro'); return; }
+    btn.classList.toggle('liked', data.liked);
+    var span = btn.querySelector('span');
+    if (span) span.textContent = parseInt(span.textContent) + (data.liked ? 1 : -1);
+  } catch { showToast('Erro de conexão.'); }
+}
+
+async function favoritarTopico(id, btn) {
+  try {
+    var res = await fetch('/api/forum/favoritar', {method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({topico_id:id})});
+    var data = await res.json();
+    if (!res.ok) { showToast(data.erro||'Erro'); return; }
+    btn.classList.toggle('favoritado', data.favoritado);
+    btn.textContent = data.favoritado ? '⭐ Favoritado' : '☆ Favoritar';
+    showToast(data.favoritado ? 'Adicionado aos favoritos!' : 'Removido dos favoritos.');
+  } catch { showToast('Erro de conexão.'); }
+}
+
+async function trocarAba(aba, btn) {
+  document.querySelectorAll('.forum-tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  if (aba === 'todos') {
+    carregarTopicos(catAtual);
+  } else {
+    var res = await fetch('/api/forum/favoritos', {headers:{Authorization:'Bearer '+token}});
+    var lista = await res.json();
+    var container = document.getElementById('listaTopicos');
+    if (!lista.length) { container.innerHTML = '<div class="empty"><div style="font-size:2rem">⭐</div><p>Nenhum tópico favorito ainda.</p></div>'; return; }
+    container.innerHTML = lista.map(function(t) {
+      var icon = catIcons[t.categoria] || '💬';
+      return '<div class="topico-item" onclick="abrirTopico('+t.id+')">' +
+        '<div class="topico-icon">'+icon+'</div>' +
+        '<div class="topico-info">' +
+          '<div class="topico-titulo">'+t.titulo+'</div>' +
+          '<div class="topico-meta"><span class="nivel-'+t.autor_nivel+'">'+nivelIcons[t.autor_nivel]+' '+t.autor_nome+'</span>' +
+          '<span class="cat-tag cat-'+t.categoria+'">'+t.categoria+'</span>' +
+          '<span>'+timeAgo(t.criado_em)+'</span></div>' +
+        '</div>' +
+        '<div class="topico-stats"><div class="topico-respostas">'+(t.total_respostas||0)+'</div><div class="topico-respostas-label">respostas</div></div>' +
+      '</div>';
+    }).join('');
+  }
 }
 
 function abrirDenuncia(topicoId, respostaId) {
