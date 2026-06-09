@@ -405,18 +405,20 @@ function mbrSelecionarToken(token) {
   mbrAtualizarCriptoUI();
 }
 
-function mbrAtualizarCriptoUI() {
-  if (!mbrCryptoValorNum) return;
+function mbrAtualizarCriptoUI(valor) {
+  var v = valor || mbrCryptoValorNum;
+  if (!v) return;
+  mbrCryptoValorNum = v;
   var contratos = {
     USDT: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
     USDC: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359'
   };
   var contrato = contratos[mbrCryptoToken];
-  var valorWei = Math.round(mbrCryptoValorNum * 1000000);
+  var valorWei = Math.round(v * 1000000);
   var eip681 = 'ethereum:' + contrato + '/transfer?address=' + MBR_WALLET + '&uint256=' + valorWei;
   document.getElementById('mbrCryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(eip681);
   document.getElementById('mbrCryptoAddr').textContent = MBR_WALLET;
-  document.getElementById('mbrCryptoValor').textContent = mbrCryptoValorNum;
+  document.getElementById('mbrCryptoValor').textContent = v;
   document.getElementById('mbrCryptoToken').textContent = mbrCryptoToken;
 }
 
@@ -493,9 +495,9 @@ async function assinar() {
     } catch {}
     mbrCryptoValorNum = parseFloat((valorSelecionado / taxaBRL).toFixed(2));
 
-    // Mostrar QR imediatamente
+    // Mostrar QR imediatamente com valor calculado
     document.getElementById('infoCripto').style.display = 'block';
-    mbrAtualizarCriptoUI();
+    mbrAtualizarCriptoUI(mbrCryptoValorNum);
 
     var res = await fetch('/api/membros/assinar', {
       method: 'POST',
