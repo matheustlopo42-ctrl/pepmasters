@@ -462,7 +462,47 @@ async function assinar() {
   } catch(e) { showToast('Erro de conexão.'); }
 }
 
-function assinarWhatsApp() {
+function selecionarPlano(el, valor) {
+  document.querySelectorAll('.plano-card').forEach(function(c){ c.classList.remove('selecionado'); });
+  el.classList.add('selecionado');
+  valorSelecionado = valor;
+  var nome = el.querySelector('.plano-nome').textContent;
+  var precoLabel = valor === 0 ? 'Grátis' : 'R$ ' + valor + '/mês';
+  document.getElementById('planoSelecionadoNome').textContent = nome + ' — ' + precoLabel;
+  var isGratis = valor === 0;
+  document.querySelector('.payment-tabs').style.display = isGratis ? 'none' : 'flex';
+  document.getElementById('infoCripto').style.display = 'none';
+  document.getElementById('btnAssinar').style.display = isGratis ? 'none' : (pagamentoSelecionado === 'cripto' ? 'block' : 'none');
+  document.getElementById('btnWpp').style.display = isGratis ? 'none' : (pagamentoSelecionado === 'whatsapp' ? 'block' : 'none');
+  document.getElementById('btnGratis').style.display = isGratis ? 'block' : 'none';
+  // Aviso de mudança de plano
+  var avisoEl = document.getElementById('avisoMudancaPlano');
+  if (avisoEl) {
+    if (_dadosPainel && _dadosPainel.status === 'ativo' && valor > 0) {
+      var ate = _dadosPainel.membro_ate ? new Date(_dadosPainel.membro_ate).toLocaleDateString('pt-BR') : '';
+      avisoEl.style.display = 'block';
+      avisoEl.textContent = '⏳ Seu novo plano entrará em vigor após o vencimento do plano atual (' + ate + '). Você não perderá os dias já pagos.';
+    } else { avisoEl.style.display = 'none'; }
+  }
+}
+
+function selecionarPagamento(tipo, el) {
+  pagamentoSelecionado = tipo;
+  document.querySelectorAll('.pay-tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('infoCripto').style.display = 'none';
+  document.getElementById('btnAssinar').style.display = tipo === 'cripto' ? 'block' : 'none';
+  document.getElementById('btnWpp').style.display = tipo === 'whatsapp' ? 'block' : 'none';
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+
+
   if (valorSelecionado === undefined || valorSelecionado === null) { showToast('Selecione um plano primeiro.'); return; }
   var nome = localStorage.getItem('pep_nome') || '';
   var plano = document.getElementById('planoSelecionadoNome').textContent;
@@ -697,6 +737,7 @@ async function carregarBadgesMini() {
 
 // Iniciar com pagamento cripto selecionado
 document.getElementById('btnWpp').style.display = 'none';
+var _dadosPainel = null;
 // Mostrar mensagem se vier de página restrita
 if (new URLSearchParams(location.search).get('msg') === 'assine') {
   setTimeout(function(){
@@ -715,12 +756,6 @@ if (new URLSearchParams(location.search).get('msg') === 'assine') {
     setTimeout(waitI18n, 50);
   }
 })();
-// Re-renderizar painel quando idioma mudar
-var _dadosPainel = null;
-var _initOriginal = init;
-init = async function() {
-  await _initOriginal();
-};
 window.addEventListener('pep_lang_change', function() {
   if (_dadosPainel) renderPainel(_dadosPainel);
 });
