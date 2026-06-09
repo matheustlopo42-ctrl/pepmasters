@@ -502,7 +502,7 @@ function showToast(msg) {
   setTimeout(function(){ t.classList.remove('show'); }, 3000);
 }
 
-
+function assinarWhatsApp() {
   if (valorSelecionado === undefined || valorSelecionado === null) { showToast('Selecione um plano primeiro.'); return; }
   var nome = localStorage.getItem('pep_nome') || '';
   var plano = document.getElementById('planoSelecionadoNome').textContent;
