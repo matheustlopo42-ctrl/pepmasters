@@ -483,6 +483,8 @@ window.PEPMASTERS_I18N = {
   "ranking.sales":          { en:"sales",              pt:"vendas",            es:"ventas",             de:"Verkäufe",            fr:"ventes" },
   "ranking.you":            { en:"(you)",              pt:"(você)",            es:"(tú)",               de:"(Sie)",               fr:"(vous)" },
   "ranking.empty":          { en:"No sales this month yet. Be the first!", pt:"Nenhuma venda este mês ainda. Seja o primeiro!", es:"Sin ventas este mes todavía. ¡Sé el primero!", de:"Noch keine Verkäufe diesen Monat. Seien Sie der Erste!", fr:"Pas encore de ventes ce mois. Soyez le premier!" },
+  "ranking.replies":        { en:"replies",   pt:"respostas", es:"respuestas", de:"Antworten", fr:"réponses" },
+  "ranking.views":          { en:"views",     pt:"views",     es:"vistas",     de:"Aufrufe",   fr:"vues" },
   "ranking.no.sales":       { en:"No sales registered this month.", pt:"Nenhuma venda registrada este mês.", es:"Sin ventas registradas este mes.", de:"Keine Verkäufe diesen Monat registriert.", fr:"Aucune vente enregistrée ce mois." },
   // EXTRATO
   "extrato.title":          { en:"Statement",          pt:"Extrato",           es:"Extracto",           de:"Auszug",              fr:"Relevé" },

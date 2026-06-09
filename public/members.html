@@ -239,6 +239,7 @@
             <span id="linkAfiliado">—</span>
             <button class="btn-copiar" onclick="copiarLink()" data-i18n="members.affiliate.copy">Copiar</button>
           </div>
+          <a id="linkPerfilPublico" href="#" target="_blank" style="display:none;font-size:.8rem;color:var(--amber);text-decoration:none;margin-top:6px;display:block">🌐 Ver meu perfil público</a>
           <p class="ref-instrucoes" data-i18n="members.affiliate.info">Compartilhe este link. Toda compra feita através dele é registrada automaticamente e a comissão é creditada na sua conta.</p>
         </div>
 
@@ -531,6 +532,11 @@ function renderPainel(data) {
 
   // Link afiliado
   document.getElementById('linkAfiliado').textContent = data.link_afiliado || '';
+  // Link perfil público
+  if (data.slug) {
+    var pLink = document.getElementById('linkPerfilPublico');
+    if (pLink) { pLink.href = '/distribuidor/' + data.slug; pLink.style.display = 'block'; }
+  }
 
   // Mensalidade
   document.getElementById('msgBase').textContent = 'R$ ' + (data.mensalidade||0).toFixed(2).replace('.',',');
