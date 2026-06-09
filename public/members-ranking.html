@@ -137,6 +137,16 @@ function mudarMes(dir) {
     mesAtual -= dir; if (mesAtual > 12) { mesAtual = 1; anoAtual--; } if (mesAtual < 1) { mesAtual = 12; anoAtual++; }
     return;
   }
+  // Não permitir antes de Janeiro 2025
+  if (anoAtual < 2025 || (anoAtual === 2025 && mesAtual < 1)) {
+    mesAtual -= dir; if (mesAtual > 12) { mesAtual = 1; anoAtual--; } if (mesAtual < 1) { mesAtual = 12; anoAtual++; }
+    return;
+  }
+  // Atualizar estado dos botões
+  var btnAnt = document.getElementById('btnAnterior');
+  var btnProx = document.getElementById('btnProximo');
+  if (btnAnt) btnAnt.disabled = (anoAtual === 2025 && mesAtual === 1);
+  if (btnProx) btnProx.disabled = (anoAtual === agora.getFullYear() && mesAtual === agora.getMonth() + 1);
   carregarRanking();
 }
 
@@ -155,6 +165,8 @@ async function carregarRanking() {
   // Desabilitar botão próximo se for mês atual
   var btnProx = document.getElementById('btnProximo');
   if (btnProx) btnProx.disabled = (anoAtual === agora.getFullYear() && mesAtual === agora.getMonth() + 1);
+  var btnAnt = document.getElementById('btnAnterior');
+  if (btnAnt) btnAnt.disabled = (anoAtual === 2025 && mesAtual === 1);
 
   try {
     var res = await fetch('/api/membros/ranking?mes='+mesAtual+'&ano='+anoAtual, {headers:{Authorization:'Bearer '+token}});
