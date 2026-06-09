@@ -1926,6 +1926,58 @@ app.get('/api/admin/membro/:id/extrato', adminMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
+// Dashboard admin
+app.get('/api/admin/dashboard', adminMiddleware, async (req, res) => {
+  try {
+    const receita = await pool.query(`
+      SELECT TO_CHAR(DATE_TRUNC('month', criado_em),'YYYY-MM') as mes,
+             COALESCE(SUM(valor_total),0) as receita
+      FROM pep_pedidos WHERE status IN ('pago','confirmado','enviado','entregue')
+        AND criado_em >= NOW() - INTERVAL '12 months'
+      GROUP BY mes ORDER BY mes
+    `);
+    const receitaMembros = await pool.query(`
+      SELECT TO_CHAR(DATE_TRUNC('month', criado_em),'YYYY-MM') as mes,
+             COALESCE(SUM(valor),0) as receita
+      FROM pep_pagamentos_membros WHERE status='pago'
+        AND criado_em >= NOW() - INTERVAL '12 months'
+      GROUP BY mes ORDER BY mes
+    `);
+    const novosMembros = await pool.query(`
+      SELECT TO_CHAR(DATE_TRUNC('month', criado_em),'YYYY-MM') as mes,
+             COUNT(*) as total
+      FROM pep_membros WHERE criado_em >= NOW() - INTERVAL '12 months'
+      GROUP BY mes ORDER BY mes
+    `);
+    const volumeAfiliados = await pool.query(`
+      SELECT TO_CHAR(DATE_TRUNC('month', criado_em),'YYYY-MM') as mes,
+             COALESCE(SUM(valor),0) as volume,
+             COALESCE(SUM(comissao),0) as comissao
+      FROM pep_vendas_afiliado WHERE criado_em >= NOW() - INTERVAL '12 months'
+      GROUP BY mes ORDER BY mes
+    `);
+    const totais = await pool.query(`
+      SELECT
+        (SELECT COUNT(*) FROM pep_usuarios) as total_usuarios,
+        (SELECT COUNT(*) FROM pep_membros WHERE status='ativo') as membros_ativos,
+        (SELECT COUNT(*) FROM pep_pedidos WHERE status IN ('pago','confirmado','enviado','entregue')) as pedidos_pagos,
+        (SELECT COALESCE(SUM(valor_total),0) FROM pep_pedidos WHERE status IN ('pago','confirmado','enviado','entregue')) as receita_total,
+        (SELECT COUNT(*) FROM pep_pedidos WHERE status='pendente') as pedidos_pendentes,
+        (SELECT COUNT(*) FROM pep_membros WHERE status='pendente') as membros_pendentes
+    `);
+    const topAfiliados = await pool.query(`
+      SELECT u.nome, m.nivel, m.codigo_ref,
+             COALESCE(SUM(va.valor),0) as volume, COUNT(va.id) as vendas
+      FROM pep_membros m
+      JOIN pep_usuarios u ON u.id=m.usuario_id
+      LEFT JOIN pep_vendas_afiliado va ON va.membro_id=m.id AND va.criado_em>=DATE_TRUNC('month',NOW())
+      WHERE m.status='ativo'
+      GROUP BY m.id,u.nome ORDER BY volume DESC LIMIT 5
+    `);
+    res.json({ receita: receita.rows, receita_membros: receitaMembros.rows, novos_membros: novosMembros.rows, volume_afiliados: volumeAfiliados.rows, totais: totais.rows[0], top_afiliados: topAfiliados.rows });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
 // Listar membros pendentes (admin)
 app.get('/api/membros/admin', adminMiddleware, async (req, res) => {
   try {

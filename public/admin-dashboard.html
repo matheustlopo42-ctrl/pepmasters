@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Dashboard — Admin PEPMASTERS</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--dark:#1C0A00}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:#0f0800;color:#fff;min-height:100vh}
+    header{background:rgba(28,10,0,.97);border-bottom:2px solid var(--amber);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .nav-links{display:flex;gap:16px}
+    .nav-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s}
+    .nav-link:hover,.nav-link.active{color:var(--amber)}
+    main{max-width:1100px;margin:0 auto;padding:32px 24px}
+    h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;text-transform:uppercase;color:var(--amber);margin-bottom:24px}
+    /* STATS */
+    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+    .stat-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,179,0,.1);border-radius:14px;padding:20px}
+    .stat-card.alert{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.05)}
+    .stat-label{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px}
+    .stat-value{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;color:var(--amber)}
+    .stat-value.red{color:#ef4444}
+    .stat-sub{font-size:.75rem;color:rgba(255,255,255,.3);margin-top:4px}
+    /* CHARTS */
+    .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+    .chart-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,179,0,.08);border-radius:14px;padding:20px}
+    .chart-card.full{grid-column:1/-1}
+    .chart-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:16px}
+    canvas{max-height:220px}
+    /* TOP AFILIADOS */
+    .top-table{width:100%;border-collapse:collapse}
+    .top-table th{text-align:left;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .top-table td{padding:10px 12px;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.04)}
+    .top-table tr:last-child td{border:none}
+    .nivel-bronze{color:#cd7f32}.nivel-prata{color:#C0C0C0}.nivel-ouro{color:#FFD700}.nivel-diamante{color:#b9f2ff}
+    .badge-pos{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem;color:rgba(255,255,255,.2)}
+    .empty{text-align:center;padding:32px;color:rgba(255,255,255,.3);font-size:.88rem}
+    @media(max-width:700px){.stats-grid{grid-template-columns:1fr 1fr}.charts-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <span class="logo">PEPMASTERS <span style="font-size:.75rem;background:rgba(255,179,0,.15);color:var(--amber);padding:2px 8px;border-radius:4px;-webkit-text-fill-color:var(--amber)">ADMIN</span></span>
+  <div class="nav-links">
+    <a href="admin-dashboard.html" class="nav-link active">📊 Dashboard</a>
+    <a href="admin.html" class="nav-link">📦 Pedidos</a>
+    <a href="admin-membros.html" class="nav-link">👥 Membros</a>
+    <a href="admin-usuarios.html" class="nav-link">👤 Usuários</a>
+    <a href="admin-estoque.html" class="nav-link">📦 Estoque</a>
+    <a href="admin-cupons.html" class="nav-link">🎟️ Cupons</a>
+    <a href="#" class="nav-link" onclick="sair(event)">Sair</a>
+  </div>
+</header>
+
+<main>
+  <h1>📊 Dashboard</h1>
+
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="stat-label">Total de Usuários</div><div class="stat-value" id="s-usuarios">—</div></div>
+    <div class="stat-card"><div class="stat-label">Membros Ativos</div><div class="stat-value" id="s-membros">—</div></div>
+    <div class="stat-card"><div class="stat-label">Receita Total</div><div class="stat-value" id="s-receita">—</div></div>
+    <div class="stat-card"><div class="stat-label">Pedidos Pagos</div><div class="stat-value" id="s-pedidos">—</div></div>
+    <div class="stat-card alert"><div class="stat-label">⏳ Pedidos Pendentes</div><div class="stat-value red" id="s-pendentes">—</div><div class="stat-sub"><a href="admin.html" style="color:#ef4444;font-size:.75rem">Ver pedidos →</a></div></div>
+    <div class="stat-card alert"><div class="stat-label">⏳ Membros Pendentes</div><div class="stat-value red" id="s-membros-pend">—</div><div class="stat-sub"><a href="admin-membros.html" style="color:#ef4444;font-size:.75rem">Ver membros →</a></div></div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card full">
+      <div class="chart-title">💰 Receita Mensal — Loja + Membros (R$)</div>
+      <canvas id="chartReceita"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">👥 Novos Membros por Mês</div>
+      <canvas id="chartMembros"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">🔗 Volume de Afiliados (R$)</div>
+      <canvas id="chartAfiliados"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:24px">
+    <div class="chart-title">🏆 Top 5 Afiliados — Este Mês</div>
+    <table class="top-table" id="topAfiliados">
+      <thead><tr><th>#</th><th>Nome</th><th>Nível</th><th>Volume</th><th>Vendas</th></tr></thead>
+      <tbody id="topAfiliadosBody"></tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+var adminToken = btoa(localStorage.getItem('admin_pass') || '');
+
+function sair(e) { e.preventDefault(); localStorage.removeItem('admin_pass'); location.href='admin-login.html'; }
+
+function fmt(v) { return 'R$ ' + parseFloat(v||0).toFixed(2).replace('.',','); }
+
+// Gerar labels de meses para últimos 12 meses
+function gerarMeses() {
+  var meses = [];
+  var agora = new Date();
+  for (var i = 11; i >= 0; i--) {
+    var d = new Date(agora.getFullYear(), agora.getMonth() - i, 1);
+    var mes = ('0'+(d.getMonth()+1)).slice(-2);
+    meses.push(d.getFullYear() + '-' + mes);
+  }
+  return meses;
+}
+
+function preencherDados(meses, rows, campo) {
+  var map = {};
+  rows.forEach(function(r){ map[r.mes] = parseFloat(r[campo]||0); });
+  return meses.map(function(m){ return map[m] || 0; });
+}
+
+var mesesLabels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function labelMes(m) {
+  var parts = m.split('-');
+  return mesesLabels[parseInt(parts[1])-1] + '/' + parts[0].slice(2);
+}
+
+var chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: true,
+  plugins: { legend: { labels: { color: 'rgba(255,255,255,.5)', font: { size: 11 } } } },
+  scales: {
+    x: { ticks: { color: 'rgba(255,255,255,.4)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' } },
+    y: { ticks: { color: 'rgba(255,255,255,.4)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' } }
+  }
+};
+
+async function init() {
+  var pass = localStorage.getItem('admin_pass');
+  if (!pass) { location.href = 'admin-login.html'; return; }
+  adminToken = btoa(pass);
+
+  var res = await fetch('/api/admin/dashboard', { headers: { Authorization: 'Basic ' + adminToken } });
+  if (res.status === 401) { location.href = 'admin-login.html'; return; }
+  var data = await res.json();
+  var t = data.totais;
+
+  // Stats
+  document.getElementById('s-usuarios').textContent = t.total_usuarios;
+  document.getElementById('s-membros').textContent = t.membros_ativos;
+  document.getElementById('s-receita').textContent = fmt(t.receita_total);
+  document.getElementById('s-pedidos').textContent = t.pedidos_pagos;
+  document.getElementById('s-pendentes').textContent = t.pedidos_pendentes;
+  document.getElementById('s-membros-pend').textContent = t.membros_pendentes;
+
+  var meses = gerarMeses();
+  var labels = meses.map(labelMes);
+
+  // Gráfico receita
+  var recLoja = preencherDados(meses, data.receita, 'receita');
+  var recMembros = preencherDados(meses, data.receita_membros, 'receita');
+  new Chart(document.getElementById('chartReceita'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'Loja', data: recLoja, backgroundColor: 'rgba(232,34,10,.7)', borderColor: '#E8220A', borderWidth: 1 },
+        { label: 'Membros', data: recMembros, backgroundColor: 'rgba(255,179,0,.7)', borderColor: '#FFB300', borderWidth: 1 }
+      ]
+    },
+    options: Object.assign({}, chartDefaults, { plugins: Object.assign({}, chartDefaults.plugins, { tooltip: { callbacks: { label: function(ctx){ return ctx.dataset.label + ': R$ ' + ctx.raw.toFixed(2); } } } }) })
+  });
+
+  // Gráfico membros
+  var membros = preencherDados(meses, data.novos_membros, 'total');
+  new Chart(document.getElementById('chartMembros'), {
+    type: 'line',
+    data: { labels: labels, datasets: [{ label: 'Novos membros', data: membros, borderColor: '#FFB300', backgroundColor: 'rgba(255,179,0,.1)', tension: 0.4, fill: true, pointBackgroundColor: '#FFB300' }] },
+    options: chartDefaults
+  });
+
+  // Gráfico afiliados
+  var volAfil = preencherDados(meses, data.volume_afiliados, 'volume');
+  new Chart(document.getElementById('chartAfiliados'), {
+    type: 'line',
+    data: { labels: labels, datasets: [{ label: 'Volume (R$)', data: volAfil, borderColor: '#FF6B00', backgroundColor: 'rgba(255,107,0,.1)', tension: 0.4, fill: true, pointBackgroundColor: '#FF6B00' }] },
+    options: chartDefaults
+  });
+
+  // Top afiliados
+  var nivelIcons = {bronze:'🥉',prata:'🥈',ouro:'🥇',diamante:'💎'};
+  var tbody = document.getElementById('topAfiliadosBody');
+  if (!data.top_afiliados.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">Nenhuma venda este mês ainda.</td></tr>';
+  } else {
+    tbody.innerHTML = data.top_afiliados.map(function(a, i) {
+      return '<tr>' +
+        '<td class="badge-pos">'+(i+1)+'</td>' +
+        '<td style="font-weight:600">'+a.nome+'</td>' +
+        '<td class="nivel-'+(a.nivel||'bronze')+'">'+(nivelIcons[a.nivel]||'🥉')+' '+(a.nivel||'bronze')+'</td>' +
+        '<td>'+fmt(a.volume)+'</td>' +
+        '<td>'+a.vendas+'</td>' +
+      '</tr>';
+    }).join('');
+  }
+}
+
+init();
+</script>
+</body>
+</html>
