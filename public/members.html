@@ -470,9 +470,23 @@ function selecionarPlano(el, valor) {
   el.classList.add('selecionado');
   valorSelecionado = valor;
   var nome = el.querySelector('.plano-nome').textContent;
-  var _dp=window.PEPMASTERS_I18N||{};var _lp=localStorage.getItem('pep_lang')||'en';
+    var _dp=window.PEPMASTERS_I18N||{};var _lp=localStorage.getItem('pep_lang')||'en';
   var _trp=function(k){return(_dp[k]&&(_dp[k][_lp]||_dp[k]['en']))||k;};
   var precoLabel = valor === 0 ? _trp('members.plan.free') : 'R$ ' + valor + ' ' + _trp('members.per.month');
+
+  // Features traduzidas por plano
+  var featMap = {
+    0:   [_trp('members.feat.commission5'),_trp('members.feat.affiliate'),_trp('members.feat.panel'),_trp('members.feat.materials'),_trp('members.feat.discount10')],
+    197: [_trp('members.feat.commission8'),_trp('members.feat.affiliate'),_trp('members.feat.panel.adv'),_trp('members.feat.exclusive'),_trp('members.feat.discount15'),_trp('members.feat.priority')],
+    397: [_trp('members.feat.commission12'),_trp('members.feat.affiliate'),_trp('members.feat.prata.all'),_trp('members.feat.protocols'),_trp('members.feat.discount20'),_trp('members.feat.kit')],
+    797: [_trp('members.feat.commission15'),_trp('members.feat.affiliate'),_trp('members.feat.ouro.all'),_trp('members.feat.mentoring'),_trp('members.feat.discount25'),_trp('members.feat.kit.premium')]
+  };
+  var feats = featMap[valor] || [];
+  var featList = el.querySelector('.plano-features');
+  if (featList && feats.length) {
+    var items = featList.querySelectorAll('li');
+    feats.forEach(function(f, i){ if (items[i]) items[i].textContent = f; });
+  }
   document.getElementById('planoSelecionadoNome').textContent = nome + ' — ' + precoLabel;
   var isGratis = valor === 0;
   document.querySelector('.payment-tabs').style.display = isGratis ? 'none' : 'flex';
@@ -785,6 +799,16 @@ if (new URLSearchParams(location.search).get('msg') === 'assine') {
 })();
 window.addEventListener('pep_lang_change', function() {
   if (_dadosPainel) renderPainel(_dadosPainel);
+  // Re-traduzir cards de plano
+  document.querySelectorAll('.plano-card').forEach(function(card){
+    if (card.classList.contains('selecionado')) {
+      var btn = card.getAttribute('onclick');
+      if (btn) {
+        var match = btn.match(/selecionarPlano\(this,\s*(\d+)\)/);
+        if (match) selecionarPlano(card, parseInt(match[1]));
+      }
+    }
+  });
 });
 </script>
 </body>
