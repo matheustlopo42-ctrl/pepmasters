@@ -414,29 +414,29 @@ async function favoritarTopico(id, btn) {
 }
 
 async function trocarAba(aba, btn) {
-  document.querySelectorAll('.forum-tab').forEach(function(b){b.classList.remove('active');});
+  catAtual = 'favoritos';
+  document.querySelectorAll('.cat-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
-  if (aba === 'todos') {
-    carregarTopicos(catAtual);
-  } else {
-    var res = await fetch('/api/forum/favoritos', {headers:{Authorization:'Bearer '+token}});
-    var lista = await res.json();
-    var container = document.getElementById('listaTopicos');
-    if (!lista.length) { container.innerHTML = '<div class="empty"><div style="font-size:2rem">⭐</div><p>Nenhum tópico favorito ainda.</p></div>'; return; }
-    container.innerHTML = lista.map(function(t) {
-      var icon = catIcons[t.categoria] || '💬';
-      return '<div class="topico-item" onclick="abrirTopico('+t.id+')">' +
-        '<div class="topico-icon">'+icon+'</div>' +
-        '<div class="topico-info">' +
-          '<div class="topico-titulo">'+t.titulo+'</div>' +
-          '<div class="topico-meta"><span class="nivel-'+t.autor_nivel+'">'+nivelIcons[t.autor_nivel]+' '+t.autor_nome+'</span>' +
-          '<span class="cat-tag cat-'+t.categoria+'">'+t.categoria+'</span>' +
-          '<span>'+timeAgo(t.criado_em)+'</span></div>' +
-        '</div>' +
-        '<div class="topico-stats"><div class="topico-respostas">'+(t.total_respostas||0)+'</div><div class="topico-respostas-label">respostas</div></div>' +
-      '</div>';
-    }).join('');
+  var res = await fetch('/api/forum/favoritos', {headers:{Authorization:'Bearer '+token}});
+  var lista = await res.json();
+  var container = document.getElementById('listaTopicos');
+  if (!lista.length) { 
+    container.innerHTML = '<div class="empty"><div style="font-size:2rem">⭐</div><p>Nenhum tópico favorito ainda.</p></div>'; 
+    return; 
   }
+  container.innerHTML = lista.map(function(t) {
+    var icon = catIcons[t.categoria] || '💬';
+    return '<div class="topico-item" onclick="abrirTopico('+t.id+')">' +
+      '<div class="topico-icon">'+icon+'</div>' +
+      '<div class="topico-info">' +
+        '<div class="topico-titulo">'+t.titulo+'</div>' +
+        '<div class="topico-meta"><span class="nivel-'+t.autor_nivel+'">'+nivelIcons[t.autor_nivel]+' '+t.autor_nome+'</span>' +
+        '<span class="cat-tag cat-'+t.categoria+'">'+t.categoria+'</span>' +
+        '<span>'+timeAgo(t.criado_em)+'</span></div>' +
+      '</div>' +
+      '<div class="topico-stats"><div class="topico-respostas">'+(t.total_respostas||0)+'</div><div class="topico-respostas-label">respostas</div></div>' +
+    '</div>';
+  }).join('');
 }
 
 function abrirDenuncia(topicoId, respostaId) {
