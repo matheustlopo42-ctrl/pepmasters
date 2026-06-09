@@ -459,7 +459,7 @@ async function assinar() {
     // Mostrar botão "Mudou de ideia?"
     var btnMudou = document.getElementById('btnMudouDeIdeia');
     if (btnMudou) btnMudou.style.display = 'block';
-    showToast('Pedido registrado! Envie o pagamento e aguarde confirmação em até 24h úteis.');
+    showToast((function(){var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';return(d['members.order.toast']&&(d['members.order.toast'][l]||d['members.order.toast']['en']))||'Pedido registrado! Envie o pagamento e aguarde confirmação em até 24h úteis.';})());
   } catch(e) { showToast('Erro de conexão.'); }
 }
 
