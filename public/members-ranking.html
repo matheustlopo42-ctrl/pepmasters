@@ -122,7 +122,6 @@ async function init() {
   traduzirNav();
   if (!token) { location.href = 'login.html?redirect=members-ranking.html'; return; }
   var agora = new Date();
-  document.getElementById('mesLabel').textContent = mesTrad + ' ' + agora.getFullYear();
   var _d=window.PEPMASTERS_I18N||{};var _l=localStorage.getItem('pep_lang')||'en';
   var _tr=function(k){return(_d[k]&&(_d[k][_l]||_d[k]['en']))||k;};
   var mesesEn=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -131,6 +130,7 @@ async function init() {
   var mesesFr=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
   var mesMap={en:mesesEn,pt:meses,es:mesesEs,de:mesesDe,fr:mesesFr};
   var mesTrad=(mesMap[_l]||meses)[agora.getMonth()];
+  document.getElementById('mesLabel').textContent = mesTrad + ' ' + agora.getFullYear();
   document.getElementById('periodoLabel').textContent = _tr('ranking.subtitle') + ' ' + mesTrad;
 
   try {
