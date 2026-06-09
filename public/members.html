@@ -343,7 +343,7 @@
         </div>
       </div>
 
-      <div id="infoCripto">
+      <div id="infoCripto" style="display:none">
         <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:16px;border:1px solid rgba(255,179,0,.2);margin-bottom:12px">
           <div style="display:flex;gap:8px;margin-bottom:12px">
             <button id="mbr-btn-usdt" class="pay-tab active" style="flex:1;font-size:.85rem;padding:8px" onclick="mbrSelecionarToken('USDT')">USDT</button>
@@ -459,7 +459,11 @@ async function assinar() {
     // Mostrar QR code com valor em USDT
     if (data.crypto_valor) {
       mbrCryptoValorNum = data.crypto_valor;
+      document.getElementById('infoCripto').style.display = 'block';
       mbrAtualizarCriptoUI();
+      document.getElementById('btnAssinar').textContent = '✓ Pedido registrado — envie o pagamento';
+      document.getElementById('btnAssinar').style.opacity = '0.7';
+      document.getElementById('btnAssinar').disabled = true;
     }
     showToast('Pedido registrado! Envie o pagamento e aguarde confirmação em até 24h úteis.');
   } catch { showToast('Erro de conexão.'); }
