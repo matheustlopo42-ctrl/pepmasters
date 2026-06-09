@@ -188,6 +188,27 @@ async function salvar() {
 
 async function init() {
   if (!token) { location.href = 'login.html?redirect=members-perfil-publico.html'; return; }
+
+  // Traduzir placeholders diretamente
+  var l = localStorage.getItem('pep_lang') || 'en';
+  var placeholders = {
+    en: { slug:'e.g. john-smith', instagram:'yourprofile', whatsapp:'15551234567' },
+    pt: { slug:'ex: joao-silva', instagram:'seuperfil', whatsapp:'5511999999999' },
+    es: { slug:'ej: juan-garcia', instagram:'tuperfil', whatsapp:'5215512345678' },
+    de: { slug:'z.B. hans-mueller', instagram:'ihrprofil', whatsapp:'4915112345678' },
+    fr: { slug:'ex: jean-dupont', instagram:'votreprofil', whatsapp:'33612345678' }
+  };
+  var ph = placeholders[l] || placeholders['en'];
+  document.getElementById('slug').placeholder = ph.slug;
+  document.getElementById('instagram').placeholder = ph.instagram;
+  document.getElementById('whatsapp').placeholder = ph.whatsapp;
+  window.addEventListener('pep_lang_change', function(){
+    var l2=localStorage.getItem('pep_lang')||'en';
+    var ph2=placeholders[l2]||placeholders['en'];
+    document.getElementById('slug').placeholder=ph2.slug;
+    document.getElementById('instagram').placeholder=ph2.instagram;
+    document.getElementById('whatsapp').placeholder=ph2.whatsapp;
+  });
   try {
     var res = await fetch('/api/membros/painel', {headers:{Authorization:'Bearer '+token}});
     if (!res.ok) { location.href = 'members.html?msg=assine'; return; }
