@@ -349,7 +349,8 @@
         Carteira: <strong style="font-size:.78rem;word-break:break-all">0xDA95bb300C7be3E3347d449b14b834Dc3098deAD</strong>
       </div>
 
-      <button class="btn-assinar" onclick="assinar()" id="btnAssinar" data-i18n="members.subscribe.now">Assinar agora</button>
+      <div id="avisoMudancaPlano" style="display:none;background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.2);border-radius:10px;padding:12px 14px;font-size:.82rem;color:rgba(255,255,255,.7);margin-bottom:12px;line-height:1.6"></div>
+    <button class="btn-assinar" onclick="assinar()" id="btnAssinar" data-i18n="members.subscribe.now">Assinar agora</button>
       <button class="btn-whatsapp-assinar" onclick="assinarWhatsApp()" id="btnWpp" data-i18n="members.subscribe.wpp">📱 Assinar via WhatsApp</button>
     <button class="btn-assinar" onclick="ativarGratis()" id="btnGratis" style="display:none;background:linear-gradient(135deg,#15803d,#22c55e)" data-i18n="members.activate.free">✅ Ativar gratuitamente</button>
     </div>
@@ -392,6 +393,18 @@ function selecionarPlano(el, valor) {
   var nome = el.querySelector('.plano-nome').textContent;
   var precoLabel = valor === 0 ? 'Grátis' : 'R$ ' + valor + '/mês';
   document.getElementById('planoSelecionadoNome').textContent = nome + ' — ' + precoLabel;
+
+  // Mostrar aviso se tem plano ativo e está trocando para plano pago
+  var avisoEl = document.getElementById('avisoMudancaPlano');
+  if (avisoEl) {
+    if (_dadosPainel && _dadosPainel.status === 'ativo' && valor > 0) {
+      var ate = _dadosPainel.membro_ate ? new Date(_dadosPainel.membro_ate).toLocaleDateString('pt-BR') : '';
+      avisoEl.style.display = 'block';
+      avisoEl.textContent = '⏳ Seu novo plano entrará em vigor após o vencimento do plano atual (' + ate + '). Você não perderá os dias já pagos.';
+    } else {
+      avisoEl.style.display = 'none';
+    }
+  }
 
   // Mostrar/ocultar opções de pagamento
   var isGratis = valor === 0;

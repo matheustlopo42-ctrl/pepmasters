@@ -421,6 +421,34 @@ app.post('/api/cadastro', rateLimit(5, 60000), async (req, res) => {
       [nome, email.toLowerCase(), cpf || null, telefone || null, hash, hash]
     );
     const u = rows[0];
+
+    // Email de boas-vindas (só no primeiro cadastro)
+    sendEmail(u.email, '🎉 Bem-vindo ao PEPMASTERS!', `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
+        <div style="text-align:center;margin-bottom:24px">
+          <h1 style="font-family:sans-serif;font-weight:900;font-size:2rem;background:linear-gradient(135deg,#E8220A,#FF6B00,#FFB300);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:0">PEPMASTERS</h1>
+          <p style="color:rgba(255,255,255,.5);font-size:.85rem;margin:4px 0 0">High Performance Peptides</p>
+        </div>
+        <h2 style="color:#FFB300;font-size:1.4rem;margin-bottom:8px">Olá, ${u.nome.split(' ')[0]}! 👋</h2>
+        <p style="color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:16px">
+          Sua conta foi criada com sucesso. Bem-vindo à PEPMASTERS — peptídeos bioativos com qualidade e transparência para atletas e entusiastas de performance.
+        </p>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,179,0,.2);border-radius:10px;padding:16px;margin-bottom:20px">
+          <p style="color:rgba(255,255,255,.6);font-size:.88rem;margin:0 0 8px">O que você pode fazer agora:</p>
+          <ul style="color:rgba(255,255,255,.7);font-size:.88rem;line-height:2;margin:0;padding-left:20px">
+            <li>Explorar nosso catálogo de peptídeos</li>
+            <li>Ativar seu acesso Members gratuito (Bronze)</li>
+            <li>Ganhar comissões indicando amigos</li>
+          </ul>
+        </div>
+        <div style="text-align:center">
+          <a href="${BASE_URL}" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;font-weight:700;text-decoration:none;border-radius:10px;font-size:1rem">Acessar a loja →</a>
+        </div>
+        <hr style="border-color:rgba(255,255,255,.1);margin:24px 0"/>
+        <p style="font-size:.78rem;color:rgba(255,255,255,.3);text-align:center">PEPMASTERS — Performance através da ciência.</p>
+      </div>
+    `).catch(() => {});
+
     res.json({ token: gerarToken(u.id), nome: u.nome, email: u.email });
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao cadastrar.' });
@@ -1655,11 +1683,13 @@ app.get('/ref/:codigo', async (req, res) => {
 
 // Assinar plano de membros
 app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
-  const { pagamento, valor } = req.body;
+  const { pagamento, valor, plano } = req.body;
   const usuario_id = req.usuario.id;
   try {
+    const isGratis = !valor || parseFloat(valor) === 0;
+
     // Verificar se já é membro
-    const existing = await pool.query(`SELECT id FROM pep_membros WHERE usuario_id = $1`, [usuario_id]);
+    const existing = await pool.query(`SELECT id, status, membro_ate, plano, mensalidade FROM pep_membros WHERE usuario_id = $1`, [usuario_id]);
 
     // Gerar código de afiliado único
     const codigo_ref = 'PEP' + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -1667,21 +1697,67 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
     let membro_id;
     if (existing.rows.length > 0) {
       membro_id = existing.rows[0].id;
-      await pool.query(`UPDATE pep_membros SET mensalidade=$1, pagamento=$2 WHERE id=$3`, [valor || 0, pagamento, membro_id]);
+      const membroAtual = existing.rows[0];
+      const planoAtual = membroAtual.plano;
+      const ativo = membroAtual.status === 'ativo' && membroAtual.membro_ate && new Date(membroAtual.membro_ate) > new Date();
+      const novoPlano = plano || (isGratis ? 'bronze' : planoAtual);
+
+      if (isGratis) {
+        // Bronze: se já tem plano pago ativo, não faz nada (não perde dias)
+        // Se não está ativo, ativa bronze
+        if (!ativo) {
+          const ate = new Date();
+          ate.setFullYear(ate.getFullYear() + 10);
+          await pool.query(`UPDATE pep_membros SET status='ativo', membro_ate=$1, plano='bronze', mensalidade=0 WHERE id=$2`, [ate, membro_id]);
+          // Email de ativação do plano Bronze
+          const uData = await pool.query(`SELECT u.nome, u.email, m.codigo_ref FROM pep_membros m JOIN pep_usuarios u ON u.id=m.usuario_id WHERE m.id=$1`, [membro_id]);
+          if (uData.rows.length) {
+            const { nome, email: uEmail, codigo_ref } = uData.rows[0];
+            sendEmail(uEmail, '✅ Plano Bronze ativado — PEPMASTERS Members', `
+              <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
+                <h2 style="color:#cd7f32">🥉 Plano Bronze Ativado!</h2>
+                <p>Olá, <strong>${nome.split(' ')[0]}</strong>!</p>
+                <p style="color:rgba(255,255,255,.8);line-height:1.7">Seu acesso Members Bronze foi ativado com sucesso. Agora você tem acesso a:</p>
+                <ul style="color:rgba(255,255,255,.7);line-height:2;padding-left:20px">
+                  <li>5% de comissão por venda indicada</li>
+                  <li>Conteúdo exclusivo e protocolos</li>
+                  <li>Fórum de distribuidores</li>
+                  <li>Desconto de 10% na loja</li>
+                </ul>
+                <p style="color:rgba(255,255,255,.7)">Seu link de afiliado: <strong style="color:#FFB300">${BASE_URL}/ref/${codigo_ref}</strong></p>
+                <div style="text-align:center;margin-top:20px">
+                  <a href="${BASE_URL}/members.html" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#cd7f32,#FFB300);color:#000;font-weight:700;text-decoration:none;border-radius:10px">Acessar painel Members →</a>
+                </div>
+                <hr style="border-color:rgba(255,255,255,.1);margin:24px 0"/>
+                <p style="font-size:.78rem;color:rgba(255,255,255,.3);text-align:center">PEPMASTERS — Performance através da ciência.</p>
+              </div>
+            `).catch(() => {});
+          }
+        }
+      } else {
+        // Plano pago
+        if (planoAtual !== novoPlano) {
+          // Mudança de plano: novo plano começa quando o atual vencer
+          await pool.query(`UPDATE pep_membros SET mensalidade=$1, pagamento=$2, plano=$3 WHERE id=$4`, [valor, pagamento, novoPlano, membro_id]);
+        } else {
+          // Mesma mensalidade: só atualiza valor/pagamento
+          await pool.query(`UPDATE pep_membros SET mensalidade=$1, pagamento=$2 WHERE id=$3`, [valor, pagamento, membro_id]);
+        }
+        // Cancelar pagamentos pendentes anteriores (evitar duplicatas no admin)
+        await pool.query(`UPDATE pep_pagamentos_membros SET status='cancelado' WHERE membro_id=$1 AND status='pendente'`, [membro_id]);
+      }
     } else {
       const res2 = await pool.query(
-        `INSERT INTO pep_membros (usuario_id, mensalidade, pagamento, codigo_ref, status) VALUES ($1,$2,$3,$4,'pendente') RETURNING id`,
-        [usuario_id, valor || 0, pagamento, codigo_ref]
+        `INSERT INTO pep_membros (usuario_id, mensalidade, pagamento, codigo_ref, status, plano) VALUES ($1,$2,$3,$4,'pendente',$5) RETURNING id`,
+        [usuario_id, valor || 0, pagamento, codigo_ref, plano || 'bronze']
       );
       membro_id = res2.rows[0].id;
-    }
 
-    // Se plano gratuito (Bronze), liberar automaticamente
-    const isGratis = !valor || parseFloat(valor) === 0;
-    if (isGratis) {
-      const membro_ate = new Date();
-      membro_ate.setFullYear(membro_ate.getFullYear() + 10); // 10 anos = vitalício
-      await pool.query(`UPDATE pep_membros SET status='ativo', membro_ate=$1 WHERE id=$2`, [membro_ate, membro_id]);
+      if (isGratis) {
+        const ate = new Date();
+        ate.setFullYear(ate.getFullYear() + 10);
+        await pool.query(`UPDATE pep_membros SET status='ativo', membro_ate=$1 WHERE id=$2`, [ate, membro_id]);
+      }
     }
 
     // Registrar pagamento
@@ -1702,7 +1778,7 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
       } catch {}
     }
 
-    res.json({ ok: true, membro_id, pagamento_id: pag.rows[0].id, crypto_valor: cryptoValor });
+    res.json({ ok: true, membro_id, pagamento_id: pag.rows[0].id, crypto_valor: cryptoValor, isGratis });
   } catch (err) {
     res.status(500).json({ erro: err.message });
   }
@@ -1712,27 +1788,59 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
 app.post('/api/membros/confirmar', adminMiddleware, async (req, res) => {
   const { pagamento_id, membro_id } = req.body;
   try {
-    const membro_ate = new Date();
-    membro_ate.setDate(membro_ate.getDate() + 30);
+    // Buscar situação atual do membro
+    const m = await pool.query(`SELECT membro_ate, status, plano FROM pep_membros WHERE id=$1`, [membro_id]);
+    if (!m.rows.length) return res.status(404).json({ erro: 'Membro não encontrado.' });
 
-    await pool.query(`UPDATE pep_membros SET status='ativo', membro_ate=$1, nivel=nivel WHERE id=$2`, [membro_ate, membro_id]);
+    const { membro_ate, status, plano } = m.rows[0];
+    const agora = new Date();
+    let novaData;
+
+    // Se ainda tem dias restantes, soma a partir do vencimento atual
+    if (status === 'ativo' && membro_ate && new Date(membro_ate) > agora) {
+      novaData = new Date(membro_ate);
+      novaData.setDate(novaData.getDate() + 30);
+    } else {
+      // Se expirado ou pendente, começa do hoje
+      novaData = new Date();
+      novaData.setDate(novaData.getDate() + 30);
+    }
+
+    await pool.query(`UPDATE pep_membros SET status='ativo', membro_ate=$1 WHERE id=$2`, [novaData, membro_id]);
     await pool.query(`UPDATE pep_pagamentos_membros SET status='pago' WHERE id=$1`, [pagamento_id]);
 
     // Buscar dados do membro para email
-    const m = await pool.query(
-      `SELECT u.email, u.nome, m.codigo_ref FROM pep_membros m JOIN pep_usuarios u ON u.id=m.usuario_id WHERE m.id=$1`,
+    const mDados = await pool.query(
+      `SELECT u.email, u.nome, m.codigo_ref, m.plano FROM pep_membros m JOIN pep_usuarios u ON u.id=m.usuario_id WHERE m.id=$1`,
       [membro_id]
     );
-    if (m.rows.length > 0) {
-      const { email, nome, codigo_ref } = m.rows[0];
-      await sendEmail(email, '✅ Acesso liberado — PEPMASTERS Members', `
-        <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
-          <h2 style="color:#1C0A00">Bem-vindo ao PEPMASTERS Members, ${nome}!</h2>
-          <p>Seu pagamento foi confirmado. Acesso liberado por <strong>30 dias</strong>.</p>
-          <p>Seu link de afiliado: <strong>${BASE_URL}/ref/${codigo_ref}</strong></p>
-          <p>Acesse sua área: <strong>${BASE_URL}/members.html</strong></p>
-          <hr/>
-          <p style="font-size:.85rem;color:#999">PEPMASTERS — Performance através da ciência.</p>
+    if (mDados.rows.length > 0) {
+      const { email, nome, codigo_ref, plano: planoAtivado } = mDados.rows[0];
+      const nivelNomes = { bronze:'Bronze 🥉', prata:'Prata 🥈', ouro:'Ouro 🥇', diamante:'Diamante 💎' };
+      const comissoes  = { bronze:'5%', prata:'8%', ouro:'12%', diamante:'15%' };
+      const descontos  = { bronze:'10%', prata:'15%', ouro:'20%', diamante:'25%' };
+      const nomePlano  = nivelNomes[planoAtivado] || planoAtivado;
+      const venceEm    = novaData.toLocaleDateString('pt-BR');
+
+      await sendEmail(email, `✅ Plano ${nomePlano} ativado — PEPMASTERS Members`, `
+        <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
+          <h2 style="color:#FFB300">✅ Plano ${nomePlano} ativado!</h2>
+          <p>Olá, <strong>${nome.split(' ')[0]}</strong>!</p>
+          <p style="color:rgba(255,255,255,.8);line-height:1.7">Seu pagamento foi confirmado. Seu plano está ativo até <strong style="color:#FFB300">${venceEm}</strong>.</p>
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,179,0,.2);border-radius:10px;padding:16px;margin:16px 0">
+            <p style="color:rgba(255,255,255,.6);margin:0 0 8px;font-size:.88rem">Seus benefícios:</p>
+            <ul style="color:rgba(255,255,255,.7);font-size:.88rem;line-height:2;margin:0;padding-left:20px">
+              <li>${comissoes[planoAtivado] || '5%'} de comissão por venda indicada</li>
+              <li>${descontos[planoAtivado] || '10%'} de desconto na loja</li>
+              <li>Acesso ao fórum e conteúdo exclusivo</li>
+            </ul>
+          </div>
+          <p style="color:rgba(255,255,255,.7)">Seu link de afiliado:<br/><strong style="color:#FFB300">${BASE_URL}/ref/${codigo_ref}</strong></p>
+          <div style="text-align:center;margin-top:20px">
+            <a href="${BASE_URL}/members.html" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;font-weight:700;text-decoration:none;border-radius:10px">Acessar painel Members →</a>
+          </div>
+          <hr style="border-color:rgba(255,255,255,.1);margin:24px 0"/>
+          <p style="font-size:.78rem;color:rgba(255,255,255,.3);text-align:center">PEPMASTERS — Performance através da ciência.</p>
         </div>
       `);
     }
@@ -1826,7 +1934,12 @@ app.get('/api/membros/admin', adminMiddleware, async (req, res) => {
              pm.id as pag_id, pm.valor as pag_valor, pm.pagamento as pag_tipo, pm.status as pag_status, pm.criado_em as pag_criado
       FROM pep_membros m
       JOIN pep_usuarios u ON u.id = m.usuario_id
-      LEFT JOIN pep_pagamentos_membros pm ON pm.membro_id = m.id AND pm.status = 'pendente'
+      LEFT JOIN LATERAL (
+        SELECT id, valor, pagamento, status, criado_em
+        FROM pep_pagamentos_membros
+        WHERE membro_id = m.id AND status = 'pendente'
+        ORDER BY criado_em DESC LIMIT 1
+      ) pm ON TRUE
       ORDER BY m.criado_em DESC
     `);
     res.json(r.rows);
