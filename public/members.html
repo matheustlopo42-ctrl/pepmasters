@@ -485,17 +485,11 @@ function selecionarPagamento(tipo, el) {
 async function assinar() {
   if (valorSelecionado === undefined || valorSelecionado === null) { showToast('Selecione um plano primeiro.'); return; }
   var token = localStorage.getItem('pep_token');
+  alert('Debug: valorSelecionado=' + valorSelecionado + ' token=' + (token ? 'ok' : 'null'));
   try {
-    // Calcular valor em USDT no frontend com fallback
     var taxaBRL = 5.5;
-    try {
-      var cotRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=brl');
-      var cotJson = await cotRes.json();
-      if (cotJson && cotJson.tether && cotJson.tether.brl) taxaBRL = cotJson.tether.brl;
-    } catch {}
     mbrCryptoValorNum = parseFloat((valorSelecionado / taxaBRL).toFixed(2));
-
-    // Mostrar QR imediatamente com valor calculado
+    alert('Debug: mbrCryptoValorNum=' + mbrCryptoValorNum);
     document.getElementById('infoCripto').style.display = 'block';
     mbrAtualizarCriptoUI(mbrCryptoValorNum);
 
