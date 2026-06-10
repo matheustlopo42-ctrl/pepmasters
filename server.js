@@ -154,8 +154,9 @@ async function initDB() {
     await client.query(`ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS cpf TEXT`);
     await client.query(`ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS telefone TEXT`);
     await client.query(`ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS senha_hash TEXT`);
-    await client.query(`ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS reset_token TEXT`);
-    await client.query(`ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS reset_exp BIGINT`);
+    await client.query(`ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS reset_token TEXT`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS reset_exp BIGINT`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_usuarios ADD COLUMN IF NOT EXISTS lang TEXT DEFAULT 'pt'`).catch(()=>{});
 
     // Pedidos — garantir colunas necessárias
     await client.query(`
