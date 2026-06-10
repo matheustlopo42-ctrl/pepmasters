@@ -817,11 +817,12 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     // email confirmação para o cliente
     const itensHtml = carrinho.map(i => '<li>' + i.nome + ' × ' + i.quantidade + ' — R$ ' + (i.preco * i.quantidade).toFixed(2).replace('.',',') + '</li>').join('');
 
+    let nowpay_address = null;
+    let nowpay_amount = null;
+    let nowpay_currency = null;
+
     if (pagamento === 'cripto') {
       // Criar pagamento NOWPayments automaticamente
-      let nowpay_address = null;
-      let nowpay_amount = null;
-      let nowpay_currency = null;
 
       if (NOWPAYMENTS_API_KEY) {
         try {
