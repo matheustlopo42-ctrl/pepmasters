@@ -2665,8 +2665,17 @@ app.post('/api/nowpayments/criar', authMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
-// Webhook NOWPayments — confirmação automática
+// Webhook NOWPayments UNIFICADO — detecta se é pedido ou assinatura
 app.post('/api/webhook/nowpayments', async (req, res) => {
+  const { order_id } = req.body;
+  // Se order_id começa com "mbr-" é assinatura, senão é pedido
+  if (order_id && order_id.startsWith('mbr-')) {
+    return webhookNowpaymentsMembers(req, res);
+  }
+  return webhookNowpaymentsPedidos(req, res);
+});
+
+async function webhookNowpaymentsPedidos(req, res) {
   try {
     // Verificar assinatura IPN
     if (NOWPAYMENTS_IPN_SECRET) {
@@ -2742,8 +2751,7 @@ app.post('/api/webhook/nowpayments', async (req, res) => {
   }
 });
 
-// Webhook NOWPayments Members — confirmação automática de assinatura
-app.post('/api/webhook/nowpayments-members', async (req, res) => {
+async function webhookNowpaymentsMembers(req, res) {
   try {
     if (NOWPAYMENTS_IPN_SECRET) {
       const crypto = require('crypto');
