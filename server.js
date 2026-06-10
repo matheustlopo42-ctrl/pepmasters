@@ -858,7 +858,7 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
             await pool.query(`UPDATE pep_pedidos SET crypto_valor=$1, crypto_token=$2 WHERE id=$3`, [npData.pay_amount, npData.payment_id, pedidoId]);
             console.log('[NOWPayments] Pagamento criado para pedido #' + pedidoId + ': ' + npData.pay_amount + ' ' + npData.pay_currency);
           }
-        } catch (e) { console.error('[NOWPayments] Erro ao criar pagamento:', e.message); }
+        } catch (e) { console.error('[NOWPayments] Erro ao criar pagamento:', e.message, e.stack?.split('\n')[1]); }
       }
       enviarEmail(email, '⏳ Aguardando confirmação — Pedido #' + pedidoId + ' PEPMASTERS',
         '<div style="font-family:sans-serif;max-width:600px;margin:0 auto">' +
