@@ -460,10 +460,18 @@ async function assinar() {
     var res = await fetch('/api/membros/assinar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-      body: JSON.stringify({ pagamento: 'cripto', valor: valorSelecionado })
+      body: JSON.stringify({ pagamento: 'cripto', valor: valorSelecionado, crypto_token: mbrCryptoToken })
     });
     var data = await res.json();
     if (!res.ok) { showToast(data.erro || 'Erro ao processar.'); return; }
+
+    // Atualizar QR e endereço com dados do NOWPayments
+    if (data.nowpay_address) {
+      document.getElementById('mbrCryptoAddr').textContent = data.nowpay_address;
+      document.getElementById('mbrCryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(data.nowpay_address);
+      if (data.nowpay_amount) document.getElementById('mbrCryptoValor').textContent = data.nowpay_amount;
+      if (data.nowpay_currency) document.getElementById('mbrCryptoToken').textContent = data.nowpay_currency;
+    }
     document.getElementById('btnAssinar').textContent = (function(){var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';return(d['members.order.registered']&&(d['members.order.registered'][l]||d['members.order.registered']['en']))||'✓ Pedido registrado — envie o pagamento';})();
     document.getElementById('btnAssinar').style.opacity = '0.7';
     // Mostrar botão "Mudou de ideia?"

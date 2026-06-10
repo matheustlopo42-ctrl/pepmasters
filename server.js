@@ -1893,7 +1893,7 @@ app.get('/ref/:codigo', async (req, res) => {
 
 // Assinar plano de membros
 app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
-  const { pagamento, valor, plano } = req.body;
+  const { pagamento, valor, plano, crypto_token } = req.body;
   const usuario_id = req.usuario.id;
   try {
     const isGratis = !valor || parseFloat(valor) === 0;
@@ -1976,16 +1976,59 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
       [membro_id, valor || 0, pagamento, isGratis ? 'pago' : 'pendente']
     );
 
-    // Se for cripto, calcular valor em USDT
+    // Se for cripto, criar pagamento NOWPayments
     let cryptoValor = 0;
+    let nowpay_address_mbr = null;
+    let nowpay_amount_mbr = null;
+    let nowpay_currency_mbr = null;
+
     if (pagamento === 'cripto' && valor) {
-      try {
-        const cotacao = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=brl');
-        const cj = await cotacao.json();
-        const rate = cj?.tether?.brl || 5.5;
-        cryptoValor = parseFloat((valor / rate).toFixed(6));
-        await pool.query(`UPDATE pep_pagamentos_membros SET crypto_valor=$1 WHERE id=$2`, [cryptoValor, pag.rows[0].id]);
-      } catch {}
+      if (NOWPAYMENTS_API_KEY) {
+        try {
+          // Converter BRL para USD
+          let valorUsd = valor;
+          try {
+            const cambioRes = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            const cambioData = await cambioRes.json();
+            const brlRate = cambioData.rates?.BRL || 5.5;
+            valorUsd = (valor / brlRate).toFixed(2);
+          } catch { valorUsd = (valor / 5.5).toFixed(2); }
+
+          const moedaMap = { 'USDTPOLYGON':'USDTPOLYGON', 'USDCPOLYGON':'USDCPOLYGON', 'USDTTRX':'USDTTRX', 'TRON':'USDTTRX' };
+          const moedaMbr = moedaMap[crypto_token] || 'USDTPOLYGON';
+
+          const npRes = await fetch('https://api.nowpayments.io/v1/payment', {
+            method: 'POST',
+            headers: { 'x-api-key': NOWPAYMENTS_API_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              price_amount: valorUsd,
+              price_currency: 'usd',
+              pay_currency: moedaMbr,
+              order_id: 'mbr-' + membro_id + '-' + pag.rows[0].id,
+              order_description: 'Assinatura PEPMASTERS Members ' + (plano||'pago'),
+              ipn_callback_url: BASE_URL + '/api/webhook/nowpayments-members',
+            })
+          });
+          const npData = await npRes.json();
+          if (npData.pay_address) {
+            nowpay_address_mbr = npData.pay_address;
+            nowpay_amount_mbr = npData.pay_amount;
+            nowpay_currency_mbr = npData.pay_currency;
+            cryptoValor = npData.pay_amount;
+            await pool.query(`UPDATE pep_pagamentos_membros SET crypto_valor=$1 WHERE id=$2`, [cryptoValor, pag.rows[0].id]);
+            console.log('[NOWPayments Members] Pagamento criado:', npData.pay_amount, npData.pay_currency);
+          }
+        } catch (e) { console.error('[NOWPayments Members]', e.message); }
+      } else {
+        // Fallback manual com CoinGecko
+        try {
+          const cotacao = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=brl');
+          const cj = await cotacao.json();
+          const rate = cj?.tether?.brl || 5.5;
+          cryptoValor = parseFloat((valor / rate).toFixed(6));
+          await pool.query(`UPDATE pep_pagamentos_membros SET crypto_valor=$1 WHERE id=$2`, [cryptoValor, pag.rows[0].id]);
+        } catch {}
+      }
     }
 
     // Notificar admin de nova assinatura paga
@@ -2009,7 +2052,7 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
       ).catch(()=>{});
     }
 
-    res.json({ ok: true, membro_id, pagamento_id: pag.rows[0].id, crypto_valor: cryptoValor, isGratis });
+    res.json({ ok: true, membro_id, pagamento_id: pag.rows[0].id, crypto_valor: cryptoValor, isGratis, nowpay_address: nowpay_address_mbr, nowpay_amount: nowpay_amount_mbr, nowpay_currency: nowpay_currency_mbr });
   } catch (err) {
     res.status(500).json({ erro: err.message });
   }
@@ -2695,6 +2738,91 @@ app.post('/api/webhook/nowpayments', async (req, res) => {
     res.json({ ok: true });
   } catch (err) {
     console.error('[NOWPayments webhook]', err.message);
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// Webhook NOWPayments Members — confirmação automática de assinatura
+app.post('/api/webhook/nowpayments-members', async (req, res) => {
+  try {
+    if (NOWPAYMENTS_IPN_SECRET) {
+      const crypto = require('crypto');
+      const sig = req.headers['x-nowpayments-sig'];
+      const payload = JSON.stringify(req.body, Object.keys(req.body).sort());
+      const expected = crypto.createHmac('sha512', NOWPAYMENTS_IPN_SECRET).update(payload).digest('hex');
+      if (sig !== expected) return res.status(400).json({ erro: 'Assinatura inválida.' });
+    }
+
+    const { order_id, payment_status, actually_paid, pay_amount, pay_currency } = req.body;
+    console.log('[NOWPayments Members] Webhook:', payment_status, 'order:', order_id);
+
+    if (payment_status === 'finished' || payment_status === 'confirmed') {
+      // order_id formato: mbr-{membro_id}-{pagamento_id}
+      const parts = order_id.split('-');
+      const membro_id = parseInt(parts[1]);
+      const pagamento_id = parseInt(parts[2]);
+
+      if (!membro_id || !pagamento_id) return res.status(400).json({ erro: 'order_id inválido.' });
+
+      const m = await pool.query(`SELECT membro_ate, status, plano FROM pep_membros WHERE id=$1`, [membro_id]);
+      if (!m.rows.length) return res.status(404).json({ erro: 'Membro não encontrado.' });
+
+      const { membro_ate, status, plano } = m.rows[0];
+      const agora = new Date();
+      let novaData;
+      const isBronze = plano === 'bronze';
+      if (!isBronze && status === 'ativo' && membro_ate && new Date(membro_ate) > agora) {
+        novaData = new Date(membro_ate);
+        novaData.setDate(novaData.getDate() + 30);
+      } else {
+        novaData = new Date();
+        novaData.setDate(novaData.getDate() + 30);
+      }
+
+      await pool.query(`UPDATE pep_membros SET status='ativo', membro_ate=$1 WHERE id=$2`, [novaData, membro_id]);
+      await pool.query(`UPDATE pep_pagamentos_membros SET status='pago', crypto_valor=$1 WHERE id=$2`, [actually_paid || pay_amount, pagamento_id]);
+
+      // Email para o membro
+      const mDados = await pool.query(
+        `SELECT u.email, u.nome, m.codigo_ref, m.plano, COALESCE(u.lang,'pt') as lang FROM pep_membros m JOIN pep_usuarios u ON u.id=m.usuario_id WHERE m.id=$1`,
+        [membro_id]
+      );
+      if (mDados.rows.length) {
+        const { email, nome, codigo_ref, plano: planoAtivado, lang } = mDados.rows[0];
+        const nivelNomes = {
+          pt:{bronze:'Bronze 🥉',prata:'Prata 🥈',ouro:'Ouro 🥇',diamante:'Diamante 💎'},
+          en:{bronze:'Bronze 🥉',prata:'Silver 🥈',ouro:'Gold 🥇',diamante:'Diamond 💎'},
+          es:{bronze:'Bronze 🥉',prata:'Plata 🥈',ouro:'Oro 🥇',diamante:'Diamante 💎'},
+          de:{bronze:'Bronze 🥉',prata:'Silber 🥈',ouro:'Gold 🥇',diamante:'Diamant 💎'},
+          fr:{bronze:'Bronze 🥉',prata:'Argent 🥈',ouro:'Or 🥇',diamante:'Diamant 💎'}
+        };
+        const comissoes = { bronze:'5%', prata:'8%', ouro:'12%', diamante:'15%' };
+        const descontos = { bronze:'10%', prata:'15%', ouro:'20%', diamante:'25%' };
+        const nomePlano = (nivelNomes[lang]||nivelNomes['pt'])[planoAtivado] || planoAtivado;
+        const venceEm = novaData.toLocaleDateString(lang==='pt'?'pt-BR':lang==='de'?'de-DE':lang==='fr'?'fr-FR':'en-US');
+        const tmpl = emailTemplates.planoAtivo[lang] || emailTemplates.planoAtivo['pt'];
+        const { sub, body } = tmpl(nome.split(' ')[0], nomePlano, venceEm, comissoes[planoAtivado]||'5%', descontos[planoAtivado]||'10%', `${BASE_URL}/ref/${codigo_ref}`, BASE_URL);
+        enviarEmail(email, sub, wrapEmail(body)).catch(()=>{});
+
+        // Email para admin
+        if (EMAIL_DESTINO) {
+          enviarEmail(EMAIL_DESTINO,
+            '✅ Assinatura Members confirmada — ' + nomePlano + ' — PEPMASTERS',
+            '<div style="font-family:sans-serif;padding:20px;background:#1C0A00;color:#fff;border-radius:12px">' +
+            '<h2 style="color:#22c55e">✅ Assinatura confirmada automaticamente!</h2>' +
+            '<b>Membro:</b> ' + nome + '<br><b>Plano:</b> ' + nomePlano + '<br>' +
+            '<b>Pago:</b> ' + (actually_paid || pay_amount) + ' ' + pay_currency + '<br>' +
+            '<b>Ativo até:</b> ' + venceEm + '</div>'
+          ).catch(()=>{});
+        }
+      }
+
+      console.log('[NOWPayments Members] Membro #' + membro_id + ' plano ativado automaticamente');
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('[NOWPayments Members webhook]', err.message);
     res.status(500).json({ erro: err.message });
   }
 });
