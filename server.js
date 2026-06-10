@@ -2168,6 +2168,36 @@ app.post('/api/admin/testar-plano-ativo', adminMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
+// Uso do banco de dados
+app.get('/api/admin/db-uso', adminMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT
+        pg_size_pretty(pg_database_size(current_database())) as tamanho,
+        pg_database_size(current_database()) as bytes,
+        (SELECT COUNT(*) FROM pep_pedidos) as total_pedidos,
+        (SELECT COUNT(*) FROM pep_usuarios) as total_usuarios,
+        (SELECT COUNT(*) FROM pep_membros) as total_membros,
+        (SELECT COUNT(*) FROM pep_forum_topicos) as total_topicos,
+        (SELECT COUNT(*) FROM pep_forum_respostas) as total_respostas
+    `);
+    const bytes = parseInt(r.rows[0].bytes);
+    const limite = 1073741824; // 1GB
+    const pct = Math.round((bytes / limite) * 100);
+    res.json({ ...r.rows[0], pct, limite_gb: '1GB', usado: r.rows[0].tamanho });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Deletar pedidos (admin)
+app.delete('/api/admin/pedidos', adminMiddleware, async (req, res) => {
+  const { ids } = req.body;
+  if (!ids || !ids.length) return res.status(400).json({ erro: 'Informe os IDs.' });
+  try {
+    await pool.query(`DELETE FROM pep_pedidos WHERE id = ANY($1::int[])`, [ids]);
+    res.json({ ok: true, deletados: ids.length });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
 // Dashboard admin
 app.get('/api/admin/dashboard', adminMiddleware, async (req, res) => {
   try {

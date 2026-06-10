@@ -39,6 +39,14 @@
     .nivel-bronze{color:#cd7f32}.nivel-prata{color:#C0C0C0}.nivel-ouro{color:#FFD700}.nivel-diamante{color:#b9f2ff}
     .badge-pos{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem;color:rgba(255,255,255,.2)}
     .empty{text-align:center;padding:32px;color:rgba(255,255,255,.3);font-size:.88rem}
+    .db-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,179,0,.1);border-radius:14px;padding:20px;margin-bottom:24px}
+    .db-bar-bg{background:rgba(255,255,255,.08);border-radius:20px;height:14px;overflow:hidden;margin:10px 0}
+    .db-bar-fill{height:100%;border-radius:20px;transition:width .8s ease;background:linear-gradient(135deg,#22c55e,#16a34a)}
+    .db-bar-fill.warn{background:linear-gradient(135deg,#eab308,#ca8a04)}
+    .db-bar-fill.danger{background:linear-gradient(135deg,#ef4444,#dc2626)}
+    .db-stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px}
+    .db-stat{font-size:.78rem;color:rgba(255,255,255,.4)}
+    .db-stat strong{color:rgba(255,255,255,.7)}
     @media(max-width:700px){.stats-grid{grid-template-columns:1fr 1fr}.charts-grid{grid-template-columns:1fr}}
   </style>
 </head>
@@ -83,6 +91,18 @@
     </div>
   </div>
 
+  <div class="db-card" id="dbCard">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div class="chart-title" style="margin:0">🗄️ Uso do Banco de Dados</div>
+      <span id="dbPct" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem;color:var(--amber)">—</span>
+    </div>
+    <div class="db-bar-bg"><div class="db-bar-fill" id="dbBar" style="width:0%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:.72rem;color:rgba(255,255,255,.3)">
+      <span id="dbUsado">Carregando...</span>
+      <span>Limite: 1GB</span>
+    </div>
+    <div class="db-stats" id="dbStats"></div>
+  </div>
   <div class="chart-card" style="margin-bottom:24px">
     <div class="chart-title">🏆 Top 5 Afiliados — Este Mês</div>
     <table class="top-table" id="topAfiliados">
@@ -132,6 +152,26 @@ var chartDefaults = {
     y: { ticks: { color: 'rgba(255,255,255,.4)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' } }
   }
 };
+
+async function carregarDbUso() {
+  try {
+    var r = await fetch('/api/admin/db-uso', { headers: { Authorization: 'Basic ' + adminToken } });
+    var d = await r.json();
+    if (d.erro) return;
+    var pct = d.pct || 0;
+    document.getElementById('dbPct').textContent = pct + '%';
+    var bar = document.getElementById('dbBar');
+    bar.style.width = pct + '%';
+    bar.className = 'db-bar-fill' + (pct >= 80 ? ' danger' : pct >= 60 ? ' warn' : '');
+    document.getElementById('dbUsado').textContent = 'Usado: ' + d.usado;
+    document.getElementById('dbStats').innerHTML =
+      '<span class="db-stat">📦 Pedidos: <strong>' + d.total_pedidos + '</strong></span>' +
+      '<span class="db-stat">👤 Usuários: <strong>' + d.total_usuarios + '</strong></span>' +
+      '<span class="db-stat">👥 Membros: <strong>' + d.total_membros + '</strong></span>' +
+      '<span class="db-stat">💬 Tópicos: <strong>' + d.total_topicos + '</strong></span>' +
+      '<span class="db-stat">💬 Respostas: <strong>' + d.total_respostas + '</strong></span>';
+  } catch {}
+}
 
 async function init() {
   var token = localStorage.getItem('pep_admin_token');

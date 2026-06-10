@@ -52,6 +52,13 @@
     .btn-save{padding:5px 12px;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:.04em;text-transform:uppercase}
     select.status-sel{background:rgba(255,255,255,.06);border:1px solid rgba(255,179,0,.2);border-radius:6px;padding:5px 8px;color:#fff;font-size:.8rem;font-family:'Barlow',sans-serif}
     select.status-sel option{background:#1C0A00}
+    .checkbox-col{width:32px;text-align:center}
+    input[type=checkbox]{width:16px;height:16px;accent-color:var(--amber);cursor:pointer}
+    .acoes-bar{display:none;align-items:center;gap:10px;padding:10px 16px;background:rgba(255,179,0,.06);border:1px solid rgba(255,179,0,.2);border-radius:10px;margin-bottom:12px}
+    .acoes-bar.visivel{display:flex}
+    .btn-exportar{padding:8px 16px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:#22c55e;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;cursor:pointer;transition:all .2s}
+    .btn-deletar{padding:8px 16px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;cursor:pointer;transition:all .2s}
+    .btn-exportar:hover{background:rgba(34,197,94,.25)}.btn-deletar:hover{background:rgba(239,68,68,.25)}
     #toast{position:fixed;bottom:24px;right:24px;background:var(--dark);color:#fff;padding:12px 20px;border-radius:10px;font-size:.88rem;border-left:4px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(10px);opacity:0;transition:all .3s;z-index:999;pointer-events:none}
     #toast.show{transform:translateY(0);opacity:1}
     @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}}
@@ -245,7 +252,64 @@
     a.click();
   }
 
-  function showToast(msg) {
+  var selectedIds = [];
+
+function toggleAll(el) {
+  document.querySelectorAll('.chk-pedido').forEach(function(c){ c.checked = el.checked; });
+  atualizarAcoes();
+}
+
+function atualizarAcoes() {
+  var checked = document.querySelectorAll('.chk-pedido:checked');
+  selectedIds = Array.from(checked).map(function(c){ return parseInt(c.value); });
+  var bar = document.getElementById('acoesBar');
+  var count = document.getElementById('acoesCount');
+  bar.classList.toggle('visivel', selectedIds.length > 0);
+  count.textContent = selectedIds.length + ' selecionado' + (selectedIds.length !== 1 ? 's' : '');
+}
+
+function desmarcarTodos() {
+  document.querySelectorAll('.chk-pedido').forEach(function(c){ c.checked = false; });
+  document.getElementById('checkAll').checked = false;
+  selectedIds = [];
+  document.getElementById('acoesBar').classList.remove('visivel');
+}
+
+function exportarCSV() {
+  if (!selectedIds.length) return;
+  var rows = [['ID','Email','Produto','Total','Pagamento','Status','Data']];
+  document.querySelectorAll('#tabelaPedidos tr[data-id]').forEach(function(tr) {
+    var id = parseInt(tr.getAttribute('data-id'));
+    if (!selectedIds.includes(id)) return;
+    var cells = tr.querySelectorAll('td');
+    // cells[0]=checkbox, [1]=id, [2]=email, [3]=produto, [4]=total, [5]=pagamento, [6]=status, [7]=data
+    rows.push([cells[1].textContent, cells[2].textContent, cells[3].textContent, cells[4].textContent, cells[5].textContent, cells[6].textContent, cells[7].textContent]);
+  });
+  var csv = rows.map(function(r){ return r.map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
+  var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href=url; a.download='pedidos_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function confirmarDelete() {
+  if (!selectedIds.length) return;
+  if (!confirm('Deletar ' + selectedIds.length + ' pedido(s)? Esta ação não pode ser desfeita.')) return;
+  try {
+    var res = await fetch('/api/admin/pedidos', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + token },
+      body: JSON.stringify({ ids: selectedIds })
+    });
+    var data = await res.json();
+    if (!res.ok) { showToast(data.erro || 'Erro ao deletar.'); return; }
+    showToast(data.deletados + ' pedido(s) deletado(s)!');
+    desmarcarTodos();
+    carregarPedidos();
+  } catch { showToast('Erro de conexão.'); }
+}
+
+function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg; t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
