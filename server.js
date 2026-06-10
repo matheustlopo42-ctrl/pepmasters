@@ -101,6 +101,8 @@ const PIXGO_WEBHOOK_SECRET= process.env.PIXGO_WEBHOOK_SECRET|| '';
 const RESEND_API_KEY      = process.env.RESEND_API_KEY      || '';
 const BASE_URL            = process.env.BASE_URL            || 'https://pepmasters.onrender.com';
 const EMAIL_DESTINO       = process.env.EMAIL_DESTINO       || '';   // preencher no Render
+const NOWPAYMENTS_API_KEY  = process.env.NOWPAYMENTS_API_KEY  || '';
+const NOWPAYMENTS_IPN_SECRET = process.env.NOWPAYMENTS_IPN_SECRET || '';
 const EMAIL_USER          = process.env.EMAIL_USER          || 'matheustlopo42@gmail.com';
 const PAYPAL_CLIENT_ID     = process.env.PAYPAL_CLIENT_ID     || '';
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET || '';
@@ -816,7 +818,39 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     const itensHtml = carrinho.map(i => '<li>' + i.nome + ' × ' + i.quantidade + ' — R$ ' + (i.preco * i.quantidade).toFixed(2).replace('.',',') + '</li>').join('');
 
     if (pagamento === 'cripto') {
-      // Email especial para cripto explicando confirmação manual
+      // Criar pagamento NOWPayments automaticamente
+      let nowpay_address = null;
+      let nowpay_amount = null;
+      let nowpay_currency = null;
+
+      if (NOWPAYMENTS_API_KEY) {
+        try {
+          // Mapear token do frontend para moeda NOWPayments
+          const moedaMap = { 'USDTPOLYGON':'USDTPOLYGON', 'USDCPOLYGON':'USDCPOLYGON', 'USDTTRX':'USDTTRX', 'USDT':'USDTPOLYGON', 'USDC':'USDCPOLYGON', 'TRON':'USDTTRX' };
+          const moeda = moedaMap[crypto_token] || 'USDTPOLYGON';
+          const npRes = await fetch('https://api.nowpayments.io/v1/payment', {
+            method: 'POST',
+            headers: { 'x-api-key': NOWPAYMENTS_API_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              price_amount: total,
+              price_currency: 'brl',
+              pay_currency: moeda,
+              order_id: String(pedidoId),
+              order_description: 'Pedido PEPMASTERS #' + pedidoId,
+              ipn_callback_url: BASE_URL + '/api/webhook/nowpayments',
+            })
+          });
+          const npData = await npRes.json();
+          if (npData.pay_address) {
+            nowpay_address = npData.pay_address;
+            nowpay_amount = npData.pay_amount;
+            nowpay_currency = npData.pay_currency;
+            // Salvar dados do pagamento
+            await pool.query(`UPDATE pep_pedidos SET crypto_valor=$1, crypto_token=$2 WHERE id=$3`, [npData.pay_amount, npData.payment_id, pedidoId]);
+            console.log('[NOWPayments] Pagamento criado para pedido #' + pedidoId + ': ' + npData.pay_amount + ' ' + npData.pay_currency);
+          }
+        } catch (e) { console.error('[NOWPayments] Erro ao criar pagamento:', e.message); }
+      }
       enviarEmail(email, '⏳ Aguardando confirmação — Pedido #' + pedidoId + ' PEPMASTERS',
         '<div style="font-family:sans-serif;max-width:600px;margin:0 auto">' +
         '<h2 style="color:#e8220a">Olá, ' + nome.split(' ')[0] + '! Seu pedido foi recebido.</h2>' +
@@ -870,7 +904,7 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       }, 48 * 60 * 60 * 1000); // 48 horas
     }
 
-    res.json({ pedido_id: pedidoId, qrcode_url, pix_copia_cola });
+    res.json({ pedido_id: pedidoId, qrcode_url, pix_copia_cola, nowpay_address, nowpay_amount, nowpay_currency });
   } catch (err) {
     await client.query('ROLLBACK').catch(() => {});
     console.error('[Pedido] Erro:', err.message);
@@ -2540,6 +2574,120 @@ async function registrarVendaAfiliado(ref_code, pedido_id, valor) {
 // Página pública do distribuidor
 app.get('/distribuidor/:slug', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'distribuidor.html'));
+});
+
+
+// ─────────────────────────────────────────────
+//  NOWPAYMENTS — CRIPTO AUTOMÁTICO
+// ─────────────────────────────────────────────
+
+// Criar pagamento NOWPayments
+app.post('/api/nowpayments/criar', authMiddleware, async (req, res) => {
+  const { pedido_id, valor_brl, moeda } = req.body;
+  // moeda: USDTPOLYGON, USDCPOLYGON, USDTTRX
+  if (!NOWPAYMENTS_API_KEY) return res.status(500).json({ erro: 'NOWPayments não configurado.' });
+  try {
+    const r = await fetch('https://api.nowpayments.io/v1/payment', {
+      method: 'POST',
+      headers: { 'x-api-key': NOWPAYMENTS_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        price_amount: valor_brl,
+        price_currency: 'brl',
+        pay_currency: moeda || 'USDTPOLYGON',
+        order_id: String(pedido_id),
+        order_description: 'Pedido PEPMASTERS #' + pedido_id,
+        ipn_callback_url: BASE_URL + '/api/webhook/nowpayments',
+      })
+    });
+    const data = await r.json();
+    if (!r.ok) return res.status(400).json({ erro: data.message || 'Erro NOWPayments.' });
+    // Salvar payment_id no pedido
+    await pool.query(`UPDATE pep_pedidos SET crypto_token=$1 WHERE id=$2`, [data.payment_id, pedido_id]);
+    res.json({
+      payment_id: data.payment_id,
+      pay_address: data.pay_address,
+      pay_amount: data.pay_amount,
+      pay_currency: data.pay_currency,
+      status: data.payment_status
+    });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Webhook NOWPayments — confirmação automática
+app.post('/api/webhook/nowpayments', async (req, res) => {
+  try {
+    // Verificar assinatura IPN
+    if (NOWPAYMENTS_IPN_SECRET) {
+      const crypto = require('crypto');
+      const sig = req.headers['x-nowpayments-sig'];
+      const payload = JSON.stringify(req.body, Object.keys(req.body).sort());
+      const expected = crypto.createHmac('sha512', NOWPAYMENTS_IPN_SECRET).update(payload).digest('hex');
+      if (sig !== expected) {
+        console.error('[NOWPayments] Assinatura inválida');
+        return res.status(400).json({ erro: 'Assinatura inválida.' });
+      }
+    }
+
+    const { order_id, payment_status, pay_amount, pay_currency, actually_paid } = req.body;
+    console.log('[NOWPayments] Webhook:', payment_status, 'pedido:', order_id);
+
+    if (payment_status === 'finished' || payment_status === 'confirmed') {
+      const pedido = await pool.query(`SELECT * FROM pep_pedidos WHERE id=$1`, [order_id]);
+      if (!pedido.rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+      const p = pedido.rows[0];
+
+      if (p.status === 'pago') return res.json({ ok: true, msg: 'Já confirmado.' });
+
+      // Confirmar pedido
+      await pool.query(`UPDATE pep_pedidos SET status='pago', crypto_valor=$1 WHERE id=$2`, [actually_paid || pay_amount, order_id]);
+
+      // Processar comissão de afiliado
+      if (p.ref_code) {
+        const membro = await pool.query(`SELECT * FROM pep_membros WHERE codigo_ref=$1 AND status='ativo'`, [p.ref_code]);
+        if (membro.rows.length) {
+          const comissoes = { bronze:0.05, prata:0.08, ouro:0.12, diamante:0.15 };
+          const taxa = comissoes[membro.rows[0].nivel] || 0.05;
+          const comissao = parseFloat(p.total || 0) * taxa;
+          await pool.query(`INSERT INTO pep_vendas_afiliado (membro_id, pedido_id, valor, comissao) VALUES ($1,$2,$3,$4)`, [membro.rows[0].id, p.id, p.total, comissao]);
+          await pool.query(`UPDATE pep_membros SET vendas_total=vendas_total+$1, credito=credito+$2 WHERE id=$3`, [p.total, comissao, membro.rows[0].id]);
+          verificarBadges(membro.rows[0].id).catch(()=>{});
+        }
+      }
+
+      // Baixar estoque
+      if (p.produto_id && p.quantidade) {
+        await pool.query(`UPDATE pep_estoque SET estoque=estoque-$1 WHERE produto_id=$2`, [p.quantidade, p.produto_id]);
+      }
+
+      // Email para o cliente
+      const uLang = await pool.query(`SELECT u.lang FROM pep_usuarios u WHERE u.email=$1`, [p.email]).catch(()=>({rows:[]}));
+      const lang = uLang.rows[0]?.lang || 'pt';
+      const tmpl = emailTemplates.pedidoConfirmado[lang] || emailTemplates.pedidoConfirmado['pt'];
+      const { sub, body } = tmpl(p.nome?.split(' ')[0] || 'Cliente', order_id, p.produto_nome, parseFloat(p.total||0).toFixed(2).replace('.',','), BASE_URL);
+      enviarEmail(p.email, sub, wrapEmail(body)).catch(()=>{});
+
+      // Email para admin
+      if (EMAIL_DESTINO) {
+        enviarEmail(EMAIL_DESTINO,
+          '✅ Pagamento confirmado automaticamente #' + order_id + ' — PEPMASTERS',
+          '<div style="font-family:sans-serif;padding:20px;background:#1C0A00;color:#fff;border-radius:12px">' +
+          '<h2 style="color:#22c55e">✅ Pagamento confirmado!</h2>' +
+          '<b>Pedido:</b> #' + order_id + '<br>' +
+          '<b>Cliente:</b> ' + (p.nome||'—') + '<br>' +
+          '<b>Valor:</b> R$ ' + parseFloat(p.total||0).toFixed(2).replace('.',',') + '<br>' +
+          '<b>Pago:</b> ' + (actually_paid || pay_amount) + ' ' + pay_currency + '<br>' +
+          '</div>'
+        ).catch(()=>{});
+      }
+
+      console.log('[NOWPayments] Pedido #' + order_id + ' confirmado automaticamente');
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('[NOWPayments webhook]', err.message);
+    res.status(500).json({ erro: err.message });
+  }
 });
 
 // ─────────────────────────────────────────────

@@ -200,9 +200,9 @@
           <div id="cripto-info" style="display:none">
             <div style="background:var(--cream);border-radius:12px;padding:18px;border:1px solid var(--border);margin-bottom:14px">
               <div style="display:flex;gap:8px;margin-bottom:10px">
-                <button id="btn-usdt" class="pay-tab active" style="flex:1;font-size:.8rem;padding:8px" onclick="selecionarToken('USDT')">USDT<br><span style="font-size:.65rem;opacity:.7">Polygon</span></button>
-                <button id="btn-usdc" class="pay-tab" style="flex:1;font-size:.8rem;padding:8px" onclick="selecionarToken('USDC')">USDC<br><span style="font-size:.65rem;opacity:.7">Polygon</span></button>
-                <button id="btn-tron" class="pay-tab" style="flex:1;font-size:.8rem;padding:8px" onclick="selecionarToken('TRON')">USDT<br><span style="font-size:.65rem;opacity:.7">Tron TRC-20</span></button>
+                <button id="btn-usdt" class="pay-tab active" style="flex:1;font-size:.8rem;padding:8px" onclick="selecionarToken('USDTPOLYGON')">USDT<br><span style="font-size:.65rem;opacity:.7">Polygon</span></button>
+                <button id="btn-usdc" class="pay-tab" style="flex:1;font-size:.8rem;padding:8px" onclick="selecionarToken('USDCPOLYGON')">USDC<br><span style="font-size:.65rem;opacity:.7">Polygon</span></button>
+                <button id="btn-tron" class="pay-tab" style="flex:1;font-size:.8rem;padding:8px" onclick="selecionarToken('USDTTRX')">USDT<br><span style="font-size:.65rem;opacity:.7">Tron TRC-20</span></button>
               </div>
               <p id="cryptoNetworkInfo" style="font-size:.78rem;color:var(--muted);margin-bottom:12px"><span data-i18n="checkout.crypto.network">Rede: <strong>Polygon (MATIC)</strong> — taxas quase zero</span></p>
               <div style="text-align:center;margin-bottom:14px">
@@ -306,7 +306,7 @@
 
 <script>
   let pagAtual    = 'cripto';
-  let cryptoToken = 'USDT';
+  let cryptoToken = 'USDTPOLYGON';
   let cryptoValor = 0;
   const WALLET    = '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
   let cupomDados = null;
@@ -417,7 +417,7 @@
     document.getElementById('cryptoToken').textContent = cryptoToken;
     document.getElementById('cryptoAddr').textContent  = WALLET;
 
-    if (cryptoToken === 'TRON') {
+    if (cryptoToken === 'USDTTRX') {
       // Tron TRC-20
       document.getElementById('cryptoAddr').textContent = TRON_WALLET;
       var tronData = 'tron:' + TRON_WALLET + '?amount=' + parseFloat(cryptoValor) + '&token=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
@@ -442,20 +442,20 @@
 
   function selecionarToken(token) {
     cryptoToken = token;
-    document.getElementById('btn-usdt').classList.toggle('active', token === 'USDT');
-    document.getElementById('btn-usdc').classList.toggle('active', token === 'USDC');
-    document.getElementById('btn-tron').classList.toggle('active', token === 'TRON');
+    document.getElementById('btn-usdt').classList.toggle('active', token === 'USDTPOLYGON');
+    document.getElementById('btn-usdc').classList.toggle('active', token === 'USDCPOLYGON');
+    document.getElementById('btn-tron').classList.toggle('active', token === 'USDTTRX');
     // Atualizar info de rede
     var netInfo = document.getElementById('cryptoNetworkInfo');
     if (netInfo) {
-      if (token === 'TRON') netInfo.innerHTML = 'Rede: <strong>Tron TRC-20</strong> — TronLink, Binance. Taxas mínimas.';
+      if (token === 'USDTTRX') netInfo.innerHTML = 'Rede: <strong>Tron TRC-20</strong> — TronLink, Binance. Taxas mínimas.';
       else netInfo.innerHTML = 'Rede: <strong>Polygon (MATIC)</strong> — MetaMask, Trust Wallet. <span data-i18n="checkout.crypto.network"></span>';
     }
     atualizarCriptoUI();
   }
 
   function copiarEndereco() {
-    var addr = cryptoToken === 'TRON' ? TRON_WALLET : WALLET;
+    var addr = cryptoToken === 'USDTTRX' ? TRON_WALLET : WALLET;
     navigator.clipboard.writeText(addr).then(() => {
       showCryptoMsg('Address copied!');
     });
@@ -654,6 +654,7 @@
       total:         total.toFixed(2),
       crypto_valor:  pagAtual === 'cripto' ? cryptoValor : null,
       crypto_token:  pagAtual === 'cripto' ? cryptoToken : null,
+      nowpayments: pagAtual === 'cripto',
       token:         localStorage.getItem('pep_token'),
       ref_code:      refValue
     };
@@ -674,7 +675,17 @@
         btn.textContent = 'Aguardando PIX...';
         verificarPagamento(data.pedido_id);
       } else if (pagAtual === 'cripto') {
-        btn.textContent = 'Aguardando pagamento cripto...';
+        btn.textContent = '⏳ Aguardando pagamento...';
+        // Atualizar QR e endereço com dados do NOWPayments
+        if (data.nowpay_address) {
+          document.getElementById('cryptoAddr').textContent = data.nowpay_address;
+          document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(data.nowpay_address);
+          var valorEl = document.getElementById('cryptoValor');
+          if (valorEl && data.nowpay_amount) valorEl.textContent = data.nowpay_amount;
+          var tokenEl = document.getElementById('cryptoToken');
+          if (tokenEl && data.nowpay_currency) tokenEl.textContent = data.nowpay_currency;
+        }
+        // Verificar confirmação automática
         verificarCripto(data.pedido_id);
       } else {
         location.href = 'confirmacao.html?id=' + data.pedido_id;
