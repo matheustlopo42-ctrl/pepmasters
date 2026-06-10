@@ -197,7 +197,7 @@
           <div id="cripto-loading" style="text-align:center;padding:16px 0;font-size:.9rem;color:var(--muted)">
             Calculando valor em cripto...
           </div>
-          <div id="cripto-tokens" style="display:none;margin-bottom:10px">
+          <div id="cripto-tokens" style="display:none;margin-top:10px">
             <div style="display:flex;gap:8px;margin-bottom:8px">
               <button id="btn-usdt" class="pay-tab active" style="flex:1;font-size:.8rem;padding:8px" onclick="selecionarToken('USDTPOLYGON')">USDT<br><span style="font-size:.65rem;opacity:.7">Polygon</span></button>
               <button id="btn-usdc" class="pay-tab" style="flex:1;font-size:.8rem;padding:8px" onclick="selecionarToken('USDCPOLYGON')">USDC<br><span style="font-size:.65rem;opacity:.7">Polygon</span></button>
@@ -683,6 +683,10 @@
         btn.textContent = '⏳ Aguardando pagamento...';
         // Mostrar bloco de cripto com endereço NOWPayments
         document.getElementById('cripto-info').style.display = 'block';
+        // Desabilitar troca de token após gerar endereço
+        document.querySelectorAll('#btn-usdt,#btn-usdc,#btn-tron').forEach(function(b){
+          b.disabled = true; b.style.opacity = '0.5'; b.style.cursor = 'not-allowed';
+        });
         if (data.nowpay_address) {
           document.getElementById('cryptoAddr').textContent = data.nowpay_address;
           document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(data.nowpay_address);
