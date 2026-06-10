@@ -14,6 +14,15 @@
 
   function setLang(lang) {
     localStorage.setItem('pep_lang', lang);
+    // Salvar no banco se logado
+    var token = localStorage.getItem('pep_token');
+    if (token) {
+      fetch('/api/usuarios/lang', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ lang: lang })
+      }).catch(function(){});
+    }
     apply(lang);
     updateBtn(lang);
     // Callbacks da página

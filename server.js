@@ -47,26 +47,18 @@ async function jobDiario() {
       RETURNING id, usuario_id, plano
     `);
     for (const m of expirados.rows) {
-      const u = await pool.query(`SELECT email, nome FROM pep_usuarios WHERE id=$1`, [m.usuario_id]);
+      const u = await pool.query(`SELECT email, nome, lang FROM pep_usuarios WHERE id=$1`, [m.usuario_id]);
       if (!u.rows.length) continue;
-      const { email, nome } = u.rows[0];
-      await enviarEmail(email, '⚠️ Seu plano PEPMASTERS expirou', `
-        <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
-          <h2 style="color:#ef4444">⚠️ Seu plano expirou</h2>
-          <p>Olá, <strong>${nome.split(' ')[0]}</strong>!</p>
-          <p style="color:rgba(255,255,255,.8);line-height:1.7;margin:12px 0">Seu plano <strong>${m.plano}</strong> expirou. Renove agora para continuar tendo acesso aos benefícios Members.</p>
-          <div style="text-align:center;margin-top:20px">
-            <a href="${BASE_URL}/members.html" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;font-weight:700;text-decoration:none;border-radius:10px">Renovar plano →</a>
-          </div>
-          <hr style="border-color:rgba(255,255,255,.1);margin:24px 0"/>
-          <p style="font-size:.78rem;color:rgba(255,255,255,.3);text-align:center">PEPMASTERS — Performance através da ciência.</p>
-        </div>
-      `).catch(() => {});
+      const { email, nome, lang } = u.rows[0];
+      const l = lang || 'pt';
+      const tmpl = emailTemplates.expirado[l] || emailTemplates.expirado['pt'];
+      const { sub, body } = tmpl(nome.split(' ')[0], m.plano, BASE_URL);
+      await enviarEmail(email, sub, wrapEmail(body)).catch(() => {});
     }
 
     // 2. Avisar membros que vencem em 7 dias (só pagos)
     const avencer = await pool.query(`
-      SELECT m.id, m.plano, m.membro_ate, u.email, u.nome
+      SELECT m.id, m.plano, m.membro_ate, u.email, u.nome, COALESCE(u.lang,'pt') as lang
       FROM pep_membros m
       JOIN pep_usuarios u ON u.id = m.usuario_id
       WHERE m.status = 'ativo'
@@ -75,27 +67,19 @@ async function jobDiario() {
     `);
 
     for (const m of avencer.rows) {
-      const venceEm = new Date(m.membro_ate).toLocaleDateString('pt-BR');
-      const nivelNomes = { prata:'Prata 🥈', ouro:'Ouro 🥇', diamante:'Diamante 💎' };
-      const nomePlano = nivelNomes[m.plano] || m.plano;
-      await enviarEmail(m.email, `⏳ Seu plano ${nomePlano} vence em 7 dias`, `
-        <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
-          <h2 style="color:#FFB300">⏳ Seu plano vence em 7 dias</h2>
-          <p>Olá, <strong>${m.nome.split(' ')[0]}</strong>!</p>
-          <p style="color:rgba(255,255,255,.8);line-height:1.7;margin:12px 0">
-            Seu plano <strong style="color:#FFB300">${nomePlano}</strong> vence no dia <strong>${venceEm}</strong>.
-            Renove agora para não perder seus benefícios e continuar acumulando comissões.
-          </p>
-          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,179,0,.2);border-radius:10px;padding:16px;margin:16px 0">
-            <p style="color:rgba(255,255,255,.6);font-size:.88rem;margin:0">💡 Ao renovar antes do vencimento, os novos 30 dias são somados ao tempo restante — você não perde nenhum dia!</p>
-          </div>
-          <div style="text-align:center;margin-top:20px">
-            <a href="${BASE_URL}/members.html" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;font-weight:700;text-decoration:none;border-radius:10px">Renovar agora →</a>
-          </div>
-          <hr style="border-color:rgba(255,255,255,.1);margin:24px 0"/>
-          <p style="font-size:.78rem;color:rgba(255,255,255,.3);text-align:center">PEPMASTERS — Performance através da ciência.</p>
-        </div>
-      `).catch(() => {});
+      const lang = m.lang || 'pt';
+      const venceEm = new Date(m.membro_ate).toLocaleDateString(lang === 'pt' ? 'pt-BR' : lang === 'de' ? 'de-DE' : lang === 'fr' ? 'fr-FR' : 'en-US');
+      const nivelNomes = {
+        pt: { prata:'Prata 🥈', ouro:'Ouro 🥇', diamante:'Diamante 💎' },
+        en: { prata:'Silver 🥈', ouro:'Gold 🥇', diamante:'Diamond 💎' },
+        es: { prata:'Plata 🥈', ouro:'Oro 🥇', diamante:'Diamante 💎' },
+        de: { prata:'Silber 🥈', ouro:'Gold 🥇', diamante:'Diamant 💎' },
+        fr: { prata:'Argent 🥈', ouro:'Or 🥇', diamante:'Diamant 💎' }
+      };
+      const nomePlano = (nivelNomes[lang] || nivelNomes['pt'])[m.plano] || m.plano;
+      const tmpl = emailTemplates.aviso7dias[lang] || emailTemplates.aviso7dias['pt'];
+      const { sub, body } = tmpl(m.nome.split(' ')[0], nomePlano, venceEm, BASE_URL);
+      await enviarEmail(m.email, sub, wrapEmail(body)).catch(() => {});
     }
 
     if (expirados.rows.length + avencer.rows.length > 0) {
@@ -426,6 +410,55 @@ function adminMiddleware(req, res, next) {
   } catch {
     res.status(401).json({ erro: 'Não autorizado.' });
   }
+}
+
+
+// ── EMAIL TEMPLATES MULTILÍNGUE ──────────────────────────────────────────
+const emailTemplates = {
+  boasVindas: {
+    pt: (nome, base) => ({ sub: '🎉 Bem-vindo ao PEPMASTERS!', body: `<h2 style="color:#FFB300">Olá, ${nome}! 👋</h2><p>Sua conta foi criada com sucesso.</p><ul><li>Explorar nosso catálogo</li><li>Ativar acesso Members gratuito</li><li>Ganhar comissões</li></ul><a href="${base}" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Acessar a loja →</a>` }),
+    en: (nome, base) => ({ sub: '🎉 Welcome to PEPMASTERS!', body: `<h2 style="color:#FFB300">Hello, ${nome}! 👋</h2><p>Your account was created successfully.</p><ul><li>Explore our catalog</li><li>Activate free Members access</li><li>Earn commissions</li></ul><a href="${base}" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Visit the store →</a>` }),
+    es: (nome, base) => ({ sub: '🎉 ¡Bienvenido a PEPMASTERS!', body: `<h2 style="color:#FFB300">¡Hola, ${nome}! 👋</h2><p>Tu cuenta fue creada con éxito.</p><ul><li>Explorar nuestro catálogo</li><li>Activar acceso Members gratuito</li><li>Ganar comisiones</li></ul><a href="${base}" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Visitar la tienda →</a>` }),
+    de: (nome, base) => ({ sub: '🎉 Willkommen bei PEPMASTERS!', body: `<h2 style="color:#FFB300">Hallo, ${nome}! 👋</h2><p>Ihr Konto wurde erfolgreich erstellt.</p><ul><li>Katalog erkunden</li><li>Kostenlosen Members-Zugang aktivieren</li><li>Provisionen verdienen</li></ul><a href="${base}" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Shop besuchen →</a>` }),
+    fr: (nome, base) => ({ sub: '🎉 Bienvenue sur PEPMASTERS!', body: `<h2 style="color:#FFB300">Bonjour, ${nome}! 👋</h2><p>Votre compte a été créé avec succès.</p><ul><li>Explorer notre catalogue</li><li>Activer l'accès Members gratuit</li><li>Gagner des commissions</li></ul><a href="${base}" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Visiter la boutique →</a>` }),
+  },
+  planoAtivo: {
+    pt: (nome, plano, vence, comissao, desconto, link, base) => ({ sub: `✅ Plano ${plano} ativado — PEPMASTERS`, body: `<h2 style="color:#FFB300">✅ Plano ${plano} ativado!</h2><p>Olá, ${nome}!</p><p>Ativo até <strong>${vence}</strong>.</p><ul><li>${comissao} de comissão por venda</li><li>${desconto} de desconto na loja</li></ul><p>Link de afiliado: <strong>${link}</strong></p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Acessar painel →</a>` }),
+    en: (nome, plano, vence, comissao, desconto, link, base) => ({ sub: `✅ Plan ${plano} activated — PEPMASTERS`, body: `<h2 style="color:#FFB300">✅ Plan ${plano} activated!</h2><p>Hello, ${nome}!</p><p>Active until <strong>${vence}</strong>.</p><ul><li>${comissao} commission per sale</li><li>${desconto} store discount</li></ul><p>Affiliate link: <strong>${link}</strong></p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Access panel →</a>` }),
+    es: (nome, plano, vence, comissao, desconto, link, base) => ({ sub: `✅ Plan ${plano} activado — PEPMASTERS`, body: `<h2 style="color:#FFB300">✅ Plan ${plano} activado!</h2><p>Hola, ${nome}!</p><p>Activo hasta <strong>${vence}</strong>.</p><ul><li>${comissao} de comisión por venta</li><li>${desconto} de descuento en tienda</li></ul><p>Enlace de afiliado: <strong>${link}</strong></p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Acceder al panel →</a>` }),
+    de: (nome, plano, vence, comissao, desconto, link, base) => ({ sub: `✅ Plan ${plano} aktiviert — PEPMASTERS`, body: `<h2 style="color:#FFB300">✅ Plan ${plano} aktiviert!</h2><p>Hallo, ${nome}!</p><p>Aktiv bis <strong>${vence}</strong>.</p><ul><li>${comissao} Provision pro Verkauf</li><li>${desconto} Rabatt im Shop</li></ul><p>Affiliate-Link: <strong>${link}</strong></p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Panel öffnen →</a>` }),
+    fr: (nome, plano, vence, comissao, desconto, link, base) => ({ sub: `✅ Plan ${plano} activé — PEPMASTERS`, body: `<h2 style="color:#FFB300">✅ Plan ${plano} activé!</h2><p>Bonjour, ${nome}!</p><p>Actif jusqu'au <strong>${vence}</strong>.</p><ul><li>${comissao} de commission par vente</li><li>${desconto} de remise en boutique</li></ul><p>Lien d'affiliation: <strong>${link}</strong></p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Accéder au panneau →</a>` }),
+  },
+  aviso7dias: {
+    pt: (nome, plano, vence, base) => ({ sub: `⏳ Seu plano ${plano} vence em 7 dias`, body: `<h2 style="color:#FFB300">⏳ Seu plano vence em 7 dias</h2><p>Olá, ${nome}!</p><p>Seu plano <strong>${plano}</strong> vence em <strong>${vence}</strong>.</p><p>💡 Ao renovar antes do vencimento, os novos 30 dias são somados ao tempo restante!</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Renovar agora →</a>` }),
+    en: (nome, plano, vence, base) => ({ sub: `⏳ Your ${plano} plan expires in 7 days`, body: `<h2 style="color:#FFB300">⏳ Your plan expires in 7 days</h2><p>Hello, ${nome}!</p><p>Your <strong>${plano}</strong> plan expires on <strong>${vence}</strong>.</p><p>💡 Renewing before expiration adds 30 days to your remaining time!</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Renew now →</a>` }),
+    es: (nome, plano, vence, base) => ({ sub: `⏳ Tu plan ${plano} vence en 7 días`, body: `<h2 style="color:#FFB300">⏳ Tu plan vence en 7 días</h2><p>Hola, ${nome}!</p><p>Tu plan <strong>${plano}</strong> vence el <strong>${vence}</strong>.</p><p>💡 ¡Al renovar antes del vencimiento, los 30 días se suman al tiempo restante!</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Renovar ahora →</a>` }),
+    de: (nome, plano, vence, base) => ({ sub: `⏳ Ihr ${plano}-Plan läuft in 7 Tagen ab`, body: `<h2 style="color:#FFB300">⏳ Ihr Plan läuft in 7 Tagen ab</h2><p>Hallo, ${nome}!</p><p>Ihr <strong>${plano}</strong>-Plan läuft am <strong>${vence}</strong> ab.</p><p>💡 Bei Verlängerung vor Ablauf werden 30 Tage zur verbleibenden Zeit addiert!</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Jetzt verlängern →</a>` }),
+    fr: (nome, plano, vence, base) => ({ sub: `⏳ Votre plan ${plano} expire dans 7 jours`, body: `<h2 style="color:#FFB300">⏳ Votre plan expire dans 7 jours</h2><p>Bonjour, ${nome}!</p><p>Votre plan <strong>${plano}</strong> expire le <strong>${vence}</strong>.</p><p>💡 En renouvelant avant l'expiration, 30 jours s'ajoutent au temps restant!</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Renouveler maintenant →</a>` }),
+  },
+  expirado: {
+    pt: (nome, plano, base) => ({ sub: '⚠️ Seu plano PEPMASTERS expirou', body: `<h2 style="color:#ef4444">⚠️ Seu plano expirou</h2><p>Olá, ${nome}!</p><p>Seu plano <strong>${plano}</strong> expirou. Renove para continuar com seus benefícios.</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Renovar plano →</a>` }),
+    en: (nome, plano, base) => ({ sub: '⚠️ Your PEPMASTERS plan has expired', body: `<h2 style="color:#ef4444">⚠️ Your plan has expired</h2><p>Hello, ${nome}!</p><p>Your <strong>${plano}</strong> plan has expired. Renew to keep your benefits.</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Renew plan →</a>` }),
+    es: (nome, plano, base) => ({ sub: '⚠️ Tu plan PEPMASTERS ha expirado', body: `<h2 style="color:#ef4444">⚠️ Tu plan ha expirado</h2><p>Hola, ${nome}!</p><p>Tu plan <strong>${plano}</strong> ha expirado. Renueva para mantener tus beneficios.</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Renovar plan →</a>` }),
+    de: (nome, plano, base) => ({ sub: '⚠️ Ihr PEPMASTERS-Plan ist abgelaufen', body: `<h2 style="color:#ef4444">⚠️ Ihr Plan ist abgelaufen</h2><p>Hallo, ${nome}!</p><p>Ihr <strong>${plano}</strong>-Plan ist abgelaufen. Verlängern Sie, um Ihre Vorteile zu behalten.</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Plan verlängern →</a>` }),
+    fr: (nome, plano, base) => ({ sub: '⚠️ Votre plan PEPMASTERS a expiré', body: `<h2 style="color:#ef4444">⚠️ Votre plan a expiré</h2><p>Bonjour, ${nome}!</p><p>Votre plan <strong>${plano}</strong> a expiré. Renouvelez pour conserver vos avantages.</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Renouveler le plan →</a>` }),
+  }
+};
+
+function wrapEmail(body) {
+  return `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
+    <div style="text-align:center;margin-bottom:20px"><strong style="font-size:1.4rem;background:linear-gradient(135deg,#E8220A,#FF6B00,#FFB300);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">PEPMASTERS</strong></div>
+    ${body}
+    <hr style="border-color:rgba(255,255,255,.1);margin:24px 0"/>
+    <p style="font-size:.78rem;color:rgba(255,255,255,.3);text-align:center">PEPMASTERS — Performance através da ciência.</p>
+  </div>`;
+}
+
+async function getUserLang(usuario_id) {
+  try {
+    const r = await pool.query(`SELECT lang FROM pep_usuarios WHERE id=$1`, [usuario_id]);
+    return (r.rows[0]?.lang) || 'pt';
+  } catch { return 'pt'; }
 }
 
 // ── EMAIL (Resend) ────────────────────────────
