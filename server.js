@@ -828,12 +828,21 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
           // Mapear token do frontend para moeda NOWPayments
           const moedaMap = { 'USDTPOLYGON':'USDTPOLYGON', 'USDCPOLYGON':'USDCPOLYGON', 'USDTTRX':'USDTTRX', 'USDT':'USDTPOLYGON', 'USDC':'USDCPOLYGON', 'TRON':'USDTTRX' };
           const moeda = moedaMap[crypto_token] || 'USDTPOLYGON';
+          // Converter BRL para USD
+          let totalUsd = total;
+          try {
+            const cambioRes = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            const cambioData = await cambioRes.json();
+            const brlRate = cambioData.rates?.BRL || 5.5;
+            totalUsd = (total / brlRate).toFixed(2);
+          } catch { totalUsd = (total / 5.5).toFixed(2); }
+
           const npRes = await fetch('https://api.nowpayments.io/v1/payment', {
             method: 'POST',
             headers: { 'x-api-key': NOWPAYMENTS_API_KEY, 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              price_amount: total,
-              price_currency: 'brl',
+              price_amount: totalUsd,
+              price_currency: 'usd',
               pay_currency: moeda,
               order_id: String(pedidoId),
               order_description: 'Pedido PEPMASTERS #' + pedidoId,
