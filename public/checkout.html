@@ -412,7 +412,7 @@
 
   function atualizarCriptoUI() {
     document.getElementById('cripto-loading').style.display = 'none';
-    document.getElementById('cripto-info').style.display   = 'block';
+    document.getElementById('cripto-info').style.display   = 'none'; // só mostra após finalizar
     document.getElementById('cryptoValor').textContent = cryptoValor;
     document.getElementById('cryptoToken').textContent = cryptoToken;
     document.getElementById('cryptoAddr').textContent  = WALLET;
@@ -676,7 +676,8 @@
         verificarPagamento(data.pedido_id);
       } else if (pagAtual === 'cripto') {
         btn.textContent = '⏳ Aguardando pagamento...';
-        // Atualizar QR e endereço com dados do NOWPayments
+        // Mostrar bloco de cripto com endereço NOWPayments
+        document.getElementById('cripto-info').style.display = 'block';
         if (data.nowpay_address) {
           document.getElementById('cryptoAddr').textContent = data.nowpay_address;
           document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(data.nowpay_address);
@@ -685,7 +686,6 @@
           var tokenEl = document.getElementById('cryptoToken');
           if (tokenEl && data.nowpay_currency) tokenEl.textContent = data.nowpay_currency;
         }
-        // Verificar confirmação automática
         verificarCripto(data.pedido_id);
       } else {
         location.href = 'confirmacao.html?id=' + data.pedido_id;
