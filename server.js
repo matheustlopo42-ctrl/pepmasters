@@ -826,8 +826,8 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       if (NOWPAYMENTS_API_KEY) {
         try {
           // Mapear token do frontend para moeda NOWPayments
-          const moedaMap = { 'USDTPOLYGON':'USDTPOLYGON', 'USDCPOLYGON':'USDCPOLYGON', 'USDTTRX':'USDTTRX', 'USDT':'USDTPOLYGON', 'USDC':'USDCPOLYGON', 'TRON':'USDTTRX' };
-          const moeda = moedaMap[crypto_token] || 'USDTPOLYGON';
+          const moedaMap = { 'USDTPOLYGON':'usdtmatic', 'USDCPOLYGON':'usdcmatic', 'USDTTRX':'usdttrc20', 'USDT':'usdtmatic', 'USDC':'usdcmatic', 'TRON':'usdttrc20' };
+          const moeda = moedaMap[crypto_token] || 'usdtmatic';
           // Converter BRL para USD
           let totalUsd = total;
           try {
@@ -1994,8 +1994,8 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
             valorUsd = (valor / brlRate).toFixed(2);
           } catch { valorUsd = (valor / 5.5).toFixed(2); }
 
-          const moedaMap = { 'USDTPOLYGON':'USDTPOLYGON', 'USDCPOLYGON':'USDCPOLYGON', 'USDTTRX':'USDTTRX', 'TRON':'USDTTRX' };
-          const moedaMbr = moedaMap[crypto_token] || 'USDTPOLYGON';
+          const moedaMap = { 'USDTPOLYGON':'usdtmatic', 'USDCPOLYGON':'usdcmatic', 'USDTTRX':'usdttrc20', 'TRON':'usdttrc20' };
+          const moedaMbr = moedaMap[crypto_token] || 'usdtmatic';
 
           const npRes = await fetch('https://api.nowpayments.io/v1/payment', {
             method: 'POST',
@@ -2645,7 +2645,7 @@ app.post('/api/nowpayments/criar', authMiddleware, async (req, res) => {
       body: JSON.stringify({
         price_amount: valor_brl,
         price_currency: 'brl',
-        pay_currency: moeda || 'USDTPOLYGON',
+        pay_currency: moeda || 'usdtmatic',
         order_id: String(pedido_id),
         order_description: 'Pedido PEPMASTERS #' + pedido_id,
         ipn_callback_url: BASE_URL + '/api/webhook/nowpayments',
