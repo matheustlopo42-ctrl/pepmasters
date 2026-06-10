@@ -36,6 +36,80 @@ function rateLimit(maxReqs, windowMs) {
 }
 setInterval(() => rateLimitMap.clear(), 3600000);
 
+// ── JOB DIÁRIO — avisos de expiração e expirar planos vencidos ────────────
+async function jobDiario() {
+  try {
+    // 1. Expirar planos vencidos (exceto bronze)
+    const expirados = await pool.query(`
+      UPDATE pep_membros SET status='expirado'
+      WHERE status='ativo' AND plano != 'bronze'
+        AND membro_ate < NOW()
+      RETURNING id, usuario_id, plano
+    `);
+    for (const m of expirados.rows) {
+      const u = await pool.query(`SELECT email, nome FROM pep_usuarios WHERE id=$1`, [m.usuario_id]);
+      if (!u.rows.length) continue;
+      const { email, nome } = u.rows[0];
+      await sendEmail(email, '⚠️ Seu plano PEPMASTERS expirou', `
+        <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
+          <h2 style="color:#ef4444">⚠️ Seu plano expirou</h2>
+          <p>Olá, <strong>${nome.split(' ')[0]}</strong>!</p>
+          <p style="color:rgba(255,255,255,.8);line-height:1.7;margin:12px 0">Seu plano <strong>${m.plano}</strong> expirou. Renove agora para continuar tendo acesso aos benefícios Members.</p>
+          <div style="text-align:center;margin-top:20px">
+            <a href="${BASE_URL}/members.html" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;font-weight:700;text-decoration:none;border-radius:10px">Renovar plano →</a>
+          </div>
+          <hr style="border-color:rgba(255,255,255,.1);margin:24px 0"/>
+          <p style="font-size:.78rem;color:rgba(255,255,255,.3);text-align:center">PEPMASTERS — Performance através da ciência.</p>
+        </div>
+      `).catch(() => {});
+    }
+
+    // 2. Avisar membros que vencem em 7 dias (só pagos)
+    const avencer = await pool.query(`
+      SELECT m.id, m.plano, m.membro_ate, u.email, u.nome
+      FROM pep_membros m
+      JOIN pep_usuarios u ON u.id = m.usuario_id
+      WHERE m.status = 'ativo'
+        AND m.plano != 'bronze'
+        AND m.membro_ate::date = (NOW() + INTERVAL '7 days')::date
+    `);
+
+    for (const m of avencer.rows) {
+      const venceEm = new Date(m.membro_ate).toLocaleDateString('pt-BR');
+      const nivelNomes = { prata:'Prata 🥈', ouro:'Ouro 🥇', diamante:'Diamante 💎' };
+      const nomePlano = nivelNomes[m.plano] || m.plano;
+      await sendEmail(m.email, `⏳ Seu plano ${nomePlano} vence em 7 dias`, `
+        <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
+          <h2 style="color:#FFB300">⏳ Seu plano vence em 7 dias</h2>
+          <p>Olá, <strong>${m.nome.split(' ')[0]}</strong>!</p>
+          <p style="color:rgba(255,255,255,.8);line-height:1.7;margin:12px 0">
+            Seu plano <strong style="color:#FFB300">${nomePlano}</strong> vence no dia <strong>${venceEm}</strong>.
+            Renove agora para não perder seus benefícios e continuar acumulando comissões.
+          </p>
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,179,0,.2);border-radius:10px;padding:16px;margin:16px 0">
+            <p style="color:rgba(255,255,255,.6);font-size:.88rem;margin:0">💡 Ao renovar antes do vencimento, os novos 30 dias são somados ao tempo restante — você não perde nenhum dia!</p>
+          </div>
+          <div style="text-align:center;margin-top:20px">
+            <a href="${BASE_URL}/members.html" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;font-weight:700;text-decoration:none;border-radius:10px">Renovar agora →</a>
+          </div>
+          <hr style="border-color:rgba(255,255,255,.1);margin:24px 0"/>
+          <p style="font-size:.78rem;color:rgba(255,255,255,.3);text-align:center">PEPMASTERS — Performance através da ciência.</p>
+        </div>
+      `).catch(() => {});
+    }
+
+    if (expirados.rows.length + avencer.rows.length > 0) {
+      console.log(`[Job diário] ${expirados.rows.length} expirados, ${avencer.rows.length} avisos enviados`);
+    }
+  } catch (e) {
+    console.error('[Job diário]', e.message);
+  }
+}
+
+// Rodar uma vez ao iniciar e depois a cada 24h
+jobDiario();
+setInterval(jobDiario, 24 * 60 * 60 * 1000);
+
 // ── ENV ──────────────────────────────────────
 const DATABASE_URL        = process.env.DATABASE_URL;
 const JWT_SECRET          = process.env.JWT_SECRET          || 'pep_jwt_secret_2025';
@@ -1703,11 +1777,10 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
       const novoPlano = plano || (isGratis ? 'bronze' : planoAtual);
 
       if (isGratis) {
-        // Bronze: se já tem plano pago ativo, não faz nada (não perde dias)
-        // Se não está ativo, ativa bronze
+        // Bronze: gratuito e sem validade — só ativa se não estiver ativo
         if (!ativo) {
           const ate = new Date();
-          ate.setFullYear(ate.getFullYear() + 10);
+          ate.setFullYear(ate.getFullYear() + 99); // sem validade prática
           await pool.query(`UPDATE pep_membros SET status='ativo', membro_ate=$1, plano='bronze', mensalidade=0 WHERE id=$2`, [ate, membro_id]);
           // Email de ativação do plano Bronze
           const uData = await pool.query(`SELECT u.nome, u.email, m.codigo_ref FROM pep_membros m JOIN pep_usuarios u ON u.id=m.usuario_id WHERE m.id=$1`, [membro_id]);
@@ -1736,12 +1809,13 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
         }
       } else {
         // Plano pago
-        if (planoAtual !== novoPlano) {
-          // Mudança de plano: novo plano começa quando o atual vencer
+        const isBronzeAtual = planoAtual === 'bronze';
+        if (planoAtual !== novoPlano && !isBronzeAtual) {
+          // Mudança entre planos pagos: novo plano começa quando atual vencer
           await pool.query(`UPDATE pep_membros SET mensalidade=$1, pagamento=$2, plano=$3 WHERE id=$4`, [valor, pagamento, novoPlano, membro_id]);
         } else {
-          // Mesma mensalidade: só atualiza valor/pagamento
-          await pool.query(`UPDATE pep_membros SET mensalidade=$1, pagamento=$2 WHERE id=$3`, [valor, pagamento, membro_id]);
+          // Bronze → pago (começa imediato) ou mesmo plano (só atualiza valor)
+          await pool.query(`UPDATE pep_membros SET mensalidade=$1, pagamento=$2, plano=$3 WHERE id=$4`, [valor, pagamento, novoPlano, membro_id]);
         }
         // Cancelar pagamentos pendentes anteriores (evitar duplicatas no admin)
         await pool.query(`UPDATE pep_pagamentos_membros SET status='cancelado' WHERE membro_id=$1 AND status='pendente'`, [membro_id]);
@@ -1796,12 +1870,14 @@ app.post('/api/membros/confirmar', adminMiddleware, async (req, res) => {
     const agora = new Date();
     let novaData;
 
-    // Se ainda tem dias restantes, soma a partir do vencimento atual
-    if (status === 'ativo' && membro_ate && new Date(membro_ate) > agora) {
+    // Bronze não tem validade real — pago começa do zero
+    const isBronze = plano === 'bronze';
+    if (!isBronze && status === 'ativo' && membro_ate && new Date(membro_ate) > agora) {
+      // Plano pago ainda ativo: soma +30 dias ao vencimento atual
       novaData = new Date(membro_ate);
       novaData.setDate(novaData.getDate() + 30);
     } else {
-      // Se expirado ou pendente, começa do hoje
+      // Bronze, expirado ou pendente: começa do hoje
       novaData = new Date();
       novaData.setDate(novaData.getDate() + 30);
     }
