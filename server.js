@@ -50,7 +50,7 @@ async function jobDiario() {
       const u = await pool.query(`SELECT email, nome FROM pep_usuarios WHERE id=$1`, [m.usuario_id]);
       if (!u.rows.length) continue;
       const { email, nome } = u.rows[0];
-      await sendEmail(email, '⚠️ Seu plano PEPMASTERS expirou', `
+      await enviarEmail(email, '⚠️ Seu plano PEPMASTERS expirou', `
         <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
           <h2 style="color:#ef4444">⚠️ Seu plano expirou</h2>
           <p>Olá, <strong>${nome.split(' ')[0]}</strong>!</p>
@@ -78,7 +78,7 @@ async function jobDiario() {
       const venceEm = new Date(m.membro_ate).toLocaleDateString('pt-BR');
       const nivelNomes = { prata:'Prata 🥈', ouro:'Ouro 🥇', diamante:'Diamante 💎' };
       const nomePlano = nivelNomes[m.plano] || m.plano;
-      await sendEmail(m.email, `⏳ Seu plano ${nomePlano} vence em 7 dias`, `
+      await enviarEmail(m.email, `⏳ Seu plano ${nomePlano} vence em 7 dias`, `
         <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
           <h2 style="color:#FFB300">⏳ Seu plano vence em 7 dias</h2>
           <p>Olá, <strong>${m.nome.split(' ')[0]}</strong>!</p>
@@ -495,7 +495,7 @@ app.post('/api/cadastro', rateLimit(5, 60000), async (req, res) => {
     const u = rows[0];
 
     // Email de boas-vindas (só no primeiro cadastro)
-    sendEmail(u.email, '🎉 Bem-vindo ao PEPMASTERS!', `
+    enviarEmail(u.email, '🎉 Bem-vindo ao PEPMASTERS!', `
       <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
         <div style="text-align:center;margin-bottom:24px">
           <h1 style="font-family:sans-serif;font-weight:900;font-size:2rem;background:linear-gradient(135deg,#E8220A,#FF6B00,#FFB300);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:0">PEPMASTERS</h1>
@@ -1692,7 +1692,7 @@ app.post('/api/forum/topicos/:id/responder', membroMiddleware, async (req, res) 
           [req.usuario.id]
         );
         const nomeResp = resp.rows[0]?.nome || 'Um membro';
-        await sendEmail(email, `💬 Nova resposta no seu tópico — PEPMASTERS Members`, `
+        await enviarEmail(email, `💬 Nova resposta no seu tópico — PEPMASTERS Members`, `
           <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#1C0A00;color:#fff;border-radius:12px">
             <h2 style="color:#FFB300;font-family:sans-serif">Nova resposta no seu tópico</h2>
             <p>Olá, <strong>${nome}</strong>!</p>
@@ -1784,7 +1784,7 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
           const uData = await pool.query(`SELECT u.nome, u.email, m.codigo_ref FROM pep_membros m JOIN pep_usuarios u ON u.id=m.usuario_id WHERE m.id=$1`, [membro_id]);
           if (uData.rows.length) {
             const { nome, email: uEmail, codigo_ref } = uData.rows[0];
-            sendEmail(uEmail, '✅ Plano Bronze ativado — PEPMASTERS Members', `
+            enviarEmail(uEmail, '✅ Plano Bronze ativado — PEPMASTERS Members', `
               <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
                 <h2 style="color:#cd7f32">🥉 Plano Bronze Ativado!</h2>
                 <p>Olá, <strong>${nome.split(' ')[0]}</strong>!</p>
@@ -1896,7 +1896,7 @@ app.post('/api/membros/confirmar', adminMiddleware, async (req, res) => {
       const nomePlano  = nivelNomes[planoAtivado] || planoAtivado;
       const venceEm    = novaData.toLocaleDateString('pt-BR');
 
-      await sendEmail(email, `✅ Plano ${nomePlano} ativado — PEPMASTERS Members`, `
+      await enviarEmail(email, `✅ Plano ${nomePlano} ativado — PEPMASTERS Members`, `
         <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
           <h2 style="color:#FFB300">✅ Plano ${nomePlano} ativado!</h2>
           <p>Olá, <strong>${nome.split(' ')[0]}</strong>!</p>
