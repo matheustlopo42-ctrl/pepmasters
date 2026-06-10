@@ -786,15 +786,29 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     enviarWhatsApp('Novo pedido PEPMASTERS #' + pedidoId + '\nCliente: ' + nome + '\nItens: ' + itensTexto + '\nTotal: R$ ' + total.toFixed(2).replace('.',',') + '\nPag: ' + pagamento.toUpperCase());
 
     if (EMAIL_DESTINO) {
-      const cryptoInfo = (pagamento === 'cripto' && crypto_valor) ? '<br>💰 Cripto esperado: <b>' + crypto_valor + ' ' + (crypto_token || 'USDT') + '</b>' : '';
-      enviarEmail(EMAIL_DESTINO, 'Novo pedido #' + pedidoId + ' — PEPMASTERS',
-        '<h2>Novo pedido #' + pedidoId + '</h2>' +
+      const isTron = crypto_token === 'TRON';
+      const rede = isTron ? 'Tron TRC-20' : 'Polygon (MATIC)';
+      const carteira = isTron ? 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB' : '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
+      const explorer = isTron
+        ? 'https://tronscan.org/#/address/TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB'
+        : 'https://polygonscan.com/address/0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
+      const cryptoInfo = (pagamento === 'cripto' && crypto_valor)
+        ? `<br><br>💰 <b>Cripto esperado:</b> ${crypto_valor} ${isTron ? 'USDT' : (crypto_token || 'USDT')}<br>` +
+          `🌐 <b>Rede:</b> ${rede}<br>` +
+          `👛 <b>Carteira:</b> <code>${carteira}</code><br>` +
+          `🔍 <a href="${explorer}" style="color:#FFB300">Verificar no explorer →</a>`
+        : '';
+      enviarEmail(EMAIL_DESTINO,
+        (isTron ? '🔶 [TRON] ' : '🔷 [POLYGON] ') + 'Novo pedido #' + pedidoId + ' — PEPMASTERS',
+        '<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#1C0A00;color:#fff;border-radius:12px">' +
+        '<h2 style="color:#FFB300">Novo pedido #' + pedidoId + '</h2>' +
         '<b>Cliente:</b> ' + nome + '<br>' +
         '<b>Email:</b> ' + email + '<br>' +
         '<b>Itens:</b> ' + itensTexto + '<br>' +
         '<b>Total:</b> R$ ' + total.toFixed(2).replace('.',',') + '<br>' +
         '<b>Pagamento:</b> ' + pagamento.toUpperCase() +
-        cryptoInfo
+        cryptoInfo +
+        '</div>'
       );
     }
 
@@ -1929,6 +1943,27 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
         cryptoValor = parseFloat((valor / rate).toFixed(6));
         await pool.query(`UPDATE pep_pagamentos_membros SET crypto_valor=$1 WHERE id=$2`, [cryptoValor, pag.rows[0].id]);
       } catch {}
+    }
+
+    // Notificar admin de nova assinatura paga
+    if (!isGratis && EMAIL_DESTINO) {
+      const uDados = await pool.query(`SELECT nome, email FROM pep_usuarios WHERE id=$1`, [usuario_id]);
+      const uNome = uDados.rows[0]?.nome || '—';
+      const uEmail = uDados.rows[0]?.email || '—';
+      const isTronMbr = pagamento === 'cripto' && cryptoValor > 0;
+      const carteiraMbr = 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB';
+      enviarEmail(EMAIL_DESTINO,
+        '🆕 Nova assinatura Members — ' + (plano || 'pago') + ' — PEPMASTERS',
+        '<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#1C0A00;color:#fff;border-radius:12px">' +
+        '<h2 style="color:#FFB300">🆕 Nova assinatura Members</h2>' +
+        '<b>Cliente:</b> ' + uNome + '<br>' +
+        '<b>Email:</b> ' + uEmail + '<br>' +
+        '<b>Plano:</b> ' + (plano || '—') + '<br>' +
+        '<b>Valor:</b> R$ ' + parseFloat(valor||0).toFixed(2).replace('.',',') + '<br>' +
+        '<b>Pagamento:</b> ' + pagamento.toUpperCase() +
+        (isTronMbr ? '<br><br>💰 <b>Cripto esperado:</b> ' + cryptoValor + ' USDT<br>🌐 <b>Rede:</b> Tron TRC-20<br>👛 <b>Carteira:</b> <code>' + carteiraMbr + '</code><br>🔍 <a href="https://tronscan.org/#/address/' + carteiraMbr + '" style="color:#FFB300">Verificar no Tronscan →</a>' : '') +
+        '</div>'
+      ).catch(()=>{});
     }
 
     res.json({ ok: true, membro_id, pagamento_id: pag.rows[0].id, crypto_valor: cryptoValor, isGratis });
