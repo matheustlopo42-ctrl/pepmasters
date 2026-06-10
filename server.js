@@ -106,9 +106,7 @@ async function jobDiario() {
   }
 }
 
-// Rodar uma vez ao iniciar e depois a cada 24h
-jobDiario();
-setInterval(jobDiario, 24 * 60 * 60 * 1000);
+// Job diário iniciado após servidor estar pronto (ver app.listen)
 
 // ── ENV ──────────────────────────────────────
 const DATABASE_URL        = process.env.DATABASE_URL;
@@ -2349,6 +2347,9 @@ app.use((req, res) => {
 initDB().then(() => {
   app.listen(PORT, () => {
     console.log('[PEPMASTERS] Servidor rodando na porta ' + PORT);
+    // Iniciar job diário após servidor estar pronto
+    setTimeout(jobDiario, 5000);
+    setInterval(jobDiario, 24 * 60 * 60 * 1000);
   });
 }).catch(err => {
   console.error('[PEPMASTERS] Falha ao iniciar:', err.message);
