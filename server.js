@@ -2749,7 +2749,7 @@ async function webhookNowpaymentsPedidos(req, res) {
     console.error('[NOWPayments webhook]', err.message);
     res.status(500).json({ erro: err.message });
   }
-});
+}
 
 async function webhookNowpaymentsMembers(req, res) {
   try {
@@ -2833,7 +2833,7 @@ async function webhookNowpaymentsMembers(req, res) {
     console.error('[NOWPayments Members webhook]', err.message);
     res.status(500).json({ erro: err.message });
   }
-});
+}
 
 // ─────────────────────────────────────────────
 //  404 FALLBACK (SPA)
