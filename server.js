@@ -437,6 +437,28 @@ const emailTemplates = {
     de: (nome, plano, vence, base) => ({ sub: `⏳ Ihr ${plano}-Plan läuft in 7 Tagen ab`, body: `<h2 style="color:#FFB300">⏳ Ihr Plan läuft in 7 Tagen ab</h2><p>Hallo, ${nome}!</p><p>Ihr <strong>${plano}</strong>-Plan läuft am <strong>${vence}</strong> ab.</p><p>💡 Bei Verlängerung vor Ablauf werden 30 Tage zur verbleibenden Zeit addiert!</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Jetzt verlängern →</a>` }),
     fr: (nome, plano, vence, base) => ({ sub: `⏳ Votre plan ${plano} expire dans 7 jours`, body: `<h2 style="color:#FFB300">⏳ Votre plan expire dans 7 jours</h2><p>Bonjour, ${nome}!</p><p>Votre plan <strong>${plano}</strong> expire le <strong>${vence}</strong>.</p><p>💡 En renouvelant avant l'expiration, 30 jours s'ajoutent au temps restant!</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Renouveler maintenant →</a>` }),
   },
+
+  pedidoConfirmado: {
+    pt: (nome, id, produto, total, base) => ({ sub: `✅ Pedido #${id} confirmado — PEPMASTERS`, body: `<h2 style="color:#FFB300">✅ Pedido confirmado!</h2><p>Olá, ${nome}!</p><p>Seu pedido <strong>#${id}</strong> de <strong>${produto}</strong> foi confirmado.</p><p style="font-size:1.2rem;color:#FFB300;font-weight:bold">Total: R$ ${total}</p><p>Você receberá o código de rastreio assim que o pedido for enviado.</p><a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Ver meus pedidos →</a>` }),
+    en: (nome, id, produto, total, base) => ({ sub: `✅ Order #${id} confirmed — PEPMASTERS`, body: `<h2 style="color:#FFB300">✅ Order confirmed!</h2><p>Hello, ${nome}!</p><p>Your order <strong>#${id}</strong> for <strong>${produto}</strong> has been confirmed.</p><p style="font-size:1.2rem;color:#FFB300;font-weight:bold">Total: R$ ${total}</p><p>You will receive the tracking code once your order is shipped.</p><a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">View my orders →</a>` }),
+    es: (nome, id, produto, total, base) => ({ sub: `✅ Pedido #${id} confirmado — PEPMASTERS`, body: `<h2 style="color:#FFB300">✅ ¡Pedido confirmado!</h2><p>Hola, ${nome}!</p><p>Tu pedido <strong>#${id}</strong> de <strong>${produto}</strong> ha sido confirmado.</p><p style="font-size:1.2rem;color:#FFB300;font-weight:bold">Total: R$ ${total}</p><p>Recibirás el código de seguimiento una vez que se envíe tu pedido.</p><a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Ver mis pedidos →</a>` }),
+    de: (nome, id, produto, total, base) => ({ sub: `✅ Bestellung #${id} bestätigt — PEPMASTERS`, body: `<h2 style="color:#FFB300">✅ Bestellung bestätigt!</h2><p>Hallo, ${nome}!</p><p>Ihre Bestellung <strong>#${id}</strong> für <strong>${produto}</strong> wurde bestätigt.</p><p style="font-size:1.2rem;color:#FFB300;font-weight:bold">Gesamt: R$ ${total}</p><p>Sie erhalten den Tracking-Code, sobald Ihre Bestellung versendet wird.</p><a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Bestellungen ansehen →</a>` }),
+    fr: (nome, id, produto, total, base) => ({ sub: `✅ Commande #${id} confirmée — PEPMASTERS`, body: `<h2 style="color:#FFB300">✅ Commande confirmée!</h2><p>Bonjour, ${nome}!</p><p>Votre commande <strong>#${id}</strong> pour <strong>${produto}</strong> a été confirmée.</p><p style="font-size:1.2rem;color:#FFB300;font-weight:bold">Total: R$ ${total}</p><p>Vous recevrez le code de suivi une fois votre commande expédiée.</p><a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Voir mes commandes →</a>` }),
+  },
+  pedidoEnviado: {
+    pt: (nome, produto, rastreio, base) => ({ sub: `📦 Pedido enviado — PEPMASTERS`, body: `<h2 style="color:#FFB300">📦 Seu pedido foi enviado!</h2><p>Olá, ${nome}!</p><p>Seu pedido de <strong>${produto}</strong> foi enviado.</p>${rastreio?`<p>Código de rastreio: <strong style="color:#FFB300">${rastreio}</strong></p><p><a href="https://rastreamento.correios.com.br/app/index.php?objetos=${rastreio}">Rastrear pedido →</a></p>`:''}<a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Ver meus pedidos →</a>` }),
+    en: (nome, produto, rastreio, base) => ({ sub: `📦 Order shipped — PEPMASTERS`, body: `<h2 style="color:#FFB300">📦 Your order has been shipped!</h2><p>Hello, ${nome}!</p><p>Your order of <strong>${produto}</strong> has been shipped.</p>${rastreio?`<p>Tracking code: <strong style="color:#FFB300">${rastreio}</strong></p>`:''}<a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">View my orders →</a>` }),
+    es: (nome, produto, rastreio, base) => ({ sub: `📦 Pedido enviado — PEPMASTERS`, body: `<h2 style="color:#FFB300">📦 ¡Tu pedido ha sido enviado!</h2><p>Hola, ${nome}!</p><p>Tu pedido de <strong>${produto}</strong> ha sido enviado.</p>${rastreio?`<p>Código de seguimiento: <strong style="color:#FFB300">${rastreio}</strong></p>`:''}<a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Ver mis pedidos →</a>` }),
+    de: (nome, produto, rastreio, base) => ({ sub: `📦 Bestellung versandt — PEPMASTERS`, body: `<h2 style="color:#FFB300">📦 Ihre Bestellung wurde versandt!</h2><p>Hallo, ${nome}!</p><p>Ihre Bestellung von <strong>${produto}</strong> wurde versandt.</p>${rastreio?`<p>Tracking-Code: <strong style="color:#FFB300">${rastreio}</strong></p>`:''}<a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Bestellungen ansehen →</a>` }),
+    fr: (nome, produto, rastreio, base) => ({ sub: `📦 Commande expédiée — PEPMASTERS`, body: `<h2 style="color:#FFB300">📦 Votre commande a été expédiée!</h2><p>Bonjour, ${nome}!</p><p>Votre commande de <strong>${produto}</strong> a été expédiée.</p>${rastreio?`<p>Code de suivi: <strong style="color:#FFB300">${rastreio}</strong></p>`:''}<a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Voir mes commandes →</a>` }),
+  },
+  pedidoEntregue: {
+    pt: (nome, produto, base) => ({ sub: `🎉 Pedido entregue — PEPMASTERS`, body: `<h2 style="color:#FFB300">🎉 Pedido entregue!</h2><p>Olá, ${nome}!</p><p>Seu pedido de <strong>${produto}</strong> foi entregue! Esperamos que goste.</p><a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Ver meus pedidos →</a>` }),
+    en: (nome, produto, base) => ({ sub: `🎉 Order delivered — PEPMASTERS`, body: `<h2 style="color:#FFB300">🎉 Order delivered!</h2><p>Hello, ${nome}!</p><p>Your order of <strong>${produto}</strong> has been delivered! We hope you enjoy it.</p><a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">View my orders →</a>` }),
+    es: (nome, produto, base) => ({ sub: `🎉 Pedido entregado — PEPMASTERS`, body: `<h2 style="color:#FFB300">🎉 ¡Pedido entregado!</h2><p>Hola, ${nome}!</p><p>Tu pedido de <strong>${produto}</strong> ha sido entregado. ¡Esperamos que lo disfrutes!</p><a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Ver mis pedidos →</a>` }),
+    de: (nome, produto, base) => ({ sub: `🎉 Bestellung geliefert — PEPMASTERS`, body: `<h2 style="color:#FFB300">🎉 Bestellung geliefert!</h2><p>Hallo, ${nome}!</p><p>Ihre Bestellung von <strong>${produto}</strong> wurde geliefert! Wir hoffen, es gefällt Ihnen.</p><a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Bestellungen ansehen →</a>` }),
+    fr: (nome, produto, base) => ({ sub: `🎉 Commande livrée — PEPMASTERS`, body: `<h2 style="color:#FFB300">🎉 Commande livrée!</h2><p>Bonjour, ${nome}!</p><p>Votre commande de <strong>${produto}</strong> a été livrée ! Nous espérons que vous l'apprécierez.</p><a href="${base}/meus-pedidos.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Voir mes commandes →</a>` }),
+  },
   expirado: {
     pt: (nome, plano, base) => ({ sub: '⚠️ Seu plano PEPMASTERS expirou', body: `<h2 style="color:#ef4444">⚠️ Seu plano expirou</h2><p>Olá, ${nome}!</p><p>Seu plano <strong>${plano}</strong> expirou. Renove para continuar com seus benefícios.</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Renovar plano →</a>` }),
     en: (nome, plano, base) => ({ sub: '⚠️ Your PEPMASTERS plan has expired', body: `<h2 style="color:#ef4444">⚠️ Your plan has expired</h2><p>Hello, ${nome}!</p><p>Your <strong>${plano}</strong> plan has expired. Renew to keep your benefits.</p><a href="${base}/members.html" style="padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px">Renew plan →</a>` }),
@@ -989,12 +1011,28 @@ app.put('/api/admin/pedido/:id/status', adminMiddleware, async (req, res) => {
     if (!rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
     const p = rows[0];
 
-    // notificar cliente por email se enviado ou entregue
-    if (status === 'enviado' || status === 'entregue') {
-      const msg = status === 'enviado'
-        ? 'Seu pedido de <b>' + p.produto_nome + '</b> foi enviado! Em breve você receberá o código de rastreio.'
-        : 'Seu pedido de <b>' + p.produto_nome + '</b> foi entregue! Esperamos que goste. 🎉';
-      enviarEmail(p.email, 'Atualização do pedido — PEPMASTERS', '<p>Olá, ' + p.nome.split(' ')[0] + '!</p><p>' + msg + '</p>');
+    // Buscar lang do usuário
+    const uLang = await pool.query(`SELECT u.lang FROM pep_usuarios u JOIN pep_pedidos ped ON ped.email=u.email WHERE ped.id=$1`, [req.params.id]).catch(()=>({rows:[]}));
+    const lang = uLang.rows[0]?.lang || 'pt';
+
+    // Email de confirmação quando admin marca como pago
+    if (status === 'pago') {
+      const pedDados = await pool.query(`SELECT total, produto_nome FROM pep_pedidos WHERE id=$1`, [req.params.id]);
+      const total = pedDados.rows[0]?.total || '0';
+      const tmpl = emailTemplates.pedidoConfirmado[lang] || emailTemplates.pedidoConfirmado['pt'];
+      const { sub, body } = tmpl(p.nome.split(' ')[0], req.params.id, p.produto_nome, parseFloat(total).toFixed(2).replace('.',','), BASE_URL);
+      enviarEmail(p.email, sub, wrapEmail(body)).catch(()=>{});
+    }
+    // Email quando enviado ou entregue
+    if (status === 'enviado') {
+      const tmpl = emailTemplates.pedidoEnviado[lang] || emailTemplates.pedidoEnviado['pt'];
+      const { sub, body } = tmpl(p.nome.split(' ')[0], p.produto_nome, null, BASE_URL);
+      enviarEmail(p.email, sub, wrapEmail(body)).catch(()=>{});
+    }
+    if (status === 'entregue') {
+      const tmpl = emailTemplates.pedidoEntregue[lang] || emailTemplates.pedidoEntregue['pt'];
+      const { sub, body } = tmpl(p.nome.split(' ')[0], p.produto_nome, BASE_URL);
+      enviarEmail(p.email, sub, wrapEmail(body)).catch(()=>{});
     }
 
     res.json({ ok: true });
@@ -1015,12 +1053,11 @@ app.put('/api/admin/pedido/:id/rastreio', adminMiddleware, async (req, res) => {
     const p = rows[0];
 
     if (codigo_rastreio) {
-      enviarEmail(p.email,
-        'Código de rastreio — PEPMASTERS',
-        '<p>Olá, ' + p.nome.split(' ')[0] + '!</p><p>Seu pedido de <b>' + p.produto_nome + '</b> foi enviado!</p>' +
-        '<p>Código de rastreio: <b>' + codigo_rastreio + '</b></p>' +
-        '<p>Rastreie em: <a href="https://rastreamento.correios.com.br/app/index.php?objetos=' + codigo_rastreio + '">Correios</a></p>'
-      );
+      const uLangR = await pool.query(`SELECT u.lang FROM pep_usuarios u JOIN pep_pedidos ped ON ped.email=u.email WHERE ped.id=$1`, [req.params.id]).catch(()=>({rows:[]}));
+      const langR = uLangR.rows[0]?.lang || 'pt';
+      const tmplR = emailTemplates.pedidoEnviado[langR] || emailTemplates.pedidoEnviado['pt'];
+      const { sub, body } = tmplR(p.nome.split(' ')[0], p.produto_nome, codigo_rastreio, BASE_URL);
+      enviarEmail(p.email, sub, wrapEmail(body)).catch(()=>{});
     }
 
     res.json({ ok: true });
@@ -2028,6 +2065,21 @@ app.get('/api/admin/membro/:id/extrato', adminMiddleware, async (req, res) => {
       FROM pep_vendas_afiliado WHERE membro_id=$1
     `, [req.params.id]);
     res.json({ vendas: vendas.rows, total_comissao: parseFloat(totais.rows[0].total_comissao), total_volume: parseFloat(totais.rows[0].total_volume) });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Rota de teste — email pedido confirmado (admin only)
+app.post('/api/admin/testar-pedido-confirmado', adminMiddleware, async (req, res) => {
+  try {
+    const { email_teste } = req.body;
+    if (!email_teste) return res.status(400).json({ erro: 'email_teste obrigatório.' });
+    const u = await pool.query(`SELECT nome, COALESCE(lang,'pt') as lang FROM pep_usuarios WHERE email=$1`, [email_teste]);
+    if (!u.rows.length) return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    const { nome, lang } = u.rows[0];
+    const tmpl = emailTemplates.pedidoConfirmado[lang] || emailTemplates.pedidoConfirmado['pt'];
+    const { sub, body } = tmpl(nome.split(' ')[0], '999', 'BPC-157 5mg', '289,90', BASE_URL);
+    await enviarEmail(email_teste, sub, wrapEmail(body));
+    res.json({ ok: true, msg: 'Email de pedido confirmado enviado em ' + lang });
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
