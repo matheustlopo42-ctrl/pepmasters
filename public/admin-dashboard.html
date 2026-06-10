@@ -183,6 +183,8 @@ async function init() {
   var data = await res.json();
   var t = data.totais;
 
+  carregarDbUso();
+
   // Stats
   document.getElementById('s-usuarios').textContent = t.total_usuarios;
   document.getElementById('s-membros').textContent = t.membros_ativos;
