@@ -110,6 +110,7 @@
     <table>
       <thead>
         <tr class="${p.pagamento === 'cripto' && p.status === 'pix_pending' ? 'cripto-pending' : ''}">
+          <th class="checkbox-col"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"></th>
           <th>ID</th><th>Cliente</th><th>Email</th><th>Produto</th><th>Total</th>
           <th>Cupom</th><th>Pagamento</th><th>Status</th><th>Rastreio</th><th>Data</th>
         </tr>
@@ -156,7 +157,8 @@
       const sl = statusLabel[p.status] || p.status;
       const dt = new Date(p.criado_em).toLocaleDateString('pt-BR');
       tbody.innerHTML += `
-        <tr>
+        <tr data-id="${p.id}">
+          <td class="checkbox-col"><input type="checkbox" class="chk-pedido" value="${p.id}" onchange="atualizarAcoes()"></td>
           <td>#${p.id}</td>
           <td>${p.nome || '—'}</td>
           <td>${p.email || '—'}</td>
