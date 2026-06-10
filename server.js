@@ -1476,6 +1476,16 @@ async function criarNotificacao(membro_id, tipo, mensagem, link) {
   } catch (e) { console.error('[Notif]', e.message); }
 }
 
+// Salvar idioma preferido do usuário
+app.put('/api/usuarios/lang', authMiddleware, async (req, res) => {
+  const { lang } = req.body;
+  if (!['pt','en','es','de','fr'].includes(lang)) return res.status(400).json({ erro: 'Idioma inválido.' });
+  try {
+    await pool.query(`UPDATE pep_usuarios SET lang=$1 WHERE id=$2`, [lang, req.usuario.id]);
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
 // GET notificações
 app.get('/api/membros/notificacoes', membroMiddleware, async (req, res) => {
   try {
