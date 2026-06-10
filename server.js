@@ -570,7 +570,7 @@ app.post('/api/login', rateLimit(10, 60000), async (req, res) => {
     const u = rows[0];
     const ok = await bcrypt.compare(senha, u.senha_hash);
     if (!ok) return res.status(401).json({ erro: 'Email ou senha incorretos.' });
-    res.json({ token: gerarToken(u.id), nome: u.nome, email: u.email });
+    res.json({ token: gerarToken(u.id), nome: u.nome, email: u.email, lang: u.lang || 'pt' });
   } catch {
     res.status(500).json({ erro: 'Erro ao fazer login.' });
   }

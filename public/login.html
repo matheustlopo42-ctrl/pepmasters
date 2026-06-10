@@ -131,6 +131,10 @@ async function fazerLogin(){
     if(!res.ok){mostrarErro(data.erro||'Email ou senha incorretos.');return;}
     localStorage.setItem('pep_token',data.token);
     localStorage.setItem('pep_nome',data.nome);
+    // Aplicar idioma salvo no banco
+    if (data.lang && data.lang !== localStorage.getItem('pep_lang')) {
+      localStorage.setItem('pep_lang', data.lang);
+    }
     var redir=new URLSearchParams(location.search).get('redirect')||'index.html';
     location.href=redir;
   }catch{mostrarErro('Erro de conexão. Tente novamente.');}
