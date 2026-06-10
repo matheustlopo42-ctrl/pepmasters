@@ -2000,7 +2000,55 @@ app.get('/api/admin/membro/:id/extrato', adminMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
-// Rota de teste — email plano ativo (admin only)
+// Rota de teste — email boas-vindas (admin only)
+app.post('/api/admin/testar-boas-vindas', adminMiddleware, async (req, res) => {
+  try {
+    const { email_teste } = req.body;
+    if (!email_teste) return res.status(400).json({ erro: 'email_teste obrigatório.' });
+    const u = await pool.query(`SELECT nome, email FROM pep_usuarios WHERE email=$1`, [email_teste]);
+    if (!u.rows.length) return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    const { nome, email } = u.rows[0];
+    await enviarEmail(email, '🎉 Bem-vindo ao PEPMASTERS!', `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
+        <div style="text-align:center;margin-bottom:24px">
+          <h1 style="font-family:sans-serif;font-weight:900;font-size:2rem;background:linear-gradient(135deg,#E8220A,#FF6B00,#FFB300);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:0">PEPMASTERS</h1>
+          <p style="color:rgba(255,255,255,.5);font-size:.85rem;margin:4px 0 0">High Performance Peptides</p>
+        </div>
+        <h2 style="color:#FFB300;font-size:1.4rem;margin-bottom:8px">Olá, ${nome.split(' ')[0]}! 👋</h2>
+        <p style="color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:16px">Sua conta foi criada com sucesso. Bem-vindo à PEPMASTERS — peptídeos bioativos com qualidade e transparência para atletas e entusiastas de performance.</p>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,179,0,.2);border-radius:10px;padding:16px;margin-bottom:20px">
+          <ul style="color:rgba(255,255,255,.7);font-size:.88rem;line-height:2;margin:0;padding-left:20px">
+            <li>Explorar nosso catálogo de peptídeos</li>
+            <li>Ativar seu acesso Members gratuito (Bronze)</li>
+            <li>Ganhar comissões indicando amigos</li>
+          </ul>
+        </div>
+        <div style="text-align:center">
+          <a href="${BASE_URL}" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;font-weight:700;text-decoration:none;border-radius:10px;font-size:1rem">Acessar a loja →</a>
+        </div>
+        <hr style="border-color:rgba(255,255,255,.1);margin:24px 0"/>
+        <p style="font-size:.78rem;color:rgba(255,255,255,.3);text-align:center">PEPMASTERS — Performance através da ciência.</p>
+      </div>
+    `);
+    res.json({ ok: true, msg: 'Email de boas-vindas enviado para ' + email });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// Rota de teste — email plano expirado (admin only)
+app.post('/api/admin/testar-plano-expirado', adminMiddleware, async (req, res) => {
+  try {
+    const { email_teste } = req.body;
+    if (!email_teste) return res.status(400).json({ erro: 'email_teste obrigatório.' });
+    const u = await pool.query(`SELECT id FROM pep_usuarios WHERE email=$1`, [email_teste]);
+    if (!u.rows.length) return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    // Colocar membro_ate no passado e plano prata para simular expiração
+    const ontem = new Date(); ontem.setDate(ontem.getDate() - 1);
+    await pool.query(`UPDATE pep_membros SET membro_ate=$1, plano='prata', status='ativo' WHERE usuario_id=$2`, [ontem, u.rows[0].id]);
+    // Rodar job para processar a expiração
+    await jobDiario();
+    res.json({ ok: true, msg: 'Plano expirado simulado. Verifique o email.' });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
 app.post('/api/admin/testar-plano-ativo', adminMiddleware, async (req, res) => {
   try {
     const { email_teste } = req.body;
