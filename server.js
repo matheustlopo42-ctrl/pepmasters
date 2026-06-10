@@ -2000,25 +2000,51 @@ app.get('/api/admin/membro/:id/extrato', adminMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
-// Rota de teste do job diário (admin only)
-app.post('/api/admin/testar-job', adminMiddleware, async (req, res) => {
+// Rota de teste — email plano ativo (admin only)
+app.post('/api/admin/testar-plano-ativo', adminMiddleware, async (req, res) => {
   try {
-    // Criar membro de teste com vencimento em 7 dias
     const { email_teste } = req.body;
-    if (email_teste) {
-      const u = await pool.query(`SELECT id FROM pep_usuarios WHERE email=$1`, [email_teste]);
-      if (u.rows.length) {
-        const ate7 = new Date();
-        ate7.setDate(ate7.getDate() + 7);
-        await pool.query(`
-          UPDATE pep_membros SET membro_ate=$1, plano='prata', status='ativo'
-          WHERE usuario_id=$2
-        `, [ate7, u.rows[0].id]);
-      }
-    }
-    // Rodar job agora
-    await jobDiario();
-    res.json({ ok: true, msg: 'Job executado. Verifique o email.' });
+    if (!email_teste) return res.status(400).json({ erro: 'email_teste obrigatório.' });
+    const u = await pool.query(`SELECT id FROM pep_usuarios WHERE email=$1`, [email_teste]);
+    if (!u.rows.length) return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    // Buscar ou criar membro
+    let membro = await pool.query(`SELECT id FROM pep_membros WHERE usuario_id=$1`, [u.rows[0].id]);
+    if (!membro.rows.length) return res.status(404).json({ erro: 'Membro não encontrado. Ative o Bronze primeiro.' });
+    // Simular confirmação de plano Prata
+    const ate = new Date(); ate.setDate(ate.getDate() + 30);
+    await pool.query(`UPDATE pep_membros SET status='ativo', membro_ate=$1, plano='prata' WHERE id=$2`, [ate, membro.rows[0].id]);
+    // Disparar email de plano ativo
+    const mDados = await pool.query(
+      `SELECT u.email, u.nome, m.codigo_ref, m.plano FROM pep_membros m JOIN pep_usuarios u ON u.id=m.usuario_id WHERE m.id=$1`,
+      [membro.rows[0].id]
+    );
+    const { email, nome, codigo_ref, plano: planoAtivado } = mDados.rows[0];
+    const nivelNomes = { bronze:'Bronze 🥉', prata:'Prata 🥈', ouro:'Ouro 🥇', diamante:'Diamante 💎' };
+    const comissoes  = { bronze:'5%', prata:'8%', ouro:'12%', diamante:'15%' };
+    const descontos  = { bronze:'10%', prata:'15%', ouro:'20%', diamante:'25%' };
+    const nomePlano  = nivelNomes[planoAtivado] || planoAtivado;
+    const venceEm    = ate.toLocaleDateString('pt-BR');
+    await enviarEmail(email, `✅ Plano ${nomePlano} ativado — PEPMASTERS Members`, `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
+        <h2 style="color:#FFB300">✅ Plano ${nomePlano} ativado!</h2>
+        <p>Olá, <strong>${nome.split(' ')[0]}</strong>!</p>
+        <p style="color:rgba(255,255,255,.8);line-height:1.7">Seu pagamento foi confirmado. Seu plano está ativo até <strong style="color:#FFB300">${venceEm}</strong>.</p>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,179,0,.2);border-radius:10px;padding:16px;margin:16px 0">
+          <ul style="color:rgba(255,255,255,.7);font-size:.88rem;line-height:2;margin:0;padding-left:20px">
+            <li>${comissoes[planoAtivado] || '5%'} de comissão por venda indicada</li>
+            <li>${descontos[planoAtivado] || '10%'} de desconto na loja</li>
+            <li>Acesso ao fórum e conteúdo exclusivo</li>
+          </ul>
+        </div>
+        <p style="color:rgba(255,255,255,.7)">Seu link de afiliado:<br/><strong style="color:#FFB300">${BASE_URL}/ref/${codigo_ref}</strong></p>
+        <div style="text-align:center;margin-top:20px">
+          <a href="${BASE_URL}/members.html" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;font-weight:700;text-decoration:none;border-radius:10px">Acessar painel Members →</a>
+        </div>
+        <hr style="border-color:rgba(255,255,255,.1);margin:24px 0"/>
+        <p style="font-size:.78rem;color:rgba(255,255,255,.3);text-align:center">PEPMASTERS — Performance através da ciência.</p>
+      </div>
+    `);
+    res.json({ ok: true, msg: 'Email de plano ativo enviado para ' + email });
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
