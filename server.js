@@ -2002,6 +2002,28 @@ app.get('/api/admin/membro/:id/extrato', adminMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
+// Rota de teste do job diário (admin only)
+app.post('/api/admin/testar-job', adminMiddleware, async (req, res) => {
+  try {
+    // Criar membro de teste com vencimento em 7 dias
+    const { email_teste } = req.body;
+    if (email_teste) {
+      const u = await pool.query(`SELECT id FROM pep_usuarios WHERE email=$1`, [email_teste]);
+      if (u.rows.length) {
+        const ate7 = new Date();
+        ate7.setDate(ate7.getDate() + 7);
+        await pool.query(`
+          UPDATE pep_membros SET membro_ate=$1, plano='prata', status='ativo'
+          WHERE usuario_id=$2
+        `, [ate7, u.rows[0].id]);
+      }
+    }
+    // Rodar job agora
+    await jobDiario();
+    res.json({ ok: true, msg: 'Job executado. Verifique o email.' });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
 // Dashboard admin
 app.get('/api/admin/dashboard', adminMiddleware, async (req, res) => {
   try {
