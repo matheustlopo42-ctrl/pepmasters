@@ -717,10 +717,12 @@
   }
 
   async function regenerarEnderecoCripto(pedidoId, token) {
+    var authToken = localStorage.getItem('pep_token');
+    if (!authToken) return;
     try {
       var res = await fetch('/api/pedido/' + pedidoId + '/cripto-token', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (localStorage.getItem('pep_token') || '') },
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authToken },
         body: JSON.stringify({ crypto_token: token })
       });
       var data = await res.json();
