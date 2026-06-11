@@ -433,6 +433,7 @@ window.PEPMASTERS_I18N = {
   "members.feat.prata.all":    { en:"All Silver benefits",         pt:"Todos os benefícios Prata",      es:"Todos los beneficios Plata",     de:"Alle Silber-Vorteile",           fr:"Tous les avantages Argent" },
   "members.feat.ouro.all":     { en:"All Gold benefits",           pt:"Todos os benefícios Ouro",       es:"Todos los beneficios Oro",       de:"Alle Gold-Vorteile",             fr:"Tous les avantages Or" },
   "checkout.member.discount": { en:"Member discount {nivel}: -{pct}% applied automatically", pt:"Desconto {nivel}: -{pct}% aplicado automaticamente", es:"Descuento {nivel}: -{pct}% aplicado automáticamente", de:"Mitgliederrabatt {nivel}: -{pct}% automatisch angewendet", fr:"Remise {nivel}: -{pct}% appliquée automatiquement" },
+  "nav.members":  { en:"Members", pt:"Membros", es:"Miembros", de:"Mitglieder", fr:"Membres" },
   "members.popular":          { en:"Most popular",    pt:"Mais popular",      es:"Más popular",       de:"Am beliebtesten",   fr:"Le plus populaire" },
   "members.plan.free":        { en:"Free",            pt:"Grátis",            es:"Gratis",            de:"Kostenlos",         fr:"Gratuit" },
   "members.per.month":        { en:"/month",          pt:"/mês",              es:"/mes",              de:"/Monat",            fr:"/mois" },

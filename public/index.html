@@ -477,6 +477,7 @@
     <div class="footer-col">
       <h4 data-i18n="footer.institutional">Institucional</h4>
       <a href="quem-somos.html" data-i18n="footer.about">Quem Somos</a>
+            <a href="members.html" data-i18n="nav.members">Membros</a>
       <a href="termos-de-uso.html" data-i18n="footer.terms">Termos de Uso</a>
       <a href="politica-privacidade.html" data-i18n="footer.privacy">Política de Privacidade</a>
     </div>
@@ -879,7 +880,7 @@ function mkCard(p) {
     var precoComDesc = preco * (1 - pctMembro / 100);
     var membroDescEl = document.createElement('div');
     membroDescEl.className = 'card-price-antes';
-    membroDescEl.innerHTML = 'R$ ' + preco.toFixed(2).replace('.', ',') + ' <span class="card-price-badge" style="background:#15803d">-' + pctMembro + '% ' + (nivelMembro.charAt(0).toUpperCase()+nivelMembro.slice(1)) + '</span>';
+    membroDescEl.innerHTML = 'R$ ' + preco.toFixed(2).replace('.', ',') + ' <span class="card-price-badge" style="background:#15803d">-' + pctMembro + '% ' + (nivelMembro.charAt(0).toUpperCase()+nivelMembro.slice(1)) + ' ' + ({bronze:'🥉',prata:'🥈',ouro:'🥇',diamante:'💎'}[nivelMembro]||'') + '</span>';
     priceWrap.appendChild(membroDescEl);
     preco = precoComDesc;
   }
