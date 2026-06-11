@@ -629,11 +629,11 @@
     if (pagAtual === 'cripto') {
       const lang = localStorage.getItem('pep_lang') || 'en';
       const msgs = {
-        pt: '⏳ Confirmação manual em até 24h úteis.\n\nPagamentos via criptomoeda precisam ser verificados manualmente na blockchain. Isso é uma característica técnica da tecnologia cripto — não é falha da PEPMASTERS.\n\nApós enviar o pagamento, nossa equipe irá confirmar e você receberá um email de confirmação.',
-        en: '⏳ Manual confirmation within 24 business hours.\n\nCryptocurrency payments require manual blockchain verification. This is a technical characteristic of crypto technology — not a PEPMASTERS issue.\n\nAfter sending payment, our team will confirm and you will receive a confirmation email.',
-        es: '⏳ Confirmación manual en hasta 24 horas hábiles.\n\nLos pagos en criptomoneda requieren verificación manual en la blockchain. Esta es una característica técnica de la tecnología cripto — no es un problema de PEPMASTERS.\n\nDespués de enviar el pago, nuestro equipo confirmará y recibirá un correo de confirmación.',
-        de: '⏳ Manuelle Bestätigung innerhalb von 24 Geschäftsstunden.\n\nKryptowährungszahlungen erfordern manuelle Blockchain-Überprüfung. Dies ist ein technisches Merkmal der Krypto-Technologie — kein PEPMASTERS-Problem.\n\nNach dem Senden der Zahlung wird unser Team bestätigen und Sie erhalten eine Bestätigungs-E-Mail.',
-        fr: '⏳ Confirmation manuelle sous 24h ouvrables.\n\nLes paiements en cryptomonnaie nécessitent une vérification manuelle sur la blockchain. C\'est une caractéristique technique de la technologie crypto — pas un problème PEPMASTERS.\n\nAprès l\'envoi du paiement, notre équipe confirmera et vous recevrez un e-mail de confirmation.'
+        pt: '✅ Confirmação automática via NOWPayments.\n\nEnvie o valor exato para o endereço gerado. Assim que o pagamento for detectado na blockchain, seu pedido será confirmado automaticamente e você receberá um email.',
+        en: '✅ Automatic confirmation via NOWPayments.\n\nSend the exact amount to the generated address. Once the payment is detected on the blockchain, your order will be automatically confirmed and you will receive an email.',
+        es: '✅ Confirmación automática vía NOWPayments.\n\nEnvía el monto exacto a la dirección generada. Una vez detectado el pago en la blockchain, tu pedido se confirmará automáticamente y recibirás un correo.',
+        de: '✅ Automatische Bestätigung über NOWPayments.\n\nSenden Sie den genauen Betrag an die generierte Adresse. Sobald die Zahlung in der Blockchain erkannt wird, wird Ihre Bestellung automatisch bestätigt und Sie erhalten eine E-Mail.',
+        fr: '✅ Confirmation automatique via NOWPayments.\n\nEnvoyez le montant exact à l\'adresse générée. Une fois le paiement détecté sur la blockchain, votre commande sera automatiquement confirmée et vous recevrez un e-mail.'
       };
       const txt = (msgs[lang] || msgs.en).replace(/\n/g, '<br>');
       document.getElementById('modal-cripto-info').innerHTML = txt;
