@@ -353,7 +353,7 @@
       badge = document.createElement('div');
       badge.id = 'badgeDescontoMembro';
       badge.style.cssText = 'background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;padding:8px 14px;border-radius:8px;font-size:.82rem;font-weight:700;margin-bottom:12px;text-align:center';
-      var resumo = document.getElementById('resumoItens');
+      var resumo = document.getElementById('resumoItems');
       if (resumo && resumo.parentNode) resumo.parentNode.insertBefore(badge, resumo);
     }
     badge.innerHTML = '🏅 Desconto ' + formatNivelNome(nivel) + ': <strong>-' + pct + '%</strong> aplicado automaticamente';

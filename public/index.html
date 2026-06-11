@@ -491,7 +491,6 @@
       <a href="meus-pedidos.html" data-i18n="footer.myorders">Meus Pedidos</a>
       <a href="perfil.html" data-i18n="footer.profile">Meu Perfil</a>
       <a href="rastrear-pedido.html" data-i18n="footer.trackorder">Rastrear Pedido</a>
-      <a href="members.html">👥 Members</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -871,6 +870,18 @@ function mkCard(p) {
     antesEl.className = 'card-price-antes';
     antesEl.innerHTML = 'R$ ' + p.precoAntes.toFixed(2).replace('.', ',') + ' <span class="card-price-badge">-' + pct + '%</span>';
     priceWrap.appendChild(antesEl);
+  }
+  // Desconto de membro
+  var nivelMembro = window._nivelMembroIndex;
+  var descontosMembro = { bronze: 5, prata: 10, ouro: 12, diamante: 15 };
+  var pctMembro = nivelMembro ? (descontosMembro[nivelMembro] || 0) : 0;
+  if (pctMembro > 0) {
+    var precoComDesc = preco * (1 - pctMembro / 100);
+    var membroDescEl = document.createElement('div');
+    membroDescEl.className = 'card-price-antes';
+    membroDescEl.innerHTML = 'R$ ' + preco.toFixed(2).replace('.', ',') + ' <span class="card-price-badge" style="background:#15803d">-' + pctMembro + '% ' + (nivelMembro.charAt(0).toUpperCase()+nivelMembro.slice(1)) + '</span>';
+    priceWrap.appendChild(membroDescEl);
+    preco = precoComDesc;
   }
   var priceEl = document.createElement('div');
   priceEl.className = 'card-price';
