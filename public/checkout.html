@@ -768,7 +768,7 @@
           var valorEl = document.getElementById('cryptoValor');
           if (valorEl && data.nowpay_amount) valorEl.textContent = data.nowpay_amount;
           var tokenEl = document.getElementById('cryptoToken');
-          if (tokenEl && data.nowpay_currency) tokenEl.textContent = data.nowpay_currency;
+          if (tokenEl && data.nowpay_currency) tokenEl.textContent = data.nowpay_currency.toUpperCase().replace('MATIC','').replace('TRX','');
         }
         verificarCripto(data.pedido_id);
       } else {
