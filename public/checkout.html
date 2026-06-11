@@ -464,6 +464,7 @@
     // Se já tem pedido criado, regenerar endereço NOWPayments com novo token
     if (window._pedidoIdAtual) {
       regenerarEnderecoCripto(window._pedidoIdAtual, token);
+      return; // não chamar atualizarCriptoUI para não sobrescrever
     }
     // Atualizar info de rede
     var netInfo = document.getElementById('cryptoNetworkInfo');
