@@ -40,7 +40,8 @@
 <div class="sidebar">
   <div class="sidebar-logo"><img src="Capturar.PNG" alt="Logo"/><span>PEPMASTERS</span></div>
   <div class="sidebar-badge">Admin</div>
-  <a href="admin.html">📋 Pedidos</a>
+  <a href="admin-dashboard.html" class="nav-link">📊 Dashboard</a>
+    <a href="admin.html">📋 Pedidos</a>
   <a href="admin-cupons.html">🏷️ Cupons</a>
   <a href="admin-membros.html">👥 Membros</a>
   <a href="admin-estoque.html" class="active">📦 Estoque</a>
@@ -52,7 +53,7 @@
   <h1>📦 Controle de Estoque</h1>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Produto</th><th>Estoque Atual</th><th>Alerta Mínimo</th><th>Situação</th><th>Atualizar</th></tr></thead>
+      <thead><tr><th>Produto</th><th>Estoque Atual</th><th>Alerta Mínimo</th><th>Preço (R$)</th><th>Situação</th><th>Atualizar</th></tr></thead>
       <tbody id="tBody"></tbody>
     </table>
   </div>
@@ -78,6 +79,7 @@
             <td><strong>${p.nome}</strong></td>
             <td>${qt}</td>
             <td><input class="estoque-input" type="number" id="min-${p.id}" value="${mn}" min="0" style="width:70px"/></td>
+            <td><input class="estoque-input" type="number" id="preco-${p.id}" value="${parseFloat(p.preco||0).toFixed(2)}" min="0" step="0.01" style="width:90px"/></td>
             <td>${badge}</td>
             <td style="display:flex;gap:8px;align-items:center">
               <input class="estoque-input" type="number" id="qt-${p.id}" value="${qt}" min="0"/>
@@ -92,11 +94,12 @@
   async function salvar(id) {
     const estoque       = parseInt(document.getElementById('qt-' + id).value);
     const alerta_minimo = parseInt(document.getElementById('min-' + id).value);
+    const preco         = parseFloat(document.getElementById('preco-' + id).value);
     try {
       await fetch('/api/admin/estoque/' + id, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + token },
-        body: JSON.stringify({ estoque, alerta_minimo })
+        body: JSON.stringify({ estoque, alerta_minimo, preco })
       });
       showToast('Estoque atualizado!');
       carregar();

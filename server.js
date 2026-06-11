@@ -1192,11 +1192,11 @@ app.get('/api/admin/estoque', adminMiddleware, async (req, res) => {
 
 // PUT /api/admin/estoque/:id
 app.put('/api/admin/estoque/:id', adminMiddleware, async (req, res) => {
-  const { estoque, alerta_minimo } = req.body;
+  const { estoque, alerta_minimo, preco } = req.body;
   try {
     await pool.query(
-      'UPDATE pep_estoque SET estoque=$1,alerta_minimo=$2 WHERE produto_id=$3::text',
-      [estoque, alerta_minimo, req.params.id]
+      'UPDATE pep_estoque SET estoque=$1, alerta_minimo=$2' + (preco !== undefined ? ', preco=$4' : '') + ' WHERE produto_id=$3::text',
+      preco !== undefined ? [estoque, alerta_minimo, req.params.id, preco] : [estoque, alerta_minimo, req.params.id]
     );
     res.json({ ok: true });
   } catch {
