@@ -359,6 +359,12 @@
     var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';
     var tmpl=(d['checkout.member.discount']&&(d['checkout.member.discount'][l]||d['checkout.member.discount']['en']))||'Desconto {nivel}: -{pct}% aplicado automaticamente';
     badge.innerHTML = '<strong>' + tmpl.replace('{nivel}',formatNivelNome(nivel)).replace('{pct}',pct) + '</strong>';
+    // Re-traduzir ao mudar idioma
+    window.addEventListener('pep_lang_change', function() {
+      var d2=window.PEPMASTERS_I18N||{};var l2=localStorage.getItem('pep_lang')||'en';
+      var tmpl2=(d2['checkout.member.discount']&&(d2['checkout.member.discount'][l2]||d2['checkout.member.discount']['en']))||'Desconto {nivel}: -{pct}% aplicado automaticamente';
+      badge.innerHTML = '<strong>' + tmpl2.replace('{nivel}',formatNivelNome(nivel)).replace('{pct}',pct) + '</strong>';
+    });
   }
   let cryptoToken = 'USDTPOLYGON';
   let cryptoValor = 0;
