@@ -2320,6 +2320,38 @@ app.delete('/api/admin/pedidos', adminMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
+// Regenerar endereço NOWPayments para pedido existente
+app.put('/api/pedido/:id/cripto-token', authMiddleware, async (req, res) => {
+  const { crypto_token } = req.body;
+  try {
+    const pedido = await pool.query(`SELECT * FROM pep_pedidos WHERE id=$1 AND usuario_id=$2`, [req.params.id, req.usuario.id]);
+    if (!pedido.rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+    const p = pedido.rows[0];
+    const moedaMap = { 'USDTPOLYGON':'usdtmatic', 'USDCPOLYGON':'usdcmatic', 'USDTTRX':'usdttrc20' };
+    const moeda = moedaMap[crypto_token] || 'usdtmatic';
+    let valorUsd = p.total;
+    try {
+      const cambio = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+      const cambioData = await cambio.json();
+      valorUsd = (p.total / (cambioData.rates?.BRL || 5.5)).toFixed(2);
+    } catch { valorUsd = (p.total / 5.5).toFixed(2); }
+    const npRes = await fetch('https://api.nowpayments.io/v1/payment', {
+      method: 'POST',
+      headers: { 'x-api-key': NOWPAYMENTS_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        price_amount: valorUsd, price_currency: 'usd', pay_currency: moeda,
+        order_id: String(req.params.id),
+        order_description: 'Pedido PEPMASTERS #' + req.params.id,
+        ipn_callback_url: BASE_URL + '/api/webhook/nowpayments',
+      })
+    });
+    const npData = await npRes.json();
+    if (!npData.pay_address) return res.status(400).json({ erro: npData.message || 'Erro NOWPayments.' });
+    await pool.query(`UPDATE pep_pedidos SET crypto_token=$1 WHERE id=$2`, [npData.payment_id, req.params.id]);
+    res.json({ nowpay_address: npData.pay_address, nowpay_amount: npData.pay_amount, nowpay_currency: npData.pay_currency });
+  } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
 // Dashboard admin
 app.get('/api/admin/dashboard', adminMiddleware, async (req, res) => {
   try {
