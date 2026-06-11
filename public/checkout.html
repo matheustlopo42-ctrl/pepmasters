@@ -356,7 +356,9 @@
       var resumo = document.getElementById('resumoItems');
       if (resumo && resumo.parentNode) resumo.parentNode.insertBefore(badge, resumo);
     }
-    badge.innerHTML = '🏅 Desconto ' + formatNivelNome(nivel) + ': <strong>-' + pct + '%</strong> aplicado automaticamente';
+    var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';
+    var tmpl=(d['checkout.member.discount']&&(d['checkout.member.discount'][l]||d['checkout.member.discount']['en']))||'Desconto {nivel}: -{pct}% aplicado automaticamente';
+    badge.innerHTML = '<strong>' + tmpl.replace('{nivel}',formatNivelNome(nivel)).replace('{pct}',pct) + '</strong>';
   }
   let cryptoToken = 'USDTPOLYGON';
   let cryptoValor = 0;
