@@ -1448,81 +1448,18 @@ app.get('/api/crypto/cotacao', async (req, res) => {
   }
 });
 
-// ── CRIPTO: verificar pagamento na Polygon ──────
+// ── CRIPTO: verificar status do pagamento NOWPayments ──────
 app.get('/api/pedido/:id/crypto-status', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT id, status, total, crypto_valor, crypto_token, criado_em FROM pep_pedidos WHERE id=$1',
+      'SELECT id, status, crypto_token FROM pep_pedidos WHERE id=$1',
       [req.params.id]
     );
     if (!rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
     const pedido = rows[0];
-
-    // Se já pago, retorna
     if (pedido.status === 'pago') return res.json({ pago: true, status: 'pago' });
-
-    // Verificar transações recentes na carteira via Polygonscan
-    const wallet   = CRYPTO_WALLET.toLowerCase();
-    const apiKey   = POLYGONSCAN_API_KEY ? '&apikey=' + POLYGONSCAN_API_KEY : '';
-    const valorEsperado = parseFloat(pedido.crypto_valor || 0);
-    const token    = pedido.crypto_token || 'USDT';
-    const pedidoTs = Math.floor(new Date(pedido.criado_em).getTime() / 1000);
-
-    // Endereços dos contratos na Polygon
-    const contratos = {
-      USDT: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-      USDC: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359'
-    };
-    const contrato = contratos[token] || contratos.USDT;
-
-    const url = 'https://api.polygonscan.com/api?module=account&action=tokentx' +
-      '&contractaddress=' + contrato +
-      '&address=' + wallet +
-      '&startblock=0&endblock=99999999&sort=desc&page=1&offset=20' + apiKey;
-
-    const r    = await fetch(url);
-    const data = await r.json();
-
-    if (data.status === '1' && data.result) {
-      for (const tx of data.result) {
-        const txTs    = parseInt(tx.timeStamp);
-        const txValor = parseFloat(tx.value) / Math.pow(10, parseInt(tx.tokenDecimal));
-        const txTo    = tx.to.toLowerCase();
-
-        // Verificar: destino correto, após criação do pedido, valor correto (±2% tolerância)
-        if (txTo === wallet && txTs >= pedidoTs - 300) {
-          const diff = Math.abs(txValor - valorEsperado) / valorEsperado;
-          if (diff <= 0.005) {
-            // Marcar pedido como pago
-            await pool.query(
-              "UPDATE pep_pedidos SET status='pago', pixgo_id=$1 WHERE id=$2 AND status!='pago'",
-              ['crypto:' + tx.hash, req.params.id]
-            );
-            enviarWhatsApp('CRIPTO CONFIRMADO! Pedido #' + req.params.id + ' — ' + txValor + ' ' + token);
-            return res.json({ pago: true, status: 'pago', tx: tx.hash });
-          }
-        }
-      }
-    }
-
-    // Verificar se houve transação mas com valor errado
-    if (data.status === '1' && data.result && data.result.length > 0) {
-      for (const tx of data.result) {
-        const txTs    = parseInt(tx.timeStamp);
-        const txValor = parseFloat(tx.value) / Math.pow(10, parseInt(tx.tokenDecimal));
-        const txTo    = tx.to.toLowerCase();
-        if (txTo === wallet && txTs >= pedidoTs - 300) {
-          const diff = Math.abs(txValor - valorEsperado) / valorEsperado;
-          if (diff > 0.005) {
-            return res.json({ pago: false, status: 'wrong_amount', sent: txValor, expected: valorEsperado });
-          }
-        }
-      }
-    }
-
     res.json({ pago: false, status: pedido.status });
   } catch (err) {
-    console.error('[Crypto] Erro ao verificar:', err.message);
     res.json({ pago: false, status: 'pix_pending' });
   }
 });
