@@ -718,21 +718,18 @@
 
   async function regenerarEnderecoCripto(pedidoId, token) {
     var authToken = localStorage.getItem('pep_token');
-    if (!authToken) return;
-    try {
-      var res = await fetch('/api/pedido/' + pedidoId + '/cripto-token', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authToken },
-        body: JSON.stringify({ crypto_token: token })
-      });
-      var data = await res.json();
-      if (data.nowpay_address) {
-        document.getElementById('cryptoAddr').textContent = data.nowpay_address;
-        document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(data.nowpay_address);
-        if (data.nowpay_amount) document.getElementById('cryptoValor').textContent = data.nowpay_amount;
-        if (data.nowpay_currency) document.getElementById('cryptoToken').textContent = data.nowpay_currency;
-      }
-    } catch(e) { console.error('Erro ao regenerar endereço:', e); }
+    var res = await fetch('/api/pedido/' + pedidoId + '/cripto-token', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authToken },
+      body: JSON.stringify({ crypto_token: token })
+    });
+    var data = await res.json();
+    if (data.nowpay_address) {
+      document.getElementById('cryptoAddr').textContent = data.nowpay_address;
+      document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(data.nowpay_address);
+      if (data.nowpay_amount) document.getElementById('cryptoValor').textContent = data.nowpay_amount;
+      if (data.nowpay_currency) document.getElementById('cryptoToken').textContent = data.nowpay_currency;
+    }
   }
 
   function verificarPagamento(pedidoId) {
