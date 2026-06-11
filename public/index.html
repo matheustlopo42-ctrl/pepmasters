@@ -944,7 +944,17 @@ function renderTopSellers(lista) {
     return TOP_SELLER_NOMES.some(function(n){ return p.nome && p.nome.toUpperCase().includes(n.toUpperCase()); });
   });
   if (tops.length === 0) tops = lista.slice(0, 5);
-  tops.slice(0, 5).forEach(function(p){ grid.appendChild(mkCard(p)); });
+  tops.slice(0, 5).forEach(function(p){
+    var card = mkCard(p);
+    // Renomear ids do seletor para top- prefix evitar duplicatas
+    var selEl = card.querySelector('.card-qtd-selector');
+    var btnEl = card.querySelector('#btn-add-' + p.id);
+    var qnEl  = card.querySelector('#qn-' + p.id);
+    if (selEl) selEl.id = 'top-sel-' + p.id;
+    if (btnEl) btnEl.id = 'top-btn-add-' + p.id;
+    if (qnEl)  qnEl.id  = 'top-qn-' + p.id;
+    grid.appendChild(card);
+  });
 }
 function renderGridDoisColunas(lista) {
   var container = document.getElementById('produtosGrid');
