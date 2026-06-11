@@ -356,22 +356,34 @@
           '<span>' + item.nome + '</span>' +
           '<span class="resumo-qty">×' + item.quantidade + '</span>' +
         '</div>' +
-        '<span>R$ ' + (item.preco * item.quantidade).toFixed(2).replace('.',',') + '</span>' +
+        '<div class="item-preco-wrapper" data-preco-original="' + (item.preco * item.quantidade).toFixed(2) + '" data-preco-desc-prod="' + (item.preco * item.quantidade).toFixed(2) + '">' +
+          '<span>R$ ' + (item.preco * item.quantidade).toFixed(2).replace('.',',') + '</span>' +
+        '</div>' +
       '</div>'
     ).join('');
 
     atualizarTotais();
+    if (nivelMembroAtual) atualizarTotaisComMembro();
   }
 
   function atualizarTotais() {
     const subtotal = carrinho.reduce((s, i) => s + i.preco * i.quantidade, 0);
     let desconto = 0;
+    let descontoMembroValor = 0;
+
+    // Desconto de membro
+    if (nivelMembroAtual) {
+      var descontosNivel = { bronze: 5, prata: 10, ouro: 12, diamante: 15 };
+      var pctMembro = descontosNivel[nivelMembroAtual] || 0;
+      descontoMembroValor = subtotal * (pctMembro / 100);
+    }
+    const subtotalComMembro = subtotal - descontoMembroValor;
 
     if (cupomDados) {
       const pct = pagAtual === 'pix' ? cupomDados.desconto_pix
                 : pagAtual === 'cripto' ? (cupomDados.desconto_pix || cupomDados.desconto_cartao || 0)
                 : cupomDados.desconto_cartao;
-      desconto = subtotal * (pct / 100);
+      desconto = subtotalComMembro * (pct / 100);
       document.getElementById('descontoRow').style.display = 'flex';
       document.getElementById('descontoTag').textContent   = '(' + cupomDados.codigo + ' −' + pct + '%)';
       document.getElementById('descontoValor').textContent = '— R$ ' + desconto.toFixed(2).replace('.',',');
@@ -379,7 +391,7 @@
       document.getElementById('descontoRow').style.display = 'none';
     }
 
-    const total = subtotal - desconto;
+    const total = subtotalComMembro - desconto;
     document.getElementById('resumoSubtotal').textContent = 'R$ ' + subtotal.toFixed(2).replace('.',',');
     document.getElementById('resumoTotal').textContent    = 'R$ ' + total.toFixed(2).replace('.',',');
   }

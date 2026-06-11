@@ -676,8 +676,33 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
   try {
     await client.query('BEGIN');
 
+    // descobrir usuario_id se logado (antes do cálculo de desconto)
+    let usuarioId = null;
+    if (userToken) {
+      try { usuarioId = jwt.verify(userToken, JWT_SECRET).id; } catch {}
+    }
+
     // calcular subtotal a partir do carrinho
     const subtotal = carrinho.reduce((s, i) => s + parseFloat(i.preco) * parseInt(i.quantidade), 0);
+
+    // calcular desconto de nível Members
+    const descontoPorNivel = { bronze: 5, prata: 10, ouro: 12, diamante: 15 };
+    let descontoMembro = 0;
+    let nivelMembro = null;
+    if (usuarioId || userToken) {
+      try {
+        const uid = usuarioId || (userToken ? jwt.verify(userToken, JWT_SECRET).id : null);
+        if (uid) {
+          const membroR = await client.query(`SELECT nivel FROM pep_membros WHERE usuario_id=$1 AND status='ativo'`, [uid]);
+          if (membroR.rows.length) {
+            nivelMembro = membroR.rows[0].nivel;
+            const pctMembro = descontoPorNivel[nivelMembro] || 0;
+            descontoMembro = subtotal * (pctMembro / 100);
+          }
+        }
+      } catch {}
+    }
+    const subtotalComMembro = subtotal - descontoMembro;
 
     // calcular desconto de cupom
     let desconto = 0;
@@ -690,7 +715,7 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       if (cupRows.length && cupRows[0].ativo) {
         const c   = cupRows[0];
         const pct = pagamento === 'pix' ? c.desconto_pix : c.desconto_cartao;
-        desconto  = subtotal * (pct / 100);
+        desconto  = subtotalComMembro * (pct / 100);
         cupomId   = c.id;
         if (!(c.usos_max > 0 && c.usos >= c.usos_max)) {
           await client.query('UPDATE pep_cupons SET usos=usos+1 WHERE id=$1', [c.id]);
@@ -698,17 +723,11 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       }
     }
 
-    const total = subtotal - desconto;
+    const total = subtotalComMembro - desconto;
 
     // montar nomes dos produtos para exibição
     const produto_nome = carrinho.map(i => i.nome + (i.quantidade > 1 ? ' x' + i.quantidade : '')).join(', ');
     const produto_id   = carrinho[0].id;
-
-    // descobrir usuario_id se logado
-    let usuarioId = null;
-    if (userToken) {
-      try { usuarioId = jwt.verify(userToken, JWT_SECRET).id; } catch {}
-    }
 
     // criar pedido
     const statusInicial = (pagamento === 'pix' || pagamento === 'cripto') ? 'pix_pending' : 'pago';
@@ -724,7 +743,7 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
         usuarioId, nome, email.toLowerCase(), cpf || null, telefone || null,
         endereco?.cep || null, endereco?.rua || null, endereco?.numero || null,
         endereco?.bairro || null, endereco?.cidade || null, endereco?.complemento || null,
-        produto_id, produto_nome, subtotal.toFixed(2), desconto.toFixed(2), total.toFixed(2),
+        produto_id, produto_nome, subtotal.toFixed(2), (desconto + descontoMembro).toFixed(2), total.toFixed(2),
         pagamento, cupomId ? cupom.toUpperCase() : null, statusInicial,
         crypto_valor || null, crypto_token || null, ref_code || null
       ]
@@ -914,7 +933,7 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       }, 48 * 60 * 60 * 1000); // 48 horas
     }
 
-    res.json({ pedido_id: pedidoId, qrcode_url, pix_copia_cola, nowpay_address, nowpay_amount, nowpay_currency });
+    res.json({ pedido_id: pedidoId, qrcode_url, pix_copia_cola, nowpay_address, nowpay_amount, nowpay_currency, desconto_membro: descontoMembro.toFixed(2), nivel_membro: nivelMembro });
   } catch (err) {
     await client.query('ROLLBACK').catch(() => {});
     console.error('[Pedido] Erro:', err.message);
