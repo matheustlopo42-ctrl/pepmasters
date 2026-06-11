@@ -322,6 +322,42 @@
 
 <script>
   let pagAtual    = 'cripto';
+  let nivelMembroAtual = null;
+
+  function formatNivelNome(nivel) {
+    var nomes = { bronze: 'Bronze 🥉', prata: 'Prata 🥈', ouro: 'Ouro 🥇', diamante: 'Diamante 💎' };
+    return nomes[nivel] || nivel;
+  }
+
+  async function carregarNivelMembro() {
+    var token = localStorage.getItem('pep_token');
+    if (!token) return;
+    try {
+      var r = await fetch('/api/membros/painel', { headers: { Authorization: 'Bearer ' + token } });
+      if (!r.ok) return;
+      var data = await r.json();
+      if (data.status === 'ativo') {
+        nivelMembroAtual = data.nivel;
+        mostrarBadgeDesconto(data.nivel);
+        atualizarTotais();
+      }
+    } catch {}
+  }
+
+  function mostrarBadgeDesconto(nivel) {
+    var descontos = { bronze: 5, prata: 10, ouro: 12, diamante: 15 };
+    var pct = descontos[nivel] || 0;
+    if (!pct) return;
+    var badge = document.getElementById('badgeDescontoMembro');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'badgeDescontoMembro';
+      badge.style.cssText = 'background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;padding:8px 14px;border-radius:8px;font-size:.82rem;font-weight:700;margin-bottom:12px;text-align:center';
+      var resumo = document.getElementById('resumoItens');
+      if (resumo && resumo.parentNode) resumo.parentNode.insertBefore(badge, resumo);
+    }
+    badge.innerHTML = '🏅 Desconto ' + formatNivelNome(nivel) + ': <strong>-' + pct + '%</strong> aplicado automaticamente';
+  }
   let cryptoToken = 'USDTPOLYGON';
   let cryptoValor = 0;
   const WALLET    = '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
@@ -343,6 +379,7 @@
     if (nome) document.getElementById('nome').value = nome;
 
     renderResumo();
+    carregarNivelMembro();
     carregarCotacao();
   }
 
