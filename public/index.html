@@ -962,6 +962,8 @@ function renderTopSellers(lista) {
     if (btnMinus) btnMinus.onclick = function(){ cardQtdPrefixed(p.id, -1, prefix); };
     if (btnPlus)  btnPlus.onclick  = function(){ cardQtdPrefixed(p.id, +1, prefix); };
     if (btnConf)  btnConf.onclick  = function(){ adicionarAoCarrinhoPrefixed(p.id, prefix); };
+    var btnCanc = card.querySelector('.qtd-cancelar');
+    if (btnCanc) btnCanc.onclick = function(){ cardQtdPrefixed(p.id, -999, prefix); };
     grid.appendChild(card);
   });
 }
