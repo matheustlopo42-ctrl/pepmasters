@@ -226,7 +226,7 @@
               </div>
               <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:8px">
                 <div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em"><span data-i18n="checkout.crypto.wallet">Endereço da carteira</span></div>
-                <div id="cryptoAddr" style="font-family:monospace;font-size:.78rem;word-break:break-all;color:var(--dark)"></div>
+                <div id="cryptoAddr" style="font-family:monospace;font-size:.85rem;font-weight:700;word-break:break-all;color:var(--dark);background:rgba(255,179,0,.12);padding:8px;border-radius:6px;border:1px solid rgba(255,179,0,.3);user-select:all;cursor:text"></div>
                 <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
                 <button onclick="copiarEndereco()" style="padding:5px 12px;background:var(--amber);border:none;border-radius:6px;font-size:.75rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer;color:var(--dark)" data-i18n="checkout.crypto.copy.addr">Copy address</button>
                 <button onclick="copiarValor()" style="padding:5px 12px;background:linear-gradient(135deg,var(--red),var(--orange));border:none;border-radius:6px;font-size:.75rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer;color:#fff" data-i18n="checkout.crypto.copy.amount">Copy exact amount</button>
@@ -536,16 +536,48 @@
     atualizarCriptoUI();
   }
 
+  function copiarTexto(texto) {
+    return new Promise((resolve, reject) => {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(resolve).catch(() => {
+          fallbackCopy(texto) ? resolve() : reject();
+        });
+      } else {
+        fallbackCopy(texto) ? resolve() : reject();
+      }
+    });
+  }
+
+  function fallbackCopy(texto) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = texto;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch { return false; }
+  }
+
   function copiarEndereco() {
-    var addr = cryptoToken === 'USDTTRX' ? TRON_WALLET : WALLET;
-    navigator.clipboard.writeText(addr).then(() => {
-      showCryptoMsg('Address copied!');
+    var addr = document.getElementById('cryptoAddr').textContent.trim();
+    copiarTexto(addr).then(() => {
+      showCryptoMsg('✅ Copiado: ' + addr);
+    }).catch(() => {
+      showCryptoMsg('⚠️ Erro ao copiar. Endereço: ' + addr);
     });
   }
 
   function copiarValor() {
-    navigator.clipboard.writeText(cryptoValor).then(() => {
-      showCryptoMsg('Amount copied: ' + cryptoValor + ' ' + cryptoToken);
+    var val = document.getElementById('cryptoValor').textContent.trim();
+    var tok = document.getElementById('cryptoToken').textContent.trim();
+    copiarTexto(val).then(() => {
+      showCryptoMsg('✅ Copiado: ' + val + ' ' + tok);
+    }).catch(() => {
+      showCryptoMsg('⚠️ Erro ao copiar. Valor: ' + val + ' ' + tok);
     });
   }
 
