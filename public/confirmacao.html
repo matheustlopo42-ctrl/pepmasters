@@ -1,20 +1,42 @@
-<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n  <title>Checkout \u2014 PEPMASTERS</title>\n  <link href=\"https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap\" rel=\"stylesheet\" />\n  <style>\n    :root { --amber: #FFB300; --red: #E8220A; --orange: #FF6B00; --cream: #FFF8F0; --warm-white: #FFFDF9; --dark: #1C0A00; --mid: #3D1A00; --muted: #7A4A2A; --border: #FFD580; }\n    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }\n    body { font-family: 'Barlow', sans-serif; background: var(--cream); min-height: 100vh; display: flex; flex-direction: column; }\n\n    header { background: var(--warm-white); border-bottom: 3px solid var(--amber); padding: 0 24px; height: 68px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(255,179,0,0.2); }\n    .logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }\n    .logo-wrap img { height: 40px; width: 40px; object-fit: contain; }\n    .logo-text { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.5rem; letter-spacing: 0.04em; background: linear-gradient(135deg, var(--red), var(--orange), var(--amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }\n\n    main { flex: 1; max-width: 1000px; margin: 0 auto; padding: 40px 24px; width: 100%; }\n\n    h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2.2rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--dark); margin-bottom: 32px; }\n\n    .checkout-grid { display: grid; grid-template-columns: 1fr 360px; gap: 28px; }\n\n    .panel { background: #fff; border-radius: 16px; padding: 28px; border: 1px solid #FFE5B0; box-shadow: 0 4px 20px rgba(255,179,0,0.08); margin-bottom: 20px; }\n\n    .panel h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dark); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }\n\n    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }\n    .form-group { margin-bottom: 14px; }\n    label { display: block; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mid); margin-bottom: 5px; }\n    input, select { width: 100%; padding: 11px 13px; border: 2px solid var(--border); border-radius: 8px; font-size: 0.93rem; font-family: 'Barlow', sans-serif; color: var(--dark); background: var(--warm-white); outline: none; transition: border-color 0.2s; }\n    input:focus, select:focus { border-color: var(--orange); }\n    input[readonly] { background: #FFF8EC; color: var(--muted); }\n\n    /* Pagamento tabs */\n    .pay-tabs { display: flex; gap: 10px; margin-bottom: 20px; }\n    .pay-tab { flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: 10px; background: none; cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); transition: all 0.2s; }\n    .pay-tab.active { border-color: var(--orange); color: var(--orange); background: #FFF3E0; }\n\n    .pay-panel { display: none; }\n    .pay-panel.active { display: block; }\n\n    /* PIX */\n    .pix-area { text-align: center; padding: 20px 0; }\n    #qrcodeImg { max-width: 200px; border-radius: 12px; border: 3px solid var(--amber); margin: 16px auto; display: block; }\n    .pix-copy { width: 100%; padding: 10px; background: var(--warm-white); border: 2px dashed var(--amber); border-radius: 8px; font-family: 'Barlow', monospace; font-size: 0.78rem; color: var(--mid); word-break: break-all; cursor: pointer; margin-top: 10px; }\n    .pix-status { margin-top: 12px; font-size: 0.88rem; color: var(--muted); }\n\n    /* Cupom */\n    .cupom-row { display: flex; gap: 10px; }\n    .cupom-row input { flex: 1; }\n    .btn-cupom { padding: 11px 18px; background: linear-gradient(135deg, var(--red), var(--orange)); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.06em; text-transform: uppercase; border: none; border-radius: 8px; cursor: pointer; white-space: nowrap; }\n\n    /* Resumo */\n    .resumo-item { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--mid); padding: 8px 0; border-bottom: 1px solid #FFE5B0; }\n    .resumo-item:last-child { border: none; }\n    .resumo-total { display: flex; justify-content: space-between; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--dark); padding: 14px 0 0; }\n    .resumo-total .valor { color: var(--red); }\n\n    .btn-finalizar { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--red), var(--orange)); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.1em; text-transform: uppercase; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 20px rgba(232,34,10,0.35); transition: transform 0.15s, box-shadow 0.15s; margin-top: 16px; }\n    .btn-finalizar:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(232,34,10,0.45); }\n    .btn-finalizar:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }\n\n    .desconto-tag { font-size: 0.8rem; color: #22c55e; font-weight: 600; }\n    .seguro { text-align: center; font-size: 0.78rem; color: var(--muted); margin-top: 12px; }\n\n    #msgErro { background: #FFF0EE; border-left: 4px solid var(--red); padding: 10px 14px; border-radius: 8px; font-size: 0.88rem; color: var(--red); margin-bottom: 16px; display: none; }\n\n    footer { background: var(--dark); color: rgba(255,255,255,0.4); text-align: center; padding: 16px; font-size: 0.8rem; }\n    footer a { color: rgba(255,179,0,0.5); text-decoration: none; }\n\n    @media (max-width: 768px) {\n      .checkout-grid { grid-template-columns: 1fr; }\n      .form-row { grid-template-columns: 1fr; }\n    }\n      header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0;height:68px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(255,179,0,.2)}
-    .header-inner{max-width:1200px;width:100%;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;gap:8px}
-    .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Pedido Confirmado — PEPMASTERS</title>
+  <meta name="description" content="Confirmação de pedido PEPMASTERS."/>
+  <meta name="robots" content="noindex, follow"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:var(--cream);min-height:100vh;display:flex;flex-direction:column}
+    header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(255,179,0,.2)}
+    .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}
     .logo-wrap img{height:40px;width:40px;object-fit:contain}
-    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .header-right{display:flex;align-items:center;gap:8px;margin-left:auto}
-    .back-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none;white-space:nowrap}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .back-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none}
     .back-link:hover{color:var(--orange)}
-    .back-link-mobile{display:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;color:var(--muted);text-decoration:none;padding:0 4px}
-    .cart-btn{background:none;border:2px solid var(--border);border-radius:10px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;color:var(--mid);transition:all .2s;white-space:nowrap}
-    .cart-btn:hover{border-color:var(--orange);color:var(--orange)}
-    .cart-count{background:var(--red);color:#fff;border-radius:50%;width:20px;height:20px;font-size:.65rem;font-weight:800;display:none;align-items:center;justify-content:center;margin-left:2px}
-    .cart-count.show{display:flex}
-    .btn-login{padding:5px 10px;border:2px solid var(--red);border-radius:8px;color:var(--red);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;text-transform:uppercase;transition:all .2s;white-space:nowrap}
-    .btn-login:hover{background:var(--red);color:#fff}
-    .btn-cadastro{padding:5px 10px;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:8px;color:#fff;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;text-transform:uppercase;white-space:nowrap}
-    @media(max-width:600px){.back-link{display:none}.back-link-mobile{display:inline}}
+    main{flex:1;max-width:680px;margin:0 auto;padding:48px 24px;width:100%}
+    .panel{background:#fff;border-radius:16px;padding:36px 28px;border:1px solid #FFE5B0;box-shadow:0 4px 20px rgba(255,179,0,.08);text-align:center}
+    .ok-icon{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:2.2rem;color:#fff}
+    .pending-icon{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--amber),var(--orange));display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:2.2rem;color:#fff}
+    h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--dark);margin-bottom:8px}
+    .subtitle{color:var(--muted);font-size:.95rem;margin-bottom:24px}
+    .pedido-info{background:var(--warm-white);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:24px;text-align:left}
+    .pedido-info .linha{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #FFE5B0;font-size:.92rem}
+    .pedido-info .linha:last-child{border:none}
+    .pedido-info .label{color:var(--muted);font-weight:600;text-transform:uppercase;font-size:.78rem;letter-spacing:.06em}
+    .pedido-info .valor{color:var(--dark);font-weight:700}
+    .status-badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+    .status-pago{background:#dcfce7;color:#15803d}
+    .status-pendente{background:#fff3cd;color:#92400e}
+    .btns{display:flex;gap:12px;margin-top:8px}
+    .btn{flex:1;padding:13px;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;text-align:center;transition:transform .15s}
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;box-shadow:0 4px 20px rgba(232,34,10,.35)}
+    .btn-secondary{background:none;border:2px solid var(--border);color:var(--mid)}
+    .loading{padding:60px 0;text-align:center;color:var(--muted)}
     footer{background:var(--dark);color:#fff;padding:52px 24px 0;margin-top:60px}
     .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;padding-bottom:44px;border-bottom:1px solid rgba(255,179,0,.2)}
     .footer-brand p{font-size:.84rem;color:rgba(255,255,255,.5);line-height:1.7;margin-top:12px;max-width:260px}
@@ -22,40 +44,40 @@
     .footer-col a{display:block;font-size:.86rem;color:rgba(255,255,255,.6);text-decoration:none;margin-bottom:8px;transition:color .2s}
     .footer-col a:hover{color:var(--amber)}
     .footer-bottom{max-width:1200px;margin:0 auto;padding:18px 0;text-align:center;font-size:.78rem;color:rgba(255,255,255,.3)}
-    .footer-bottom a{color:rgba(255,179,0,.4);text-decoration:none}
-    .footer-bottom a:hover{color:var(--amber)}
-    @media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}}
-    @media(max-width:480px){.footer-grid{grid-template-columns:1fr}}
-  </style>\n</head>\n<body>\n\n<header>
-  <div class="header-inner">
-    <a href="index.html" class="back-link-mobile">←</a>
-    <a href="index.html" class="logo-wrap">
-      <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain"/>
-      <span class="logo-text">PEPMASTERS</span>
-    </a>
-    <div class="header-right">
-      <a href="index.html" class="back-link">← Início</a>
-      <div id="authArea"></div>
-      <button class="cart-btn" onclick="abrirCarrinho()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.98-1.61L23 6H6"/></svg>
-        <span data-i18n="nav.cart">Cart</span>
-        <span class="cart-count" id="cartCount">0</span>
-      </button>
-    </div>
+    .admin-link{display:block;text-align:center;padding:8px;font-size:.75rem;color:rgba(255,255,255,.15);text-decoration:none}
+    .admin-link:hover{color:var(--amber)}
+    @media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}.btns{flex-direction:column}}
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo-wrap">
+    <img src="Capturar.PNG" alt="Logo"/>
+    <span class="logo-text">PEPMASTERS</span>
+  </a>
+  <a href="index.html" class="back-link">← <span data-i18n="checkout.back">Continuar comprando</span></a>
+</header>
+
+<main>
+  <div class="panel" id="conteudo">
+    <div class="loading" data-i18n="confirm.loading">Carregando pedido...</div>
   </div>
-</header>\n\n<main>\n  <h1>\ud83d\uded2 Finalizar Pedido</h1>\n\n  <div id=\"msgErro\"></div>\n\n  <div class=\"checkout-grid\">\n    <div>\n      <!-- DADOS PESSOAIS -->\n      <div class=\"panel\">\n        <h2>\ud83d\udc64 Seus Dados</h2>\n        <div class=\"form-row\">\n          <div class=\"form-group\">\n            <label>Nome completo</label>\n            <input type=\"text\" id=\"nome\" placeholder=\"Seu nome\" />\n          </div>\n          <div class=\"form-group\">\n            <label>Email</label>\n            <input type=\"email\" id=\"email\" placeholder=\"seu@email.com\" />\n          </div>\n        </div>\n        <div class=\"form-row\">\n          <div class=\"form-group\">\n            <label>CPF</label>\n            <input type=\"text\" id=\"cpf\" placeholder=\"000.000.000-00\" maxlength=\"14\" />\n          </div>\n          <div class=\"form-group\">\n            <label>Telefone</label>\n            <input type=\"text\" id=\"telefone\" placeholder=\"(00) 00000-0000\" maxlength=\"15\" />\n          </div>\n        </div>\n      </div>\n\n      <!-- ENTREGA -->\n      <div class=\"panel\">\n        <h2>\ud83d\udce6 Endere\u00e7o de Entrega</h2>\n        <div class=\"form-row\">\n          <div class=\"form-group\">\n            <label>CEP</label>\n            <input type=\"text\" id=\"cep\" placeholder=\"00000-000\" maxlength=\"9\" oninput=\"buscarCep(this)\" />\n          </div>\n          <div class=\"form-group\">\n            <label>N\u00famero</label>\n            <input type=\"text\" id=\"numero\" placeholder=\"N\u00ba\" />\n          </div>\n        </div>\n        <div class=\"form-group\">\n          <label>Rua</label>\n          <input type=\"text\" id=\"rua\" placeholder=\"Logradouro\" readonly />\n        </div>\n        <div class=\"form-row\">\n          <div class=\"form-group\">\n            <label>Bairro</label>\n            <input type=\"text\" id=\"bairro\" readonly />\n          </div>\n          <div class=\"form-group\">\n            <label>Cidade / UF</label>\n            <input type=\"text\" id=\"cidade\" readonly />\n          </div>\n        </div>\n        <div class=\"form-group\">\n          <label>Complemento</label>\n          <input type=\"text\" id=\"complemento\" placeholder=\"Apto, bloco...\" />\n        </div>\n      </div>\n\n      <!-- PAGAMENTO -->\n      <div class=\"panel\">\n        <h2>\ud83d\udcb3 Pagamento</h2>\n        <div class=\"pay-tabs\">\n          <button class=\"pay-tab active\" onclick=\"trocarPag('pix', this)\">PIX</button>\n          <button class=\"pay-tab\" onclick=\"trocarPag('cartao', this)\">Cart\u00e3o</button>\n        </div>\n\n        <!-- PIX -->\n        <div class=\"pay-panel active\" id=\"pag-pix\">\n          <p style=\"font-size:.88rem;color:var(--muted);margin-bottom:16px\">Clique em \"Finalizar\" para gerar o QR Code PIX. Pagamento confirmado automaticamente.</p>\n          <div class=\"pix-area\" id=\"pixArea\" style=\"display:none\">\n            <img id=\"qrcodeImg\" src=\"\" alt=\"QR Code PIX\" />\n            <div class=\"pix-copy\" id=\"pixCopia\" onclick=\"copiarPix()\">Clique para copiar o c\u00f3digo PIX</div>\n            <p class=\"pix-status\" id=\"pixStatus\">\u23f3 Aguardando pagamento...</p>\n          </div>\n        </div>\n\n        <!-- CART\u00c3O -->\n        <div class=\"pay-panel\" id=\"pag-cartao\">\n          <div class=\"form-group\">\n            <label>N\u00famero do cart\u00e3o</label>\n            <input type=\"text\" id=\"cc-num\" placeholder=\"0000 0000 0000 0000\" maxlength=\"19\" oninput=\"mascaraCartao(this)\" />\n          </div>\n          <div class=\"form-group\">\n            <label>Nome no cart\u00e3o</label>\n            <input type=\"text\" id=\"cc-nome\" placeholder=\"NOME COMO NO CART\u00c3O\" />\n          </div>\n          <div class=\"form-row\">\n            <div class=\"form-group\">\n              <label>Validade</label>\n              <input type=\"text\" id=\"cc-val\" placeholder=\"MM/AA\" maxlength=\"5\" oninput=\"mascaraValidade(this)\" />\n            </div>\n            <div class=\"form-group\">\n              <label>CVV</label>\n              <input type=\"text\" id=\"cc-cvv\" placeholder=\"000\" maxlength=\"4\" />\n            </div>\n          </div>\n          <div class=\"form-group\">\n            <label>Parcelas</label>\n            <select id=\"parcelas\">\n              <option value=\"1\">1x sem juros</option>\n              <option value=\"2\">2x sem juros</option>\n              <option value=\"3\">3x sem juros</option>\n            </select>\n          </div>\n        </div>\n      </div>\n    </div>\n\n    <!-- RESUMO -->\n    <div>\n      <div class=\"panel\" style=\"position:sticky;top:88px\">\n        <h2>\ud83e\uddfe Resumo</h2>\n\n        <div id=\"resumoProduto\" class=\"resumo-item\">\n          <span>Produto</span><span id=\"resumoNome\">\u2014</span>\n        </div>\n        <div class=\"resumo-item\">\n          <span>Subtotal</span><span id=\"resumoSubtotal\">R$ 0,00</span>\n        </div>\n        <div class=\"resumo-item\" id=\"descontoRow\" style=\"display:none\">\n          <span>Desconto <span class=\"desconto-tag\" id=\"descontoTag\"></span></span>\n          <span id=\"descontoValor\" style=\"color:#22c55e\">\u2014 R$ 0,00</span>\n        </div>\n        <div class=\"resumo-item\">\n          <span>Frete</span><span>A calcular</span>\n        </div>\n        <div class=\"resumo-total\">\n          <span>Total</span><span class=\"valor\" id=\"resumoTotal\">R$ 0,00</span>\n        </div>\n\n        <!-- Cupom -->\n        <div style=\"margin-top:18px\">\n          <label>Cupom de desconto</label>\n          <div class=\"cupom-row\">\n            <input type=\"text\" id=\"cupom\" placeholder=\"C\u00d3DIGO\" style=\"text-transform:uppercase\" />\n            <button class=\"btn-cupom\" onclick=\"aplicarCupom()\">Aplicar</button>\n          </div>\n          <p id=\"cupomMsg\" style=\"font-size:.82rem;margin-top:6px;color:var(--muted)\"></p>\n        </div>\n\n        <button class=\"btn-finalizar\" id=\"btnFinalizar\" onclick=\"finalizar()\">Finalizar Pedido</button>\n        <p class=\"seguro\">\ud83d\udd12 Pagamento 100% seguro</p>\n      </div>\n    </div>\n  </div>\n</main>\n\n<footer>
+</main>
+
+<footer>
   <div class="footer-grid">
     <div class="footer-brand">
       <a href="index.html" class="logo-wrap" style="margin-bottom:0">
         <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain"/>
         <span class="logo-text">PEPMASTERS</span>
       </a>
-      <p data-i18n="footer.desc"><span data-i18n="footer.desc">Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</span></p>
+      <p><span data-i18n="footer.desc">Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</span></p>
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer.institutional">Institucional</h4>
       <a href="quem-somos.html" data-i18n="footer.about">Quem Somos</a>
-            <a href="members.html" data-i18n="nav.members">Membros</a>
+      <a href="members.html" data-i18n="nav.members">Membros</a>
       <a href="termos-de-uso.html" data-i18n="footer.terms">Termos de Uso</a>
       <a href="politica-privacidade.html" data-i18n="footer.privacy">Política de Privacidade</a>
     </div>
@@ -76,20 +98,69 @@
     <p>© 2025 PEPMASTERS. <span data-i18n="footer.rights">Todos os direitos reservados.</span></p>
     <a href="admin-login.html" class="admin-link" data-i18n="footer.admin">Área do Administrador</a>
   </div>
-</footer>\n\n<script>\n  let pagAtual = 'pix';\n  let produto   = null;\n  let cupomDados = null;\n\n  // \u2500\u2500\u2500 INIT \u2500\u2500\u2500\n  async function init() {\n    const params = new URLSearchParams(location.search);\n    const pid    = params.get('produto');\n\n    // preencher dados do usu\u00e1rio logado\n    const token = localStorage.getItem('pep_token');\n    const nome  = localStorage.getItem('pep_nome');\n    if (nome) document.getElementById('nome').value = nome;\n\n    // buscar produto\n    if (pid) {\n      try {\n        const res = await fetch('/api/produtos');\n        const list = await res.json();\n        produto = list.find(p => p.id == pid);\n      } catch {\n        produto = [\n          { id:1, nome:'BPC-157', preco:150 },\n          { id:2, nome:'TB-500', preco:180 },\n          { id:3, nome:'HGH Frag 176-191', preco:160 },\n          { id:4, nome:'Ipamorelin', preco:140 },\n          { id:5, nome:'Sermorelin', preco:170 },\n        ].find(p => p.id == pid);\n      }\n    }\n\n    atualizarResumo();\n  }\n\n  function atualizarResumo() {\n    const preco = produto ? parseFloat(produto.preco) : 0;\n    let total = preco;\n    let desc  = 0;\n\n    document.getElementById('resumoNome').textContent = produto ? produto.nome : '\u2014';\n    document.getElementById('resumoSubtotal').textContent = 'R$ ' + preco.toFixed(2).replace('.',',');\n\n    if (cupomDados) {\n      const pct = pagAtual === 'pix' ? cupomDados.desconto_pix : cupomDados.desconto_cartao;\n      desc = preco * (pct / 100);\n      total = preco - desc;\n      document.getElementById('descontoRow').style.display = 'flex';\n      document.getElementById('descontoTag').textContent   = '(' + cupomDados.codigo + ' \u2212' + pct + '%)';\n      document.getElementById('descontoValor').textContent = '\u2014 R$ ' + desc.toFixed(2).replace('.',',');\n    } else {\n      document.getElementById('descontoRow').style.display = 'none';\n    }\n\n    document.getElementById('resumoTotal').textContent = 'R$ ' + total.toFixed(2).replace('.',',');\n  }\n\n  function trocarPag(tipo, btn) {\n    pagAtual = tipo;\n    document.querySelectorAll('.pay-tab').forEach(t => t.classList.remove('active'));\n    document.querySelectorAll('.pay-panel').forEach(p => p.classList.remove('active'));\n    btn.classList.add('active');\n    document.getElementById('pag-' + tipo).classList.add('active');\n    atualizarResumo();\n  }\n\n  // \u2500\u2500\u2500 CEP \u2500\u2500\u2500\n  async function buscarCep(el) {\n    let v = el.value.replace(/\\D/g,'');\n    if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5,8);\n    el.value = v;\n    if (v.replace('-','').length < 8) return;\n    try {\n      const r = await fetch('https://viacep.com.br/ws/' + v.replace('-','') + '/json/');\n      const d = await r.json();\n      if (d.erro) return;\n      document.getElementById('rua').value    = d.logradouro;\n      document.getElementById('bairro').value = d.bairro;\n      document.getElementById('cidade').value = d.localidade + ' / ' + d.uf;\n      document.getElementById('numero').focus();\n    } catch {}\n  }\n\n  // \u2500\u2500\u2500 CUPOM \u2500\u2500\u2500\n  async function aplicarCupom() {\n    const codigo = document.getElementById('cupom').value.trim().toUpperCase();\n    const msg    = document.getElementById('cupomMsg');\n    if (!codigo) return;\n    try {\n      const res  = await fetch('/api/cupom/' + codigo);\n      const data = await res.json();\n      if (!res.ok || !data.ativo) { msg.style.color = 'var(--red)'; msg.textContent = '\u274c Cupom inv\u00e1lido ou inativo.'; cupomDados = null; }\n      else { msg.style.color = '#22c55e'; msg.textContent = '\u2705 Cupom aplicado!'; cupomDados = data; }\n    } catch { msg.style.color = 'var(--muted)'; msg.textContent = 'Erro ao verificar cupom.'; }\n    atualizarResumo();\n  }\n\n  // \u2500\u2500\u2500 FINALIZAR \u2500\u2500\u2500\n  async function finalizar() {\n    const nome       = document.getElementById('nome').value.trim();\n    const email      = document.getElementById('email').value.trim();\n    const cpf        = document.getElementById('cpf').value.trim();\n    const telefone   = document.getElementById('telefone').value.trim();\n    const cep        = document.getElementById('cep').value.trim();\n    const rua        = document.getElementById('rua').value.trim();\n    const numero     = document.getElementById('numero').value.trim();\n    const bairro     = document.getElementById('bairro').value.trim();\n    const cidade     = document.getElementById('cidade').value.trim();\n    const complemento= document.getElementById('complemento').value.trim();\n\n    if (!nome || !email || !cpf || !cep || !rua || !numero) { mostrarErro('Preencha todos os campos obrigat\u00f3rios.'); return; }\n    if (!produto) { mostrarErro('Produto n\u00e3o encontrado.'); return; }\n\n    const btn = document.getElementById('btnFinalizar');\n    btn.disabled = true; btn.textContent = 'Processando...';\n\n    const pedido = {\n      nome, email, cpf, telefone,\n      endereco: { cep, rua, numero, bairro, cidade, complemento },\n      produto_id: produto.id,\n      produto_nome: produto.nome,\n      pagamento: pagAtual,\n      cupom: cupomDados ? cupomDados.codigo : null,\n      token: localStorage.getItem('pep_token')\n    };\n\n    try {\n      const res  = await fetch('/api/pedido', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(pedido) });\n      const data = await res.json();\n\n      if (!res.ok) { mostrarErro(data.erro || 'Erro ao criar pedido.'); btn.disabled = false; btn.textContent = 'Finalizar Pedido'; return; }\n\n      if (pagAtual === 'pix') {\n        document.getElementById('pixArea').style.display = 'block';\n        document.getElementById('qrcodeImg').src = data.qrcode_url || '';\n        document.getElementById('pixCopia').textContent = data.pix_copia_cola || '';\n        btn.textContent = '\u23f3 Aguardando PIX...';\n        verificarPagamento(data.pedido_id);\n      } else {\n        location.href = 'confirmacao.html?id=' + data.pedido_id;\n      }\n    } catch {\n      mostrarErro('Erro de conex\u00e3o. Tente novamente.');\n      btn.disabled = false; btn.textContent = 'Finalizar Pedido';\n    }\n  }\n\n  function verificarPagamento(pedidoId) {\n    const interval = setInterval(async () => {\n      try {\n        const res  = await fetch('/api/pedido/' + pedidoId + '/status');\n        const data = await res.json();\n        if (data.status === 'PAGO' || data.status === 'pago') {\n          clearInterval(interval);\n          location.href = 'confirmacao.html?id=' + pedidoId;\n        }\n      } catch {}\n    }, 4000);\n    setTimeout(() => clearInterval(interval), 600000);\n  }\n\n  function copiarPix() {\n    const texto = document.getElementById('pixCopia').textContent;\n    navigator.clipboard.writeText(texto).then(() => {\n      document.getElementById('pixStatus').textContent = '\u2705 C\u00f3digo copiado!';\n    });\n  }\n\n  function mostrarErro(msg) {\n    const el = document.getElementById('msgErro');\n    el.textContent = msg; el.style.display = 'block';\n    window.scrollTo({ top: 0, behavior: 'smooth' });\n  }\n\n  // \u2500\u2500\u2500 M\u00c1SCARAS \u2500\u2500\u2500\n  document.getElementById('cpf').addEventListener('input', function() {\n    let v = this.value.replace(/\\D/g,'').slice(0,11);\n    v = v.replace(/(\\d{3})(\\d)/, '$1.$2').replace(/(\\d{3})(\\d)/, '$1.$2').replace(/(\\d{3})(\\d{1,2})$/, '$1-$2');\n    this.value = v;\n  });\n  document.getElementById('telefone').addEventListener('input', function() {\n    let v = this.value.replace(/\\D/g,'').slice(0,11);\n    if (v.length > 6) v = v.replace(/^(\\d{2})(\\d{5})(\\d{0,4})/, '($1) $2-$3');\n    else if (v.length > 2) v = v.replace(/^(\\d{2})(\\d*)/, '($1) $2');\n    this.value = v;\n  });\n  function mascaraCartao(el) { el.value = el.value.replace(/\\D/g,'').slice(0,16).replace(/(\\d{4})/g,'$1 ').trim(); }\n  function mascaraValidade(el) { el.value = el.value.replace(/\\D/g,'').slice(0,4).replace(/(\\d{2})(\\d)/, '$1/$2'); }\n\n  init();\n</script>\n<script src="i18n.js"></script>
+</footer>
+
+<script>
+  async function init() {
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    const box = document.getElementById('conteudo');
+    if (!id) {
+      box.innerHTML = '<h1 data-i18n="confirm.notfound">Pedido não encontrado</h1>' +
+        '<p class="subtitle" data-i18n="confirm.notfound.desc">Não encontramos o ID do pedido.</p>' +
+        '<div class="btns"><a href="index.html" class="btn btn-primary" data-i18n="confirm.continue">Continuar Comprando</a></div>';
+      return;
+    }
+    try {
+      const r = await fetch('/api/pedido/' + id + '/status');
+      if (!r.ok) throw new Error('not found');
+      const p = await r.json();
+      const pago = (p.status === 'pago' || p.status === 'PAGO');
+
+      const icon  = pago
+        ? '<div class="ok-icon">✓</div>'
+        : '<div class="pending-icon">⏳</div>';
+      const title = pago
+        ? '<h1 data-i18n="confirm.success.title">Pedido Confirmado!</h1>'
+        : '<h1 data-i18n="confirm.pending.title">Pedido Recebido!</h1>';
+      const subtitle = pago
+        ? '<p class="subtitle" data-i18n="confirm.success.desc">Seu pagamento foi confirmado com sucesso. Em breve enviaremos os detalhes de envio por email.</p>'
+        : '<p class="subtitle" data-i18n="confirm.pending.desc">Estamos aguardando a confirmação do seu pagamento. Você receberá um email assim que for confirmado.</p>';
+      const statusBadge = pago
+        ? '<span class="status-badge status-pago" data-i18n="confirm.status.paid">Pago</span>'
+        : '<span class="status-badge status-pendente" data-i18n="confirm.status.pending">Pendente</span>';
+
+      const total = p.total ? 'R$ ' + parseFloat(p.total).toFixed(2).replace('.',',') : '—';
+      const dataFormatada = p.criado_em ? new Date(p.criado_em).toLocaleDateString('pt-BR') : '—';
+
+      box.innerHTML =
+        icon + title + subtitle +
+        '<div class="pedido-info">' +
+          '<div class="linha"><span class="label" data-i18n="confirm.order.number">Pedido</span><span class="valor">#' + p.id + '</span></div>' +
+          '<div class="linha"><span class="label" data-i18n="confirm.order.product">Produto</span><span class="valor">' + (p.produto_nome || '—') + '</span></div>' +
+          '<div class="linha"><span class="label" data-i18n="confirm.order.total">Total</span><span class="valor">' + total + '</span></div>' +
+          '<div class="linha"><span class="label" data-i18n="confirm.order.status">Status</span><span class="valor">' + statusBadge + '</span></div>' +
+          '<div class="linha"><span class="label" data-i18n="confirm.order.date">Data</span><span class="valor">' + dataFormatada + '</span></div>' +
+        '</div>' +
+        '<div class="btns">' +
+          '<a href="meus-pedidos.html" class="btn btn-secondary" data-i18n="confirm.myorders">Meus Pedidos</a>' +
+          '<a href="index.html" class="btn btn-primary" data-i18n="confirm.continue">Continuar Comprando</a>' +
+        '</div>';
+    } catch {
+      box.innerHTML = '<h1 data-i18n="confirm.notfound">Pedido não encontrado</h1>' +
+        '<p class="subtitle" data-i18n="confirm.notfound.desc">Não foi possível carregar os detalhes deste pedido.</p>' +
+        '<div class="btns"><a href="index.html" class="btn btn-primary" data-i18n="confirm.continue">Continuar Comprando</a></div>';
+    }
+  }
+  init();
+</script>
+<script src="i18n.js"></script>
 <script src="i18n-init.js"></script>
 <script>
 function abrirCarrinho(){window.location.href='checkout.html';}
 function logout(e){e.preventDefault();localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');window.location.href='index.html';}
-function renderAuth(){
-  var area=document.getElementById('authArea');if(!area)return;
-  var token=localStorage.getItem('pep_token');var nome=localStorage.getItem('pep_nome');
-  var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'en';
-  var tr=function(k){return(d[k]&&(d[k][l]||d[k]['en']))||k;};
-  if(token&&nome){area.innerHTML='<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:600;font-size:.78rem;color:var(--muted)">'+tr('nav.hello')+', '+nome.split(' ')[0]+'</span><a href="meus-pedidos.html" class="btn-login">'+tr('nav.orders')+'</a><a href="#" class="btn-login" onclick="logout(event)">'+tr('nav.logout')+'</a>';}
-  else{area.innerHTML='<a href="login.html" class="btn-login">'+tr('nav.login')+'</a><a href="cadastro.html" class="btn-cadastro">'+tr('nav.register')+'</a>';}
-}
-function updateCartCount(){try{var c=JSON.parse(localStorage.getItem('pep_carrinho')||'[]');var n=c.reduce(function(s,i){return s+i.quantidade;},0);var el=document.getElementById('cartCount');if(el){el.style.display=n>0?'flex':'none';el.textContent=n;}}catch(e){}}
-window.addEventListener('DOMContentLoaded',function(){renderAuth();updateCartCount();});
+window.addEventListener('DOMContentLoaded',function(){if(window.updateCartCount)updateCartCount();});
 </script>
-</body>\n</html>
+
+</body>
+</html>

@@ -952,7 +952,7 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
 app.get('/api/pedido/:id/status', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT id,status,produto_nome,pagamento,codigo_rastreio,criado_em FROM pep_pedidos WHERE id=$1',
+      'SELECT id,status,produto_nome,pagamento,total,codigo_rastreio,criado_em FROM pep_pedidos WHERE id=$1',
       [req.params.id]
     );
     if (!rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
