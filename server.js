@@ -119,6 +119,11 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
+// Evitar crash do servidor em caso de erro de conexão do pool
+pool.on('error', (err) => {
+  console.error('[DB Pool] Erro:', err.message);
+});
+
 // ── MIDDLEWARES ───────────────────────────────
 app.use(express.json());
 // Forçar HTTPS em produção
@@ -2664,13 +2669,25 @@ app.post('/api/webhook/nowpayments', async (req, res) => {
   return webhookNowpaymentsPedidos(req, res);
 });
 
+// Ordena chaves recursivamente para verificação de assinatura NOWPayments
+function sortObjectKeys(obj) {
+  if (Array.isArray(obj)) return obj.map(sortObjectKeys);
+  if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj).sort().reduce((acc, key) => {
+      acc[key] = sortObjectKeys(obj[key]);
+      return acc;
+    }, {});
+  }
+  return obj;
+}
+
 async function webhookNowpaymentsPedidos(req, res) {
   try {
     // Verificar assinatura IPN
     if (NOWPAYMENTS_IPN_SECRET) {
       const crypto = require('crypto');
       const sig = req.headers['x-nowpayments-sig'];
-      const payload = JSON.stringify(req.body, Object.keys(req.body).sort());
+      const payload = JSON.stringify(sortObjectKeys(req.body));
       const expected = crypto.createHmac('sha512', NOWPAYMENTS_IPN_SECRET).update(payload).digest('hex');
       if (sig !== expected) {
         console.error('[NOWPayments] Assinatura inválida');
@@ -2745,7 +2762,7 @@ async function webhookNowpaymentsMembers(req, res) {
     if (NOWPAYMENTS_IPN_SECRET) {
       const crypto = require('crypto');
       const sig = req.headers['x-nowpayments-sig'];
-      const payload = JSON.stringify(req.body, Object.keys(req.body).sort());
+      const payload = JSON.stringify(sortObjectKeys(req.body));
       const expected = crypto.createHmac('sha512', NOWPAYMENTS_IPN_SECRET).update(payload).digest('hex');
       if (sig !== expected) return res.status(400).json({ erro: 'Assinatura inválida.' });
     }
