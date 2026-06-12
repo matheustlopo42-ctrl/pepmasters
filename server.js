@@ -698,9 +698,9 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       try {
         const uid = usuarioId || (userToken ? jwt.verify(userToken, JWT_SECRET).id : null);
         if (uid) {
-          const membroR = await client.query(`SELECT nivel FROM pep_membros WHERE usuario_id=$1 AND status='ativo'`, [uid]);
+          const membroR = await client.query(`SELECT plano FROM pep_membros WHERE usuario_id=$1 AND status='ativo'`, [uid]);
           if (membroR.rows.length) {
-            nivelMembro = membroR.rows[0].nivel;
+            nivelMembro = membroR.rows[0].plano;
             const pctMembro = descontoPorNivel[nivelMembro] || 0;
             descontoMembro = subtotal * (pctMembro / 100);
           }
@@ -2696,7 +2696,23 @@ async function webhookNowpaymentsPedidos(req, res) {
     }
 
     const { order_id, payment_status, pay_amount, pay_currency, actually_paid } = req.body;
-    console.log('[NOWPayments] Webhook:', payment_status, 'pedido:', order_id);
+    console.log('[NOWPayments] Webhook:', payment_status, 'pedido:', order_id, 'pago:', actually_paid, '/', pay_amount);
+
+    if (payment_status === 'partially_paid') {
+      // Notificar admin para verificar manualmente se o total recebido é suficiente
+      if (EMAIL_DESTINO) {
+        enviarEmail(EMAIL_DESTINO,
+          '⚠️ Pagamento parcial — Pedido #' + order_id + ' — PEPMASTERS',
+          '<div style="font-family:sans-serif;padding:20px;background:#1C0A00;color:#fff;border-radius:12px">' +
+          '<h2 style="color:#eab308">⚠️ Pagamento parcial recebido</h2>' +
+          '<b>Pedido:</b> #' + order_id + '<br>' +
+          '<b>Esperado:</b> ' + pay_amount + ' ' + pay_currency + '<br>' +
+          '<b>Recebido:</b> ' + actually_paid + ' ' + pay_currency + '<br>' +
+          '<p>Verifique manualmente no NOWPayments se o total acumulado é suficiente e confirme o pedido no admin.</p>' +
+          '</div>'
+        ).catch(()=>{});
+      }
+    }
 
     if (payment_status === 'finished' || payment_status === 'confirmed') {
       const pedido = await pool.query(`SELECT * FROM pep_pedidos WHERE id=$1`, [order_id]);
