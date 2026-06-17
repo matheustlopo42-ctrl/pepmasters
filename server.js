@@ -210,6 +210,7 @@ async function initDB() {
     `);
     await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS nome TEXT`);
     await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS preco NUMERIC(10,2)`);
+    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS preco_original NUMERIC(10,2)`);
     await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS descricao TEXT`);
     await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS estoque INT DEFAULT 0`);
     await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS alerta_minimo INT DEFAULT 3`);
@@ -534,7 +535,7 @@ async function enviarWhatsApp(mensagem) {
 app.get('/api/produtos', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT produto_id AS id, nome, preco, descricao, estoque FROM pep_estoque WHERE nome IS NOT NULL ORDER BY produto_id'
+      'SELECT produto_id AS id, nome, preco, preco_original, descricao, estoque FROM pep_estoque WHERE nome IS NOT NULL ORDER BY produto_id'
     );
     res.json(rows);
   } catch (err) {
@@ -1251,12 +1252,14 @@ app.get('/api/admin/estoque', adminMiddleware, async (req, res) => {
 
 // PUT /api/admin/estoque/:id
 app.put('/api/admin/estoque/:id', adminMiddleware, async (req, res) => {
-  const { estoque, alerta_minimo, preco } = req.body;
+  const { estoque, alerta_minimo, preco, preco_original } = req.body;
   try {
-    await pool.query(
-      'UPDATE pep_estoque SET estoque=$1, alerta_minimo=$2' + (preco !== undefined ? ', preco=$4' : '') + ' WHERE id=$3::int',
-      preco !== undefined ? [estoque, alerta_minimo, req.params.id, preco] : [estoque, alerta_minimo, req.params.id]
-    );
+    let query = 'UPDATE pep_estoque SET estoque=$1, alerta_minimo=$2';
+    let params = [estoque, alerta_minimo, req.params.id];
+    if (preco !== undefined) { query += ', preco=$4'; params.push(preco); }
+    if (preco_original !== undefined) { query += ', preco_original=$' + (params.length + 1); params.push(preco_original); }
+    query += ' WHERE id=$3::int';
+    await pool.query(query, params);
     res.json({ ok: true });
   } catch {
     res.status(500).json({ erro: 'Erro ao atualizar estoque.' });

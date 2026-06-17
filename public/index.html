@@ -853,7 +853,7 @@ async function carregarProdutos(){
   console.log('[PEPMASTERS] carregarProdutos lang='+lang);
   function getProdI18n(c){const l=c.i18n&&c.i18n[lang]?c.i18n[lang]:c.i18n&&c.i18n['pt']?c.i18n['pt']:{categoria:c.categoria||'',descricao:c.descricao||''};return l;}
   try{const res=await fetch('/api/produtos');const lista=await res.json();
-    produtosData=CATALOGO.map(c=>{const api=lista.find(p=>String(p.id)===String(c.id)||p.nome===c.nome);const i=getProdI18n(c);return{...c,categoria:i.categoria,descricao:i.descricao,preco:api?parseFloat(api.preco):c.preco,estoque:api?parseInt(api.estoque):10}})
+    produtosData=CATALOGO.map(c=>{const api=lista.find(p=>String(p.id)===String(c.id)||p.nome===c.nome);const i=getProdI18n(c);return{...c,categoria:i.categoria,descricao:i.descricao,preco:api?parseFloat(api.preco):c.preco,precoAntes:api&&api.preco_original?parseFloat(api.preco_original):c.precoAntes,estoque:api?parseInt(api.estoque):10}})
   }catch{produtosData=CATALOGO.map(c=>{const i=getProdI18n(c);return{...c,categoria:i.categoria,descricao:i.descricao,estoque:c.id==='5'?0:10}})}
   renderGrid(produtosData)
   // Traduzir botão ver mais

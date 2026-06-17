@@ -57,7 +57,7 @@
   </div>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Produto</th><th>Estoque Atual</th><th>Alerta Mínimo</th><th>Preço (R$)</th><th>Situação</th><th>Atualizar</th></tr></thead>
+      <thead><tr><th>Produto</th><th>Estoque Atual</th><th>Alerta Mínimo</th><th>Preço Original (riscado)</th><th>Preço de Venda</th><th>Situação</th><th>Atualizar</th></tr></thead>
       <tbody id="tBody"></tbody>
     </table>
   </div>
@@ -87,6 +87,7 @@
             <td><strong>${p.nome}</strong></td>
             <td>${qt}</td>
             <td><input class="estoque-input" type="number" id="min-${p.id}" value="${mn}" min="0" style="width:70px" oninput="marcarAlterado(${p.id})"/></td>
+            <td><input class="estoque-input" type="number" id="preco-orig-${p.id}" value="${parseFloat(p.preco_original||0).toFixed(2)}" min="0" step="0.01" style="width:90px" placeholder="sem desconto" oninput="marcarAlterado(${p.id})"/></td>
             <td><input class="estoque-input" type="number" id="preco-${p.id}" value="${parseFloat(p.preco||0).toFixed(2)}" min="0" step="0.01" style="width:90px" oninput="marcarAlterado(${p.id})"/></td>
             <td>${badge}</td>
             <td style="display:flex;gap:8px;align-items:center">
@@ -129,10 +130,11 @@
         const estoque       = parseInt(document.getElementById('qt-' + id).value);
         const alerta_minimo = parseInt(document.getElementById('min-' + id).value);
         const preco         = parseFloat(document.getElementById('preco-' + id).value);
+        const preco_original = parseFloat(document.getElementById('preco-orig-' + id).value) || null;
         await fetch('/api/admin/estoque/' + id, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + token },
-          body: JSON.stringify({ estoque, alerta_minimo, preco })
+          body: JSON.stringify({ estoque, alerta_minimo, preco, preco_original })
         });
       } catch { erros++; }
     }
@@ -153,11 +155,12 @@
     const estoque       = parseInt(document.getElementById('qt-' + id).value);
     const alerta_minimo = parseInt(document.getElementById('min-' + id).value);
     const preco         = parseFloat(document.getElementById('preco-' + id).value);
+    const preco_original = parseFloat(document.getElementById('preco-orig-' + id).value) || null;
     try {
       await fetch('/api/admin/estoque/' + id, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + token },
-        body: JSON.stringify({ estoque, alerta_minimo, preco })
+        body: JSON.stringify({ estoque, alerta_minimo, preco, preco_original })
       });
       linhasAlteradas.delete(id);
       atualizarBtnSalvarTudo();
