@@ -773,22 +773,27 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     // ── PIX: criar cobrança no PixGo ──
     let qrcode_url     = null;
     let pix_copia_cola = null;
+    let isSplitPix     = false;
 
     if (pagamento === 'pix' && PIXGO_API_KEY) {
+      if (total > 6000) {
+        return res.status(400).json({ erro: 'PIX disponível apenas para valores até R$ 6.000. Use Cripto para valores maiores.' });
+      }
+
+      isSplitPix = total > 3000;
+      const pixAmount = isSplitPix ? total / 2 : total;
+
       try {
-        const externalId = 'pep-' + pedidoId;
+        const externalId = 'pep-' + pedidoId + (isSplitPix ? '-1' : '');
         const pixPayload = JSON.stringify({
-          amount:      total,
-          description: 'PEPMASTERS #' + pedidoId,
+          amount:      pixAmount,
+          description: 'PEPMASTERS #' + pedidoId + (isSplitPix ? ' (1/2)' : ''),
           external_id: externalId,
           webhook_url: BASE_URL + '/webhook/pixgo'
         });
         const pixRes = await fetch('https://pixgo.org/api/v1/payment/create', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-API-Key': PIXGO_API_KEY
-          },
+          headers: { 'Content-Type': 'application/json', 'X-API-Key': PIXGO_API_KEY },
           body: pixPayload
         });
         const pixData = await pixRes.json();
@@ -797,7 +802,8 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
           qrcode_url     = pixData.data.qr_image_url || null;
           pix_copia_cola = pixData.data.qr_code      || null;
           if (pixData.data.id) {
-            await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixData.data.id, pedidoId]);
+            const pixgoIds = isSplitPix ? pixData.data.id + ':pending2' : pixData.data.id;
+            await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixgoIds, pedidoId]);
           }
         } else {
           console.error('[PixGo] Erro:', pixData.message || pixData.error || JSON.stringify(pixData));
@@ -945,6 +951,37 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     res.status(500).json({ erro: 'Erro ao criar pedido.' });
   } finally {
     client.release();
+  }
+});
+
+// GET /api/pedido/:id/pix2 — gera o 2° QR code PIX para split
+app.get('/api/pedido/:id/pix2', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT id, total, pixgo_id FROM pep_pedidos WHERE id=$1', [req.params.id]);
+    if (!rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+    const p = rows[0];
+    const pixAmount = parseFloat(p.total) / 2;
+
+    const pixPayload = JSON.stringify({
+      amount:      pixAmount,
+      description: 'PEPMASTERS #' + p.id + ' (2/2)',
+      external_id: 'pep-' + p.id + '-2',
+      webhook_url: BASE_URL + '/webhook/pixgo'
+    });
+    const pixRes = await fetch('https://pixgo.org/api/v1/payment/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-API-Key': PIXGO_API_KEY },
+      body: pixPayload
+    });
+    const pixData = await pixRes.json();
+    if (pixData.success && pixData.data) {
+      const id1 = (p.pixgo_id || '').split(':')[0];
+      await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [id1 + ':' + pixData.data.id, p.id]);
+      return res.json({ qrcode_url: pixData.data.qr_image_url, pix_copia_cola: pixData.data.qr_code });
+    }
+    res.status(500).json({ erro: 'Erro ao gerar 2° PIX.' });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
   }
 });
 
@@ -1312,22 +1349,37 @@ app.post('/webhook/pixgo', express.raw({ type: '*/*' }), async (req, res) => {
 
   if (evento.event === 'charge.paid' || evento.status === 'paid') {
     const externalId = evento.externalId || evento.external_id || '';
-    const match      = externalId.match(/pep-(\d+)/);
+    const match      = externalId.match(/pep-(\d+)(-(\d+))?/);
     if (match) {
-      const pedidoId = parseInt(match[1]);
+      const pedidoId  = parseInt(match[1]);
+      const parte     = match[3] ? parseInt(match[3]) : null; // 1, 2 ou null (sem split)
       try {
-        const { rows } = await pool.query(
-          'UPDATE pep_pedidos SET status=$1 WHERE id=$2 AND status=$3 RETURNING nome,email,produto_nome',
-          ['pago', pedidoId, 'pix_pending']
-        );
-        if (rows.length) {
-          const p = rows[0];
-          console.log('[Webhook] Pedido #' + pedidoId + ' marcado como PAGO.');
-          enviarWhatsApp('PIX CONFIRMADO! Pedido #' + pedidoId + ' - ' + p.nome + ' - ' + p.produto_nome);
-          enviarEmail(p.email, 'Pagamento confirmado — PEPMASTERS',
-            '<h2>Pagamento confirmado! ✅</h2><p>Olá, ' + p.nome.split(' ')[0] + '! Seu pagamento PIX do pedido <b>#' + pedidoId + '</b> foi confirmado.</p>' +
-            '<p>Produto: <b>' + p.produto_nome + '</b></p><p>Em breve enviaremos o código de rastreio.</p>'
+        const { rows: pedRows } = await pool.query('SELECT * FROM pep_pedidos WHERE id=$1', [pedidoId]);
+        if (!pedRows.length) return res.status(200).send('OK');
+        const pedido = pedRows[0];
+
+        // Verificar se é split (pixgo_id contém ':')
+        const isSplit = pedido.pixgo_id && pedido.pixgo_id.includes(':');
+
+        if (isSplit && parte === 1) {
+          // 1° PIX do split pago — marcar como pix_parcial
+          await pool.query('UPDATE pep_pedidos SET status=$1 WHERE id=$2', ['pix_parcial', pedidoId]);
+          console.log('[Webhook] Pedido #' + pedidoId + ' — 1° PIX split confirmado (pix_parcial).');
+        } else {
+          // PIX normal ou 2° PIX do split — marcar como pago
+          const { rows } = await pool.query(
+            "UPDATE pep_pedidos SET status='pago' WHERE id=$1 AND status IN ('pix_pending','pix_parcial') RETURNING nome,email,produto_nome,lang",
+            [pedidoId]
           );
+          if (rows.length) {
+            const p = rows[0];
+            console.log('[Webhook] Pedido #' + pedidoId + ' marcado como PAGO.');
+            enviarWhatsApp('PIX CONFIRMADO! Pedido #' + pedidoId + ' - ' + p.nome + ' - ' + p.produto_nome);
+            const lang = p.lang || 'pt';
+            const emailHtml = await gerarEmailPedido('pedidoConfirmado', p, pedidoId, lang);
+            enviarEmail(p.email, 'Pagamento confirmado — PEPMASTERS', emailHtml).catch(()=>{});
+            enviarEmail(EMAIL_DESTINO, '[PEPMASTERS] Pedido #' + pedidoId + ' PAGO via PIX', emailHtml).catch(()=>{});
+          }
         }
       } catch (err) {
         console.error('[Webhook] Erro ao atualizar pedido:', err.message);
