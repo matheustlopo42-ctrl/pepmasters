@@ -316,7 +316,7 @@ async function confirmarDelete() {
     if (!res.ok) { showToast(data.erro || 'Erro ao deletar.'); return; }
     showToast(data.deletados + ' pedido(s) deletado(s)!');
     desmarcarTodos();
-    carregarPedidos();
+    setTimeout(function(){ location.reload(); }, 800);
   } catch { showToast('Erro de conexão.'); }
 }
 
