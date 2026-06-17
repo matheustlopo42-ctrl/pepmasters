@@ -1178,30 +1178,55 @@ function mostrarSeletorPrefixed(id, prefix) {
   var btn = document.getElementById(prefix + 'btn-add-' + id);
   if (sel) sel.classList.add('show');
   if (btn) btn.style.display = 'none';
-  cardQtds[prefix+id] = 1;
+  cardQtds[prefix+id] = 2;
   var qn = document.getElementById(prefix + 'qn-' + id);
-  if (qn) qn.textContent = 1;
+  if (qn) qn.textContent = 2;
+  // atualizar info usando id sem prefixo (mesma lógica do grid)
+  atualizarInfoQtdPrefixed(id, prefix);
 }
 
 function cardQtdPrefixed(id, delta, prefix) {
   var key = prefix + id;
-  var nova = (cardQtds[key] || 1) + delta;
-  if (nova <= 0) {
+  var atual = cardQtds[key] || 2;
+  var nova = atual + delta;
+  if (nova < 2) {
     var sel = document.getElementById(prefix + 'sel-' + id);
     var btn = document.getElementById(prefix + 'btn-add-' + id);
     if (sel) sel.classList.remove('show');
     if (btn) btn.style.display = '';
-    cardQtds[key] = 1;
+    cardQtds[key] = 2;
     return;
   }
+  if (nova % 2 !== 0) nova += delta > 0 ? 1 : -1;
   cardQtds[key] = nova;
   var qn = document.getElementById(prefix + 'qn-' + id);
   if (qn) qn.textContent = nova;
+  atualizarInfoQtdPrefixed(id, prefix);
+}
+
+function atualizarInfoQtdPrefixed(id, prefix) {
+  var qtd = cardQtds[prefix + id] || 2;
+  var totalCarrinho = getCarrinho().reduce(function(s,i){ return s + (String(i.id) === String(id) ? 0 : i.quantidade); }, 0);
+  var totalComEste = totalCarrinho + qtd;
+  var el = document.getElementById(prefix + 'qtd-info-' + id) || document.getElementById('qtd-info-' + id);
+  if (!el) return;
+  var d = window.PEPMASTERS_I18N || {};
+  var l = localStorage.getItem('pep_lang') || 'en';
+  var tr2 = function(k, n) {
+    if (!d[k]) { var fb = {'cart.pairs':n+' par','cart.box.label':n+' ampolas','cart.box.missing':'faltam '+n,'cart.box.complete':'✅ '+n+' caixas'}; return fb[k]||k; }
+    return (d[k][l]||d[k]['en']||k).replace('{n}',n);
+  };
+  var pares = Math.floor(qtd / 2);
+  var resto = totalComEste % 10;
+  var msg = tr2('cart.pairs', pares) + ' · ' + tr2('cart.box.label', totalComEste);
+  if (resto !== 0) msg += ' · ' + tr2('cart.box.missing', 10 - resto);
+  else if (totalComEste > 0) msg += ' · ' + tr2('cart.box.complete', Math.floor(totalComEste/10));
+  el.textContent = msg;
 }
 
 function adicionarAoCarrinhoPrefixed(id, prefix) {
-  var qtd = cardQtds[prefix + id] || 1;
-  adicionarAoCarrinho(id, qtd);
+  var qtd = cardQtds[prefix + id] || 2;
+  confirmarSeletor(id, null, qtd);
   var sel = document.getElementById(prefix + 'sel-' + id);
   var btn = document.getElementById(prefix + 'btn-add-' + id);
   if (sel) sel.classList.remove('show');
@@ -1270,10 +1295,10 @@ function cardQtd(id, delta) {
   atualizarInfoQtd(id);
 }
 
-function confirmarSeletor(id, preco) {
+function confirmarSeletor(id, preco, qtdOverride) {
   const p = produtosData.find(x => String(x.id) === String(id));
   if (!p) return;
-  const qtd = cardQtds[id] || 2;
+  const qtd = qtdOverride || cardQtds[id] || 2;
 
   // Validações
   if (qtd % 2 !== 0) { showToast('Quantidade deve ser em pares'); return; }
