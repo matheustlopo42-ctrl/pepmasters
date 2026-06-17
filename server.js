@@ -773,21 +773,21 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     // ── PIX: criar cobrança no PixGo ──
     let qrcode_url     = null;
     let pix_copia_cola = null;
-    let isSplitPix     = false;
+    let numQrsPix      = 1;
 
     if (pagamento === 'pix' && PIXGO_API_KEY) {
       if (total > 6000) {
         return res.status(400).json({ erro: 'PIX disponível apenas para valores até R$ 6.000. Use Cripto para valores maiores.' });
       }
 
-      isSplitPix = total > 3000;
-      const pixAmount = isSplitPix ? total / 2 : total;
+      numQrsPix = Math.ceil(total / 2000);
+      const pixAmount = parseFloat((total / numQrsPix).toFixed(2));
 
       try {
-        const externalId = 'pep-' + pedidoId + (isSplitPix ? '-1' : '');
+        const externalId = 'pep-' + pedidoId + (numQrsPix > 1 ? '-1' : '');
         const pixPayload = JSON.stringify({
           amount:      pixAmount,
-          description: 'PEPMASTERS #' + pedidoId + (isSplitPix ? ' (1/2)' : ''),
+          description: 'PEPMASTERS #' + pedidoId + (numQrsPix > 1 ? ' (1/' + numQrsPix + ')' : ''),
           external_id: externalId,
           webhook_url: BASE_URL + '/webhook/pixgo'
         });
@@ -802,8 +802,11 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
           qrcode_url     = pixData.data.qr_image_url || null;
           pix_copia_cola = pixData.data.qr_code      || null;
           if (pixData.data.id) {
-            const pixgoIds = isSplitPix ? pixData.data.id + ':pending2' : pixData.data.id;
-            await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixgoIds, pedidoId]);
+            // pixgo_id format: "id1:pending:numQrs" para split, ou "id1" para simples
+            const pixgoId = numQrsPix > 1
+              ? pixData.data.id + ':pending:' + numQrsPix
+              : pixData.data.id;
+            await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixgoId, pedidoId]);
           }
         } else {
           console.error('[PixGo] Erro:', pixData.message || pixData.error || JSON.stringify(pixData));
@@ -944,7 +947,7 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       }, 48 * 60 * 60 * 1000); // 48 horas
     }
 
-    res.json({ pedido_id: pedidoId, qrcode_url, pix_copia_cola, nowpay_address, nowpay_amount, nowpay_currency, desconto_membro: descontoMembro.toFixed(2), nivel_membro: nivelMembro });
+    res.json({ pedido_id: pedidoId, qrcode_url, pix_copia_cola, nowpay_address, nowpay_amount, nowpay_currency, desconto_membro: descontoMembro.toFixed(2), nivel_membro: nivelMembro, total_pix: total.toFixed(2), num_qrs: numQrsPix });
   } catch (err) {
     await client.query('ROLLBACK').catch(() => {});
     console.error('[Pedido] Erro:', err.message);
@@ -954,18 +957,26 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
   }
 });
 
-// GET /api/pedido/:id/pix2 — gera o 2° QR code PIX para split
-app.get('/api/pedido/:id/pix2', async (req, res) => {
+// GET /api/pedido/:id/pix-next — gera o próximo QR code PIX para split
+app.get('/api/pedido/:id/pix-next', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT id, total, pixgo_id FROM pep_pedidos WHERE id=$1', [req.params.id]);
     if (!rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
     const p = rows[0];
-    const pixAmount = parseFloat(p.total) / 2;
+
+    const parts    = (p.pixgo_id || '').split(':');
+    const numQrs   = parseInt(parts[2] || 1);
+    const paidSoFar = parts.filter(x => x !== 'pending' && x !== String(numQrs) && x.length > 5).length;
+    const nextPart  = paidSoFar + 1; // próxima parte (2 ou 3)
+
+    if (nextPart > numQrs) return res.status(400).json({ erro: 'Todos os QRs já foram gerados.' });
+
+    const pixAmount = parseFloat((parseFloat(p.total) / numQrs).toFixed(2));
 
     const pixPayload = JSON.stringify({
       amount:      pixAmount,
-      description: 'PEPMASTERS #' + p.id + ' (2/2)',
-      external_id: 'pep-' + p.id + '-2',
+      description: 'PEPMASTERS #' + p.id + ' (' + (nextPart) + '/' + numQrs + ')',
+      external_id: 'pep-' + p.id + '-' + nextPart,
       webhook_url: BASE_URL + '/webhook/pixgo'
     });
     const pixRes = await fetch('https://pixgo.org/api/v1/payment/create', {
@@ -975,11 +986,17 @@ app.get('/api/pedido/:id/pix2', async (req, res) => {
     });
     const pixData = await pixRes.json();
     if (pixData.success && pixData.data) {
-      const id1 = (p.pixgo_id || '').split(':')[0];
-      await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [id1 + ':' + pixData.data.id, p.id]);
-      return res.json({ qrcode_url: pixData.data.qr_image_url, pix_copia_cola: pixData.data.qr_code });
+      // Adicionar novo ID ao pixgo_id
+      const newPixgoId = parts[0] + ':' + pixData.data.id + ':pending:' + numQrs;
+      await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [newPixgoId, p.id]);
+      return res.json({
+        qrcode_url:     pixData.data.qr_image_url,
+        pix_copia_cola: pixData.data.qr_code,
+        parte:          nextPart,
+        total_partes:   numQrs
+      });
     }
-    res.status(500).json({ erro: 'Erro ao gerar 2° PIX.' });
+    res.status(500).json({ erro: 'Erro ao gerar próximo PIX: ' + (pixData.message || '') });
   } catch (err) {
     res.status(500).json({ erro: err.message });
   }
@@ -1351,29 +1368,30 @@ app.post('/webhook/pixgo', express.raw({ type: '*/*' }), async (req, res) => {
     const externalId = evento.externalId || evento.external_id || '';
     const match      = externalId.match(/pep-(\d+)(-(\d+))?/);
     if (match) {
-      const pedidoId  = parseInt(match[1]);
-      const parte     = match[3] ? parseInt(match[3]) : null; // 1, 2 ou null (sem split)
+      const pedidoId = parseInt(match[1]);
+      const parte    = match[3] ? parseInt(match[3]) : null;
       try {
         const { rows: pedRows } = await pool.query('SELECT * FROM pep_pedidos WHERE id=$1', [pedidoId]);
         if (!pedRows.length) return res.status(200).send('OK');
         const pedido = pedRows[0];
 
-        // Verificar se é split (pixgo_id contém ':')
-        const isSplit = pedido.pixgo_id && pedido.pixgo_id.includes(':');
+        const parts  = (pedido.pixgo_id || '').split(':');
+        const numQrs = parseInt(parts.find(x => !isNaN(x) && parseInt(x) <= 3 && parseInt(x) >= 1) || 1);
+        const isSplit = numQrs > 1;
 
-        if (isSplit && parte === 1) {
-          // 1° PIX do split pago — marcar como pix_parcial
-          await pool.query('UPDATE pep_pedidos SET status=$1 WHERE id=$2', ['pix_parcial', pedidoId]);
-          console.log('[Webhook] Pedido #' + pedidoId + ' — 1° PIX split confirmado (pix_parcial).');
+        if (isSplit && parte && parte < numQrs) {
+          // Parte intermediária paga — marcar como pix_parcial
+          await pool.query("UPDATE pep_pedidos SET status='pix_parcial' WHERE id=$1", [pedidoId]);
+          console.log('[Webhook] Pedido #' + pedidoId + ' — parte ' + parte + '/' + numQrs + ' PIX confirmada (pix_parcial).');
         } else {
-          // PIX normal ou 2° PIX do split — marcar como pago
+          // Última parte ou PIX simples — marcar como pago
           const { rows } = await pool.query(
             "UPDATE pep_pedidos SET status='pago' WHERE id=$1 AND status IN ('pix_pending','pix_parcial') RETURNING nome,email,produto_nome,lang",
             [pedidoId]
           );
           if (rows.length) {
             const p = rows[0];
-            console.log('[Webhook] Pedido #' + pedidoId + ' marcado como PAGO.');
+            console.log('[Webhook] Pedido #' + pedidoId + ' marcado como PAGO (parte ' + (parte||1) + '/' + numQrs + ').');
             enviarWhatsApp('PIX CONFIRMADO! Pedido #' + pedidoId + ' - ' + p.nome + ' - ' + p.produto_nome);
             const lang = p.lang || 'pt';
             const emailHtml = await gerarEmailPedido('pedidoConfirmado', p, pedidoId, lang);
