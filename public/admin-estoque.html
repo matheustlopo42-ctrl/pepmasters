@@ -51,6 +51,10 @@
 
 <div class="main">
   <h1>📦 Controle de Estoque</h1>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <span id="alteracoesInfo" style="font-size:.82rem;color:rgba(255,179,0,.6)"></span>
+    <button id="btnSalvarTudo" onclick="salvarTudo()" style="display:none;padding:10px 24px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">💾 Salvar Tudo</button>
+  </div>
   <div class="table-wrap">
     <table>
       <thead><tr><th>Produto</th><th>Estoque Atual</th><th>Alerta Mínimo</th><th>Preço (R$)</th><th>Situação</th><th>Atualizar</th></tr></thead>
@@ -64,31 +68,77 @@
   const token = localStorage.getItem('pep_admin_token');
   if (!token) location.href = 'admin-login.html';
 
+  var linhasAlteradas = new Set();
+
   async function carregar() {
     try {
       const res  = await fetch('/api/admin/estoque', { headers: { Authorization: 'Basic ' + token } });
       const data = await res.json();
       const tb   = document.getElementById('tBody');
       tb.innerHTML = '';
+      linhasAlteradas.clear();
+      atualizarBtnSalvarTudo();
       data.forEach(p => {
         const qt = parseInt(p.estoque || 0);
         const mn = parseInt(p.alerta_minimo || 3);
         const badge = qt === 0 ? '<span class="badge-zero">Esgotado</span>' : qt <= mn ? '<span class="badge-low">Estoque baixo</span>' : '<span class="badge-ok">OK</span>';
         tb.innerHTML += `
-          <tr>
+          <tr id="row-${p.id}">
             <td><strong>${p.nome}</strong></td>
             <td>${qt}</td>
-            <td><input class="estoque-input" type="number" id="min-${p.id}" value="${mn}" min="0" style="width:70px"/></td>
-            <td><input class="estoque-input" type="number" id="preco-${p.id}" value="${parseFloat(p.preco||0).toFixed(2)}" min="0" step="0.01" style="width:90px"/></td>
+            <td><input class="estoque-input" type="number" id="min-${p.id}" value="${mn}" min="0" style="width:70px" oninput="marcarAlterado(${p.id})"/></td>
+            <td><input class="estoque-input" type="number" id="preco-${p.id}" value="${parseFloat(p.preco||0).toFixed(2)}" min="0" step="0.01" style="width:90px" oninput="marcarAlterado(${p.id})"/></td>
             <td>${badge}</td>
             <td style="display:flex;gap:8px;align-items:center">
-              <input class="estoque-input" type="number" id="qt-${p.id}" value="${qt}" min="0"/>
+              <input class="estoque-input" type="number" id="qt-${p.id}" value="${qt}" min="0" oninput="marcarAlterado(${p.id})"/>
               <button class="btn-save" onclick="salvar(${p.id})">Salvar</button>
             </td>
           </tr>
         `;
       });
     } catch { showToast('Erro ao carregar.'); }
+  }
+
+  function marcarAlterado(id) {
+    linhasAlteradas.add(id);
+    var row = document.getElementById('row-' + id);
+    if (row) row.style.background = 'rgba(255,179,0,.06)';
+    atualizarBtnSalvarTudo();
+  }
+
+  function atualizarBtnSalvarTudo() {
+    var btn = document.getElementById('btnSalvarTudo');
+    var info = document.getElementById('alteracoesInfo');
+    if (linhasAlteradas.size > 0) {
+      btn.style.display = 'block';
+      info.textContent = linhasAlteradas.size + ' linha(s) com alterações não salvas';
+    } else {
+      btn.style.display = 'none';
+      info.textContent = '';
+    }
+  }
+
+  async function salvarTudo() {
+    if (!linhasAlteradas.size) return;
+    var btn = document.getElementById('btnSalvarTudo');
+    btn.textContent = '⏳ Salvando...';
+    btn.disabled = true;
+    var erros = 0;
+    for (const id of linhasAlteradas) {
+      try {
+        const estoque       = parseInt(document.getElementById('qt-' + id).value);
+        const alerta_minimo = parseInt(document.getElementById('min-' + id).value);
+        const preco         = parseFloat(document.getElementById('preco-' + id).value);
+        await fetch('/api/admin/estoque/' + id, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + token },
+          body: JSON.stringify({ estoque, alerta_minimo, preco })
+        });
+      } catch { erros++; }
+    }
+    if (erros) showToast(erros + ' erro(s) ao salvar.');
+    else showToast('Todas as alterações salvas!');
+    carregar();
   }
 
   async function salvar(id) {
@@ -101,6 +151,8 @@
         headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + token },
         body: JSON.stringify({ estoque, alerta_minimo, preco })
       });
+      linhasAlteradas.delete(id);
+      atualizarBtnSalvarTudo();
       showToast('Estoque atualizado!');
       carregar();
     } catch { showToast('Erro ao salvar.'); }
