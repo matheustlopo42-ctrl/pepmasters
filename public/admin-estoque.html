@@ -138,7 +138,15 @@
     }
     if (erros) showToast(erros + ' erro(s) ao salvar.');
     else showToast('Todas as alterações salvas!');
-    carregar();
+    // Limpar destaques sem recarregar
+    linhasAlteradas.forEach(function(id) {
+      var row = document.getElementById('row-' + id);
+      if (row) row.style.background = '';
+    });
+    linhasAlteradas.clear();
+    btn.textContent = '💾 Salvar Tudo';
+    btn.disabled = false;
+    atualizarBtnSalvarTudo();
   }
 
   async function salvar(id) {
