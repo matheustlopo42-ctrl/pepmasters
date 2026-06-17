@@ -369,13 +369,14 @@
     <div class="cart-subtotal"><span data-i18n="cart.subtotal">Subtotal</span><span id="cartSubtotal">R$ 0,00</span></div>
     <div id="caixaProgress" style="margin:8px 0;padding:10px 12px;border-radius:8px;background:#FFF3D0;border:1px solid var(--border);font-size:.8rem;display:none">
       <div style="display:flex;justify-content:space-between;font-weight:700;color:var(--mid);margin-bottom:6px">
-        <span id="caixaProgressLabel">0 / 10 ampolas</span>
+        <span id="caixaProgressLabel">0 ampolas</span>
         <span id="caixaProgressCaixas">0 caixas</span>
       </div>
       <div style="background:#FFE5B0;border-radius:4px;height:6px;overflow:hidden">
         <div id="caixaProgressBar" style="height:100%;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:4px;transition:width .3s;width:0%"></div>
       </div>
       <div id="caixaProgressMsg" style="margin-top:6px;color:var(--muted)"></div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #FFE5B0;font-size:.72rem;color:var(--muted)" data-i18n="cart.box.rules">Produtos em pares · máx. 5 caixas</div>
     </div>
     <div class="cart-total-row"><span data-i18n="cart.total">Total</span><span id="cartTotal">R$ 0,00</span></div>
     <a href="checkout.html" class="btn-checkout" id="btnCheckout" onclick="fecharCarrinho()" data-i18n="cart.checkout">Finalizar Pedido</a>
@@ -704,7 +705,13 @@ function renderCarrinho(){
   document.getElementById('cartSubtotal').textContent='R$ '+subtotal.toFixed(2).replace('.',',');
   document.getElementById('cartTotal').textContent='R$ '+subtotal.toFixed(2).replace('.',',');
 
-  // Indicador de progresso de caixa
+  var d = window.PEPMASTERS_I18N || {};
+  var l = localStorage.getItem('pep_lang') || 'en';
+  var tr2 = function(k, n) {
+    var s = (d[k] && (d[k][l] || d[k]['en'])) || k;
+    return s.replace('{n}', n);
+  };
+
   var total = c.reduce(function(s,i){return s+i.quantidade;},0);
   var progEl = document.getElementById('caixaProgress');
   var barEl  = document.getElementById('caixaProgressBar');
@@ -716,23 +723,25 @@ function renderCarrinho(){
     progEl.style.display = 'block';
     var caixasCompletas = Math.floor(total / 10);
     var resto = total % 10;
-    var pct = (total % 10) / 10 * 100;
-    if (pct === 0 && total > 0) pct = 100;
+    var pct = resto === 0 && total > 0 ? 100 : (resto / 10 * 100);
     barEl.style.width = pct + '%';
-    labEl.textContent = total + ' ampola' + (total!==1?'s':'');
-    cxEl.textContent  = caixasCompletas + ' caixa' + (caixasCompletas!==1?'s':'');
+    labEl.textContent = tr2('cart.box.label', total);
+    cxEl.textContent  = tr2('cart.box.count', caixasCompletas);
     if (resto === 0 && total > 0) {
-      msgEl.textContent = '✅ ' + caixasCompletas + ' caixa' + (caixasCompletas!==1?'s':'') + ' completa' + (caixasCompletas!==1?'s':'') + '!';
+      msgEl.textContent = tr2('cart.box.complete', caixasCompletas);
       progEl.style.background = '#dcfce7';
       progEl.style.borderColor = '#22c55e';
       if (btnCk) { btnCk.style.opacity='1'; btnCk.style.pointerEvents='auto'; }
     } else {
       var faltam = 10 - resto;
-      msgEl.textContent = 'Faltam ' + faltam + ' ampola' + (faltam!==1?'s':'') + ' para completar a caixa';
+      msgEl.textContent = tr2('cart.box.missing', faltam);
       progEl.style.background = '#FFF3D0';
       progEl.style.borderColor = 'var(--border)';
       if (btnCk) { btnCk.style.opacity='.5'; btnCk.style.pointerEvents='none'; }
     }
+    // Re-traduzir regras ao mudar idioma
+    var rulesEl = progEl.querySelector('[data-i18n="cart.box.rules"]');
+    if (rulesEl && d['cart.box.rules']) rulesEl.textContent = d['cart.box.rules'][l] || d['cart.box.rules']['en'];
   }
 }
 
@@ -1224,16 +1233,18 @@ function esconderSeletor(id) {
 
 function atualizarInfoQtd(id) {
   var qtd = cardQtds[id] || 2;
-  var totalCarrinho = getCarrinho().reduce(function(s,i){ return s + (i.id === id ? 0 : i.quantidade); }, 0);
+  var totalCarrinho = getCarrinho().reduce(function(s,i){ return s + (String(i.id) === String(id) ? 0 : i.quantidade); }, 0);
   var totalComEste = totalCarrinho + qtd;
-  var caixas = totalComEste / 10;
   var el = document.getElementById('qtd-info-' + id);
   if (!el) return;
+  var d = window.PEPMASTERS_I18N || {};
+  var l = localStorage.getItem('pep_lang') || 'en';
+  var tr2 = function(k, n) { var s = (d[k] && (d[k][l] || d[k]['en'])) || k; return s.replace('{n}', n); };
   var pares = Math.floor(qtd / 2);
   var resto = totalComEste % 10;
-  var msg = pares + ' par' + (pares !== 1 ? 'es' : '') + ' · total: ' + totalComEste;
-  if (resto !== 0) msg += ' · faltam ' + (10 - resto) + ' p/ fechar caixa';
-  else msg += ' · ' + Math.floor(totalComEste/10) + ' caixa' + (totalComEste/10 !== 1 ? 's' : '');
+  var msg = pares + ' par' + (pares !== 1 ? 's' : '') + ' · ' + tr2('cart.box.label', totalComEste);
+  if (resto !== 0) msg += ' · ' + tr2('cart.box.missing', 10 - resto);
+  else if (totalComEste > 0) msg += ' · ' + tr2('cart.box.complete', Math.floor(totalComEste/10));
   el.textContent = msg;
 }
 
