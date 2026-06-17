@@ -1239,7 +1239,15 @@ function atualizarInfoQtd(id) {
   if (!el) return;
   var d = window.PEPMASTERS_I18N || {};
   var l = localStorage.getItem('pep_lang') || 'en';
-  var tr2 = function(k, n) { var s = (d[k] && (d[k][l] || d[k]['en'])) || k; return s.replace('{n}', n); };
+  var tr2 = function(k, n) {
+    if (!d[k]) {
+      // fallback sem i18n
+      var fallbacks = { 'cart.pairs': n+' par', 'cart.box.label': n+' ampolas', 'cart.box.missing': 'faltam '+n, 'cart.box.complete': '✅ '+n+' caixa(s) completa(s)!' };
+      return fallbacks[k] || k;
+    }
+    var s = d[k][l] || d[k]['en'] || k;
+    return s.replace('{n}', n);
+  };
   var pares = Math.floor(qtd / 2);
   var resto = totalComEste % 10;
   var msg = tr2('cart.pairs', pares) + ' · ' + tr2('cart.box.label', totalComEste);
