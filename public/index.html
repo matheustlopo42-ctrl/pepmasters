@@ -975,16 +975,22 @@ function mkCard(p) {
     // Botões de caixa
     var caixaRow = document.createElement('div');
     caixaRow.style.cssText = 'display:flex;gap:4px;justify-content:center;margin:6px 0';
+    var _d = window.PEPMASTERS_I18N || {};
+    var _l = localStorage.getItem('pep_lang') || 'en';
+    var _cxLabel = { en:'box', pt:'cx', es:'cj', de:'Sch', fr:'bt' };
+    var _cxLbl = _cxLabel[_l] || 'box';
+    var _pid = p.id;
     [1,2,3,4,5].forEach(function(n){
       var cb = document.createElement('button');
       cb.style.cssText = 'flex:1;padding:5px 0;border:1px solid var(--border);border-radius:6px;background:none;font-size:.7rem;font-family:"Barlow Condensed",sans-serif;font-weight:700;cursor:pointer;color:var(--mid)';
-      cb.textContent = n + (n===1?' cx':' cx');
-      cb.title = n * 10 + ' ampolas';
-      cb.onclick = function(){
-        cardQtds[p.id] = n * 10;
-        var qn = document.getElementById('qn-' + p.id);
-        if (qn) qn.textContent = n * 10;
-      };
+      cb.textContent = n + ' ' + _cxLbl;
+      cb.title = n * 10 + (_l==='pt'?' ampolas':' ampoules');
+      cb.onclick = (function(num){ return function(){
+        cardQtds[_pid] = num * 10;
+        var qn = document.getElementById('qn-' + _pid);
+        if (qn) qn.textContent = num * 10;
+        atualizarInfoQtd(_pid);
+      };})(n);
       caixaRow.appendChild(cb);
     });
 
@@ -1040,11 +1046,26 @@ function renderTopSellers(lista) {
     var btnMinus = card.querySelector('.qtd-btn:first-child');
     var btnPlus  = card.querySelectorAll('.qtd-btn')[1];
     var btnConf  = card.querySelector('.qtd-confirmar');
-    if (btnMinus) btnMinus.onclick = function(){ cardQtdPrefixed(p.id, -1, prefix); };
-    if (btnPlus)  btnPlus.onclick  = function(){ cardQtdPrefixed(p.id, +1, prefix); };
+    if (btnMinus) btnMinus.onclick = function(){ cardQtdPrefixed(p.id, -2, prefix); };
+    if (btnPlus)  btnPlus.onclick  = function(){ cardQtdPrefixed(p.id, +2, prefix); };
     if (btnConf)  btnConf.onclick  = function(){ adicionarAoCarrinhoPrefixed(p.id, prefix); };
     var btnCanc = card.querySelector('.qtd-cancelar');
     if (btnCanc) btnCanc.onclick = function(){ cardQtdPrefixed(p.id, -999, prefix); };
+    // Re-bind botões de caixa para usar prefix
+    card.querySelectorAll('.qtd-btn, button').forEach(function(btn){
+      // Os botões de caixa são os que têm textContent "1 cx", "2 cx" etc (ou "1 box" etc)
+      var t = btn.textContent.trim();
+      var m = t.match(/^(\d+)\s/);
+      if (m && btn.title && btn.title.indexOf('ampol') > -1 || btn.title && btn.title.indexOf('ampoule') > -1) {
+        var num = parseInt(m[1]);
+        btn.onclick = (function(n){ return function(){
+          cardQtds[prefix + p.id] = n * 10;
+          var qn = document.getElementById(prefix + 'qn-' + p.id);
+          if (qn) qn.textContent = n * 10;
+          atualizarInfoQtdPrefixed(p.id, prefix);
+        };})(num);
+      }
+    });
     grid.appendChild(card);
   });
 }
