@@ -1206,7 +1206,7 @@ function cardQtdPrefixed(id, delta, prefix) {
 
 function atualizarInfoQtdPrefixed(id, prefix) {
   var qtd = cardQtds[prefix + id] || 2;
-  var totalCarrinho = getCarrinho().reduce(function(s,i){ return s + (String(i.id) === String(id) ? 0 : i.quantidade); }, 0);
+  var totalCarrinho = getCarrinho().reduce(function(s,i){ return s + i.quantidade; }, 0);
   var totalComEste = totalCarrinho + qtd;
   var el = document.getElementById(prefix + 'qtd-info-' + id) || document.getElementById('qtd-info-' + id);
   if (!el) return;
@@ -1258,7 +1258,7 @@ function esconderSeletor(id) {
 
 function atualizarInfoQtd(id) {
   var qtd = cardQtds[id] || 2;
-  var totalCarrinho = getCarrinho().reduce(function(s,i){ return s + (String(i.id) === String(id) ? 0 : i.quantidade); }, 0);
+  var totalCarrinho = getCarrinho().reduce(function(s,i){ return s + i.quantidade; }, 0);
   var totalComEste = totalCarrinho + qtd;
   var el = document.getElementById('qtd-info-' + id);
   if (!el) return;
@@ -1312,7 +1312,7 @@ function confirmarSeletor(id, preco, qtdOverride) {
   if (!jaExiste && c.length >= 5) { showToast('Máximo 5 produtos diferentes por pedido'); return; }
 
   // Verificar máximo 50 no total
-  const totalAtual = c.reduce(function(s,i){ return s + (String(i.id)===String(id)?0:i.quantidade); }, 0);
+  const totalAtual = c.reduce(function(s,i){ return s + i.quantidade; }, 0);
   if (totalAtual + qtd > 50) { showToast('Máximo 50 ampolas (5 caixas)'); return; }
 
   if (idx >= 0) c[idx].quantidade += qtd;
