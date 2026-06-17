@@ -1239,7 +1239,8 @@ function atualizarInfoQtdPrefixed(id, prefix) {
   };
   var pares = Math.floor(qtd / 2);
   var resto = totalComEste % 10;
-  var msg = tr2('cart.pairs', pares) + ' · ' + tr2('cart.box.label', totalComEste);
+  var pairsKey = pares === 1 ? 'cart.pairs1' : 'cart.pairs';
+  var msg = tr2(pairsKey, pares) + ' · ' + tr2('cart.box.label', totalComEste);
   if (resto !== 0) msg += ' · ' + tr2('cart.box.missing', 10 - resto);
   else if (totalComEste > 0) msg += ' · ' + tr2('cart.box.complete', Math.floor(totalComEste/10));
   el.textContent = msg;
@@ -1296,7 +1297,8 @@ function atualizarInfoQtd(id) {
   };
   var pares = Math.floor(qtd / 2);
   var resto = totalComEste % 10;
-  var msg = tr2('cart.pairs', pares) + ' · ' + tr2('cart.box.label', totalComEste);
+  var pairsKey = pares === 1 ? 'cart.pairs1' : 'cart.pairs';
+  var msg = tr2(pairsKey, pares) + ' · ' + tr2('cart.box.label', totalComEste);
   if (resto !== 0) msg += ' · ' + tr2('cart.box.missing', 10 - resto);
   else if (totalComEste > 0) msg += ' · ' + tr2('cart.box.complete', Math.floor(totalComEste/10));
   el.textContent = msg;

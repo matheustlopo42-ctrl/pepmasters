@@ -455,6 +455,7 @@ window.PEPMASTERS_I18N = {
   "cart.box.rules": { en:"Orders in pairs · max 5 boxes", pt:"Produtos em pares · máx. 5 caixas", es:"Productos en pares · máx. 5 cajas", de:"Produkte paarweise · max. 5 Schachteln", fr:"Produits par paires · max. 5 boîtes" },
   "cart.box.label": { en:"{n} ampoules", pt:"{n} ampolas", es:"{n} ampollas", de:"{n} Ampullen", fr:"{n} ampoules" },
   "cart.box.count": { en:"{n} box(es)", pt:"{n} caixas", es:"{n} cajas", de:"{n} Schachteln", fr:"{n} boîtes" },
+  "cart.pairs1": { en:"1 pair", pt:"1 par", es:"1 par", de:"1 Paar", fr:"1 paire" },
   "cart.pairs": { en:"{n} pairs", pt:"{n} pares", es:"{n} pares", de:"{n} Paare", fr:"{n} paires" },
   "members.popular":          { en:"Most popular",    pt:"Mais popular",      es:"Más popular",       de:"Am beliebtesten",   fr:"Le plus populaire" },
   "members.plan.free":        { en:"Free",            pt:"Grátis",            es:"Gratis",            de:"Kostenlos",         fr:"Gratuit" },
