@@ -367,8 +367,18 @@
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-foot" id="cartFoot" style="display:none">
     <div class="cart-subtotal"><span data-i18n="cart.subtotal">Subtotal</span><span id="cartSubtotal">R$ 0,00</span></div>
+    <div id="caixaProgress" style="margin:8px 0;padding:10px 12px;border-radius:8px;background:#FFF3D0;border:1px solid var(--border);font-size:.8rem;display:none">
+      <div style="display:flex;justify-content:space-between;font-weight:700;color:var(--mid);margin-bottom:6px">
+        <span id="caixaProgressLabel">0 / 10 ampolas</span>
+        <span id="caixaProgressCaixas">0 caixas</span>
+      </div>
+      <div style="background:#FFE5B0;border-radius:4px;height:6px;overflow:hidden">
+        <div id="caixaProgressBar" style="height:100%;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:4px;transition:width .3s;width:0%"></div>
+      </div>
+      <div id="caixaProgressMsg" style="margin-top:6px;color:var(--muted)"></div>
+    </div>
     <div class="cart-total-row"><span data-i18n="cart.total">Total</span><span id="cartTotal">R$ 0,00</span></div>
-    <a href="checkout.html" class="btn-checkout" onclick="fecharCarrinho()" data-i18n="cart.checkout">Finalizar Pedido</a>
+    <a href="checkout.html" class="btn-checkout" id="btnCheckout" onclick="fecharCarrinho()" data-i18n="cart.checkout">Finalizar Pedido</a>
     <button class="btn-limpar" onclick="limparCarrinho()" data-i18n="cart.clear">Limpar carrinho</button>
   </div>
 </div>
@@ -648,9 +658,11 @@ function adicionarAoCarrinho(id){
 }
 function removerDoCarrinho(id){setCarrinho(getCarrinho().filter(i=>i.id!==id));renderCarrinho()}
 function alterarQtd(id,delta){
-  const c=getCarrinho();const idx=c.findIndex(i=>i.id===id);if(idx<0)return;
+  const c=getCarrinho();const idx=c.findIndex(i=>String(i.id)===String(id));if(idx<0)return;
   const nova=c[idx].quantidade+delta;
-  if(nova<=0){c.splice(idx,1)}else{c[idx].quantidade=nova}
+  if(nova<2){c.splice(idx,1)}
+  else if(nova%2!==0){c[idx].quantidade=nova+1} // forçar par
+  else{c[idx].quantidade=nova}
   setCarrinho(c);renderCarrinho()
 }
 function limparCarrinho(){setCarrinho([]);renderCarrinho()}
@@ -678,9 +690,9 @@ function renderCarrinho(){
         <div class="cart-item-name">${item.nome}</div>
         <div class="cart-item-cat">${item.categoria}</div>
         <div class="cart-item-controls">
-          <button class="qty-btn" onclick="alterarQtd('${item.id}',-1)">−</button>
+          <button class="qty-btn" onclick="alterarQtd('${item.id}',-2)">−</button>
           <span class="qty-val">${item.quantidade}</span>
-          <button class="qty-btn" onclick="alterarQtd('${item.id}',1)">+</button>
+          <button class="qty-btn" onclick="alterarQtd('${item.id}',2)">+</button>
           <span class="unit-price">× R$ ${item.preco.toFixed(2).replace('.',',')}</span>
         </div>
       </div>
@@ -691,6 +703,37 @@ function renderCarrinho(){
     </div>`).join('');
   document.getElementById('cartSubtotal').textContent='R$ '+subtotal.toFixed(2).replace('.',',');
   document.getElementById('cartTotal').textContent='R$ '+subtotal.toFixed(2).replace('.',',');
+
+  // Indicador de progresso de caixa
+  var total = c.reduce(function(s,i){return s+i.quantidade;},0);
+  var progEl = document.getElementById('caixaProgress');
+  var barEl  = document.getElementById('caixaProgressBar');
+  var labEl  = document.getElementById('caixaProgressLabel');
+  var cxEl   = document.getElementById('caixaProgressCaixas');
+  var msgEl  = document.getElementById('caixaProgressMsg');
+  var btnCk  = document.getElementById('btnCheckout');
+  if (progEl) {
+    progEl.style.display = 'block';
+    var caixasCompletas = Math.floor(total / 10);
+    var resto = total % 10;
+    var pct = (total % 10) / 10 * 100;
+    if (pct === 0 && total > 0) pct = 100;
+    barEl.style.width = pct + '%';
+    labEl.textContent = total + ' ampola' + (total!==1?'s':'');
+    cxEl.textContent  = caixasCompletas + ' caixa' + (caixasCompletas!==1?'s':'');
+    if (resto === 0 && total > 0) {
+      msgEl.textContent = '✅ ' + caixasCompletas + ' caixa' + (caixasCompletas!==1?'s':'') + ' completa' + (caixasCompletas!==1?'s':'') + '!';
+      progEl.style.background = '#dcfce7';
+      progEl.style.borderColor = '#22c55e';
+      if (btnCk) { btnCk.style.opacity='1'; btnCk.style.pointerEvents='auto'; }
+    } else {
+      var faltam = 10 - resto;
+      msgEl.textContent = 'Faltam ' + faltam + ' ampola' + (faltam!==1?'s':'') + ' para completar a caixa';
+      progEl.style.background = '#FFF3D0';
+      progEl.style.borderColor = 'var(--border)';
+      if (btnCk) { btnCk.style.opacity='.5'; btnCk.style.pointerEvents='none'; }
+    }
+  }
 }
 
 // ── AUTH ──
@@ -906,24 +949,53 @@ function mkCard(p) {
     var sel = document.createElement('div');
     sel.className = 'card-qtd-selector';
     sel.id = 'sel-' + p.id;
+
+    // Linha +/- (incremento de 2)
     var qtdRow = document.createElement('div');
     qtdRow.className = 'qtd-row';
     var btnM = document.createElement('button');
     btnM.className = 'qtd-btn'; btnM.textContent = '−';
-    btnM.onclick = function(){ cardQtd(p.id, -1); };
+    btnM.onclick = function(){ cardQtd(p.id, -2); };
     var qtdNum = document.createElement('span');
-    qtdNum.className = 'qtd-display'; qtdNum.id = 'qn-' + p.id; qtdNum.textContent = '1';
+    qtdNum.className = 'qtd-display'; qtdNum.id = 'qn-' + p.id; qtdNum.textContent = '2';
     var btnP = document.createElement('button');
     btnP.className = 'qtd-btn'; btnP.textContent = '+';
-    btnP.onclick = function(){ cardQtd(p.id, 1); };
+    btnP.onclick = function(){ cardQtd(p.id, 2); };
     qtdRow.appendChild(btnM); qtdRow.appendChild(qtdNum); qtdRow.appendChild(btnP);
+
+    // Botões de caixa
+    var caixaRow = document.createElement('div');
+    caixaRow.style.cssText = 'display:flex;gap:4px;justify-content:center;margin:6px 0';
+    [1,2,3,4,5].forEach(function(n){
+      var cb = document.createElement('button');
+      cb.style.cssText = 'flex:1;padding:5px 0;border:1px solid var(--border);border-radius:6px;background:none;font-size:.7rem;font-family:"Barlow Condensed",sans-serif;font-weight:700;cursor:pointer;color:var(--mid)';
+      cb.textContent = n + (n===1?' cx':' cx');
+      cb.title = n * 10 + ' ampolas';
+      cb.onclick = function(){
+        cardQtds[p.id] = n * 10;
+        var qn = document.getElementById('qn-' + p.id);
+        if (qn) qn.textContent = n * 10;
+      };
+      caixaRow.appendChild(cb);
+    });
+
+    var infoRow = document.createElement('div');
+    infoRow.id = 'qtd-info-' + p.id;
+    infoRow.style.cssText = 'font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:4px';
+    infoRow.textContent = '1 par · mín. 2';
+
     var btnConf = document.createElement('button');
     btnConf.className = 'qtd-confirmar'; btnConf.textContent = tr('btn.confirm');
     btnConf.onclick = function(){ confirmarSeletor(p.id, preco); };
     var btnCanc = document.createElement('button');
     btnCanc.className = 'qtd-cancelar'; btnCanc.textContent = tr('btn.cancel');
     btnCanc.onclick = function(){ esconderSeletor(p.id); };
-    sel.appendChild(qtdRow); sel.appendChild(btnConf); sel.appendChild(btnCanc);
+
+    sel.appendChild(qtdRow);
+    sel.appendChild(caixaRow);
+    sel.appendChild(infoRow);
+    sel.appendChild(btnConf);
+    sel.appendChild(btnCanc);
     body.appendChild(footer);
     body.appendChild(sel);
     div.appendChild(body);
@@ -1128,17 +1200,18 @@ function adicionarAoCarrinhoPrefixed(id, prefix) {
 }
 
 function mostrarSeletor(id) {
-  // esconder outros seletores abertos
   document.querySelectorAll('.card-qtd-selector.show').forEach(el => {
     const otherId = el.id.replace('sel-','');
     if (otherId !== id) esconderSeletor(otherId);
   });
-  cardQtds[id] = 1;
+  cardQtds[id] = 2; // mínimo 2 (1 par)
   const sel = document.getElementById('sel-'+id);
   const btn = document.getElementById('btn-add-'+id);
   if (sel) sel.classList.add('show');
   if (btn) btn.style.display = 'none';
-  document.getElementById('qn-'+id).textContent = 1;
+  var qn = document.getElementById('qn-'+id);
+  if (qn) qn.textContent = 2;
+  atualizarInfoQtd(id);
 }
 
 function esconderSeletor(id) {
@@ -1146,28 +1219,70 @@ function esconderSeletor(id) {
   const btn = document.getElementById('btn-add-'+id);
   if (sel) sel.classList.remove('show');
   if (btn) btn.style.display = '';
-  cardQtds[id] = 1;
+  cardQtds[id] = 2;
+}
+
+function atualizarInfoQtd(id) {
+  var qtd = cardQtds[id] || 2;
+  var totalCarrinho = getCarrinho().reduce(function(s,i){ return s + (i.id === id ? 0 : i.quantidade); }, 0);
+  var totalComEste = totalCarrinho + qtd;
+  var caixas = totalComEste / 10;
+  var el = document.getElementById('qtd-info-' + id);
+  if (!el) return;
+  var pares = Math.floor(qtd / 2);
+  var resto = totalComEste % 10;
+  var msg = pares + ' par' + (pares !== 1 ? 'es' : '') + ' · total: ' + totalComEste;
+  if (resto !== 0) msg += ' · faltam ' + (10 - resto) + ' p/ fechar caixa';
+  else msg += ' · ' + Math.floor(totalComEste/10) + ' caixa' + (totalComEste/10 !== 1 ? 's' : '');
+  el.textContent = msg;
 }
 
 function cardQtd(id, delta) {
-  const nova = (cardQtds[id] || 1) + delta;
-  if (nova <= 0) { esconderSeletor(id); return; }
+  var atual = cardQtds[id] || 2;
+  var nova = atual + delta;
+  if (nova < 2) { esconderSeletor(id); return; }
+  if (nova % 2 !== 0) nova += delta > 0 ? 1 : -1; // forçar par
+  // verificar máximo total (50)
+  var totalOutros = getCarrinho().reduce(function(s,i){ return s + (String(i.id)===String(id)?0:i.quantidade); }, 0);
+  if (totalOutros + nova > 50) { showToast('Máximo 50 ampolas (5 caixas)'); return; }
   cardQtds[id] = nova;
-  const el = document.getElementById('qn-'+id);
-  if (el) el.textContent = cardQtds[id];
+  var el = document.getElementById('qn-'+id);
+  if (el) el.textContent = nova;
+  atualizarInfoQtd(id);
 }
 
 function confirmarSeletor(id, preco) {
-  const p   = produtosData.find(x => x.id === id);
+  const p = produtosData.find(x => String(x.id) === String(id));
   if (!p) return;
-  const qtd = cardQtds[id] || 1;
-  const c   = getCarrinho();
-  const idx = c.findIndex(i => i.id === id);
+  const qtd = cardQtds[id] || 2;
+
+  // Validações
+  if (qtd % 2 !== 0) { showToast('Quantidade deve ser em pares'); return; }
+  if (qtd < 2) { showToast('Mínimo 2 unidades por produto'); return; }
+
+  const c = getCarrinho();
+  const idx = c.findIndex(i => String(i.id) === String(id));
+
+  // Verificar máximo 5 produtos diferentes
+  const jaExiste = idx >= 0;
+  if (!jaExiste && c.length >= 5) { showToast('Máximo 5 produtos diferentes por pedido'); return; }
+
+  // Verificar máximo 50 no total
+  const totalAtual = c.reduce(function(s,i){ return s + (String(i.id)===String(id)?0:i.quantidade); }, 0);
+  if (totalAtual + qtd > 50) { showToast('Máximo 50 ampolas (5 caixas)'); return; }
+
   if (idx >= 0) c[idx].quantidade += qtd;
   else c.push({ id: p.id, nome: p.nome, img: p.img, categoria: p.categoria, preco: p.preco, quantidade: qtd });
   setCarrinho(c);
   esconderSeletor(id);
-  showToast(p.nome + ' × ' + qtd + ' adicionado ao carrinho');
+
+  var caixas = Math.floor(qtd / 10);
+  var pares  = (qtd % 10) / 2;
+  var msg = p.nome + ' × ' + qtd;
+  if (caixas > 0) msg += ' (' + caixas + (caixas===1?' cx':' cx');
+  if (pares > 0)  msg += (caixas>0?'+':'(') + pares + ' par' + (pares!==1?'es':'');
+  if (caixas > 0 || pares > 0) msg += ')';
+  showToast(msg + ' adicionado');
 }
 
 // ── TOAST ──
