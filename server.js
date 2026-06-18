@@ -376,7 +376,7 @@ async function initDB() {
       ];
       for (const p of produtos) {
         await client.query(
-          'INSERT INTO pep_estoque (produto_id,nome,preco,descricao,estoque) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (produto_id) DO UPDATE SET nome=EXCLUDED.nome,preco=EXCLUDED.preco,descricao=EXCLUDED.descricao',
+          'INSERT INTO pep_estoque (produto_id,nome,preco,descricao,estoque) VALUES ($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING',
           [String(p.id), p.nome, p.preco, p.descricao, p.estoque]
         );
       }
@@ -1463,7 +1463,7 @@ app.get('/api/seed-pep-159357', async (req, res) => {
     ];
     for (const [pid,nome,preco,desc,estoque] of produtos) {
       await client.query(
-        "INSERT INTO pep_estoque (produto_id,nome,preco,descricao,estoque,alerta_minimo) VALUES ($1,$2,$3,$4,$5,3) ON CONFLICT (produto_id) DO UPDATE SET nome=EXCLUDED.nome,preco=EXCLUDED.preco,descricao=EXCLUDED.descricao",
+        "INSERT INTO pep_estoque (produto_id,nome,preco,descricao,estoque,alerta_minimo) VALUES ($1,$2,$3,$4,$5,3) ON CONFLICT DO NOTHING",
         [pid,nome,preco,desc,estoque]
       );
     }
