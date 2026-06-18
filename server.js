@@ -597,7 +597,8 @@ app.post('/api/cadastro', rateLimit(5, 60000), async (req, res) => {
 
     res.json({ token: gerarToken(u.id), nome: u.nome, email: u.email });
   } catch (err) {
-    res.status(500).json({ erro: 'Erro ao cadastrar.' });
+    console.error('[Cadastro] Erro:', err.message);
+    res.status(500).json({ erro: 'Erro ao cadastrar: ' + err.message });
   }
 });
 
