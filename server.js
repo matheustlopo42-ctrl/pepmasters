@@ -195,10 +195,10 @@ async function initDB() {
         criado_em TIMESTAMPTZ DEFAULT NOW()
       )
     `);
-    await client.query(`ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS desconto_pix INT DEFAULT 0`);
-    await client.query(`ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS desconto_cartao INT DEFAULT 0`);
-    await client.query(`ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS usos INT DEFAULT 0`);
-    await client.query(`ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS usos_max INT DEFAULT 0`);
+    await client.query(`ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS desconto_pix INT DEFAULT 0`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS desconto_cartao INT DEFAULT 0`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS usos INT DEFAULT 0`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_cupons ADD COLUMN IF NOT EXISTS usos_max INT DEFAULT 0`).catch(()=>{});
 
     // Estoque — garantir colunas necessárias
     await client.query(`
@@ -208,12 +208,12 @@ async function initDB() {
         criado_em TIMESTAMPTZ DEFAULT NOW()
       )
     `);
-    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS nome TEXT`);
-    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS preco NUMERIC(10,2)`);
-    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS preco_original NUMERIC(10,2)`);
-    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS descricao TEXT`);
-    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS estoque INT DEFAULT 0`);
-    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS alerta_minimo INT DEFAULT 3`);
+    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS nome TEXT`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS preco NUMERIC(10,2)`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS preco_original NUMERIC(10,2)`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS descricao TEXT`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS estoque INT DEFAULT 0`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_estoque ADD COLUMN IF NOT EXISTS alerta_minimo INT DEFAULT 3`).catch(()=>{});
 
     // ── MEMBROS ──────────────────────────────────
     await client.query(`
