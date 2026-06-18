@@ -1286,6 +1286,16 @@ app.post('/api/admin/seed-produtos', adminMiddleware, async (req, res) => {
   }
 });
 
+// DELETE /api/admin/estoque/:id
+app.delete('/api/admin/estoque/:id', adminMiddleware, async (req, res) => {
+  try {
+    await pool.query('DELETE FROM pep_estoque WHERE id=$1', [req.params.id]);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
 // GET /api/admin/estoque
 app.get('/api/admin/estoque', adminMiddleware, async (req, res) => {
   try {
