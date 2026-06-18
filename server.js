@@ -368,16 +368,27 @@ async function initDB() {
     const { rows } = await client.query('SELECT COUNT(*) FROM pep_estoque');
     if (parseInt(rows[0].count) === 0) {
       const produtos = [
-        { id:1, nome:'BPC-157',          preco:150.00, descricao:'Recuperacao muscular e articular acelerada.', estoque:10 },
-        { id:2, nome:'TB-500',           preco:180.00, descricao:'Regeneracao tecidual e anti-inflamatorio.',  estoque:10 },
-        { id:3, nome:'HGH Frag 176-191', preco:160.00, descricao:'Queima de gordura sem efeitos do GH completo.', estoque:10 },
-        { id:4, nome:'Ipamorelin',       preco:140.00, descricao:'Estimulante seletivo do hormonio do crescimento.', estoque:10 },
-        { id:5, nome:'Sermorelin',       preco:170.00, descricao:'Anti-aging, sono e estimulo natural do GH.', estoque:0  },
+        { id:'1',  nome:'BPC-157',          preco:150.00, descricao:'Recuperacao muscular e articular acelerada.',         estoque:10 },
+        { id:'2',  nome:'TB-500',            preco:180.00, descricao:'Regeneracao tecidual e anti-inflamatorio.',            estoque:10 },
+        { id:'3',  nome:'HGH Frag 176-191', preco:160.00, descricao:'Queima de gordura sem efeitos do GH completo.',        estoque:10 },
+        { id:'4',  nome:'Ipamorelin',        preco:140.00, descricao:'Estimulante seletivo do hormonio do crescimento.',     estoque:10 },
+        { id:'5',  nome:'Sermorelin',        preco:170.00, descricao:'Anti-aging, sono e estimulo natural do GH.',           estoque:0  },
+        { id:'6',  nome:'CJC-1295',          preco:180.00, descricao:'Estimulante de GH de longa duracao para massa.',       estoque:10 },
+        { id:'7',  nome:'IGF-1 LR3',         preco:220.00, descricao:'Fator de crescimento insulinico para hipertrofia.',    estoque:10 },
+        { id:'8',  nome:'IGF-1 DES',         preco:200.00, descricao:'Variante do IGF-1 com acao local nos musculos.',       estoque:10 },
+        { id:'9',  nome:'ACE-031',           preco:250.00, descricao:'Inibidor da miostatina. Potencializa massa e forca.',  estoque:10 },
+        { id:'10', nome:'Semax',             preco:160.00, descricao:'Neuropeptideo para foco, memoria e funcao cerebral.',  estoque:10 },
+        { id:'11', nome:'Selank',            preco:150.00, descricao:'Ansiolitico natural com efeito nootropico.',           estoque:10 },
+        { id:'12', nome:'Kisspeptin',        preco:190.00, descricao:'Estimula producao de LH e testosterona.',              estoque:10 },
+        { id:'13', nome:'SS-31',             preco:210.00, descricao:'Acao antioxidante mitocondrial e cardioprotetora.',    estoque:10 },
+        { id:'14', nome:'SLU-PP-32',         preco:230.00, descricao:'Simula efeitos metabolicos do exercicio.',             estoque:10 },
+        { id:'15', nome:'AHK-CU',            preco:140.00, descricao:'Peptideo de cobre para cabelo, pele e cabelos.',       estoque:10 },
+        { id:'16', nome:'VIP',               preco:200.00, descricao:'Potente anti-inflamatorio e vasoativo intestinal.',    estoque:10 },
       ];
       for (const p of produtos) {
         await client.query(
           'INSERT INTO pep_estoque (produto_id,nome,preco,descricao,estoque) VALUES ($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING',
-          [String(p.id), p.nome, p.preco, p.descricao, p.estoque]
+          [p.id, p.nome, p.preco, p.descricao, p.estoque]
         );
       }
       console.log('[DB] Produtos inseridos no estoque.');
@@ -1236,6 +1247,41 @@ app.put('/api/admin/cupons/:id', adminMiddleware, async (req, res) => {
     res.json({ ok: true });
   } catch {
     res.status(500).json({ erro: 'Erro.' });
+  }
+});
+
+// POST /api/admin/seed-produtos — insere produtos faltantes
+app.post('/api/admin/seed-produtos', adminMiddleware, async (req, res) => {
+  const produtos = [
+    { id:'1',  nome:'BPC-157',          preco:150.00, descricao:'Recuperacao muscular e articular acelerada.',         estoque:10 },
+    { id:'2',  nome:'TB-500',            preco:180.00, descricao:'Regeneracao tecidual e anti-inflamatorio.',            estoque:10 },
+    { id:'3',  nome:'HGH Frag 176-191', preco:160.00, descricao:'Queima de gordura sem efeitos do GH completo.',        estoque:10 },
+    { id:'4',  nome:'Ipamorelin',        preco:140.00, descricao:'Estimulante seletivo do hormonio do crescimento.',     estoque:10 },
+    { id:'5',  nome:'Sermorelin',        preco:170.00, descricao:'Anti-aging, sono e estimulo natural do GH.',           estoque:0  },
+    { id:'6',  nome:'CJC-1295',          preco:180.00, descricao:'Estimulante de GH de longa duracao para massa.',       estoque:10 },
+    { id:'7',  nome:'IGF-1 LR3',         preco:220.00, descricao:'Fator de crescimento insulinico para hipertrofia.',    estoque:10 },
+    { id:'8',  nome:'IGF-1 DES',         preco:200.00, descricao:'Variante do IGF-1 com acao local nos musculos.',       estoque:10 },
+    { id:'9',  nome:'ACE-031',           preco:250.00, descricao:'Inibidor da miostatina. Potencializa massa e forca.',  estoque:10 },
+    { id:'10', nome:'Semax',             preco:160.00, descricao:'Neuropeptideo para foco, memoria e funcao cerebral.',  estoque:10 },
+    { id:'11', nome:'Selank',            preco:150.00, descricao:'Ansiolitico natural com efeito nootropico.',           estoque:10 },
+    { id:'12', nome:'Kisspeptin',        preco:190.00, descricao:'Estimula producao de LH e testosterona.',              estoque:10 },
+    { id:'13', nome:'SS-31',             preco:210.00, descricao:'Acao antioxidante mitocondrial e cardioprotetora.',    estoque:10 },
+    { id:'14', nome:'SLU-PP-32',         preco:230.00, descricao:'Simula efeitos metabolicos do exercicio.',             estoque:10 },
+    { id:'15', nome:'AHK-CU',            preco:140.00, descricao:'Peptideo de cobre para cabelo, pele e cabelos.',       estoque:10 },
+    { id:'16', nome:'VIP',               preco:200.00, descricao:'Potente anti-inflamatorio e vasoativo intestinal.',    estoque:10 },
+  ];
+  try {
+    let inseridos = 0;
+    for (const p of produtos) {
+      const r = await pool.query(
+        'INSERT INTO pep_estoque (produto_id,nome,preco,descricao,estoque) VALUES ($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING RETURNING id',
+        [p.id, p.nome, p.preco, p.descricao, p.estoque]
+      );
+      if (r.rows.length) inseridos++;
+    }
+    res.json({ ok: true, inseridos });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
   }
 });
 
