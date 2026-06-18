@@ -146,7 +146,6 @@ app.get('/robots.txt', (req, res) => res.sendFile(path.join(__dirname, 'robots.t
 async function initDB() {
   const client = await pool.connect();
   try {
-    await client.query('BEGIN');
 
     // Usuários — garantir colunas necessárias
     await client.query(`
@@ -363,8 +362,6 @@ async function initDB() {
       )
     `);
 
-    await client.query('COMMIT');
-
     // Seed produtos se estoque vazio
     const { rows } = await client.query('SELECT COUNT(*) FROM pep_estoque');
     if (parseInt(rows[0].count) === 0) {
@@ -384,8 +381,8 @@ async function initDB() {
       console.log('[DB] Produtos inseridos no estoque.');
     }
   } catch (err) {
-    await client.query('ROLLBACK');
     console.error('[DB] Erro no init:', err.message);
+    throw err;
   } finally {
     client.release();
   }
