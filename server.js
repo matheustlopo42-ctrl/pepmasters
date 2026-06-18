@@ -260,20 +260,7 @@ async function initDB() {
     // Coluna ref_code em pedidos para rastrear afiliado
     await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS ref_code TEXT`).catch(() => {});
 
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS pep_forum_denuncias (
-        id          SERIAL PRIMARY KEY,
-        topico_id   INT REFERENCES pep_forum_topicos(id) ON DELETE CASCADE,
-        resposta_id INT REFERENCES pep_forum_respostas(id) ON DELETE CASCADE,
-        membro_id   INT NOT NULL REFERENCES pep_membros(id),
-        motivo      TEXT,
-        status      TEXT DEFAULT 'pendente',
-        criado_em   TIMESTAMPTZ DEFAULT NOW()
-      )
-    `);
-    await client.query(`ALTER TABLE pep_forum_respostas ADD COLUMN IF NOT EXISTS denuncias INT DEFAULT 0`).catch(()=>{});
-    await client.query(`ALTER TABLE pep_forum_topicos ADD COLUMN IF NOT EXISTS likes INT DEFAULT 0`).catch(()=>{});
-    await client.query(`ALTER TABLE pep_forum_respostas ADD COLUMN IF NOT EXISTS likes INT DEFAULT 0`).catch(()=>{});
+
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS pep_forum_likes (
@@ -350,6 +337,21 @@ async function initDB() {
         criado_em   TIMESTAMPTZ DEFAULT NOW()
       )
     `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_forum_denuncias (
+        id          SERIAL PRIMARY KEY,
+        topico_id   INT REFERENCES pep_forum_topicos(id) ON DELETE CASCADE,
+        resposta_id INT REFERENCES pep_forum_respostas(id) ON DELETE CASCADE,
+        membro_id   INT NOT NULL REFERENCES pep_membros(id),
+        motivo      TEXT,
+        status      TEXT DEFAULT 'pendente',
+        criado_em   TIMESTAMPTZ DEFAULT NOW()
+      )
+    `).catch(()=>{});
+    await client.query(`ALTER TABLE pep_forum_respostas ADD COLUMN IF NOT EXISTS denuncias INT DEFAULT 0`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_forum_topicos ADD COLUMN IF NOT EXISTS likes INT DEFAULT 0`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_forum_respostas ADD COLUMN IF NOT EXISTS likes INT DEFAULT 0`).catch(()=>{});
 
     // Lista de espera
     await client.query(`
