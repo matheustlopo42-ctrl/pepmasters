@@ -2943,24 +2943,25 @@ app.use((req, res) => {
 // ─────────────────────────────────────────────
 //  START
 // ─────────────────────────────────────────────
-initDB().then(() => {
-  app.listen(PORT, () => {
-    console.log('[PEPMASTERS] Servidor rodando na porta ' + PORT);
-    setTimeout(jobDiario, 5000);
-    setInterval(jobDiario, 24 * 60 * 60 * 1000);
-  });
-}).catch(async err => {
-  console.error('[PEPMASTERS] Falha ao iniciar (tentativa 1):', err.message);
-  // Tentar novamente após 5 segundos
-  await new Promise(r => setTimeout(r, 5000));
-  initDB().then(() => {
-    app.listen(PORT, () => {
-      console.log('[PEPMASTERS] Servidor rodando na porta ' + PORT);
+// Subir servidor imediatamente, inicializar banco em seguida
+app.listen(PORT, () => {
+  console.log('[PEPMASTERS] Servidor rodando na porta ' + PORT);
+
+  async function tentarInitDB(tentativa) {
+    try {
+      await initDB();
+      console.log('[PEPMASTERS] Banco inicializado com sucesso.');
       setTimeout(jobDiario, 5000);
       setInterval(jobDiario, 24 * 60 * 60 * 1000);
-    });
-  }).catch(err2 => {
-    console.error('[PEPMASTERS] Falha ao iniciar (tentativa 2):', err2.message);
-    process.exit(1);
-  });
+    } catch (err) {
+      console.error('[PEPMASTERS] Falha ao inicializar banco (tentativa ' + tentativa + '):', err.message);
+      if (tentativa < 5) {
+        setTimeout(() => tentarInitDB(tentativa + 1), 10000);
+      } else {
+        console.error('[PEPMASTERS] Banco não disponível após 5 tentativas. Continuando sem init.');
+      }
+    }
+  }
+
+  tentarInitDB(1);
 });
