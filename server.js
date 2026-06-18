@@ -781,7 +781,7 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
         return res.status(400).json({ erro: 'PIX disponível apenas para valores até R$ 6.000. Use Cripto para valores maiores.' });
       }
 
-      numQrsPix = Math.ceil(total / 2000);
+      numQrsPix = Math.ceil(total / 15);
       const pixAmount = parseFloat((total / numQrsPix).toFixed(2));
 
       try {
