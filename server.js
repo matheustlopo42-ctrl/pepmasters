@@ -151,7 +151,7 @@ function calcularSplitPix(total, numQrs) {
   const valores = [];
   let soma = 0;
   for (let i = 0; i < numQrs - 1; i++) {
-    const v = parseFloat((base + i * 0.03).toFixed(2)); // +0.03, +0.06... por parte
+    const v = parseFloat((base + (i + 1) * 0.03).toFixed(2)); // +0.03, +0.06... a partir da 1ª parte
     valores.push(v);
     soma += v;
   }
