@@ -1390,6 +1390,7 @@ app.post('/api/paypal/capture-order', async (req, res) => {
 });
 
 app.post('/webhook/pixgo', express.raw({ type: '*/*' }), async (req, res) => {
+  console.log('[PixGo Webhook] Recebido. Headers:', JSON.stringify(req.headers).substring(0, 200));
   // Obter body como string/buffer
   let rawBody;
   if (Buffer.isBuffer(req.body)) {
@@ -1401,11 +1402,13 @@ app.post('/webhook/pixgo', express.raw({ type: '*/*' }), async (req, res) => {
   } else {
     rawBody = Buffer.from('');
   }
+  console.log('[PixGo Webhook] Body:', rawBody.toString().substring(0, 300));
 
   // Verificar assinatura
   if (PIXGO_WEBHOOK_SECRET && rawBody.length > 0) {
     const sig  = req.headers['x-pixgo-signature'] || req.headers['x-signature'] || '';
     const hmac = crypto.createHmac('sha256', PIXGO_WEBHOOK_SECRET).update(rawBody).digest('hex');
+    console.log('[PixGo Webhook] Sig recebida:', sig.substring(0, 20), '| Esperada:', hmac.substring(0, 20));
     if (sig && sig !== hmac) {
       console.warn('[Webhook] Assinatura inválida.');
       return res.status(400).send('Invalid signature');
