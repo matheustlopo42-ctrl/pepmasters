@@ -463,7 +463,7 @@ window.PEPMASTERS_I18N = {
   "register.firstname": { en:"First Name", pt:"Nome", es:"Nombre", de:"Vorname", fr:"Prénom" },
   "register.lastname": { en:"Last Name", pt:"Sobrenome", es:"Apellido", de:"Nachname", fr:"Nom de famille" },
   "register.email": { en:"Email", pt:"Email", es:"Correo", de:"E-Mail", fr:"E-mail" },
-  "register.cpf": { en:"Tax ID", pt:"CPF", es:"ID Fiscal", de:"Steuer-ID", fr:"Numéro fiscal" },
+  "register.cpf": { en:"ID / Tax Number", pt:"CPF", es:"ID / Número Fiscal", de:"Ausweis-/Steuernummer", fr:"Pièce d'identité / N° fiscal" },
   "register.phone": { en:"Phone", pt:"Telefone", es:"Teléfono", de:"Telefon", fr:"Téléphone" },
   "register.password": { en:"Password", pt:"Senha", es:"Contraseña", de:"Passwort", fr:"Mot de passe" },
   "register.confirm": { en:"Confirm", pt:"Confirmar", es:"Confirmar", de:"Bestätigen", fr:"Confirmer" },

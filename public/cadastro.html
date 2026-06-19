@@ -137,9 +137,7 @@ async function cadastrar(){
   var telefone=document.getElementById('telefone').value.trim();
   var senha=document.getElementById('senha').value;
   var confirmar=document.getElementById('confirmar').value;
-  var lang = localStorage.getItem('pep_lang') || 'pt';
-  var cpfObrigatorio = lang === 'pt';
-  if(!nome||!sobrenome||!email||!senha||(cpfObrigatorio&&!cpf)){mostrarErro('Preencha todos os campos obrigatórios.');return;}
+  if(!nome||!sobrenome||!email||!cpf||!senha){mostrarErro('Preencha todos os campos obrigatórios.');return;}
   if(senha!==confirmar){mostrarErro('As senhas não conferem.');return;}
   if(senha.length<6){mostrarErro('A senha deve ter pelo menos 6 caracteres.');return;}
   try{

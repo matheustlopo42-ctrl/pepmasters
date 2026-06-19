@@ -772,9 +772,7 @@
     const cidade    = document.getElementById('cidade').value.trim();
     const complemento = document.getElementById('complemento').value.trim();
 
-    var checkoutLang = localStorage.getItem('pep_lang') || 'pt';
-    var cpfObrigatorioCheckout = checkoutLang === 'pt';
-    if (!nome || !email || (cpfObrigatorioCheckout && !cpf) || !cep || !rua || !numero) { mostrarErro('Preencha todos os campos obrigatórios.'); return; }
+    if (!nome || !email || !cpf || !cep || !rua || !numero) { mostrarErro('Preencha todos os campos obrigatórios.'); return; }
     if (!carrinho.length) { mostrarErro('Carrinho vazio.'); return; }
 
     // Validações de caixa
