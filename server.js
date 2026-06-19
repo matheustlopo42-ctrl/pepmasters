@@ -276,6 +276,7 @@ async function initDB() {
 
     // Coluna ref_code em pedidos para rastrear afiliado
     await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS ref_code TEXT`).catch(() => {});
+    await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS pix_partes_pagas INT DEFAULT 0`).catch(() => {});
 
 
 
@@ -1042,7 +1043,7 @@ app.get('/api/pedido/:id/pix-next', async (req, res) => {
 app.get('/api/pedido/:id/status', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT id,status,produto_nome,pagamento,total,codigo_rastreio,criado_em FROM pep_pedidos WHERE id=$1',
+      'SELECT id,status,produto_nome,pagamento,total,codigo_rastreio,criado_em,pix_partes_pagas FROM pep_pedidos WHERE id=$1',
       [req.params.id]
     );
     if (!rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
@@ -1470,8 +1471,11 @@ app.post('/webhook/pixgo', express.raw({ type: '*/*' }), async (req, res) => {
         const isSplit = numQrs > 1;
 
         if (isSplit && parte && parte < numQrs) {
-          // Parte intermediária paga — marcar como pix_parcial
-          await pool.query("UPDATE pep_pedidos SET status='pix_parcial' WHERE id=$1", [pedidoId]);
+          // Parte intermediária paga — marcar como pix_parcial e registrar contador
+          await pool.query(
+            "UPDATE pep_pedidos SET status='pix_parcial', pix_partes_pagas=GREATEST(COALESCE(pix_partes_pagas,0),$2) WHERE id=$1",
+            [pedidoId, parte]
+          );
           console.log('[Webhook] Pedido #' + pedidoId + ' — parte ' + parte + '/' + numQrs + ' PIX confirmada (pix_parcial).');
         } else {
           // Última parte ou PIX simples — marcar como pago

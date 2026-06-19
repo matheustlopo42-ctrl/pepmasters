@@ -893,8 +893,10 @@
     setTimeout(() => clearInterval(iv), 600000);
   }
 
-  async function verificarPagamentoSplit(pedidoId, numQrs) {
-    var parteAtual = 1;
+  var pixPartesGeradas = 1; // controla quantas partes já foram geradas (mostradas na tela)
+
+  function verificarPagamentoSplit(pedidoId, numQrs) {
+    pixPartesGeradas = 1;
     const iv = setInterval(async () => {
       try {
         const res  = await fetch('/api/pedido/' + pedidoId + '/status');
@@ -902,22 +904,24 @@
         if (data.status === 'pago') {
           clearInterval(iv);
           location.href = 'confirmacao.html?id=' + pedidoId;
-        } else if (data.status === 'pix_parcial' && parteAtual < numQrs) {
-          parteAtual++;
-          clearInterval(iv);
-          // Buscar próximo QR
-          const r2 = await fetch('/api/pedido/' + pedidoId + '/pix-next');
-          const d2 = await r2.json();
-          if (d2.qrcode_url) {
-            document.getElementById('pixArea').style.display  = 'none';
-            document.getElementById('pixArea2').style.display = 'block';
-            document.getElementById('qrcodeImg2').src         = d2.qrcode_url;
-            document.getElementById('pixCopia2').textContent  = d2.pix_copia_cola || '';
-            // Atualizar label
-            var lbl2 = document.getElementById('pixArea2').querySelector('p');
-            if (lbl2) lbl2.textContent = '✅ ' + (parteAtual-1) + '° pago! Agora o ' + parteAtual + '° de ' + numQrs + ' — R$ ' + d2.valor_parte;
-            // Continuar verificando
-            verificarPagamentoSplit(pedidoId, numQrs);
+        } else if (data.status === 'pix_parcial') {
+          const partesPagas = parseInt(data.pix_partes_pagas || 0);
+          // Só gera o próximo QR se a parte atualmente exibida já foi paga
+          if (partesPagas >= pixPartesGeradas && pixPartesGeradas < numQrs) {
+            pixPartesGeradas++;
+            const parteAlvo = pixPartesGeradas;
+            const r2 = await fetch('/api/pedido/' + pedidoId + '/pix-next');
+            const d2 = await r2.json();
+            if (d2.qrcode_url) {
+              document.getElementById('pixArea').style.display  = 'none';
+              document.getElementById('pixArea2').style.display = 'block';
+              document.getElementById('qrcodeImg2').src         = d2.qrcode_url;
+              document.getElementById('pixCopia2').textContent  = d2.pix_copia_cola || '';
+              var lbl2 = document.getElementById('pixArea2').querySelector('p');
+              if (lbl2) lbl2.textContent = '✅ ' + (parteAlvo - 1) + '° pago! Agora o ' + parteAlvo + '° de ' + numQrs + ' — R$ ' + d2.valor_parte;
+            } else {
+              pixPartesGeradas--; // falhou, permite tentar de novo
+            }
           }
         }
       } catch {}
