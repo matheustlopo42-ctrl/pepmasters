@@ -573,45 +573,28 @@ app.get('/api/produtos', async (req, res) => {
 
 // POST /api/cadastro
 app.post('/api/cadastro', rateLimit(5, 60000), async (req, res) => {
-  const { nome, email, cpf, telefone, senha } = req.body;
+  const { nome, email, cpf, telefone, senha, lang } = req.body;
   if (!nome || !email || !senha) return res.status(400).json({ erro: 'Campos obrigatórios ausentes.' });
   try {
     const existe = await pool.query('SELECT id FROM pep_usuarios WHERE email = $1', [email.toLowerCase()]);
     if (existe.rows.length) return res.status(400).json({ erro: 'Email já cadastrado.' });
 
+    const userLang = lang || 'pt';
     const hash = await bcrypt.hash(senha, 10);
     const { rows } = await pool.query(
-      'INSERT INTO pep_usuarios (nome,email,cpf,telefone,senha_hash) VALUES ($1,$2,$3,$4,$5) RETURNING id,nome,email',
-      [nome, email.toLowerCase(), cpf || null, telefone || null, hash]
+      'INSERT INTO pep_usuarios (nome,email,cpf,telefone,senha_hash,lang) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id,nome,email',
+      [nome, email.toLowerCase(), cpf || null, telefone || null, hash, userLang]
     );
     const u = rows[0];
 
-    // Email de boas-vindas (só no primeiro cadastro)
-    enviarEmail(u.email, '🎉 Bem-vindo ao PEPMASTERS!', `
-      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#1C0A00;color:#fff;border-radius:12px">
-        <div style="text-align:center;margin-bottom:24px">
-          <h1 style="font-family:sans-serif;font-weight:900;font-size:2rem;background:linear-gradient(135deg,#E8220A,#FF6B00,#FFB300);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:0">PEPMASTERS</h1>
-          <p style="color:rgba(255,255,255,.5);font-size:.85rem;margin:4px 0 0">High Performance Peptides</p>
-        </div>
-        <h2 style="color:#FFB300;font-size:1.4rem;margin-bottom:8px">Olá, ${u.nome.split(' ')[0]}! 👋</h2>
-        <p style="color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:16px">
-          Sua conta foi criada com sucesso. Bem-vindo à PEPMASTERS — peptídeos bioativos com qualidade e transparência para atletas e entusiastas de performance.
-        </p>
-        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,179,0,.2);border-radius:10px;padding:16px;margin-bottom:20px">
-          <p style="color:rgba(255,255,255,.6);font-size:.88rem;margin:0 0 8px">O que você pode fazer agora:</p>
-          <ul style="color:rgba(255,255,255,.7);font-size:.88rem;line-height:2;margin:0;padding-left:20px">
-            <li>Explorar nosso catálogo de peptídeos</li>
-            <li>Ativar seu acesso Members gratuito (Bronze)</li>
-            <li>Ganhar comissões indicando amigos</li>
-          </ul>
-        </div>
-        <div style="text-align:center">
-          <a href="${BASE_URL}" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;font-weight:700;text-decoration:none;border-radius:10px;font-size:1rem">Acessar a loja →</a>
-        </div>
-        <hr style="border-color:rgba(255,255,255,.1);margin:24px 0"/>
-        <p style="font-size:.78rem;color:rgba(255,255,255,.3);text-align:center">PEPMASTERS — Performance através da ciência.</p>
-      </div>
-    `).catch(() => {});
+    // Email de boas-vindas multilíngue
+    try {
+      const tmpl = emailTemplates.boasVindas[userLang] || emailTemplates.boasVindas['pt'];
+      const { sub, body } = tmpl(u.nome.split(' ')[0], BASE_URL);
+      enviarEmail(u.email, sub, wrapEmail(body)).catch(() => {});
+    } catch (e) {
+      console.error('[Cadastro] Erro ao enviar email boas-vindas:', e.message);
+    }
 
     res.json({ token: gerarToken(u.id), nome: u.nome, email: u.email });
   } catch (err) {

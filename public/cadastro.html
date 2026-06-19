@@ -133,7 +133,7 @@ async function cadastrar(){
   if(senha!==confirmar){mostrarErro('As senhas não conferem.');return;}
   if(senha.length<6){mostrarErro('A senha deve ter pelo menos 6 caracteres.');return;}
   try{
-    var res=await fetch('/api/cadastro',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:nome+' '+sobrenome,email,cpf,telefone,senha})});
+    var res=await fetch('/api/cadastro',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:nome+' '+sobrenome,email,cpf,telefone,senha,lang:localStorage.getItem('pep_lang')||'pt'})});
     var data=await res.json();
     if(!res.ok){mostrarErro(data.erro||'Erro ao cadastrar.');return;}
     localStorage.setItem('pep_token',data.token);
