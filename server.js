@@ -1452,14 +1452,18 @@ app.post('/webhook/pixgo', express.raw({ type: '*/*' }), async (req, res) => {
         } else {
           // Última parte ou PIX simples — marcar como pago
           const { rows } = await pool.query(
-            "UPDATE pep_pedidos SET status='pago' WHERE id=$1 AND status IN ('pix_pending','pix_parcial') RETURNING nome,email,produto_nome,lang",
+            "UPDATE pep_pedidos SET status='pago' WHERE id=$1 AND status IN ('pix_pending','pix_parcial') RETURNING nome,email,produto_nome",
             [pedidoId]
           );
           if (rows.length) {
             const p = rows[0];
             console.log('[Webhook] Pedido #' + pedidoId + ' marcado como PAGO (parte ' + (parte||1) + '/' + numQrs + ').');
             enviarWhatsApp('PIX CONFIRMADO! Pedido #' + pedidoId + ' - ' + p.nome + ' - ' + p.produto_nome);
-            const lang = p.lang || 'pt';
+            let lang = 'pt';
+            try {
+              const ur = await pool.query('SELECT lang FROM pep_usuarios WHERE email=$1', [p.email]);
+              if (ur.rows.length && ur.rows[0].lang) lang = ur.rows[0].lang;
+            } catch {}
             const emailHtml = await gerarEmailPedido('pedidoConfirmado', p, pedidoId, lang);
             enviarEmail(p.email, 'Pagamento confirmado — PEPMASTERS', emailHtml).catch(()=>{});
             enviarEmail(EMAIL_DESTINO, '[PEPMASTERS] Pedido #' + pedidoId + ' PAGO via PIX', emailHtml).catch(()=>{});
