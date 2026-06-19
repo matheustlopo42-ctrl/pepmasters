@@ -143,6 +143,23 @@ app.get('/sitemap.xml', (req, res) => res.sendFile(path.join(__dirname, 'sitemap
 app.get('/robots.txt', (req, res) => res.sendFile(path.join(__dirname, 'robots.txt')));
 
 // ── INIT TABELAS ─────────────────────────────
+// Calcula valores de split PIX com pequenas variações para evitar bloqueio bancário
+// por múltiplos PIX de valor idêntico no mesmo dia
+function calcularSplitPix(total, numQrs) {
+  if (numQrs <= 1) return [parseFloat(total.toFixed(2))];
+  const base = Math.floor((total / numQrs) * 100) / 100;
+  const valores = [];
+  let soma = 0;
+  for (let i = 0; i < numQrs - 1; i++) {
+    const v = parseFloat((base + i * 0.03).toFixed(2)); // +0.03, +0.06... por parte
+    valores.push(v);
+    soma += v;
+  }
+  const ultimo = parseFloat((total - soma).toFixed(2));
+  valores.push(ultimo);
+  return valores;
+}
+
 async function initDB() {
   const client = await pool.connect();
   try {
@@ -793,7 +810,8 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       }
 
       numQrsPix = Math.ceil(total / 15);
-      const pixAmount = parseFloat((total / numQrsPix).toFixed(2));
+      const splitValores = calcularSplitPix(total, numQrsPix);
+      const pixAmount = splitValores[0];
 
       try {
         const externalId = 'pep-' + pedidoId + (numQrsPix > 1 ? '-1' : '');
@@ -959,7 +977,7 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       }, 48 * 60 * 60 * 1000); // 48 horas
     }
 
-    res.json({ pedido_id: pedidoId, qrcode_url, pix_copia_cola, nowpay_address, nowpay_amount, nowpay_currency, desconto_membro: descontoMembro.toFixed(2), nivel_membro: nivelMembro, total_pix: total.toFixed(2), num_qrs: numQrsPix });
+    res.json({ pedido_id: pedidoId, qrcode_url, pix_copia_cola, nowpay_address, nowpay_amount, nowpay_currency, desconto_membro: descontoMembro.toFixed(2), nivel_membro: nivelMembro, total_pix: total.toFixed(2), num_qrs: numQrsPix, valor_pix1: pagamento === 'pix' && numQrsPix > 1 ? calcularSplitPix(total, numQrsPix)[0].toFixed(2) : null });
   } catch (err) {
     await client.query('ROLLBACK').catch(() => {});
     console.error('[Pedido] Erro:', err.message);
@@ -988,7 +1006,7 @@ app.get('/api/pedido/:id/pix-next', async (req, res) => {
 
     if (nextPart > numQrs) return res.status(400).json({ erro: 'Todos os QRs já foram gerados.' });
 
-    const pixAmount = parseFloat((parseFloat(p.total) / numQrs).toFixed(2));
+    const pixAmount = calcularSplitPix(parseFloat(p.total), numQrs)[nextPart - 1];
 
     const pixPayload = JSON.stringify({
       amount:      pixAmount,
@@ -1010,7 +1028,8 @@ app.get('/api/pedido/:id/pix-next', async (req, res) => {
         qrcode_url:     pixData.data.qr_image_url,
         pix_copia_cola: pixData.data.qr_code,
         parte:          nextPart,
-        total_partes:   numQrs
+        total_partes:   numQrs,
+        valor_parte:    pixAmount.toFixed(2)
       });
     }
     res.status(500).json({ erro: 'Erro ao gerar próximo PIX: ' + (pixData.message || '') });

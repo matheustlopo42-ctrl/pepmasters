@@ -829,7 +829,7 @@
         const lbl = document.getElementById('pixParteLabel');
         if (lbl && numQrs > 1) {
           lbl.style.display = 'block';
-          lbl.textContent = '1° de ' + numQrs + ' pagamentos — R$ ' + (totalPedido / numQrs).toFixed(2).replace('.', ',');
+          lbl.textContent = '1° de ' + numQrs + ' pagamentos — R$ ' + (data.valor_pix1 || (totalPedido / numQrs).toFixed(2)).toString().replace('.', ',');
         }
 
         document.getElementById('pixArea').style.display = 'block';
