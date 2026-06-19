@@ -1404,10 +1404,12 @@ app.post('/webhook/pixgo', express.raw({ type: '*/*' }), async (req, res) => {
   }
   console.log('[PixGo Webhook] Body:', rawBody.toString().substring(0, 300));
 
-  // Verificar assinatura
+  // Verificar assinatura: HMAC-SHA256 sobre "timestamp.body"
   if (PIXGO_WEBHOOK_SECRET && rawBody.length > 0) {
-    const sig  = req.headers['x-webhook-signature'] || req.headers['x-pixgo-signature'] || req.headers['x-signature'] || '';
-    const hmac = crypto.createHmac('sha256', PIXGO_WEBHOOK_SECRET).update(rawBody).digest('hex');
+    const sig       = req.headers['x-webhook-signature'] || '';
+    const timestamp = req.headers['x-webhook-timestamp'] || '';
+    const signedPayload = timestamp + '.' + rawBody.toString();
+    const hmac = crypto.createHmac('sha256', PIXGO_WEBHOOK_SECRET).update(signedPayload).digest('hex');
     console.log('[PixGo Webhook] Sig recebida:', sig.substring(0, 20), '| Esperada:', hmac.substring(0, 20));
     if (sig && sig !== hmac) {
       console.warn('[Webhook] Assinatura inválida.');
