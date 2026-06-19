@@ -57,7 +57,8 @@
 <div class="sidebar">
   <div class="sidebar-logo"><img src="Capturar.PNG" alt="Logo"/><span>PEPMASTERS</span></div>
   <div class="sidebar-badge">Admin</div>
-  <a href="admin.html">📋 Pedidos</a>
+  <a href="admin-dashboard.html" class="nav-link">📊 Dashboard</a>
+    <a href="admin.html">📋 Pedidos</a>
   <a href="admin-cupons.html">🏷️ Cupons</a>
   <a href="admin-membros.html">👥 Membros</a>
   <a href="admin-estoque.html">📦 Estoque</a>
@@ -161,9 +162,10 @@
 
   async function confirmarDelete() {
     if (!deletarId) return;
+    const idParaDeletar = deletarId;
     fecharModal();
     try {
-      const res = await fetch('/api/admin/usuarios/' + deletarId, {
+      const res = await fetch('/api/admin/usuarios/' + idParaDeletar, {
         method: 'DELETE',
         headers: { Authorization: 'Basic ' + token }
       });
