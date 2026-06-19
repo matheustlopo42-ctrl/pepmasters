@@ -1406,7 +1406,7 @@ app.post('/webhook/pixgo', express.raw({ type: '*/*' }), async (req, res) => {
 
   // Verificar assinatura
   if (PIXGO_WEBHOOK_SECRET && rawBody.length > 0) {
-    const sig  = req.headers['x-pixgo-signature'] || req.headers['x-signature'] || '';
+    const sig  = req.headers['x-webhook-signature'] || req.headers['x-pixgo-signature'] || req.headers['x-signature'] || '';
     const hmac = crypto.createHmac('sha256', PIXGO_WEBHOOK_SECRET).update(rawBody).digest('hex');
     console.log('[PixGo Webhook] Sig recebida:', sig.substring(0, 20), '| Esperada:', hmac.substring(0, 20));
     if (sig && sig !== hmac) {
@@ -1426,7 +1426,7 @@ app.post('/webhook/pixgo', express.raw({ type: '*/*' }), async (req, res) => {
 
   console.log('[Webhook PixGo] Evento recebido:', JSON.stringify(evento));
 
-  if (evento.event === 'charge.paid' || evento.status === 'paid') {
+  if (evento.event === 'payment.completed' || evento.event === 'charge.paid' || evento.status === 'paid' || evento.status === 'completed') {
     const externalId = evento.externalId || evento.external_id || '';
     const match      = externalId.match(/pep-(\d+)(-(\d+))?/);
     if (match) {
