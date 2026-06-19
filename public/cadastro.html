@@ -70,18 +70,18 @@
     <div id="msgErro"></div>
     <div id="msgOk"></div>
     <div class="form-row">
-      <div class="form-group"><label>Nome</label><input type="text" id="nome" placeholder="Seu nome"/></div>
-      <div class="form-group"><label>Sobrenome</label><input type="text" id="sobrenome" placeholder="Sobrenome"/></div>
+      <div class="form-group"><label data-i18n="register.firstname">Nome</label><input type="text" id="nome" placeholder="Seu nome" data-i18n-placeholder="register.firstname.placeholder"/></div>
+      <div class="form-group"><label data-i18n="register.lastname">Sobrenome</label><input type="text" id="sobrenome" placeholder="Sobrenome" data-i18n-placeholder="register.lastname.placeholder"/></div>
     </div>
-    <div class="form-group"><label>Email</label><input type="email" id="email" placeholder="seu@email.com"/></div>
-    <div class="form-group"><label>CPF</label><input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14"/></div>
-    <div class="form-group"><label>Telefone</label><input type="text" id="telefone" placeholder="(00) 00000-0000" maxlength="15"/></div>
+    <div class="form-group"><label data-i18n="register.email">Email</label><input type="email" id="email" placeholder="seu@email.com"/></div>
+    <div class="form-group"><label data-i18n="register.cpf">CPF</label><input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14"/></div>
+    <div class="form-group"><label data-i18n="register.phone">Telefone</label><input type="text" id="telefone" placeholder="(00) 00000-0000" maxlength="15"/></div>
     <div class="form-row">
-      <div class="form-group"><label>Senha</label><input type="password" id="senha" placeholder="••••••••"/></div>
-      <div class="form-group"><label>Confirmar</label><input type="password" id="confirmar" placeholder="••••••••"/></div>
+      <div class="form-group"><label data-i18n="register.password">Senha</label><input type="password" id="senha" placeholder="••••••••"/></div>
+      <div class="form-group"><label data-i18n="register.confirm">Confirmar</label><input type="password" id="confirmar" placeholder="••••••••"/></div>
     </div>
     <button class="btn-primary" onclick="cadastrar()" data-i18n="register.btn">Criar conta</button>
-    <div class="auth-footer">Já tem conta? <a href="login.html">Entrar</a></div>
+    <div class="auth-footer"><span data-i18n="register.haveaccount">Já tem conta?</span> <a href="login.html" data-i18n="register.login">Entrar</a></div>
   </div>
 </main>
 <footer>
@@ -138,7 +138,8 @@ async function cadastrar(){
     if(!res.ok){mostrarErro(data.erro||'Erro ao cadastrar.');return;}
     localStorage.setItem('pep_token',data.token);
     localStorage.setItem('pep_nome',data.nome);
-    mostrarOk('Conta criada! Redirecionando...');
+    var d=window.PEPMASTERS_I18N||{};var l=localStorage.getItem('pep_lang')||'pt';
+    mostrarOk((d['register.success']&&(d['register.success'][l]||d['register.success']['pt']))||'Conta criada! Redirecionando...');
     setTimeout(function(){location.href='index.html';},1500);
   }catch{mostrarErro('Erro de conexão. Tente novamente.');}
 }
