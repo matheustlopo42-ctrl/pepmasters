@@ -813,11 +813,11 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
         if (pixData.success && pixData.data) {
           qrcode_url     = pixData.data.qr_image_url || null;
           pix_copia_cola = pixData.data.qr_code      || null;
-          if (pixData.data.id) {
+          if ((pixData.data.payment_id || pixData.data.id)) {
             // pixgo_id format: "id1:pending:numQrs" para split, ou "id1" para simples
             const pixgoId = numQrsPix > 1
-              ? pixData.data.id + ':pending:' + numQrsPix
-              : pixData.data.id;
+              ? (pixData.data.payment_id || pixData.data.id) + ':pending:' + numQrsPix
+              : (pixData.data.payment_id || pixData.data.id);
             await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixgoId, pedidoId]);
           }
         } else {
@@ -977,9 +977,14 @@ app.get('/api/pedido/:id/pix-next', async (req, res) => {
     const p = rows[0];
 
     const parts    = (p.pixgo_id || '').split(':');
-    const numQrs   = parseInt(parts[2] || 1);
-    const paidSoFar = parts.filter(x => x !== 'pending' && x !== String(numQrs) && x.length > 5).length;
-    const nextPart  = paidSoFar + 1; // próxima parte (2 ou 3)
+    // numQrs: pega o maior número entre 1 e 3 encontrado nas partes (ignora 'undefined'/'pending'/hashes)
+    let numQrs = 1;
+    parts.forEach(x => {
+      const n = parseInt(x);
+      if (!isNaN(n) && n >= 1 && n <= 3) numQrs = Math.max(numQrs, n);
+    });
+    const paidSoFar = parts.filter(x => x && x !== 'undefined' && x !== 'pending' && x !== String(numQrs) && x.length > 5).length;
+    const nextPart  = paidSoFar + 1;
 
     if (nextPart > numQrs) return res.status(400).json({ erro: 'Todos os QRs já foram gerados.' });
 
@@ -999,7 +1004,7 @@ app.get('/api/pedido/:id/pix-next', async (req, res) => {
     const pixData = await pixRes.json();
     if (pixData.success && pixData.data) {
       // Adicionar novo ID ao pixgo_id
-      const newPixgoId = parts[0] + ':' + pixData.data.id + ':pending:' + numQrs;
+      const newPixgoId = parts[0] + ':' + (pixData.data.payment_id || pixData.data.id) + ':pending:' + numQrs;
       await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [newPixgoId, p.id]);
       return res.json({
         qrcode_url:     pixData.data.qr_image_url,
