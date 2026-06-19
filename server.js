@@ -1429,8 +1429,10 @@ app.post('/webhook/pixgo', express.raw({ type: '*/*' }), async (req, res) => {
   console.log('[Webhook PixGo] Evento recebido:', JSON.stringify(evento));
 
   if (evento.event === 'payment.completed' || evento.event === 'charge.paid' || evento.status === 'paid' || evento.status === 'completed') {
-    const externalId = evento.externalId || evento.external_id || '';
+    const dataObj    = evento.data || evento;
+    const externalId = dataObj.externalId || dataObj.external_id || evento.externalId || evento.external_id || '';
     const match      = externalId.match(/pep-(\d+)(-(\d+))?/);
+    console.log('[Webhook PixGo] externalId:', externalId, '| match:', match ? match[0] : 'none');
     if (match) {
       const pedidoId = parseInt(match[1]);
       const parte    = match[3] ? parseInt(match[3]) : null;
