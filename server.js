@@ -701,14 +701,9 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
   if (carrinho.length > 5) {
     return res.status(400).json({ erro: 'Máximo 5 produtos diferentes por pedido.' });
   }
-  const modoCarrinhoPedido = carrinho.some(i => parseInt(i.quantidade) % 5 === 0 && parseInt(i.quantidade) % 10 !== 0) ? 'meia' : 'normal';
   for (const item of carrinho) {
     const q = parseInt(item.quantidade);
-    if (modoCarrinhoPedido === 'meia') {
-      if (q < 5 || q % 5 !== 0) return res.status(400).json({ erro: 'Quantidade de ' + item.nome + ' deve ser múltiplo de 5 (modo Meia Caixa).' });
-    } else {
-      if (q < 2 || q % 2 !== 0) return res.status(400).json({ erro: 'Quantidade de ' + item.nome + ' deve ser em pares.' });
-    }
+    if (q < 2) return res.status(400).json({ erro: 'Quantidade mínima de ' + item.nome + ' é 2 unidades.' });
   }
   const FAMILIAS_SRV = {
     retatrutide:['RT30','RT40','RT60'], tirzepatide:['TR30','TR40','TR50','TR60'],

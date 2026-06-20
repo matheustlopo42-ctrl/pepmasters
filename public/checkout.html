@@ -803,14 +803,8 @@
     if (totalAmpolas % 10 !== 0) { mostrarErro('Complete uma caixa (10 ampolas). Total atual: ' + totalAmpolas + ' — faltam ' + (10 - totalAmpolas % 10) + '.'); return; }
     if (totalAmpolas > 50) { mostrarErro('Máximo 5 caixas (50 ampolas).'); return; }
 
-    // Modo do carrinho: 'meia' se algum item usa múltiplo de 5 não-múltiplo de 10
-    const modoCarrinho = carrinho.some(i => i.quantidade % 5 === 0 && i.quantidade % 10 !== 0) ? 'meia' : 'normal';
     for (const item of carrinho) {
-      if (modoCarrinho === 'meia') {
-        if (item.quantidade < 5 || item.quantidade % 5 !== 0) { mostrarErro('No modo Meia Caixa, a quantidade de ' + item.nome + ' deve ser múltiplo de 5 (mínimo 5).'); return; }
-      } else {
-        if (item.quantidade < 2 || item.quantidade % 2 !== 0) { mostrarErro('Quantidade de ' + item.nome + ' deve ser em pares (mínimo 2).'); return; }
-      }
+      if (item.quantidade < 2) { mostrarErro('Quantidade mínima de ' + item.nome + ' é 2 unidades.'); return; }
     }
     if (carrinho.length > 5) { mostrarErro('Máximo 5 produtos diferentes por pedido.'); return; }
 
