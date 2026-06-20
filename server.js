@@ -277,6 +277,7 @@ async function initDB() {
     // Coluna ref_code em pedidos para rastrear afiliado
     await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS ref_code TEXT`).catch(() => {});
     await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS pix_partes_pagas INT DEFAULT 0`).catch(() => {});
+    await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS retirada_paraguai BOOLEAN DEFAULT FALSE`).catch(() => {});
 
 
 
@@ -683,7 +684,8 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     endereco, carrinho, pagamento, cupom, total: totalFront,
     crypto_valor, crypto_token,
     token: userToken,
-    ref_code
+    ref_code,
+    retirada_paraguai
   } = req.body;
 
   if (!nome || !email || !pagamento || !carrinho || !carrinho.length) {
@@ -783,9 +785,10 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     const totalProdutos = subtotalComMembro - desconto;
 
     // Frete real: R$50 por vial (mesmo padrão da calculadora), não sofre desconto
+    // Opcional: cliente pode optar por retirar pessoalmente no Paraguai (sem frete)
     const FRETE_POR_VIAL = 50;
     const totalVialsPedido = carrinho.reduce((s, i) => s + parseInt(i.quantidade), 0);
-    const freteTotal = totalVialsPedido * FRETE_POR_VIAL;
+    const freteTotal = retirada_paraguai ? 0 : totalVialsPedido * FRETE_POR_VIAL;
 
     const total = totalProdutos + freteTotal;
 
@@ -800,8 +803,8 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       `INSERT INTO pep_pedidos
          (usuario_id,nome,email,cpf,telefone,cep,rua,numero,bairro,cidade,complemento,
           produto_id,produto_nome,preco_unitario,desconto,total,pagamento,cupom,status,
-          crypto_valor,crypto_token,ref_code)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)
+          crypto_valor,crypto_token,ref_code,retirada_paraguai)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)
        RETURNING id`,
       [
         usuarioId, nome, email.toLowerCase(), cpf || null, telefone || null,
@@ -809,7 +812,7 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
         endereco?.bairro || null, endereco?.cidade || null, endereco?.complemento || null,
         produto_id, produto_nome, subtotal.toFixed(2), (desconto + descontoMembro).toFixed(2), total.toFixed(2),
         pagamento, cupomId ? cupom.toUpperCase() : null, statusInicial,
-        crypto_valor || null, crypto_token || null, ref_code || null
+        crypto_valor || null, crypto_token || null, ref_code || null, !!retirada_paraguai
       ]
     );
     const pedidoId = pedRows[0].id;

@@ -346,10 +346,15 @@ footer { background:var(--dark); color:#fff; padding:52px 24px 0; margin-top:50p
         </div>
         <div class="panel">
           <div class="panel-title">🚚 Frete Paraguai → Brasil</div>
+          <div class="alert alert-info" style="margin-bottom:14px">💡 O frete é <strong>opcional</strong> — R$ 500,00 por caixa (R$ 50,00/ampola). Se preferir, retire pessoalmente no Paraguai sem pagar frete.</div>
           <div class="radio-group">
             <div class="radio-option">
               <input type="radio" name="tipoFrete" id="freteRecomendado" value="recomendado" checked>
               <label for="freteRecomendado">✅ Padrão<br><small>R$ <span id="fretePadraoLabel">50,00</span>/vial</small></label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" name="tipoFrete" id="freteRetirada" value="retirada">
+              <label for="freteRetirada">📦 Retirada no Paraguai<br><small>Sem frete (R$ 0,00)</small></label>
             </div>
             <div class="radio-option">
               <input type="radio" name="tipoFrete" id="fretePersonalizado" value="personalizado">
@@ -942,6 +947,7 @@ function validarSortida() {
 }
 function getFretePorVial() {
     const tipo = document.querySelector('input[name="tipoFrete"]:checked').value;
+    if (tipo === 'retirada') return 0;
     return tipo === 'recomendado' ? parseFloat(document.getElementById('configFretePadrao').value || 50) : parseFloat(document.getElementById('valorFretePersonalizado').value || 50);
 }
 function calcularTotal() {

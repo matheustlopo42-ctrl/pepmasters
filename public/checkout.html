@@ -267,6 +267,13 @@
 
         <div class="resumo-items" id="resumoItems"></div>
 
+        <div style="background:var(--warm-white);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:12px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:.86rem;color:var(--mid)">
+            <input type="checkbox" id="checkRetirada" onchange="atualizarTotais()" style="width:18px;height:18px;accent-color:var(--red)"/>
+            <span data-i18n="checkout.retirada">📦 Vou retirar pessoalmente no Paraguai (desconto de R$ 50,00 por ampola — sem frete)</span>
+          </label>
+        </div>
+
         <div class="resumo-subtotais">
           <div class="resumo-linha"><span data-i18n="checkout.subtotal">Subtotal</span><span id="resumoSubtotal">R$ 0,00</span></div>
           <div class="resumo-linha" id="descontoRow" style="display:none">
@@ -466,13 +473,19 @@
     const totalProdutos = subtotalComMembro - desconto;
 
     // Frete real: R$ por vial × total de vials no carrinho (não sofre desconto)
+    // Opcional: cliente pode escolher retirar pessoalmente no Paraguai, sem pagar frete
     const totalVials = carrinho.reduce((s, i) => s + i.quantidade, 0);
-    const freteTotal  = totalVials * FRETE_POR_VIAL;
+    const retiradaMarcada = document.getElementById('checkRetirada')?.checked;
+    const freteTotal  = retiradaMarcada ? 0 : totalVials * FRETE_POR_VIAL;
 
     const total = totalProdutos + freteTotal;
     document.getElementById('resumoSubtotal').textContent = 'R$ ' + subtotal.toFixed(2).replace('.',',');
     var freteEl = document.getElementById('resumoFrete');
-    if (freteEl) freteEl.textContent = 'R$ ' + freteTotal.toFixed(2).replace('.',',') + ' (' + totalVials + ' vials × R$ ' + FRETE_POR_VIAL.toFixed(2).replace('.',',') + ')';
+    if (freteEl) {
+      freteEl.textContent = retiradaMarcada
+        ? 'R$ 0,00 (retirada no Paraguai)'
+        : 'R$ ' + freteTotal.toFixed(2).replace('.',',') + ' (' + totalVials + ' vials × R$ ' + FRETE_POR_VIAL.toFixed(2).replace('.',',') + ')';
+    }
     document.getElementById('resumoTotal').textContent    = 'R$ ' + total.toFixed(2).replace('.',',');
 
     // Desabilitar PIX acima de R$6.000
@@ -835,12 +848,25 @@
     btn.disabled = true; btn.textContent = 'Processando...';
 
     const subtotal = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
+    let descontoMembroValor = 0;
+    if (nivelMembroAtual) {
+      var descontosNivelFinal = { bronze: 5, prata: 10, ouro: 12, diamante: 15 };
+      var pctMembroFinal = descontosNivelFinal[nivelMembroAtual] || 0;
+      descontoMembroValor = subtotal * (pctMembroFinal / 100);
+    }
+    const subtotalComMembroFinal = subtotal - descontoMembroValor;
     let desconto = 0;
     if (cupomDados) {
-      const pct = pagAtual === 'pix' ? cupomDados.desconto_pix : cupomDados.desconto_cartao;
-      desconto = subtotal * (pct / 100);
+      const pct = pagAtual === 'pix' ? cupomDados.desconto_pix
+                : pagAtual === 'cripto' ? (cupomDados.desconto_pix || cupomDados.desconto_cartao || 0)
+                : cupomDados.desconto_cartao;
+      desconto = subtotalComMembroFinal * (pct / 100);
     }
-    const total = subtotal - desconto;
+    const totalProdutosFinal = subtotalComMembroFinal - desconto;
+    const totalVialsFinal = carrinho.reduce((s, i) => s + i.quantidade, 0);
+    const retiradaFinal = document.getElementById('checkRetirada')?.checked || false;
+    const freteFinal = retiradaFinal ? 0 : totalVialsFinal * FRETE_POR_VIAL;
+    const total = totalProdutosFinal + freteFinal;
 
     // Ler cookie de afiliado
     const refCode = document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('pep_ref='));
@@ -857,7 +883,8 @@
       crypto_token:  pagAtual === 'cripto' ? cryptoToken : null,
       nowpayments: pagAtual === 'cripto',
       token:         localStorage.getItem('pep_token'),
-      ref_code:      refValue
+      ref_code:      refValue,
+      retirada_paraguai: document.getElementById('checkRetirada')?.checked || false
     };
 
     try {
