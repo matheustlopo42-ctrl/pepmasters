@@ -802,10 +802,40 @@
     const totalAmpolas = carrinho.reduce((s,i) => s + i.quantidade, 0);
     if (totalAmpolas % 10 !== 0) { mostrarErro('Complete uma caixa (10 ampolas). Total atual: ' + totalAmpolas + ' — faltam ' + (10 - totalAmpolas % 10) + '.'); return; }
     if (totalAmpolas > 50) { mostrarErro('Máximo 5 caixas (50 ampolas).'); return; }
+
+    // Modo do carrinho: 'meia' se algum item usa múltiplo de 5 não-múltiplo de 10
+    const modoCarrinho = carrinho.some(i => i.quantidade % 5 === 0 && i.quantidade % 10 !== 0) ? 'meia' : 'normal';
     for (const item of carrinho) {
-      if (item.quantidade < 2 || item.quantidade % 2 !== 0) { mostrarErro('Quantidade de ' + item.nome + ' deve ser em pares (mínimo 2).'); return; }
+      if (modoCarrinho === 'meia') {
+        if (item.quantidade < 5 || item.quantidade % 5 !== 0) { mostrarErro('No modo Meia Caixa, a quantidade de ' + item.nome + ' deve ser múltiplo de 5 (mínimo 5).'); return; }
+      } else {
+        if (item.quantidade < 2 || item.quantidade % 2 !== 0) { mostrarErro('Quantidade de ' + item.nome + ' deve ser em pares (mínimo 2).'); return; }
+      }
     }
     if (carrinho.length > 5) { mostrarErro('Máximo 5 produtos diferentes por pedido.'); return; }
+
+    // Validação de limite por família (máx 10 ampolas combinando concentrações do mesmo peptídeo)
+    const FAMILIAS_CHK = {
+      retatrutide:['RT30','RT40','RT60'], tirzepatide:['TR30','TR40','TR50','TR60'],
+      ss31:['2S10','2S50'], tesamorelin:['TSM10','TSM20'], motsc:['MS20','MS40'],
+      epithalon:['ET10','ET50'], bpc157:['BPC10','BPC20'], selank:['SK10','SK30'],
+      pinealon:['PIN10','PIN20'], cjcnodac:['CND5','CND10'], cjcdac:['CD5','CD10'],
+      sermorelin:['Serm5','Serm10'], adipotide:['AP5','AP10'], semax:['SX5','SX10'],
+      ghkcu:['CU50','CU100'], glutathione:['GTT600','GTT1500'], nad:['NJ500','NJ1000'],
+      thymosinA:['TA5','TA10'], cagrilintide:['CGL5','CGL10'], aminomq:['20AM','50AM'],
+      snap8:['NP8-10','NP8-100'],
+    };
+    const MAPA_FAM_CHK = {};
+    Object.entries(FAMILIAS_CHK).forEach(([fam, codigos]) => { codigos.forEach(c => { MAPA_FAM_CHK[c] = fam; }); });
+    const familiaTotais = {};
+    for (const item of carrinho) {
+      const fam = MAPA_FAM_CHK[String(item.id)];
+      if (!fam) continue;
+      familiaTotais[fam] = (familiaTotais[fam] || 0) + item.quantidade;
+    }
+    for (const [fam, tot] of Object.entries(familiaTotais)) {
+      if (tot > 10) { mostrarErro('Máximo 10 ampolas combinando concentrações do mesmo peptídeo (família: ' + fam + ').'); return; }
+    }
 
     const btn = document.getElementById('btnFinalizar');
     btn.disabled = true; btn.textContent = 'Processando...';

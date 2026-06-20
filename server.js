@@ -690,6 +690,50 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     return res.status(400).json({ erro: 'Dados incompletos.' });
   }
 
+  // Validações de caixa/família (segurança — espelha validação do frontend)
+  const totalAmpolasPedido = carrinho.reduce((s, i) => s + parseInt(i.quantidade), 0);
+  if (totalAmpolasPedido % 10 !== 0) {
+    return res.status(400).json({ erro: 'O total de ampolas deve ser múltiplo de 10 (1 caixa).' });
+  }
+  if (totalAmpolasPedido > 50) {
+    return res.status(400).json({ erro: 'Máximo 50 ampolas (5 caixas) por pedido.' });
+  }
+  if (carrinho.length > 5) {
+    return res.status(400).json({ erro: 'Máximo 5 produtos diferentes por pedido.' });
+  }
+  const modoCarrinhoPedido = carrinho.some(i => parseInt(i.quantidade) % 5 === 0 && parseInt(i.quantidade) % 10 !== 0) ? 'meia' : 'normal';
+  for (const item of carrinho) {
+    const q = parseInt(item.quantidade);
+    if (modoCarrinhoPedido === 'meia') {
+      if (q < 5 || q % 5 !== 0) return res.status(400).json({ erro: 'Quantidade de ' + item.nome + ' deve ser múltiplo de 5 (modo Meia Caixa).' });
+    } else {
+      if (q < 2 || q % 2 !== 0) return res.status(400).json({ erro: 'Quantidade de ' + item.nome + ' deve ser em pares.' });
+    }
+  }
+  const FAMILIAS_SRV = {
+    retatrutide:['RT30','RT40','RT60'], tirzepatide:['TR30','TR40','TR50','TR60'],
+    ss31:['2S10','2S50'], tesamorelin:['TSM10','TSM20'], motsc:['MS20','MS40'],
+    epithalon:['ET10','ET50'], bpc157:['BPC10','BPC20'], selank:['SK10','SK30'],
+    pinealon:['PIN10','PIN20'], cjcnodac:['CND5','CND10'], cjcdac:['CD5','CD10'],
+    sermorelin:['Serm5','Serm10'], adipotide:['AP5','AP10'], semax:['SX5','SX10'],
+    ghkcu:['CU50','CU100'], glutathione:['GTT600','GTT1500'], nad:['NJ500','NJ1000'],
+    thymosinA:['TA5','TA10'], cagrilintide:['CGL5','CGL10'], aminomq:['20AM','50AM'],
+    snap8:['NP8-10','NP8-100'],
+  };
+  const MAPA_FAM_SRV = {};
+  Object.entries(FAMILIAS_SRV).forEach(([fam, codigos]) => { codigos.forEach(c => { MAPA_FAM_SRV[c] = fam; }); });
+  const familiaTotaisSrv = {};
+  for (const item of carrinho) {
+    const fam = MAPA_FAM_SRV[String(item.id)];
+    if (!fam) continue;
+    familiaTotaisSrv[fam] = (familiaTotaisSrv[fam] || 0) + parseInt(item.quantidade);
+  }
+  for (const fam in familiaTotaisSrv) {
+    if (familiaTotaisSrv[fam] > 10) {
+      return res.status(400).json({ erro: 'Máximo 10 ampolas combinando concentrações da família ' + fam + '.' });
+    }
+  }
+
   const client = await pool.connect();
   try {
     await client.query('BEGIN');

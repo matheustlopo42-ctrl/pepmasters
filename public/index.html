@@ -444,6 +444,34 @@
   <!-- Todos os produtos -->
   <div class="todos-produtos" id="todosProdutos">
   <div class="section-label"><h2 data-i18n="products.title">Nossos Produtos</h2></div>
+
+  <div id="regrasCompra" style="background:linear-gradient(135deg,var(--dark),var(--mid));color:#fff;border-radius:14px;margin-bottom:24px;overflow:hidden">
+    <button onclick="toggleRegras()" style="width:100%;padding:16px 20px;background:none;border:none;color:#fff;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.05rem;text-transform:uppercase;letter-spacing:.02em">
+      <span>📋 <span data-i18n="rules.title">Regras de Compra</span></span>
+      <span id="regrasToggleIcon" style="transition:transform .25s">▼</span>
+    </button>
+    <div id="regrasConteudo" style="display:none;padding:0 20px 20px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+        <div style="background:rgba(255,179,0,.08);border-radius:10px;padding:13px 15px;border-left:4px solid var(--amber)">
+          <strong style="display:block;margin-bottom:4px;font-size:.85rem;color:var(--amber);text-transform:uppercase">📦 <span data-i18n="rules.box">Caixa</span></strong>
+          <span style="font-size:.85rem" data-i18n="rules.box.desc">10 ampolas = 1 caixa. Máximo 5 caixas (50 ampolas) por pedido.</span>
+        </div>
+        <div style="background:rgba(255,179,0,.08);border-radius:10px;padding:13px 15px;border-left:4px solid var(--amber)">
+          <strong style="display:block;margin-bottom:4px;font-size:.85rem;color:var(--amber);text-transform:uppercase">½ <span data-i18n="rules.half">Meia Caixa</span></strong>
+          <span style="font-size:.85rem" data-i18n="rules.half.desc">Ao escolher "½ caixa" em qualquer produto, todos os demais do carrinho passam a ser em múltiplos de 5.</span>
+        </div>
+        <div style="background:rgba(255,179,0,.08);border-radius:10px;padding:13px 15px;border-left:4px solid var(--amber)">
+          <strong style="display:block;margin-bottom:4px;font-size:.85rem;color:var(--amber);text-transform:uppercase">🧬 <span data-i18n="rules.family">Mesma Família</span></strong>
+          <span style="font-size:.85rem" data-i18n="rules.family.desc">Pode misturar concentrações do mesmo peptídeo (ex: 30mg+40mg+60mg), mas no máximo 10 ampolas combinadas dessa família.</span>
+        </div>
+        <div style="background:rgba(255,179,0,.08);border-radius:10px;padding:13px 15px;border-left:4px solid var(--amber)">
+          <strong style="display:block;margin-bottom:4px;font-size:.85rem;color:var(--amber);text-transform:uppercase">🛒 <span data-i18n="rules.products">Produtos Diferentes</span></strong>
+          <span style="font-size:.85rem" data-i18n="rules.products.desc">Máximo 5 produtos diferentes por pedido.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="filtros">
     <button class="filtro-btn active" onclick="filtrar('',this)" data-i18n="products.all">Todos</button>
     <button class="filtro-btn" onclick="filtrar('glp1',this)" data-i18n="cat.glp1">GLP-1</button>
@@ -626,15 +654,37 @@ function adicionarAoCarrinho(id){
   if(btn){btn.textContent=(function(){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d['btn.added']&&(d['btn.added'][l]||d['btn.added']['en']))||'Added';})();btn.classList.add('adicionado');setTimeout(()=>{btn.textContent=(function(){var d=window.PEPMASTERS_I18N;var l=localStorage.getItem('pep_lang')||'en';return(d&&d['btn.add']&&(d['btn.add'][l]||d['btn.add']['en']))||'Add to Cart';})();btn.classList.remove('adicionado')},1500)}
 }
 function removerDoCarrinho(id){setCarrinho(getCarrinho().filter(i=>i.id!==id));renderCarrinho()}
-function alterarQtd(id,delta){
+function alterarQtd(id,direcao){
   const c=getCarrinho();const idx=c.findIndex(i=>String(i.id)===String(id));if(idx<0)return;
-  const nova=c[idx].quantidade+delta;
-  if(nova<2){c.splice(idx,1)}
-  else if(nova%2!==0){c[idx].quantidade=nova+1} // forçar par
-  else{c[idx].quantidade=nova}
+  var modo = getModoCarrinho();
+  var passo = modo === 'meia' ? 5 : 2;
+  var minimo = modo === 'meia' ? 5 : 2;
+  const nova=c[idx].quantidade + (direcao > 0 ? passo : -passo);
+  if(nova<minimo){c.splice(idx,1)}
+  else {
+    // Verificar limite de família ao aumentar
+    if (direcao > 0) {
+      var fam = getFamiliaPep(String(id));
+      if (fam) {
+        var familiaOutros = c.reduce(function(s,i){ return (String(i.id)!==String(id) && getFamiliaPep(String(i.id))===fam) ? s+i.quantidade : s; }, 0);
+        if (familiaOutros + nova > 10) { showToast('⛔ Máximo 10 ampolas por família de peptídeo'); return; }
+      }
+      var totalOutros = c.reduce(function(s,i){ return String(i.id)===String(id)?s:s+i.quantidade; }, 0);
+      if (totalOutros + nova > 50) { showToast('Máximo 50 ampolas (5 caixas)'); return; }
+    }
+    c[idx].quantidade=nova;
+  }
   setCarrinho(c);renderCarrinho()
 }
 function limparCarrinho(){setCarrinho([]);renderCarrinho()}
+
+function toggleRegras(){
+  var conteudo = document.getElementById('regrasConteudo');
+  var icon = document.getElementById('regrasToggleIcon');
+  var aberto = conteudo.style.display === 'block';
+  conteudo.style.display = aberto ? 'none' : 'block';
+  icon.style.transform = aberto ? 'rotate(0deg)' : 'rotate(180deg)';
+}
 
 function atualizarBadge(){
   const c=getCarrinho();const tot=c.reduce((s,i)=>s+i.quantidade,0);
@@ -670,9 +720,9 @@ function renderCarrinho(){
         <div class="cart-item-name">${item.nome}</div>
         <div class="cart-item-cat">${item.categoria}</div>
         <div class="cart-item-controls">
-          <button class="qty-btn" onclick="alterarQtd('${item.id}',-2)">−</button>
+          <button class="qty-btn" onclick="alterarQtd('${item.id}',-1)">−</button>
           <span class="qty-val">${item.quantidade}</span>
-          <button class="qty-btn" onclick="alterarQtd('${item.id}',2)">+</button>
+          <button class="qty-btn" onclick="alterarQtd('${item.id}',1)">+</button>
           <span class="unit-price">× R$ ${item.preco.toFixed(2).replace('.',',')}</span>
         </div>
       </div>
@@ -953,12 +1003,26 @@ function mkCard(p) {
 
     // Botões de caixa
     var caixaRow = document.createElement('div');
-    caixaRow.style.cssText = 'display:flex;gap:4px;justify-content:center;margin:6px 0';
+    caixaRow.style.cssText = 'display:flex;gap:4px;justify-content:center;margin:6px 0;flex-wrap:wrap';
     var _d = window.PEPMASTERS_I18N || {};
     var _l = localStorage.getItem('pep_lang') || 'en';
     var _cxLabel = { en:'box', pt:'cx', es:'cj', de:'Sch', fr:'bt' };
+    var _meiaLabel = { en:'½ box', pt:'½ cx', es:'½ cj', de:'½ Sch', fr:'½ bt' };
     var _cxLbl = _cxLabel[_l] || 'box';
     var _pid = p.id;
+
+    var btnMeia = document.createElement('button');
+    btnMeia.style.cssText = 'flex:1;padding:5px 0;border:1px solid var(--red);border-radius:6px;background:rgba(232,34,10,.06);font-size:.7rem;font-family:"Barlow Condensed",sans-serif;font-weight:700;cursor:pointer;color:var(--red)';
+    btnMeia.textContent = _meiaLabel[_l] || '½ box';
+    btnMeia.title = '5 ' + (_l==='pt'?'ampolas':'ampoules');
+    btnMeia.onclick = function(){
+      cardQtds[_pid] = 5;
+      var qn = document.getElementById('qn-' + _pid);
+      if (qn) qn.textContent = 5;
+      atualizarInfoQtd(_pid);
+    };
+    caixaRow.appendChild(btnMeia);
+
     [1,2,3,4,5].forEach(function(n){
       var cb = document.createElement('button');
       cb.style.cssText = 'flex:1;padding:5px 0;border:1px solid var(--border);border-radius:6px;background:none;font-size:.7rem;font-family:"Barlow Condensed",sans-serif;font-weight:700;cursor:pointer;color:var(--mid)';
@@ -1030,17 +1094,16 @@ function renderTopSellers(lista) {
     if (btnConf)  btnConf.onclick  = function(){ adicionarAoCarrinhoPrefixed(p.id, prefix); };
     var btnCanc = card.querySelector('.qtd-cancelar');
     if (btnCanc) btnCanc.onclick = function(){ cardQtdPrefixed(p.id, -999, prefix); };
-    // Re-bind botões de caixa para usar prefix
+    // Re-bind botões de caixa/meia-caixa para usar prefix (extrai quantidade do title)
     card.querySelectorAll('.qtd-btn, button').forEach(function(btn){
-      // Os botões de caixa são os que têm textContent "1 cx", "2 cx" etc (ou "1 box" etc)
-      var t = btn.textContent.trim();
-      var m = t.match(/^(\d+)\s/);
-      if (m && btn.title && btn.title.indexOf('ampol') > -1 || btn.title && btn.title.indexOf('ampoule') > -1) {
+      var titleStr = btn.title || '';
+      var m = titleStr.match(/^(\d+)\s*(ampol|ampoule)/);
+      if (m) {
         var num = parseInt(m[1]);
         btn.onclick = (function(n){ return function(){
-          cardQtds[prefix + p.id] = n * 10;
+          cardQtds[prefix + p.id] = n;
           var qn = document.getElementById(prefix + 'qn-' + p.id);
-          if (qn) qn.textContent = n * 10;
+          if (qn) qn.textContent = n;
           atualizarInfoQtdPrefixed(p.id, prefix);
         };})(num);
       }
@@ -1178,26 +1241,30 @@ function mostrarSeletorPrefixed(id, prefix) {
   var btn = document.getElementById(prefix + 'btn-add-' + id);
   if (sel) sel.classList.add('show');
   if (btn) btn.style.display = 'none';
-  cardQtds[prefix+id] = 2;
+  var modo = getModoCarrinho();
+  var minimo = modo === 'meia' ? 5 : 2;
+  cardQtds[prefix+id] = minimo;
   var qn = document.getElementById(prefix + 'qn-' + id);
-  if (qn) qn.textContent = 2;
+  if (qn) qn.textContent = minimo;
   // atualizar info usando id sem prefixo (mesma lógica do grid)
   atualizarInfoQtdPrefixed(id, prefix);
 }
 
 function cardQtdPrefixed(id, delta, prefix) {
   var key = prefix + id;
-  var atual = cardQtds[key] || 2;
-  var nova = atual + delta;
-  if (nova < 2) {
+  var modo = getModoCarrinho();
+  var passo = modo === 'meia' ? 5 : 2;
+  var minimo = modo === 'meia' ? 5 : 2;
+  var atual = cardQtds[key] || minimo;
+  var nova = atual + (delta > 0 ? passo : -passo);
+  if (nova < minimo) {
     var sel = document.getElementById(prefix + 'sel-' + id);
     var btn = document.getElementById(prefix + 'btn-add-' + id);
     if (sel) sel.classList.remove('show');
     if (btn) btn.style.display = '';
-    cardQtds[key] = 2;
+    cardQtds[key] = minimo;
     return;
   }
-  if (nova % 2 !== 0) nova += delta > 0 ? 1 : -1;
   cardQtds[key] = nova;
   var qn = document.getElementById(prefix + 'qn-' + id);
   if (qn) qn.textContent = nova;
@@ -1239,13 +1306,15 @@ function mostrarSeletor(id) {
     const otherId = el.id.replace('sel-','');
     if (otherId !== id) esconderSeletor(otherId);
   });
-  cardQtds[id] = 2; // mínimo 2 (1 par)
+  var modo = getModoCarrinho();
+  var minimo = modo === 'meia' ? 5 : 2;
+  cardQtds[id] = minimo;
   const sel = document.getElementById('sel-'+id);
   const btn = document.getElementById('btn-add-'+id);
   if (sel) sel.classList.add('show');
   if (btn) btn.style.display = 'none';
   var qn = document.getElementById('qn-'+id);
-  if (qn) qn.textContent = 2;
+  if (qn) qn.textContent = minimo;
   atualizarInfoQtd(id);
 }
 
@@ -1254,11 +1323,14 @@ function esconderSeletor(id) {
   const btn = document.getElementById('btn-add-'+id);
   if (sel) sel.classList.remove('show');
   if (btn) btn.style.display = '';
-  cardQtds[id] = 2;
+  var modo = getModoCarrinho();
+  cardQtds[id] = modo === 'meia' ? 5 : 2;
 }
 
 function atualizarInfoQtd(id) {
-  var qtd = cardQtds[id] || 2;
+  var modo = getModoCarrinho();
+  var minimo = modo === 'meia' ? 5 : 2;
+  var qtd = cardQtds[id] || minimo;
   var totalCarrinho = getCarrinho().reduce(function(s,i){ return s + i.quantidade; }, 0);
   var totalComEste = totalCarrinho + qtd;
   var el = document.getElementById('qtd-info-' + id);
@@ -1267,27 +1339,58 @@ function atualizarInfoQtd(id) {
   var l = localStorage.getItem('pep_lang') || 'en';
   var tr2 = function(k, n) {
     if (!d[k]) {
-      // fallback sem i18n
       var fallbacks = { 'cart.pairs': n+' par', 'cart.box.label': n+' ampolas', 'cart.box.missing': 'faltam '+n, 'cart.box.complete': '✅ '+n+' caixa(s) completa(s)!' };
       return fallbacks[k] || k;
     }
     var s = d[k][l] || d[k]['en'] || k;
     return s.replace('{n}', n);
   };
-  var pares = Math.floor(qtd / 2);
   var resto = totalComEste % 10;
-  var pairsKey = pares === 1 ? 'cart.pairs1' : 'cart.pairs';
-  var msg = tr2(pairsKey, pares) + ' · ' + tr2('cart.box.label', totalComEste);
+  var msg;
+  if (modo === 'meia') {
+    msg = '½ caixa (' + qtd + ' ampolas)' + ' · ' + tr2('cart.box.label', totalComEste);
+  } else {
+    var pares = Math.floor(qtd / 2);
+    var pairsKey = pares === 1 ? 'cart.pairs1' : 'cart.pairs';
+    msg = tr2(pairsKey, pares) + ' · ' + tr2('cart.box.label', totalComEste);
+  }
   if (resto !== 0) msg += ' · ' + tr2('cart.box.missing', 10 - resto);
   else if (totalComEste > 0) msg += ' · ' + tr2('cart.box.complete', Math.floor(totalComEste/10));
+
+  // Mostrar aviso de limite de família, se aplicável
+  var fam = getFamiliaPep(String(id));
+  if (fam) {
+    var familiaTotalAtual = getFamiliaTotalCarrinho(String(id), id);
+    var familiaComEste = familiaTotalAtual + qtd;
+    msg += ' · família: ' + familiaComEste + '/10';
+  }
   el.textContent = msg;
 }
 
+function getModoCarrinho() {
+  // Retorna 'meia' se algum item do carrinho usa múltiplo de 5 não-múltiplo de 10 (ex: 5, 15, 25)
+  var c = getCarrinho();
+  var temMeia = c.some(function(i){ return i.quantidade % 5 === 0 && i.quantidade % 10 !== 0; });
+  return temMeia ? 'meia' : 'normal';
+}
+
+function getFamiliaTotalCarrinho(codigo, excluirId) {
+  var c = getCarrinho();
+  var fam = getFamiliaPep(codigo);
+  if (!fam) return 0;
+  return c.reduce(function(s, i) {
+    if (excluirId !== undefined && String(i.id) === String(excluirId)) return s;
+    return getFamiliaPep(String(i.id)) === fam ? s + i.quantidade : s;
+  }, 0);
+}
+
 function cardQtd(id, delta) {
-  var atual = cardQtds[id] || 2;
-  var nova = atual + delta;
-  if (nova < 2) { esconderSeletor(id); return; }
-  if (nova % 2 !== 0) nova += delta > 0 ? 1 : -1; // forçar par
+  var modo = getModoCarrinho();
+  var passo = modo === 'meia' ? 5 : 2;
+  var minimo = modo === 'meia' ? 5 : 2;
+  var atual = cardQtds[id] || minimo;
+  var nova = atual + (delta > 0 ? passo : -passo);
+  if (nova < minimo) { esconderSeletor(id); return; }
   // verificar máximo total (50)
   var totalOutros = getCarrinho().reduce(function(s,i){ return s + (String(i.id)===String(id)?0:i.quantidade); }, 0);
   if (totalOutros + nova > 50) { showToast('Máximo 50 ampolas (5 caixas)'); return; }
@@ -1300,22 +1403,28 @@ function cardQtd(id, delta) {
 function confirmarSeletor(id, preco, qtdOverride) {
   const p = produtosData.find(x => String(x.id) === String(id));
   if (!p) return;
-  const qtd = qtdOverride || cardQtds[id] || 2;
+  const modo = getModoCarrinho();
+  const minimo = modo === 'meia' ? 5 : 2;
+  const qtd = qtdOverride || cardQtds[id] || minimo;
 
-  // Validações
-  if (qtd % 2 !== 0) { showToast('Quantidade deve ser em pares'); return; }
-  if (qtd < 2) { showToast('Mínimo 2 unidades por produto'); return; }
+  // Validações de quantidade conforme modo do carrinho
+  if (modo === 'meia') {
+    if (qtd % 5 !== 0) { showToast('No modo Meia Caixa, a quantidade deve ser múltiplo de 5'); return; }
+  } else {
+    if (qtd % 2 !== 0) { showToast('Quantidade deve ser em pares'); return; }
+  }
+  if (qtd < minimo) { showToast('Mínimo ' + minimo + ' unidades por produto'); return; }
 
   const c = getCarrinho();
   const idx = c.findIndex(i => String(i.id) === String(id));
 
-  // Verificar conflito de família (mesma concentração diferente já no carrinho)
-  if (idx < 0) {
-    const conflito = produtoConflitaComCarrinho(id);
-    if (conflito) {
-      showToast('⛔ Você já tem ' + conflito.nome + ' no carrinho — mesma família, concentração diferente não permitida.');
-      return;
-    }
+  // Verificar limite de família: máximo 10 ampolas combinando todas as concentrações
+  const familiaTotal = getFamiliaTotalCarrinho(String(id), idx >= 0 ? id : undefined);
+  const novaQtdProduto = idx >= 0 ? qtd : qtd; // qtd já é o total que terá após adicionar (ver abaixo)
+  const totalFamiliaComEste = familiaTotal + (idx >= 0 ? (c[idx].quantidade + qtd) : qtd);
+  if (getFamiliaPep(String(id)) && totalFamiliaComEste > 10) {
+    showToast('⛔ Máximo 10 ampolas por família de peptídeo (ex: Retatrutide 30+40+60mg juntas).');
+    return;
   }
 
   // Verificar máximo 5 produtos diferentes
