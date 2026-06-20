@@ -1054,10 +1054,10 @@ function validarMeia() {
     slotA.classList.toggle('preenchido', !!codA); slotB.classList.toggle('preenchido', !!codB);
     if (!codA || !codB) { info.style.display='none'; vBox.innerHTML=''; return; }
     if (codA === codB) { vBox.innerHTML = `<div class="validation-box erro">⛔ <strong>Produtos iguais:</strong> selecione dois produtos diferentes para meia+meia.</div>`; info.style.display='none'; return; }
-    if (familiasConflitam(codA, codB)) { vBox.innerHTML = `<div class="validation-box erro">⛔ <strong>Mesma família:</strong> <em>${pA.nome}</em> e <em>${pB.nome}</em> são concentrações diferentes do mesmo peptídeo. Escolha produtos de famílias distintas.</div>`; info.style.display='none'; return; }
+    // Nota: 5+5=10 sempre cabe no limite de 10 ampolas por família, mesma família é permitida aqui
     const subA = (pA.produtoBRL + pA.aduanaBRL) * 5 / 10; const subB = (pB.produtoBRL + pB.aduanaBRL) * 5 / 10; const totalCaixa = subA + subB;
     info.style.display='block'; info.innerHTML = `✅ <strong>${pA.nome}</strong> (5×) + <strong>${pB.nome}</strong> (5×) — S/ frete: <strong>R$ ${fmt(totalCaixa)}</strong> por caixa`;
-    vBox.innerHTML = `<div class="validation-box ok">✅ Combinação válida! Produtos de famílias distintas.</div>`;
+    vBox.innerHTML = `<div class="validation-box ok">✅ Combinação válida!</div>`;
 }
 function adicionarLinhaSortida() {
     const totalAtual = calcularTotalVialsSortida();
@@ -1090,8 +1090,15 @@ function validarSortida() {
         linha.classList.remove('erro','ok'); if (!cod) return; if (msgEl) msgEl.textContent = ''; let erroLocal = false;
         if (qtd % 2 !== 0) { const msg = `⚠️ Quantidade ímpar (${qtd}) não permitida. Use 2, 4, 6 ou 8.`; if (msgEl) msgEl.textContent = msg; erros.push(`${cod}: ${msg}`); erroLocal = true; }
         if (selecionados.find(s => s.codigo === cod)) { const msg = `⛔ ${cod} já adicionado na caixa.`; if (msgEl) msgEl.textContent = msg; erros.push(msg); erroLocal = true; }
-        const conflito = selecionados.find(s => familiasConflitam(s.codigo, cod));
-        if (conflito) { const nomeConf = PRODUTOS.find(x => x.codigo === conflito.codigo)?.nome || conflito.codigo; const msg = `⛔ Mesma família de "${nomeConf}".`; if (msgEl) msgEl.textContent = msg; erros.push(`${cod}: ${msg}`); erroLocal = true; }
+        // Limite de família: máx 10 ampolas combinando concentrações (não bloqueia mistura, só limita o total)
+        const fam = getFamilia(cod);
+        if (fam) {
+            const familiaTotalAtual = selecionados.reduce((s,sel) => getFamilia(sel.codigo) === fam ? s + sel.qtd : s, 0);
+            if (familiaTotalAtual + qtd > 10) {
+                const msg = `⛔ Máximo 10 ampolas da família "${fam}" (já tem ${familiaTotalAtual}, +${qtd} ultrapassa).`;
+                if (msgEl) msgEl.textContent = msg; erros.push(`${cod}: ${msg}`); erroLocal = true;
+            }
+        }
         linha.classList.add(erroLocal ? 'erro' : 'ok'); selecionados.push({codigo:cod, qtd, num}); totalVials += qtd;
     });
     document.getElementById('sortidaTotalVials').textContent = totalVials;
@@ -1116,14 +1123,23 @@ function calcularTotal() {
     if (modoAtual === 'fechada') {
         const selecionados = PRODUTOS.filter(p => document.getElementById(`chk_${p.codigo}`)?.checked && (parseInt(document.getElementById(`qtd_${p.codigo}`)?.value)||0) > 0);
         if (!selecionados.length) { alert('⚠️ Selecione ao menos um produto.'); return; }
-        for (let i = 0; i < selecionados.length; i++) { for (let j = i+1; j < selecionados.length; j++) { if (familiasConflitam(selecionados[i].codigo, selecionados[j].codigo)) { alert(`⛔ Conflito: "${selecionados[i].nome}" e "${selecionados[j].nome}" são da mesma família. Remova um deles.`); erroValidacao = true; break; } } if (erroValidacao) break; }
+        // Limite de família: máx 10 ampolas combinadas (cada caixa = 10, então só cabe 1 caixa por família)
+        const familiaTotaisFechada = {};
+        for (const p of selecionados) {
+            const fam = getFamilia(p.codigo); if (!fam) continue;
+            const qtdBox = parseInt(document.getElementById(`qtd_${p.codigo}`).value) || 0;
+            familiaTotaisFechada[fam] = (familiaTotaisFechada[fam] || 0) + qtdBox*10;
+        }
+        for (const [fam, tot] of Object.entries(familiaTotaisFechada)) {
+            if (tot > 10) { alert(`⛔ Máximo 10 ampolas combinando concentrações da família "${fam}" (atual: ${tot}).`); erroValidacao = true; break; }
+        }
         if (erroValidacao) return;
         selecionados.forEach(p => { const qtdBox = parseInt(document.getElementById(`qtd_${p.codigo}`).value) || 0; itens.push({ nome:p.nome, codigo:p.codigo, qtdVials:qtdBox*10*qtdCaixas, produtoBRL:p.produtoBRL*qtdBox*qtdCaixas, aduanaBRL:p.aduanaBRL*qtdBox*qtdCaixas }); });
     } else if (modoAtual === 'meia') {
         const codA = document.getElementById('meiaSelA').value; const codB = document.getElementById('meiaSelB').value;
         if (!codA || !codB) { alert('⚠️ Selecione os dois produtos para a meia caixa.'); return; }
         if (codA === codB) { alert('⛔ Produtos iguais. Selecione produtos diferentes.'); return; }
-        if (familiasConflitam(codA, codB)) { alert('⛔ Produtos da mesma família. Escolha produtos distintos.'); return; }
+        // 5+5=10 sempre cabe no limite de família, não bloqueia mesma família aqui
         const pA = PRODUTOS.find(p => p.codigo === codA); const pB = PRODUTOS.find(p => p.codigo === codB);
         itens.push({ nome:pA.nome, codigo:pA.codigo, qtdVials:5*qtdCaixas, produtoBRL:(pA.produtoBRL/10)*5*qtdCaixas, aduanaBRL:(pA.aduanaBRL/10)*5*qtdCaixas });
         itens.push({ nome:pB.nome, codigo:pB.codigo, qtdVials:5*qtdCaixas, produtoBRL:(pB.produtoBRL/10)*5*qtdCaixas, aduanaBRL:(pB.aduanaBRL/10)*5*qtdCaixas });
@@ -1134,7 +1150,11 @@ function calcularTotal() {
             if (!cod) return;
             if (qtd % 2 !== 0) { erros.push(`${cod}: quantidade ímpar`); return; }
             if (coletados.find(c=>c.codigo===cod)) { erros.push(`${cod}: duplicado`); return; }
-            const conflito = coletados.find(c => familiasConflitam(c.codigo, cod)); if (conflito) { erros.push(`${cod}: mesma família de ${conflito.codigo}`); return; }
+            const fam = getFamilia(cod);
+            if (fam) {
+                const familiaTotalAtual = coletados.reduce((s,c) => getFamilia(c.codigo) === fam ? s + c.qtd : s, 0);
+                if (familiaTotalAtual + qtd > 10) { erros.push(`${cod}: máximo 10 ampolas da família "${fam}" (já tem ${familiaTotalAtual})`); return; }
+            }
             coletados.push({codigo:cod,qtd}); totalVials += qtd;
         });
         if (erros.length) { alert('⛔ Corrija os erros na caixa sortida:\n' + erros.join('\n')); return; }
