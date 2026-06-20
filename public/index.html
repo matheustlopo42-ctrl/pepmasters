@@ -1417,9 +1417,12 @@ function confirmarSeletor(id, preco, qtdOverride) {
     return;
   }
 
-  // Verificar máximo 5 produtos diferentes
+  // Verificar máximo de produtos diferentes (5 por caixa de 10 ampolas)
   const jaExiste = idx >= 0;
-  if (!jaExiste && c.length >= 5) { showToast('Máximo 5 produtos diferentes por pedido'); return; }
+  const totalAtualParaCaixas = c.reduce(function(s,i){ return s + i.quantidade; }, 0);
+  const caixasEstimadas = Math.max(1, Math.ceil((totalAtualParaCaixas + qtd) / 10));
+  const maxProdutos = caixasEstimadas * 5;
+  if (!jaExiste && c.length >= maxProdutos) { showToast('Máximo ' + maxProdutos + ' produtos diferentes para ' + caixasEstimadas + ' caixa(s) (5 produtos por caixa)'); return; }
 
   // Verificar máximo 50 no total
   const totalAtual = c.reduce(function(s,i){ return s + i.quantidade; }, 0);

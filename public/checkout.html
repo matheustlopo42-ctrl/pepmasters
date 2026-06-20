@@ -819,7 +819,9 @@
     for (const item of carrinho) {
       if (item.quantidade < 2) { mostrarErro('Quantidade mínima de ' + item.nome + ' é 2 unidades.'); return; }
     }
-    if (carrinho.length > 5) { mostrarErro('Máximo 5 produtos diferentes por pedido.'); return; }
+    const caixasPedido = Math.max(1, Math.ceil(totalAmpolas / 10));
+    const maxProdutosPedido = caixasPedido * 5;
+    if (carrinho.length > maxProdutosPedido) { mostrarErro('Máximo ' + maxProdutosPedido + ' produtos diferentes para ' + caixasPedido + ' caixa(s) (5 produtos por caixa).'); return; }
 
     // Validação de limite por família (máx 10 ampolas combinando concentrações do mesmo peptídeo)
     const FAMILIAS_CHK = {

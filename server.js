@@ -700,8 +700,10 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
   if (totalAmpolasPedido > 50) {
     return res.status(400).json({ erro: 'Máximo 50 ampolas (5 caixas) por pedido.' });
   }
-  if (carrinho.length > 5) {
-    return res.status(400).json({ erro: 'Máximo 5 produtos diferentes por pedido.' });
+  const caixasPedidoSrv = Math.max(1, Math.ceil(totalAmpolasPedido / 10));
+  const maxProdutosSrv = caixasPedidoSrv * 5;
+  if (carrinho.length > maxProdutosSrv) {
+    return res.status(400).json({ erro: 'Máximo ' + maxProdutosSrv + ' produtos diferentes para ' + caixasPedidoSrv + ' caixa(s) (5 produtos por caixa).' });
   }
   for (const item of carrinho) {
     const q = parseInt(item.quantidade);
