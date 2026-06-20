@@ -1267,7 +1267,8 @@ function cardQtdPrefixed(id, delta, prefix) {
 
 function cardQtdMeiaPrefixed(id, prefix) {
   var key = prefix + id;
-  var nova = (cardQtds[key] || 0) + 5;
+  var atual = cardQtds[key] || 0;
+  var nova = (atual === 2 || atual === 0) ? 5 : atual + 5;
   var totalOutros = getCarrinho().reduce(function(s,i){ return s + (String(i.id)===String(id)?0:i.quantidade); }, 0);
   if (totalOutros + nova > 50) { showToast('Máximo 50 ampolas (5 caixas)'); return; }
   cardQtds[key] = nova;
@@ -1385,9 +1386,9 @@ function cardQtd(id, delta) {
 }
 
 function cardQtdMeia(id) {
-  // Botão "½ caixa" — soma 5 à quantidade pendente desse produto (atalho pra fechar a caixa)
+  // Botão "½ caixa" — se ainda está no padrão (2, intocado), vira 5. Se já foi alterado, soma +5.
   var atual = cardQtds[id] || 0;
-  var nova = atual + 5;
+  var nova = (atual === 2 || atual === 0) ? 5 : atual + 5;
   var totalOutros = getCarrinho().reduce(function(s,i){ return s + (String(i.id)===String(id)?0:i.quantidade); }, 0);
   if (totalOutros + nova > 50) { showToast('Máximo 50 ampolas (5 caixas)'); return; }
   cardQtds[id] = nova;
