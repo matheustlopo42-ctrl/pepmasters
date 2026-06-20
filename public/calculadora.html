@@ -42,7 +42,7 @@ header{position:sticky;top:0;z-index:1000;background:var(--warm-white);border-bo
 .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .hamburger.open span:nth-child(2){opacity:0}
 .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-@media(max-width:768px){.hamburger{display:flex}#authArea{display:none}#cartLabel{display:none}.back-link-arrow{display:inline!important}}
+@media(max-width:768px){.hamburger{display:flex}#authArea{display:none}#cartLabel{display:none}.back-link-arrow{display:inline!important}.back-link-store{display:none!important}}
 .mobile-menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998}
 .mobile-menu-overlay.open{display:block}
 .mobile-menu{display:block;position:fixed;top:0;left:0;bottom:0;width:80%;max-width:300px;background:#fff;border-right:2px solid var(--amber);z-index:9999;padding:80px 20px 24px;box-shadow:4px 0 24px rgba(0,0,0,.15);overflow-y:auto;transform:translateX(-110%);transition:transform .3s ease;visibility:hidden}
@@ -354,6 +354,7 @@ footer { background:var(--dark); color:#fff; padding:52px 24px 0; margin-top:50p
       <img src="Capturar.PNG" alt="Logo"/>
       <span class="logo-text">PEPMASTERS</span>
     </a>
+    <a href="index.html" class="back-link-store" data-i18n="calc.backstore" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-decoration:none;margin-left:14px;white-space:nowrap">← Voltar à loja</a>
     <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
     <div class="header-right">
       <div id="authArea"></div>
@@ -381,127 +382,127 @@ footer { background:var(--dark); color:#fff; padding:52px 24px 0; margin-top:50p
 <div class="cart-overlay" id="cartOverlay" onclick="fecharCarrinho()"></div>
 <div class="cart-drawer" id="cartDrawer">
   <div class="cart-head">
-    <h2>Carrinho</h2>
+    <h2 data-i18n="cart.title">Carrinho</h2>
     <button class="cart-close" onclick="fecharCarrinho()">✕</button>
   </div>
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-foot" id="cartFoot" style="display:none">
-    <div class="cart-subtotal"><span>Subtotal</span><span id="cartSubtotal">R$ 0,00</span></div>
-    <div class="cart-total-row"><span>Total</span><span id="cartTotal">R$ 0,00</span></div>
-    <a href="checkout.html" class="btn-checkout">Finalizar Pedido</a>
-    <button class="btn-limpar" onclick="limparCarrinhoDrawer()">Limpar carrinho</button>
+    <div class="cart-subtotal"><span data-i18n="cart.subtotal">Subtotal</span><span id="cartSubtotal">R$ 0,00</span></div>
+    <div class="cart-total-row"><span data-i18n="cart.total">Total</span><span id="cartTotal">R$ 0,00</span></div>
+    <a href="checkout.html" class="btn-checkout" data-i18n="cart.checkout">Finalizar Pedido</a>
+    <button class="btn-limpar" onclick="limparCarrinhoDrawer()" data-i18n="cart.clear">Limpar carrinho</button>
   </div>
 </div>
 
 <div class="calc-hero">
   <div class="calc-hero-content">
-    <h1>🧮 Calculadora de Importação</h1>
-    <p>Simule o custo total — produto, aduana e frete Paraguai → Brasil — antes de fechar seu pedido.</p>
+    <h1 data-i18n="calc.hero.title">🧮 Calculadora de Importação</h1>
+    <p data-i18n="calc.hero.subtitle">Simule o custo total — produto, aduana e frete Paraguai → Brasil — antes de fechar seu pedido.</p>
   </div>
 </div>
 
 <div class="container">
   <div class="tabs">
-    <button class="tab active" onclick="mudarTab('calculadora',event)">🧮 Calculadora</button>
-    <button class="tab" onclick="mudarTab('produtos',event)">📦 Produtos</button>
-    <button class="tab" onclick="mudarTab('historico',event)">📜 Histórico</button>
-    <button class="tab" onclick="mudarTab('analise',event)">📊 Análise</button>
-    <button class="tab" onclick="mudarTab('configuracoes',event)">⚙️ Configurações</button>
+    <button class="tab active" onclick="mudarTab('calculadora',event)" data-i18n="calc.tab.calc">🧮 Calculadora</button>
+    <button class="tab" onclick="mudarTab('produtos',event)" data-i18n="calc.tab.products">📦 Produtos</button>
+    <button class="tab" onclick="mudarTab('historico',event)" data-i18n="calc.tab.history">📜 Histórico</button>
+    <button class="tab" onclick="mudarTab('analise',event)" data-i18n="calc.tab.analysis">📊 Análise</button>
+    <button class="tab" onclick="mudarTab('configuracoes',event)" data-i18n="calc.tab.settings">⚙️ Configurações</button>
   </div>
   <div class="content">
     <!-- TAB: CALCULADORA -->
     <div id="tab-calculadora" class="tab-content active">
       <div class="regras-banner">
-        <h3>📋 Regras de Compra do Grupo</h3>
+        <h3 data-i18n="calc.rules.title">📋 Regras de Compra do Grupo</h3>
         <div class="regras-grid">
-          <div class="regra-item"><strong>❌ Concentrações duplicadas</strong>Não é permitido comprar o mesmo peptídeo em concentrações diferentes (ex: RT40 + RT60).</div>
-          <div class="regra-item"><strong>📦 Caixa Fechada</strong>10 vials do mesmo produto. Sem restrições adicionais.</div>
-          <div class="regra-item"><strong>½ + ½ Meia Caixa</strong>5 vials de produto A + 5 vials de produto B. Produtos diferentes obrigatoriamente.</div>
-          <div class="regra-item"><strong>🎲 Caixa Sortida</strong>Múltiplos produtos em pares (2, 4, 6 vials). Quantidades ímpares são proibidas. Total deve fechar em múltiplo de 10.</div>
+          <div class="regra-item"><strong data-i18n="calc.rule1.title">❌ Concentrações duplicadas</strong><span data-i18n="calc.rule1.desc">Não é permitido comprar o mesmo peptídeo em concentrações diferentes (ex: RT40 + RT60).</span></div>
+          <div class="regra-item"><strong data-i18n="calc.rule2.title">📦 Caixa Fechada</strong><span data-i18n="calc.rule2.desc">10 vials do mesmo produto. Sem restrições adicionais.</span></div>
+          <div class="regra-item"><strong data-i18n="calc.rule3.title">½ + ½ Meia Caixa</strong><span data-i18n="calc.rule3.desc">5 vials de produto A + 5 vials de produto B. Produtos diferentes obrigatoriamente.</span></div>
+          <div class="regra-item"><strong data-i18n="calc.rule4.title">🎲 Caixa Sortida</strong><span data-i18n="calc.rule4.desc">Múltiplos produtos em pares (2, 4, 6 vials). Quantidades ímpares são proibidas. Total deve fechar em múltiplo de 10.</span></div>
         </div>
       </div>
       <div class="grid-2" style="margin-bottom:28px;">
         <div class="panel">
-          <div class="panel-title">💰 Precificação</div>
+          <div class="panel-title" data-i18n="calc.pricing.title">💰 Precificação</div>
           <div style="background:linear-gradient(135deg,#11998e,#38ef7d);color:white;padding:22px;border-radius:12px;text-align:center;">
-            <div style="font-size:0.85em;opacity:0.9;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Tabela de Preços</div>
+            <div style="font-size:0.85em;opacity:0.9;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;" data-i18n="calc.pricing.table">Tabela de Preços</div>
             <div style="font-family:'Barlow Condensed',sans-serif;font-size:2.2em;font-weight:900;">100% R$</div>
-            <div style="font-size:0.82em;opacity:0.9;margin-top:10px;">Produto + Aduana já em Reais</div>
+            <div style="font-size:0.82em;opacity:0.9;margin-top:10px;" data-i18n="calc.pricing.desc">Produto + Aduana já em Reais</div>
           </div>
         </div>
         <div class="panel">
-          <div class="panel-title">🚚 Frete Paraguai → Brasil</div>
-          <div class="alert alert-info" style="margin-bottom:14px">💡 O frete é <strong>opcional</strong> — R$ 500,00 por caixa (R$ 50,00/ampola). Se preferir, retire pessoalmente no Paraguai sem pagar frete.</div>
+          <div class="panel-title" data-i18n="calc.freight.title">🚚 Frete Paraguai → Brasil</div>
+          <div class="alert alert-info" style="margin-bottom:14px"><span data-i18n="calc.freight.optional">💡 O frete é opcional — R$ 500,00 por caixa (R$ 50,00/ampola). Se preferir, retire pessoalmente no Paraguai sem pagar frete.</span></div>
           <div class="radio-group">
             <div class="radio-option">
               <input type="radio" name="tipoFrete" id="freteRecomendado" value="recomendado" checked>
-              <label for="freteRecomendado">✅ Padrão<br><small>R$ <span id="fretePadraoLabel">50,00</span>/vial</small></label>
+              <label for="freteRecomendado"><span data-i18n="calc.freight.standard">✅ Padrão</span><br><small>R$ <span id="fretePadraoLabel">50,00</span>/vial</small></label>
             </div>
             <div class="radio-option">
               <input type="radio" name="tipoFrete" id="freteRetirada" value="retirada">
-              <label for="freteRetirada">📦 Retirada no Paraguai<br><small>Sem frete (R$ 0,00)</small></label>
+              <label for="freteRetirada"><span data-i18n="calc.freight.pickup">📦 Retirada no Paraguai</span><br><small data-i18n="calc.freight.pickup.sub">Sem frete (R$ 0,00)</small></label>
             </div>
             <div class="radio-option">
               <input type="radio" name="tipoFrete" id="fretePersonalizado" value="personalizado">
-              <label for="fretePersonalizado">🔧 Personalizado<br><small>Definir valor</small></label>
+              <label for="fretePersonalizado"><span data-i18n="calc.freight.custom">🔧 Personalizado</span><br><small data-i18n="calc.freight.custom.sub">Definir valor</small></label>
             </div>
           </div>
           <div id="fretePersonalizadoDiv" style="display:none;margin-top:16px;">
             <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label">Valor por vial (R$):</label>
+              <label class="form-label" data-i18n="calc.freight.value">Valor por vial (R$):</label>
               <input type="number" class="form-control" id="valorFretePersonalizado" step="0.01" placeholder="Ex: 50.00">
             </div>
           </div>
         </div>
       </div>
       <div class="panel" style="margin-bottom:28px;">
-        <div class="panel-title">🛒 Modo de Compra</div>
+        <div class="panel-title" data-i18n="calc.mode.title">🛒 Modo de Compra</div>
         <div class="modo-compra-selector">
           <div class="modo-card active" id="modoCard_fechada" onclick="selecionarModo('fechada')">
             <div class="modo-icon">📦</div>
-            <div class="modo-title">Caixa Fechada</div>
-            <div class="modo-desc">10 vials do mesmo produto por caixa</div>
+            <div class="modo-title" data-i18n="calc.mode.closed">Caixa Fechada</div>
+            <div class="modo-desc" data-i18n="calc.mode.closed.desc">10 vials do mesmo produto por caixa</div>
           </div>
           <div class="modo-card" id="modoCard_meia" onclick="selecionarModo('meia')">
             <div class="modo-icon">½</div>
-            <div class="modo-title">Meia + Meia</div>
-            <div class="modo-desc">5 vials de A + 5 vials de B</div>
+            <div class="modo-title" data-i18n="calc.mode.half">Meia + Meia</div>
+            <div class="modo-desc" data-i18n="calc.mode.half.desc">5 vials de A + 5 vials de B</div>
           </div>
           <div class="modo-card" id="modoCard_sortida" onclick="selecionarModo('sortida')">
             <div class="modo-icon">🎲</div>
-            <div class="modo-title">Caixa Sortida</div>
-            <div class="modo-desc">Até 10 produtos em pares (2/4/6 vials)</div>
+            <div class="modo-title" data-i18n="calc.mode.mixed">Caixa Sortida</div>
+            <div class="modo-desc" data-i18n="calc.mode.mixed.desc">Até 10 produtos em pares (2/4/6 vials)</div>
           </div>
         </div>
         <div id="modo_fechada" class="modo-section active">
-          <div class="alert alert-info">💡 Selecione os produtos e a quantidade de <strong>caixas (10 vials cada)</strong>. O sistema bloqueia automaticamente concentrações duplicadas da mesma família.</div>
-          <div class="search-box"><input type="text" id="searchFechada" placeholder="Buscar produto..." onkeyup="filtrarListaFechada()"></div>
+          <div class="alert alert-info"><span data-i18n="calc.closed.alert">💡 Selecione os produtos e a quantidade de caixas (10 vials cada). O sistema bloqueia automaticamente concentrações duplicadas da mesma família.</span></div>
+          <div class="search-box"><input type="text" id="searchFechada" data-i18n-placeholder="calc.search.product" placeholder="Buscar produto..." onkeyup="filtrarListaFechada()"></div>
           <div class="filtros" id="filtrosFechada">
-            <button class="filtro-btn active" onclick="filtrarCatFechada('todos',event)">Todos</button>
-            <button class="filtro-btn" onclick="filtrarCatFechada('glp1',event)">GLP-1</button>
-            <button class="filtro-btn" onclick="filtrarCatFechada('recuperacao',event)">Recuperação</button>
-            <button class="filtro-btn" onclick="filtrarCatFechada('hormonio',event)">Hormônios</button>
-            <button class="filtro-btn" onclick="filtrarCatFechada('longevidade',event)">Longevidade</button>
-            <button class="filtro-btn" onclick="filtrarCatFechada('nootrop',event)">Nootrópicos</button>
-            <button class="filtro-btn" onclick="filtrarCatFechada('estetica',event)">Estética</button>
-            <button class="filtro-btn" onclick="filtrarCatFechada('combo',event)">Combos</button>
+            <button class="filtro-btn active" onclick="filtrarCatFechada('todos',event)" data-i18n="calc.filter.all">Todos</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('glp1',event)" data-i18n="cat.glp1">GLP-1</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('recuperacao',event)" data-i18n="cat.recuperacao">Recuperação</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('hormonio',event)" data-i18n="calc.filter.hormones">Hormônios</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('longevidade',event)" data-i18n="cat.longevidade">Longevidade</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('nootrop',event)" data-i18n="calc.filter.nootropics">Nootrópicos</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('estetica',event)" data-i18n="cat.estetica">Estética</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('combo',event)" data-i18n="calc.filter.combos">Combos</button>
           </div>
           <div id="listaFechada"></div>
           <div id="validacaoFechada"></div>
         </div>
         <div id="modo_meia" class="modo-section">
-          <div class="alert alert-info">💡 Selecione <strong>dois produtos diferentes</strong>. Cada um contribui com <strong>5 vials</strong>. Não é permitido selecionar produtos da mesma família.</div>
+          <div class="alert alert-info"><span data-i18n="calc.half.alert">💡 Selecione dois produtos diferentes. Cada um contribui com 5 vials. Não é permitido selecionar produtos da mesma família.</span></div>
           <div class="meia-caixa-builder">
-            <h4>🔧 Monte sua Meia + Meia</h4>
+            <h4 data-i18n="calc.half.build">🔧 Monte sua Meia + Meia</h4>
             <div class="meia-slots">
               <div class="meia-slot" id="meiaSlotA">
-                <label>Produto A — 5 vials</label>
+                <label data-i18n="calc.half.productA">Produto A — 5 vials</label>
                 <select id="meiaSelA" onchange="validarMeia()"><option value="">— Selecione —</option></select>
                 <div id="meiaInfoA" style="font-size:0.82em;color:#666;"></div>
               </div>
               <div class="meia-separador">+</div>
               <div class="meia-slot" id="meiaSlotB">
-                <label>Produto B — 5 vials</label>
+                <label data-i18n="calc.half.productB">Produto B — 5 vials</label>
                 <select id="meiaSelB" onchange="validarMeia()"><option value="">— Selecione —</option></select>
                 <div id="meiaInfoB" style="font-size:0.82em;color:#666;"></div>
               </div>
@@ -511,15 +512,15 @@ footer { background:var(--dark); color:#fff; padding:52px 24px 0; margin-top:50p
           <div id="validacaoMeia"></div>
         </div>
         <div id="modo_sortida" class="modo-section">
-          <div class="alert alert-info">💡 Monte sua caixa com <strong>diferentes produtos</strong>. Cada item deve ser adquirido em quantidade <strong>par (2, 4, 6, 8 vials)</strong>. O total deve fechar em <strong>10 vials</strong>.</div>
+          <div class="alert alert-info"><span data-i18n="calc.mixed.alert">💡 Monte sua caixa com diferentes produtos. Cada item deve ser adquirido em quantidade par (2, 4, 6, 8 vials). O total deve fechar em 10 vials.</span></div>
           <div class="sortida-builder">
-            <h4>🎲 Monte sua Caixa Sortida (total: 10 vials)</h4>
+            <h4 data-i18n="calc.mixed.build">🎲 Monte sua Caixa Sortida (total: 10 vials)</h4>
             <div id="sortidaLinhas"></div>
-            <button class="btn-add-linha" onclick="adicionarLinhaSortida()">+ Adicionar Produto</button>
+            <button class="btn-add-linha" onclick="adicionarLinhaSortida()" data-i18n="calc.mixed.addproduct">+ Adicionar Produto</button>
             <div class="sortida-total-vials">
-              <div class="stv-label">Total de Vials</div>
+              <div class="stv-label" data-i18n="calc.mixed.totalvials">Total de Vials</div>
               <div class="stv-num"><span id="sortidaTotalVials">0</span> / 10</div>
-              <div class="stv-label" id="sortidaStatusMsg">Adicione produtos até completar 10 vials</div>
+              <div class="stv-label" id="sortidaStatusMsg" data-i18n="calc.mixed.addhint">Adicione produtos até completar 10 vials</div>
             </div>
           </div>
           <div id="validacaoSortida"></div>
@@ -527,66 +528,66 @@ footer { background:var(--dark); color:#fff; padding:52px 24px 0; margin-top:50p
         <div style="margin-top:24px;padding-top:22px;border-top:2px solid var(--border);">
           <div class="grid-2" style="gap:20px;align-items:end;">
             <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label">Quantidade de Caixas:</label>
+              <label class="form-label" data-i18n="calc.boxqty">Quantidade de Caixas:</label>
               <input type="number" class="form-control" id="qtdCaixas" min="1" value="1" onchange="atualizarCalculo()">
             </div>
-            <button class="btn btn-primary btn-block" onclick="calcularTotal()" style="font-size:1.05em;padding:16px;">🧮 Calcular Total do Pedido</button>
+            <button class="btn btn-primary btn-block" onclick="calcularTotal()" style="font-size:1.05em;padding:16px;"><span data-i18n="calc.calculate">🧮 Calcular Total do Pedido</span></button>
           </div>
         </div>
       </div>
       <div id="resultadoSection" style="display:none;">
         <div class="stats-grid">
-          <div class="stat-card"><div class="stat-icon">💊</div><div class="stat-label">Produtos (R$)</div><div class="stat-value" id="totalProdutoBRL">R$ 0</div><div class="stat-subtext">Custo dos peptídeos</div></div>
-          <div class="stat-card"><div class="stat-icon">🛃</div><div class="stat-label">Aduana (R$)</div><div class="stat-value" id="totalAduanaBRL">R$ 0</div><div class="stat-subtext">Taxa alfandegária</div></div>
-          <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-label">Total Vials</div><div class="stat-value" id="totalVials">0</div><div class="stat-subtext">Unidades totais</div></div>
-          <div class="stat-card"><div class="stat-icon">🚚</div><div class="stat-label">Frete PY→BR</div><div class="stat-value" id="freteTotal">R$ 0</div><div class="stat-subtext">Após chegada ao PY</div></div>
-          <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Custo/Vial</div><div class="stat-value" id="custoVial">R$ 0</div><div class="stat-subtext">Valor médio unitário</div></div>
+          <div class="stat-card"><div class="stat-icon">💊</div><div class="stat-label" data-i18n="calc.stat.products">Produtos (R$)</div><div class="stat-value" id="totalProdutoBRL">R$ 0</div><div class="stat-subtext" data-i18n="calc.stat.products.sub">Custo dos peptídeos</div></div>
+          <div class="stat-card"><div class="stat-icon">🛃</div><div class="stat-label" data-i18n="calc.stat.customs">Aduana (R$)</div><div class="stat-value" id="totalAduanaBRL">R$ 0</div><div class="stat-subtext" data-i18n="calc.stat.customs.sub">Taxa alfandegária</div></div>
+          <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-label" data-i18n="calc.stat.vials">Total Vials</div><div class="stat-value" id="totalVials">0</div><div class="stat-subtext" data-i18n="calc.stat.vials.sub">Unidades totais</div></div>
+          <div class="stat-card"><div class="stat-icon">🚚</div><div class="stat-label" data-i18n="calc.stat.freight">Frete PY→BR</div><div class="stat-value" id="freteTotal">R$ 0</div><div class="stat-subtext" data-i18n="calc.stat.freight.sub">Após chegada ao PY</div></div>
+          <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label" data-i18n="calc.stat.costvial">Custo/Vial</div><div class="stat-value" id="custoVial">R$ 0</div><div class="stat-subtext" data-i18n="calc.stat.costvial.sub">Valor médio unitário</div></div>
         </div>
         <div class="panel">
-          <div class="panel-title">📋 Detalhamento do Pedido</div>
+          <div class="panel-title" data-i18n="calc.detail.title">📋 Detalhamento do Pedido</div>
           <div id="resumoProdutos" style="margin-bottom:20px;padding:16px;background:var(--cream);border-radius:10px;font-size:0.9em;"></div>
           <div class="resultado-box">
-            <div class="resultado-item"><span class="label">💊 Produtos (R$):</span><span class="value" id="detProdutoBRL">R$ 0,00</span></div>
-            <div class="resultado-item"><span class="label">🛃 Aduana (R$):</span><span class="value" id="detAduanaBRL">R$ 0,00</span></div>
-            <div class="resultado-item"><span class="label">📦 Subtotal S/ Frete:</span><span class="value" id="detSubtotalBRL">R$ 0,00</span></div>
+            <div class="resultado-item"><span class="label" data-i18n="calc.detail.products">💊 Produtos (R$):</span><span class="value" id="detProdutoBRL">R$ 0,00</span></div>
+            <div class="resultado-item"><span class="label" data-i18n="calc.detail.customs">🛃 Aduana (R$):</span><span class="value" id="detAduanaBRL">R$ 0,00</span></div>
+            <div class="resultado-item"><span class="label" data-i18n="calc.detail.subtotal">📦 Subtotal S/ Frete:</span><span class="value" id="detSubtotalBRL">R$ 0,00</span></div>
             <div class="resultado-item"><span class="label">🚚 Frete (R$ <span id="fretePorVialDisplay">50,00</span>/vial × <span id="totalVialsDisplay">0</span> vials):</span><span class="value" id="detFreteBRL">R$ 0,00</span></div>
-            <div class="resultado-total">💰 TOTAL: <span id="totalFinalBRL">R$ 0,00</span></div>
+            <div class="resultado-total"><span data-i18n="calc.detail.total">💰 TOTAL:</span> <span id="totalFinalBRL">R$ 0,00</span></div>
           </div>
         </div>
         <div class="comparador">
-          <div class="comparador-title">📈 Cenários de Frete PY→BR</div>
+          <div class="comparador-title" data-i18n="calc.scenarios.title">📈 Cenários de Frete PY→BR</div>
           <div class="comparador-grid">
             <div class="comparador-card"><div class="titulo">R$ 30/vial</div><div class="valor" id="cenarioF30">R$ 0</div><div class="diferenca negativo" id="difF30">-R$ 0</div></div>
             <div class="comparador-card"><div class="titulo">R$ 40/vial</div><div class="valor" id="cenarioF40">R$ 0</div><div class="diferenca negativo" id="difF40">-R$ 0</div></div>
-            <div class="comparador-card"><div class="titulo">R$ 50/vial</div><div class="valor" id="cenarioF50">R$ 0</div><span class="badge badge-primary" style="margin-top:6px;">Ref.</span></div>
+            <div class="comparador-card"><div class="titulo">R$ 50/vial</div><div class="valor" id="cenarioF50">R$ 0</div><span class="badge badge-primary" style="margin-top:6px;" data-i18n="calc.scenarios.ref">Ref.</span></div>
             <div class="comparador-card"><div class="titulo">R$ 60/vial</div><div class="valor" id="cenarioF60">R$ 0</div><div class="diferenca positivo" id="difF60">+R$ 0</div></div>
             <div class="comparador-card"><div class="titulo">R$ 70/vial</div><div class="valor" id="cenarioF70">R$ 0</div><div class="diferenca positivo" id="difF70">+R$ 0</div></div>
           </div>
           <div class="alert alert-info" style="margin-top:16px;margin-bottom:0;">💡 <span id="analiseTexto">Complete o cálculo para ver a análise.</span></div>
         </div>
         <div class="action-buttons">
-          <button class="btn btn-success" onclick="salvarHistorico()">💾 Salvar Histórico</button>
-          <button class="btn btn-primary" onclick="exportarTXT()">📄 Exportar TXT</button>
-          <button class="btn btn-success" onclick="compartilharWhatsApp()">📱 WhatsApp</button>
-          <button class="btn btn-warning" onclick="limparCalculo()">🔄 Nova Cotação</button>
+          <button class="btn btn-success" onclick="salvarHistorico()" data-i18n="calc.btn.save">💾 Salvar Histórico</button>
+          <button class="btn btn-primary" onclick="exportarTXT()" data-i18n="calc.btn.export">📄 Exportar TXT</button>
+          <button class="btn btn-success" onclick="compartilharWhatsApp()" data-i18n="calc.btn.whatsapp">📱 WhatsApp</button>
+          <button class="btn btn-warning" onclick="limparCalculo()" data-i18n="calc.btn.newquote">🔄 Nova Cotação</button>
         </div>
       </div>
     </div>
     <!-- TAB: PRODUTOS -->
     <div id="tab-produtos" class="tab-content">
       <div class="panel">
-        <div class="panel-title">📦 Catálogo Completo de Peptídeos</div>
-        <div class="alert alert-info">💡 Preços em R$. Cada card exibe indicação clínica e estrutura de custos.</div>
-        <div class="search-box"><input type="text" id="searchCatalogo" placeholder="Buscar no catálogo..." onkeyup="filtrarCatalogo()"></div>
+        <div class="panel-title" data-i18n="calc.catalog.title">📦 Catálogo Completo de Peptídeos</div>
+        <div class="alert alert-info"><span data-i18n="calc.catalog.alert">💡 Preços em R$. Cada card exibe indicação clínica e estrutura de custos.</span></div>
+        <div class="search-box"><input type="text" id="searchCatalogo" data-i18n-placeholder="calc.catalog.search" placeholder="Buscar no catálogo..." onkeyup="filtrarCatalogo()"></div>
         <div class="filtros">
-          <button class="filtro-btn active" onclick="filtrarCatalogoCat('todos',event)">Todos</button>
-          <button class="filtro-btn" onclick="filtrarCatalogoCat('glp1',event)">GLP-1</button>
-          <button class="filtro-btn" onclick="filtrarCatalogoCat('recuperacao',event)">Recuperação</button>
-          <button class="filtro-btn" onclick="filtrarCatalogoCat('hormonio',event)">Hormônios</button>
-          <button class="filtro-btn" onclick="filtrarCatalogoCat('longevidade',event)">Longevidade</button>
-          <button class="filtro-btn" onclick="filtrarCatalogoCat('nootrop',event)">Nootrópicos</button>
-          <button class="filtro-btn" onclick="filtrarCatalogoCat('estetica',event)">Estética</button>
-          <button class="filtro-btn" onclick="filtrarCatalogoCat('combo',event)">Combos</button>
+          <button class="filtro-btn active" onclick="filtrarCatalogoCat('todos',event)" data-i18n="calc.filter.all">Todos</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('glp1',event)" data-i18n="cat.glp1">GLP-1</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('recuperacao',event)" data-i18n="cat.recuperacao">Recuperação</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('hormonio',event)" data-i18n="calc.filter.hormones">Hormônios</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('longevidade',event)" data-i18n="cat.longevidade">Longevidade</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('nootrop',event)" data-i18n="calc.filter.nootropics">Nootrópicos</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('estetica',event)" data-i18n="cat.estetica">Estética</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('combo',event)" data-i18n="calc.filter.combos">Combos</button>
         </div>
         <div id="produtosGrid" class="grid-3" style="margin-top:22px;"></div>
       </div>
@@ -594,10 +595,10 @@ footer { background:var(--dark); color:#fff; padding:52px 24px 0; margin-top:50p
     <!-- TAB: HISTÓRICO -->
     <div id="tab-historico" class="tab-content">
       <div class="panel">
-        <div class="panel-title">📜 Histórico de Cálculos</div>
+        <div class="panel-title" data-i18n="calc.history.title">📜 Histórico de Cálculos</div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
           <span class="badge badge-primary" id="historicoCount">0 registros</span>
-          <button class="btn btn-danger" onclick="limparHistorico()">🗑️ Limpar Histórico</button>
+          <button class="btn btn-danger" onclick="limparHistorico()" data-i18n="calc.history.clear">🗑️ Limpar Histórico</button>
         </div>
         <div id="historicoContainer"></div>
       </div>
@@ -605,12 +606,12 @@ footer { background:var(--dark); color:#fff; padding:52px 24px 0; margin-top:50p
     <!-- TAB: ANÁLISE -->
     <div id="tab-analise" class="tab-content">
       <div class="panel">
-        <div class="panel-title">📊 Análise Estatística</div>
+        <div class="panel-title" data-i18n="calc.analysis.title">📊 Análise Estatística</div>
         <div class="stats-grid">
-          <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-label">Total Calculado</div><div class="stat-value" id="analiseTotalCalculos">0</div><div class="stat-subtext">Pedidos realizados</div></div>
-          <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Valor Médio</div><div class="stat-value" id="analiseMediaValor">R$ 0</div><div class="stat-subtext">Por pedido</div></div>
-          <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-label">Média de Vials</div><div class="stat-value" id="analiseMediaVials">0</div><div class="stat-subtext">Por pedido</div></div>
-          <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-label">Produto Top</div><div class="stat-value" style="font-size:1.5em;" id="analiseProdutoTop">-</div><div class="stat-subtext">Mais pedido</div></div>
+          <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-label" data-i18n="calc.analysis.total">Total Calculado</div><div class="stat-value" id="analiseTotalCalculos">0</div><div class="stat-subtext" data-i18n="calc.analysis.total.sub">Pedidos realizados</div></div>
+          <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label" data-i18n="calc.analysis.avg">Valor Médio</div><div class="stat-value" id="analiseMediaValor">R$ 0</div><div class="stat-subtext">Por pedido</div></div>
+          <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-label" data-i18n="calc.analysis.avgvials">Média de Vials</div><div class="stat-value" id="analiseMediaVials">0</div><div class="stat-subtext">Por pedido</div></div>
+          <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-label" data-i18n="calc.analysis.top">Produto Top</div><div class="stat-value" style="font-size:1.5em;" id="analiseProdutoTop">-</div><div class="stat-subtext" data-i18n="calc.analysis.top.sub">Mais pedido</div></div>
         </div>
       </div>
     </div>
@@ -618,20 +619,20 @@ footer { background:var(--dark); color:#fff; padding:52px 24px 0; margin-top:50p
     <div id="tab-configuracoes" class="tab-content">
       <div class="grid-2">
         <div class="panel">
-          <div class="panel-title">⚙️ Configurações</div>
+          <div class="panel-title" data-i18n="calc.settings.title">⚙️ Configurações</div>
           <div class="form-group">
-            <label class="form-label">Frete Padrão por Vial — PY→BR (R$):</label>
+            <label class="form-label" data-i18n="calc.settings.freight">Frete Padrão por Vial — PY→BR (R$):</label>
             <input type="number" class="form-control" id="configFretePadrao" value="50" step="0.01" onchange="atualizarLabelFrete()">
           </div>
-          <button class="btn btn-primary btn-block" onclick="salvarConfiguracoes()">💾 Salvar</button>
-          <div class="alert alert-success" style="margin-top:16px;display:none;" id="configSalva">✅ Configurações salvas!</div>
+          <button class="btn btn-primary btn-block" onclick="salvarConfiguracoes()" data-i18n="calc.settings.save">💾 Salvar</button>
+          <div class="alert alert-success" style="margin-top:16px;display:none;" id="configSalva"><span data-i18n="calc.settings.saved">✅ Configurações salvas!</span></div>
         </div>
         <div class="panel">
-          <div class="panel-title">📱 Sobre</div>
+          <div class="panel-title" data-i18n="calc.about.title">📱 Sobre</div>
           <div style="line-height:2.1;">
-            <p><strong>Calculadora PEPMASTERS</strong></p>
-            <p>Use esta ferramenta para simular o custo total de importação antes de finalizar seu pedido na loja.</p>
-            <p style="margin-top:12px;"><a href="index.html" style="color:var(--red);font-weight:700;">→ Voltar para a loja</a></p>
+            <p><strong data-i18n="calc.about.name">Calculadora PEPMASTERS</strong></p>
+            <p data-i18n="calc.about.desc">Use esta ferramenta para simular o custo total de importação antes de finalizar seu pedido na loja.</p>
+            <p style="margin-top:12px;"><a href="index.html" style="color:var(--red);font-weight:700;" data-i18n="calc.about.backstore">→ Voltar para a loja</a></p>
           </div>
         </div>
       </div>
@@ -849,7 +850,7 @@ function limparCarrinhoDrawer(){ setCarrinhoCalc([]); }
 function renderCarrinhoDrawer(){
   var c=getCarrinhoCalc(); var itemsEl=document.getElementById('cartItems'); var footEl=document.getElementById('cartFoot');
   if(!itemsEl) return;
-  if(!c.length){ itemsEl.innerHTML='<div class="cart-empty"><p>Seu carrinho está vazio.</p></div>'; if(footEl) footEl.style.display='none'; return; }
+  if(!c.length){ itemsEl.innerHTML='<div class="cart-empty"><p data-i18n="calc.cart.empty">Seu carrinho está vazio.</p></div>'; if(footEl) footEl.style.display='none'; return; }
   if(footEl) footEl.style.display='block';
   var subtotal=c.reduce(function(s,i){return s+i.preco*i.quantidade;},0);
   itemsEl.innerHTML=c.map(function(item){
@@ -1250,5 +1251,7 @@ function salvarConfiguracoes() {
 function fmt(v) { return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 document.addEventListener('keydown', e => { if (e.ctrlKey && e.key==='Enter') calcularTotal(); if (e.ctrlKey && e.key==='s') { e.preventDefault(); salvarHistorico(); } });
 </script>
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
 </body>
 </html>
