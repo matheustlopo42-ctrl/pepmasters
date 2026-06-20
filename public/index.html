@@ -380,6 +380,7 @@
     </div>
     <div class="cart-total-row"><span data-i18n="cart.total">Total</span><span id="cartTotal">R$ 0,00</span></div>
     <a href="checkout.html" class="btn-checkout" id="btnCheckout" onclick="fecharCarrinho()" data-i18n="cart.checkout">Finalizar Pedido</a>
+    <button onclick="abrirCalculadoraComCarrinho()" style="width:100%;margin-top:8px;padding:10px;background:rgba(255,179,0,.1);border:1px solid var(--border);border-radius:8px;color:var(--mid);font-weight:700;font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px" data-i18n="cart.verify.calc">🧮 Conferir valor na calculadora (frete, aduana e mais)</button>
     <button class="btn-limpar" onclick="limparCarrinho()" data-i18n="cart.clear">Limpar carrinho</button>
   </div>
 </div>
@@ -645,6 +646,14 @@ function atualizarBadge(){
 
 function abrirCarrinho(){renderCarrinho();document.getElementById('cartDrawer').classList.add('open');document.getElementById('cartOverlay').classList.add('open');document.body.style.overflow='hidden'}
 function fecharCarrinho(){document.getElementById('cartDrawer').classList.remove('open');document.getElementById('cartOverlay').classList.remove('open');document.body.style.overflow=''}
+
+function abrirCalculadoraComCarrinho(){
+  var c = getCarrinho();
+  if (!c.length) { showToast('Carrinho vazio'); return; }
+  var transferData = c.map(function(item){ return { codigo: item.id, qtd: item.quantidade }; });
+  localStorage.setItem('pep_calc_transfer', JSON.stringify(transferData));
+  window.open('calculadora.html?from=cart', '_blank');
+}
 
 function renderCarrinho(){
   const c=getCarrinho();const itemsEl=document.getElementById('cartItems');const footEl=document.getElementById('cartFoot');

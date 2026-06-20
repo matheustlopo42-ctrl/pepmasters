@@ -695,7 +695,77 @@ window.addEventListener('DOMContentLoaded', () => {
     carregarListaFechada(); carregarSelectsMeia(); adicionarLinhaSortida();
     carregarProdutosGrid(); carregarHistorico(); atualizarEstatisticas();
     configurarEventListeners(); carregarConfiguracoes();
+    processarCarrinhoTransferido();
 });
+function processarCarrinhoTransferido() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('from') !== 'cart') return;
+    var raw = localStorage.getItem('pep_calc_transfer');
+    if (!raw) return;
+    var transferItems;
+    try { transferItems = JSON.parse(raw); } catch { return; }
+    if (!transferItems || !transferItems.length) return;
+
+    // Montar itens com base nos produtos do carrinho (vials diretos, sem precisar de múltiplo de 10)
+    var itens = [];
+    var naoEncontrados = [];
+    transferItems.forEach(function(ti) {
+        var p = PRODUTOS.find(function(x) { return x.codigo === ti.codigo; });
+        if (!p) { naoEncontrados.push(ti.codigo); return; }
+        var vp = p.produtoBRL / 10, va = p.aduanaBRL / 10;
+        itens.push({ nome: p.nome, codigo: p.codigo, qtdVials: ti.qtd, produtoBRL: vp * ti.qtd, aduanaBRL: va * ti.qtd });
+    });
+    if (!itens.length) return;
+
+    var totalProduto = itens.reduce((a,i) => a + i.produtoBRL, 0);
+    var totalAduana  = itens.reduce((a,i) => a + i.aduanaBRL,  0);
+    var totalVials   = itens.reduce((a,i) => a + i.qtdVials,   0);
+    var subtotal     = totalProduto + totalAduana;
+    var fretePV      = parseFloat(document.getElementById('configFretePadrao').value || 50);
+    var freteBRL     = totalVials * fretePV;
+    var totalFinal   = subtotal + freteBRL;
+    var custoVial    = totalFinal / totalVials;
+
+    // Banner de aviso
+    var banner = document.createElement('div');
+    banner.className = 'alert alert-success';
+    banner.style.marginBottom = '20px';
+    banner.innerHTML = '✅ <strong>Carrinho importado automaticamente do checkout!</strong> Os valores abaixo já refletem exatamente o que está no seu pedido.';
+    var contentDiv = document.querySelector('.content');
+    if (contentDiv) contentDiv.insertBefore(banner, contentDiv.firstChild);
+
+    if (naoEncontrados.length) {
+        var avisoNaoEnc = document.createElement('div');
+        avisoNaoEnc.className = 'alert alert-warning';
+        avisoNaoEnc.style.marginBottom = '20px';
+        avisoNaoEnc.innerHTML = '⚠️ Produto(s) não encontrados na calculadora: ' + naoEncontrados.join(', ') + '. Eles não foram incluídos no cálculo abaixo.';
+        contentDiv.insertBefore(avisoNaoEnc, banner.nextSibling);
+    }
+
+    document.getElementById('totalProdutoBRL').textContent = `R$ ${fmt(totalProduto)}`;
+    document.getElementById('totalAduanaBRL').textContent  = `R$ ${fmt(totalAduana)}`;
+    document.getElementById('totalVials').textContent      = totalVials;
+    document.getElementById('freteTotal').textContent      = `R$ ${fmt(freteBRL)}`;
+    document.getElementById('custoVial').textContent       = `R$ ${fmt(custoVial)}`;
+    document.getElementById('detProdutoBRL').textContent   = `R$ ${fmt(totalProduto)}`;
+    document.getElementById('detAduanaBRL').textContent    = `R$ ${fmt(totalAduana)}`;
+    document.getElementById('detSubtotalBRL').textContent  = `R$ ${fmt(subtotal)}`;
+    document.getElementById('fretePorVialDisplay').textContent = fmt(fretePV);
+    document.getElementById('totalVialsDisplay').textContent   = totalVials;
+    document.getElementById('detFreteBRL').textContent     = `R$ ${fmt(freteBRL)}`;
+    document.getElementById('totalFinalBRL').textContent   = `R$ ${fmt(totalFinal)}`;
+    document.getElementById('resumoProdutos').innerHTML    = `
+        <strong>📦 Itens do seu carrinho:</strong><br><br>
+        ${itens.map(it => `• <strong>${it.codigo}</strong> — ${it.nome} × ${it.qtdVials} vials &nbsp; S/frete: R$ ${fmt(it.produtoBRL+it.aduanaBRL)}`).join('<br>')}`;
+    document.getElementById('resultadoSection').style.display = 'block';
+    calcularCenarios(subtotal, totalVials, totalFinal);
+    ultimoCalculo = { data: new Date().toLocaleString('pt-BR'), modo: 'carrinho', qtdCaixas: 1, itens, totalProduto, totalAduana, subtotal, freteBRL, totalFinal, totalVials, custoVial, fretePV, produtosTexto: itens.map(i => `${i.qtdVials}v ${i.codigo}`).join(' | ') };
+
+    document.getElementById('resultadoSection').scrollIntoView({ behavior:'smooth', block:'start' });
+
+    // Limpar para não reaplicar em próxima visita
+    localStorage.removeItem('pep_calc_transfer');
+}
 function configurarEventListeners() {
     document.querySelectorAll('input[name="tipoFrete"]').forEach(r => {
         r.addEventListener('change', function() {

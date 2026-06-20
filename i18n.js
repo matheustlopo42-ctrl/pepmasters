@@ -486,6 +486,7 @@ window.PEPMASTERS_I18N = {
   "cat.emagrecimento": { en:"Weight Loss", pt:"Emagrecimento", es:"Pérdida de Peso", de:"Gewichtsverlust", fr:"Perte de Poids" },
   "cat.imunidade": { en:"Immunity", pt:"Imunidade", es:"Inmunidad", de:"Immunität", fr:"Immunité" },
   "cat.sono": { en:"Sleep", pt:"Sono", es:"Sueño", de:"Schlaf", fr:"Sommeil" },
+  "cart.verify.calc": { en:"🧮 Check value in calculator (shipping, customs & more)", pt:"🧮 Conferir valor na calculadora (frete, aduana e mais)", es:"🧮 Verificar valor en la calculadora (envío, aduana y más)", de:"🧮 Wert im Rechner prüfen (Versand, Zoll und mehr)", fr:"🧮 Vérifier la valeur dans le calculateur (frais, douane et plus)" },
   "members.popular":          { en:"Most popular",    pt:"Mais popular",      es:"Más popular",       de:"Am beliebtesten",   fr:"Le plus populaire" },
   "members.plan.free":        { en:"Free",            pt:"Grátis",            es:"Gratis",            de:"Kostenlos",         fr:"Gratuit" },
   "members.per.month":        { en:"/month",          pt:"/mês",              es:"/mes",              de:"/Monat",            fr:"/mois" },
