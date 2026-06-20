@@ -700,10 +700,16 @@ window.addEventListener('DOMContentLoaded', () => {
 function processarCarrinhoTransferido() {
     var params = new URLSearchParams(window.location.search);
     if (params.get('from') !== 'cart') return;
-    var raw = localStorage.getItem('pep_calc_transfer');
-    if (!raw) return;
     var transferItems;
-    try { transferItems = JSON.parse(raw); } catch { return; }
+    var dataParam = params.get('data');
+    if (dataParam) {
+        try { transferItems = JSON.parse(decodeURIComponent(dataParam)); } catch { transferItems = null; }
+    }
+    if (!transferItems || !transferItems.length) {
+        var raw = localStorage.getItem('pep_calc_transfer');
+        if (!raw) return;
+        try { transferItems = JSON.parse(raw); } catch { return; }
+    }
     if (!transferItems || !transferItems.length) return;
 
     // Montar itens com base nos produtos do carrinho (vials diretos, sem precisar de múltiplo de 10)

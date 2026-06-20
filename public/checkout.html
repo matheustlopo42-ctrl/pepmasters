@@ -390,8 +390,11 @@
   function abrirCalculadoraCheckout(){
     if (!carrinho.length) { mostrarErro('Carrinho vazio'); return; }
     var transferData = carrinho.map(function(item){ return { codigo: item.id, qtd: item.quantidade }; });
-    localStorage.setItem('pep_calc_transfer', JSON.stringify(transferData));
-    window.open('calculadora.html?from=cart', '_blank');
+    var encoded = encodeURIComponent(JSON.stringify(transferData));
+    localStorage.setItem('pep_calc_transfer', JSON.stringify(transferData)); // fallback
+    var url = 'calculadora.html?from=cart&data=' + encoded;
+    var win = window.open(url, '_blank');
+    if (!win) { window.location.href = url; } // fallback se popup foi bloqueado
   }
 
   // ── INIT ──
