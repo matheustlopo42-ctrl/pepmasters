@@ -488,6 +488,7 @@
       <h4 data-i18n="footer.institutional">Institucional</h4>
       <a href="quem-somos.html" data-i18n="footer.about">Quem Somos</a>
             <a href="members.html" data-i18n="nav.members">Membros</a>
+            <a href="calculadora.html" data-i18n="nav.calculator">Calculadora de Importação</a>
       <a href="termos-de-uso.html" data-i18n="footer.terms">Termos de Uso</a>
       <a href="politica-privacidade.html" data-i18n="footer.privacy">Política de Privacidade</a>
     </div>
@@ -512,137 +513,101 @@
 
 <script>
 const CATALOGO=[
-  {id:'16',nome:'VIP',precoAntes:230,img:'img/vip.png',catClass:'antiinfla',preco:200,
-    i18n:{
-      pt:{categoria:'Anti-inflamatório',descricao:'Peptídeo vasoativo intestinal. Potente anti-inflamatório sistêmico.'},
-      en:{categoria:'Anti-inflammatory',descricao:'Vasoactive intestinal peptide. Potent systemic anti-inflammatory.'},
-      es:{categoria:'Antiinflamatorio',descricao:'Péptido vasoactivo intestinal. Potente antiinflamatorio sistémico.'},
-      de:{categoria:'Entzündungshemmend',descricao:'Vasoaktives intestinales Peptid. Starkes systemisches Entzündungshemmemittel.'},
-      fr:{categoria:'Anti-inflammatoire',descricao:'Peptide vasoactif intestinal. Puissant anti-inflammatoire systémique.'}
-    }},
-  {id:'13',nome:'SS-31',precoAntes:252,img:'img/ss-31.png',catClass:'antioxidante',preco:210,
-    i18n:{
-      pt:{categoria:'Antioxidante',descricao:'Peptídeo mitocondrial com ação antioxidante e cardioprotetora.'},
-      en:{categoria:'Antioxidant',descricao:'Mitochondrial peptide with antioxidant and cardioprotective action.'},
-      es:{categoria:'Antioxidante',descricao:'Péptido mitocondrial con acción antioxidante y cardioprotectora.'},
-      de:{categoria:'Antioxidativ',descricao:'Mitochondriales Peptid mit antioxidativer und kardioprotektiver Wirkung.'},
-      fr:{categoria:'Antioxydant',descricao:'Peptide mitochondrial avec action antioxydante et cardioprotectrice.'}
-    }},
-  {id:'10',nome:'Semax',precoAntes:176,img:'img/semax.png',catClass:'cognitivo',preco:160,
-    i18n:{
-      pt:{categoria:'Cognitivo',descricao:'Neuropeptídeo que melhora foco, memória e função cerebral.'},
-      en:{categoria:'Cognitive',descricao:'Neuropeptide that improves focus, memory and brain function.'},
-      es:{categoria:'Cognitivo',descricao:'Neuropéptido que mejora el enfoque, la memoria y la función cerebral.'},
-      de:{categoria:'Kognitiv',descricao:'Neuropeptid, das Fokus, Gedächtnis und Gehirnfunktion verbessert.'},
-      fr:{categoria:'Cognitif',descricao:'Neuropeptide qui améliore la concentration, la mémoire et la fonction cérébrale.'}
-    }},
-  {id:'11',nome:'Selank',precoAntes:180,img:'img/selank.png',catClass:'cognitivo',preco:150,
-    i18n:{
-      pt:{categoria:'Cognitivo',descricao:'Ansiolítico natural com efeito nootrópico e neuroprotetor.'},
-      en:{categoria:'Cognitive',descricao:'Natural anxiolytic with nootropic and neuroprotective effects.'},
-      es:{categoria:'Cognitivo',descricao:'Ansiolítico natural con efecto nootrópico y neuroprotector.'},
-      de:{categoria:'Kognitiv',descricao:'Natürliches Anxiolytikum mit nootropen und neuroprotektiven Wirkungen.'},
-      fr:{categoria:'Cognitif',descricao:'Anxiolytique naturel avec effets nootropiques et neuroprotecteurs.'}
-    }},
-  {id:'15',nome:'AHK-CU',precoAntes:168,img:'img/ahk-cu.png',catClass:'estetico',preco:140,
-    i18n:{
-      pt:{categoria:'Estético',descricao:'Peptídeo de cobre para cabelo, pele e regeneração capilar.'},
-      en:{categoria:'Aesthetic',descricao:'Copper peptide for hair, skin and capillary regeneration.'},
-      es:{categoria:'Estético',descricao:'Péptido de cobre para cabello, piel y regeneración capilar.'},
-      de:{categoria:'Ästhetisch',descricao:'Kupferpeptid für Haar, Haut und kapillare Regeneration.'},
-      fr:{categoria:'Esthétique',descricao:'Peptide de cuivre pour les cheveux, la peau et la régénération capillaire.'}
-    }},
-  {id:'4',nome:'Ipamorelin',precoAntes:168,img:'img/ipamorelin.png',catClass:'gh',preco:140,
-    i18n:{
-      pt:{categoria:'GH & Massa',descricao:'Estimulante seletivo do GH sem efeitos colaterais indesejados.'},
-      en:{categoria:'GH & Mass',descricao:'Selective GH stimulant without unwanted side effects.'},
-      es:{categoria:'GH & Masa',descricao:'Estimulante selectivo del GH sin efectos secundarios no deseados.'},
-      de:{categoria:'GH & Masse',descricao:'Selektiver GH-Stimulator ohne unerwünschte Nebenwirkungen.'},
-      fr:{categoria:'GH & Masse',descricao:'Stimulant sélectif de la GH sans effets secondaires indésirables.'}
-    }},
-  {id:'5',nome:'Sermorelin',precoAntes:195,img:'img/semorelin.png',catClass:'gh',preco:170,
-    i18n:{
-      pt:{categoria:'GH & Massa',descricao:'Anti-aging, melhora do sono e estímulo natural do GH.'},
-      en:{categoria:'GH & Mass',descricao:'Anti-aging, sleep improvement and natural GH stimulation.'},
-      es:{categoria:'GH & Masa',descricao:'Anti-aging, mejora del sueño y estimulación natural del GH.'},
-      de:{categoria:'GH & Masse',descricao:'Anti-Aging, Schlafverbesserung und natürliche GH-Stimulation.'},
-      fr:{categoria:'GH & Masse',descricao:'Anti-âge, amélioration du sommeil et stimulation naturelle de la GH.'}
-    }},
-  {id:'6',nome:'CJC-1295',precoAntes:198,img:'img/cjc-1295.png',catClass:'gh',preco:180,
-    i18n:{
-      pt:{categoria:'GH & Massa',descricao:'Estimulante de GH de longa duração. Ideal para massa muscular.'},
-      en:{categoria:'GH & Mass',descricao:'Long-acting GH stimulant. Ideal for muscle mass.'},
-      es:{categoria:'GH & Masa',descricao:'Estimulante de GH de larga duración. Ideal para masa muscular.'},
-      de:{categoria:'GH & Masse',descricao:'Langwirksamer GH-Stimulator. Ideal für Muskelmasse.'},
-      fr:{categoria:'GH & Masse',descricao:'Stimulant GH à longue durée. Idéal pour la masse musculaire.'}
-    }},
-  {id:'8',nome:'IGF-1 DES',precoAntes:220,img:'img/igf-des.png',catClass:'gh',preco:200,
-    i18n:{
-      pt:{categoria:'GH & Massa',descricao:'Variante do IGF-1 com ação local intensa nos tecidos musculares.'},
-      en:{categoria:'GH & Mass',descricao:'IGF-1 variant with intense local action on muscle tissue.'},
-      es:{categoria:'GH & Masa',descricao:'Variante del IGF-1 con acción local intensa en tejidos musculares.'},
-      de:{categoria:'GH & Masse',descricao:'IGF-1-Variante mit intensiver lokaler Wirkung auf Muskelgewebe.'},
-      fr:{categoria:'GH & Masse',descricao:"Variante de l'IGF-1 avec une action locale intense sur les tissus musculaires."}
-    }},
-  {id:'7',nome:'IGF-1 LR3',precoAntes:242,img:'img/igf-lr3.png',catClass:'gh',preco:220,
-    i18n:{
-      pt:{categoria:'GH & Massa',descricao:'Fator de crescimento insulínico de alta potência para hipertrofia.'},
-      en:{categoria:'GH & Mass',descricao:'High-potency insulin-like growth factor for hypertrophy.'},
-      es:{categoria:'GH & Masa',descricao:'Factor de crecimiento insulínico de alta potencia para hipertrofia.'},
-      de:{categoria:'GH & Masse',descricao:'Hochpotentes insulinähnliches Wachstumsfaktor für Hypertrophie.'},
-      fr:{categoria:'GH & Masse',descricao:'Facteur de croissance insulinique haute puissance pour l hypertrophie.'}
-    }},
-  {id:'9',nome:'ACE-031',precoAntes:300,img:'img/ace-031.png',catClass:'gh',preco:250,
-    i18n:{
-      pt:{categoria:'GH & Massa',descricao:'Inibidor da miostatina. Potencializa ganho de massa e força.'},
-      en:{categoria:'GH & Mass',descricao:'Myostatin inhibitor. Enhances muscle mass and strength gains.'},
-      es:{categoria:'GH & Masa',descricao:'Inhibidor de la miostatina. Potencia el aumento de masa y fuerza.'},
-      de:{categoria:'GH & Masse',descricao:'Myostatin-Inhibitor. Steigert Muskelmasseaufbau und Kraft.'},
-      fr:{categoria:'GH & Masse',descricao:'Inhibiteur de la myostatine. Améliore les gains de masse et de force.'}
-    }},
-  {id:'12',nome:'Kisspeptin',precoAntes:228,img:'img/kisspeptin.png',catClass:'hormonal',preco:190,
-    i18n:{
-      pt:{categoria:'Hormonal',descricao:'Regulador hormonal que estimula a produção de LH e testosterona.'},
-      en:{categoria:'Hormonal',descricao:'Hormonal regulator that stimulates LH and testosterone production.'},
-      es:{categoria:'Hormonal',descricao:'Regulador hormonal que estimula la producción de LH y testosterona.'},
-      de:{categoria:'Hormonal',descricao:'Hormoneller Regulator, der die LH- und Testosteronproduktion stimuliert.'},
-      fr:{categoria:'Hormonal',descricao:'Régulateur hormonal qui stimule la production de LH et de testostérone.'}
-    }},
-  {id:'3',nome:'HGH Frag 176-191',precoAntes:176,img:'img/hgh-frag.png',catClass:'gordura',preco:160,
-    i18n:{
-      pt:{categoria:'Queima de Gordura',descricao:'Fragmento do GH com ação direta na queima de gordura localizada.'},
-      en:{categoria:'Fat Loss',descricao:'GH fragment with direct action on localized fat burning.'},
-      es:{categoria:'Quema de Grasa',descricao:'Fragmento del GH con acción directa en la quema de grasa localizada.'},
-      de:{categoria:'Fettverbrennung',descricao:'GH-Fragment mit direkter Wirkung auf lokalisierte Fettverbrennung.'},
-      fr:{categoria:'Perte de graisse',descricao:'Fragment GH avec action directe sur la combustion des graisses localisées.'}
-    }},
-  {id:'14',nome:'SLU-PP-32',precoAntes:253,img:'img/slu-pp-32.png',catClass:'gordura',preco:230,
-    i18n:{
-      pt:{categoria:'Queima de Gordura',descricao:'Ativa receptores ERR. Simula os efeitos metabólicos do exercício.'},
-      en:{categoria:'Fat Loss',descricao:'Activates ERR receptors. Simulates the metabolic effects of exercise.'},
-      es:{categoria:'Quema de Grasa',descricao:'Activa receptores ERR. Simula los efectos metabólicos del ejercicio.'},
-      de:{categoria:'Fettverbrennung',descricao:'Aktiviert ERR-Rezeptoren. Simuliert die metabolischen Wirkungen von Sport.'},
-      fr:{categoria:'Perte de graisse',descricao:'Active les récepteurs ERR. Simule les effets métaboliques de l exercice.'}
-    }},
-  {id:'1',nome:'BPC-157',precoAntes:180,img:'img/bpc-157.png',catClass:'recuperacao',preco:150,
-    i18n:{
-      pt:{categoria:'Recuperação',descricao:'Recuperação muscular e articular acelerada. Excelente para lesões.'},
-      en:{categoria:'Recovery',descricao:'Accelerated muscle and joint recovery. Excellent for injuries.'},
-      es:{categoria:'Recuperación',descricao:'Recuperación muscular y articular acelerada. Excelente para lesiones.'},
-      de:{categoria:'Erholung',descricao:'Beschleunigte Muskel- und Gelenkerholung. Ausgezeichnet bei Verletzungen.'},
-      fr:{categoria:'Récupération',descricao:'Récupération musculaire et articulaire accélérée. Excellent pour les blessures.'}
-    }},
-  {id:'2',nome:'TB-500',precoAntes:198,img:'img/tb-500.png',catClass:'recuperacao',preco:180,
-    i18n:{
-      pt:{categoria:'Recuperação',descricao:'Regeneração tecidual profunda e efeito anti-inflamatório potente.'},
-      en:{categoria:'Recovery',descricao:'Deep tissue regeneration and potent anti-inflammatory effect.'},
-      es:{categoria:'Recuperación',descricao:'Regeneración tisular profunda y efecto antiinflamatorio potente.'},
-      de:{categoria:'Erholung',descricao:'Tiefe Geweberegeneration und starke entzündungshemmende Wirkung.'},
-      fr:{categoria:'Récupération',descricao:'Régénération tissulaire profonde et puissant effet anti-inflammatoire.'}
-    }},
+  {id:'RT30',nome:'Retatrutide 30mg',img:'',catClass:'glp1',preco:288.9,categoria:'GLP-1',descricao:'Agonista triplo GLP-1/GIP/Glucagon. Perda de peso de até 24–28% (fase 2/3, Eli Lilly). Indicado para obesidade, diabetes tipo 2 e síndrome metabólica.'},
+  {id:'RT40',nome:'Retatrutide 40mg',img:'',catClass:'glp1',preco:345.6,categoria:'GLP-1',descricao:'Agonista triplo GLP-1/GIP/Glucagon — dose intermediária. Maior magnitude de perda de peso entre incretinomiméticos modernos.'},
+  {id:'RT60',nome:'Retatrutide 60mg',img:'',catClass:'glp1',preco:394.2,categoria:'GLP-1',descricao:'Agonista triplo GLP-1/GIP/Glucagon — dose alta. Resultados fase 3: perda de até 28,3% em 80 semanas.'},
+  {id:'TR30',nome:'Tirzepatide 30mg',img:'',catClass:'glp1',preco:224.1,categoria:'GLP-1',descricao:'Agonista dual GLP-1/GIP aprovado FDA (Mounjaro/Zepbound). Perda de 15–22% do peso. Diabetes tipo 2 e obesidade.'},
+  {id:'TR40',nome:'Tirzepatide 40mg',img:'',catClass:'glp1',preco:250.0,categoria:'GLP-1',descricao:'Agonista dual GLP-1/GIP — dose intermediária. Superior ao semaglutide em comparativos diretos.'},
+  {id:'TR50',nome:'Tirzepatide 50mg',img:'',catClass:'glp1',preco:264.6,categoria:'GLP-1',descricao:'Agonista dual GLP-1/GIP — dose alta. Reduz apetite e melhora sensibilidade insulínica.'},
+  {id:'TR60',nome:'Tirzepatide 60mg',img:'',catClass:'glp1',preco:307.8,categoria:'GLP-1',descricao:'Agonista dual GLP-1/GIP — dose máxima de manutenção. Protocolos para obesidade grave.'},
+  {id:'2S10',nome:'SS-31 10mg',img:'',catClass:'longevidade',preco:162.0,categoria:'Longevidade',descricao:'Peptídeo mitocondrial (Szeto-Schiller). Reduz estresse oxidativo mitocondrial. Longevidade e neuroproteção.'},
+  {id:'2S50',nome:'SS-31 50mg',img:'',catClass:'longevidade',preco:345.6,categoria:'Longevidade',descricao:'SS-31 dose alta. Proteção mitocondrial intensa em patologias isquêmicas e envelhecimento.'},
+  {id:'TB10',nome:'TB500 10mg',img:'',catClass:'recuperacao',preco:199.8,categoria:'Recuperação',descricao:'Thymosin Beta-4. Promove angiogênese e migração celular. Recuperação de lesões musculares e tendíneas.'},
+  {id:'TSM10',nome:'Tesamorelin 10mg',img:'',catClass:'hormonio',preco:226.8,categoria:'Hormônio',descricao:'Análogo do GHRH. Aprovado FDA para lipodistrofia. Reduz gordura visceral e melhora perfil lipídico.'},
+  {id:'TSM20',nome:'Tesamorelin 20mg',img:'',catClass:'hormonio',preco:340.2,categoria:'Hormônio',descricao:'Tesamorelin dose alta. Protocolos intensivos de redução de gordura visceral.'},
+  {id:'MS20',nome:'MOTS-C 20mg',img:'',catClass:'longevidade',preco:216.0,categoria:'Longevidade',descricao:'Peptídeo mitocondrial. Ativa AMPK, melhora captação de glicose. Longevidade e performance esportiva.'},
+  {id:'MS40',nome:'MOTS-C 40mg',img:'',catClass:'longevidade',preco:270.0,categoria:'Longevidade',descricao:'MOTS-C dose alta. Potencializa eficiência mitocondrial. Atletas de alto rendimento.'},
+  {id:'NJ500',nome:'NAD+ 500mg',img:'',catClass:'longevidade',preco:162.0,categoria:'Longevidade',descricao:'Cofator do metabolismo celular. Ativa sirtuínas. Longevidade, fadiga crônica e recuperação metabólica.'},
+  {id:'NJ1000',nome:'NAD+ 1000mg',img:'',catClass:'longevidade',preco:183.6,categoria:'Longevidade',descricao:'NAD+ dose alta. Doenças neurodegenerativas e recuperação pós-viral.'},
+  {id:'GLOW70',nome:'GLOW70',img:'',catClass:'combo',preco:286.2,categoria:'Combo',descricao:'Stack: BPC-157 + GHK-CU + TB500. Recuperação e rejuvenescimento sinérgico.'},
+  {id:'KLOW80',nome:'KLOW80',img:'',catClass:'combo',preco:324.0,categoria:'Combo',descricao:'GLOW70 + KPV anti-inflamatório. Para lesões inflamadas e recuperação pós-cirúrgica.'},
+  {id:'MT1',nome:'Melatonin I 10mg',img:'',catClass:'sono',preco:151.2,categoria:'Sono',descricao:'Hormônio pineal. Antioxidante e imunomodulador. Insônia e distúrbios circadianos.'},
+  {id:'MT2',nome:'Melatonin II 10mg',img:'',catClass:'sono',preco:151.2,categoria:'Sono',descricao:'Melatonina formulação alternativa. Regulação do sono e ritmo circadiano.'},
+  {id:'PT141',nome:'PT-141 10mg',img:'',catClass:'sexual',preco:151.2,categoria:'Sexual',descricao:'Agonista MC3R/MC4R. Aprovado FDA para disfunção sexual hipoativa feminina.'},
+  {id:'DS10',nome:'DSIP 10mg',img:'',catClass:'sono',preco:151.2,categoria:'Sono',descricao:'Delta Sleep-Inducing Peptide. Melhora o sono delta. Insônia crônica.'},
+  {id:'SK10',nome:'Selank 10mg',img:'',catClass:'nootrop',preco:159.3,categoria:'Nootrópico',descricao:'Análogo da tuftosina. Ansiolítico e nootrópico. Modula GABA e BDNF.'},
+  {id:'SK30',nome:'Selank 30mg',img:'',catClass:'nootrop',preco:189.0,categoria:'Nootrópico',descricao:'Selank dose alta para ansiedade severa e neuroproteção intensiva.'},
+  {id:'ET10',nome:'Epithalon 10mg',img:'',catClass:'longevidade',preco:145.8,categoria:'Longevidade',descricao:'Tetrapeptídeo pineal. Ativa telomerase. Antienvelhecimento e imunomodulação.'},
+  {id:'ET50',nome:'Epithalon 50mg',img:'',catClass:'longevidade',preco:237.6,categoria:'Longevidade',descricao:'Epithalon dose alta. Protocolo intensivo de longevidade.'},
+  {id:'BPC10',nome:'BPC-157 10mg',img:'',catClass:'recuperacao',preco:162.0,categoria:'Recuperação',descricao:'Body Protective Compound. Promove angiogênese e cicatrização GI.'},
+  {id:'BPC20',nome:'BPC-157 20mg',img:'',catClass:'recuperacao',preco:189.0,categoria:'Recuperação',descricao:'BPC-157 dose alta para lesões extensas. Atletas de alta performance.'},
+  {id:'BB10',nome:'BPC+TB 10mg',img:'',catClass:'combo',preco:189.0,categoria:'Combo',descricao:'Combinação clássica BPC-157 + TB500. Padrão para lesões musculoesqueléticas.'},
+  {id:'BB20',nome:'BPC+TB 20mg',img:'',catClass:'combo',preco:264.6,categoria:'Combo',descricao:'BPC+TB dose alta. Lesões extensas e recuperação pós-cirúrgica ortopédica.'},
+  {id:'XS20',nome:'Semax+Selank 20mg',img:'',catClass:'combo',preco:178.2,categoria:'Combo',descricao:'Stack nootrópico: Semax + Selank. Cognição com controle de ansiedade.'},
+  {id:'AP5',nome:'Adipotide 5mg',img:'',catClass:'emagrecimento',preco:216.0,categoria:'Emagrecimento',descricao:'Peptídeo pró-apoptótico para vasos adiposos. Uso experimental para obesidade grave.'},
+  {id:'AP10',nome:'Adipotide 10mg',img:'',catClass:'emagrecimento',preco:270.0,categoria:'Emagrecimento',descricao:'Adipotide dose alta. Apoptose vascular do tecido adiposo.'},
+  {id:'SX5',nome:'Semax 5mg',img:'',catClass:'nootrop',preco:135.0,categoria:'Nootrópico',descricao:'Análogo do ACTH(4-10). Melhora cognitiva e neuroproteção pós-AVC.'},
+  {id:'KP10',nome:'KPV 10mg',img:'',catClass:'recuperacao',preco:145.8,categoria:'Recuperação',descricao:'Tripeptídeo anti-inflamatório. Inibe NF-κB. Crohn, colite e dermatite.'},
+  {id:'ADA10',nome:'Adamax 10mg',img:'',catClass:'nootrop',preco:226.8,categoria:'Nootrópico',descricao:'Peptídeo nootrópico neuroprotetor e adaptogênico.'},
+  {id:'PIN10',nome:'Pinealon 10mg',img:'',catClass:'nootrop',preco:137.7,categoria:'Nootrópico',descricao:'Tripeptídeo citomedino pineal. Neuroprotetor e antienvelhecimento cerebral.'},
+  {id:'PIN20',nome:'Pinealon 20mg',img:'',catClass:'nootrop',preco:157.1,categoria:'Nootrópico',descricao:'Pinealon dose alta. Alzheimer, Parkinson e demência vascular.'},
+  {id:'SX10',nome:'Semax 10mg',img:'',catClass:'nootrop',preco:162.0,categoria:'Nootrópico',descricao:'Semax dose alta. Neurogênese e plasticidade sináptica.'},
+  {id:'CND5',nome:'CJC-1295 no DAC 5mg',img:'',catClass:'hormonio',preco:162.0,categoria:'Hormônio',descricao:'Análogo GHRH, meia-vida curta. Combinado com Ipamorelin.'},
+  {id:'CND10',nome:'CJC-1295 no DAC 10mg',img:'',catClass:'hormonio',preco:243.0,categoria:'Hormônio',descricao:'CJC-1295 sem DAC, dose alta. Múltiplas aplicações diárias.'},
+  {id:'CP10',nome:'CJC+IPA 10mg',img:'',catClass:'combo',preco:189.0,categoria:'Combo',descricao:'Padrão-ouro de secretagogos de GH: CJC-1295 + Ipamorelin.'},
+  {id:'CD5',nome:'CJC-1295 com DAC 5mg',img:'',catClass:'hormonio',preco:243.0,categoria:'Hormônio',descricao:'CJC-1295 com DAC. Dose semanal. Elevação sustentada de GH e IGF-1.'},
+  {id:'CD10',nome:'CJC-1295 com DAC 10mg',img:'',catClass:'hormonio',preco:378.0,categoria:'Hormônio',descricao:'CJC-1295 com DAC, dose alta. Deficiência severa de GH e sarcopenia.'},
+  {id:'Serm5',nome:'Sermorelin 5mg',img:'',catClass:'hormonio',preco:137.7,categoria:'Hormônio',descricao:'Análogo do GHRH. Secretagogo fisiológico de GH. Anti-aging e sono profundo.'},
+  {id:'Serm10',nome:'Sermorelin 10mg',img:'',catClass:'hormonio',preco:179.0,categoria:'Hormônio',descricao:'Sermorelin dose alta. Estímulo intensivo ao GH endógeno.'},
+  {id:'10AD',nome:'AOD9604 10mg',img:'',catClass:'emagrecimento',preco:226.8,categoria:'Emagrecimento',descricao:'Fragmento C-terminal do GH. Ação lipolítica sem efeitos proliferativos.'},
+  {id:'IP10',nome:'Ipamorelin 10mg',img:'',catClass:'hormonio',preco:156.6,categoria:'Hormônio',descricao:'GHRP seletivo. Estimula GH sem elevar cortisol. Anti-aging e massa magra.'},
+  {id:'CU50',nome:'GHK-CU 50mg',img:'',catClass:'estetica',preco:113.4,categoria:'Estética',descricao:'Complexo cobre-tripeptídeo. Estimula colágeno e elastina. Antienvelhecimento cutâneo.'},
+  {id:'CU100',nome:'GHK-CU 100mg',img:'',catClass:'estetica',preco:124.2,categoria:'Estética',descricao:'GHK-CU dose alta. Rejuvenescimento cutâneo sistêmico e alopecia avançada.'},
+  {id:'KS10',nome:'KissPeptin-10 10mg',img:'',catClass:'hormonio',preco:178.2,categoria:'Hormônio',descricao:'Regulador do eixo reprodutivo. Hipogonadismo e fertilidade.'},
+  {id:'TY10',nome:'Thymalin 10mg',img:'',catClass:'imunidade',preco:147.4,categoria:'Imunidade',descricao:'Polipeptídeo tímico. Estimula diferenciação de linfócitos T.'},
+  {id:'TA5',nome:'Thymosin Alpha-1 5mg',img:'',catClass:'imunidade',preco:162.0,categoria:'Imunidade',descricao:'Imunomodulador tímico. Aprovado em +35 países para hepatite B/C crônica.'},
+  {id:'TA10',nome:'Thymosin Alpha-1 10mg',img:'',catClass:'imunidade',preco:226.8,categoria:'Imunidade',descricao:'Thymosin Alpha-1 dose alta. Hepatite crônica e imunodeficiência severa.'},
+  {id:'GTT1500',nome:'Glutathione 1500mg',img:'',catClass:'estetica',preco:153.9,categoria:'Estética',descricao:'Antioxidante mestre. Clareamento de pele e detoxificação hepática.'},
+  {id:'GTT600',nome:'Glutathione 600mg',img:'',catClass:'estetica',preco:127.9,categoria:'Estética',descricao:'Glutationa dose padrão. Manutenção antioxidante e suporte hepático.'},
+  {id:'XT100',nome:'Botulinum toxin 100iu',img:'',catClass:'estetica',preco:143.3,categoria:'Estética',descricao:'Toxina botulínica tipo A. Rugas de expressão e hiperidrose.'},
+  {id:'20AM',nome:'5-amino-1mq 20mg',img:'',catClass:'emagrecimento',preco:156.6,categoria:'Emagrecimento',descricao:'Inibidor seletivo da NNMT. Aumenta NAD+. Obesidade e resistência insulínica.'},
+  {id:'50AM',nome:'5-amino-1mq 50mg',img:'',catClass:'emagrecimento',preco:178.2,categoria:'Emagrecimento',descricao:'5-amino-1mq dose alta. Obesidade metabólica severa.'},
+  {id:'G75',nome:'HMG 75 IU',img:'',catClass:'hormonio',preco:125.5,categoria:'Hormônio',descricao:'Human Menopausal Gonadotropin. Foliculogênese e espermatogênese.'},
+  {id:'E3K',nome:'EPO 3000 IU',img:'',catClass:'performance',preco:127.9,categoria:'Performance',descricao:'Eritropoietina recombinante. Estimula eritropoiese. Anemia de doença crônica.'},
+  {id:'CBL60',nome:'Cerebrolysin 60mg',img:'',catClass:'nootrop',preco:131.2,categoria:'Nootrópico',descricao:'Hidrolisado neurotrófico. Alzheimer, AVC isquêmico e reabilitação neurológica.'},
+  {id:'CGL5',nome:'Cagrilintide 5mg',img:'',catClass:'glp1',preco:189.0,categoria:'GLP-1',descricao:'Análogo de longa ação da amilina. Reduz apetite. Combinado com semaglutide.'},
+  {id:'CGL10',nome:'Cagrilintide 10mg',img:'',catClass:'glp1',preco:270.0,categoria:'GLP-1',descricao:'Cagrilintide dose alta. Obesidade severa combinada com GLP-1.'},
+  {id:'NP8-10',nome:'Snap-8 10mg',img:'',catClass:'estetica',preco:125.5,categoria:'Estética',descricao:'Octapeptídeo análogo ao Argireline. Alternativa à toxina botulínica.'},
+  {id:'NP8-100',nome:'Snap-8 100mg',img:'',catClass:'estetica',preco:239.7,categoria:'Estética',descricao:'Snap-8 dose alta para mesoterapia facial intensiva.'},
+  {id:'CS10',nome:'CagriSema 10mg',img:'',catClass:'combo',preco:186.3,categoria:'Combo',descricao:'GLP-1 agonista + análogo de amilina. Perda de ~22% em estudos clínicos.'},
+  {id:'RC10',nome:'Retatrutide+Cagrili 10mg',img:'',catClass:'combo',preco:226.8,categoria:'Combo',descricao:'Stack experimental: agonista triplo + análogo de amilina. 4 vias metabólicas.'},
+  {id:'KP5',nome:'KPV 5mg',img:'',catClass:'recuperacao',preco:118.8,categoria:'Recuperação',descricao:'KPV dose conservadora. Manutenção anti-inflamatória.'}
 ];
 const catEmoji={'Recuperação':'','Queima de Gordura':'','GH & Massa':'','Cognitivo':'','Hormonal':'','Antioxidante':'','Estético':'','Anti-inflamatório':''};
 let produtosData=[];let filtroAtivo='';
+
+// Regras de família (mesmo peptídeo, concentrações diferentes não podem coexistir no carrinho)
+const FAMILIAS_PEP = {
+  retatrutide:['RT30','RT40','RT60'], tirzepatide:['TR30','TR40','TR50','TR60'],
+  ss31:['2S10','2S50'], tesamorelin:['TSM10','TSM20'], motsc:['MS20','MS40'],
+  epithalon:['ET10','ET50'], bpc157:['BPC10','BPC20'], selank:['SK10','SK30'],
+  pinealon:['PIN10','PIN20'], cjcnodac:['CND5','CND10'], cjcdac:['CD5','CD10'],
+  sermorelin:['Serm5','Serm10'], adipotide:['AP5','AP10'], semax:['SX5','SX10'],
+  ghkcu:['CU50','CU100'], glutathione:['GTT600','GTT1500'], nad:['NJ500','NJ1000'],
+  thymosinA:['TA5','TA10'], cagrilintide:['CGL5','CGL10'], aminomq:['20AM','50AM'],
+  snap8:['NP8-10','NP8-100'],
+};
+const MAPA_FAMILIA_PEP = {};
+Object.entries(FAMILIAS_PEP).forEach(([fam, codigos]) => { codigos.forEach(c => { MAPA_FAMILIA_PEP[c] = fam; }); });
+function getFamiliaPep(codigo) { return MAPA_FAMILIA_PEP[codigo] || null; }
+function familiasConflitamPep(codA, codB) {
+  const fA = getFamiliaPep(codA), fB = getFamiliaPep(codB);
+  return fA && fB && fA === fB && codA !== codB;
+}
+function produtoConflitaComCarrinho(novoId) {
+  const carrinho = getCarrinho();
+  return carrinho.find(item => familiasConflitamPep(String(item.id), String(novoId)));
+}
 
 // ── CARRINHO ──
 function getCarrinho(){try{return JSON.parse(localStorage.getItem('pep_carrinho')||'[]')}catch{return[]}}
@@ -1022,7 +987,7 @@ function mkCard(p) {
 }
 
 // Top Sellers
-var TOP_SELLER_NOMES = ['BPC-157','TB-500','SLU-PP-32','AHK-CU','Ipamorelin'];
+var TOP_SELLER_NOMES = ['Retatrutide 30mg','Tirzepatide 30mg','BPC-157 10mg','TB500 10mg','Ipamorelin 10mg'];
 function renderTopSellers(lista) {
   var grid = document.getElementById('topSellersGrid');
   if (!grid) return;
@@ -1329,6 +1294,15 @@ function confirmarSeletor(id, preco, qtdOverride) {
 
   const c = getCarrinho();
   const idx = c.findIndex(i => String(i.id) === String(id));
+
+  // Verificar conflito de família (mesma concentração diferente já no carrinho)
+  if (idx < 0) {
+    const conflito = produtoConflitaComCarrinho(id);
+    if (conflito) {
+      showToast('⛔ Você já tem ' + conflito.nome + ' no carrinho — mesma família, concentração diferente não permitida.');
+      return;
+    }
+  }
 
   // Verificar máximo 5 produtos diferentes
   const jaExiste = idx >= 0;

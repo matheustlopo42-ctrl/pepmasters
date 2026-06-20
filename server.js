@@ -1304,6 +1304,96 @@ app.delete('/api/admin/estoque/:id', adminMiddleware, async (req, res) => {
   }
 });
 
+// POST /api/admin/seed-produtos-v2 — SUBSTITUI TODOS os produtos pelo novo catálogo (69 peptídeos)
+// ATENÇÃO: deleta todo o conteúdo atual de pep_estoque antes de inserir o novo catálogo.
+app.post('/api/admin/seed-produtos-v2', adminMiddleware, async (req, res) => {
+  const produtos = [
+    { id:'RT30', nome:'Retatrutide 30mg', preco:288.9, descricao:'Agonista triplo GLP-1/GIP/Glucagon. Perda de peso de até 24–28% (fase 2/3, Eli Lilly). Indicado para obesidade, diabetes tipo 2 e síndrome metabólica.', estoque:20 },
+    { id:'RT40', nome:'Retatrutide 40mg', preco:345.6, descricao:'Agonista triplo GLP-1/GIP/Glucagon — dose intermediária. Maior magnitude de perda de peso entre incretinomiméticos modernos.', estoque:20 },
+    { id:'RT60', nome:'Retatrutide 60mg', preco:394.2, descricao:'Agonista triplo GLP-1/GIP/Glucagon — dose alta. Resultados fase 3: perda de até 28,3% em 80 semanas.', estoque:20 },
+    { id:'TR30', nome:'Tirzepatide 30mg', preco:224.1, descricao:'Agonista dual GLP-1/GIP aprovado FDA (Mounjaro/Zepbound). Perda de 15–22% do peso. Diabetes tipo 2 e obesidade.', estoque:20 },
+    { id:'TR40', nome:'Tirzepatide 40mg', preco:250.0, descricao:'Agonista dual GLP-1/GIP — dose intermediária. Superior ao semaglutide em comparativos diretos.', estoque:20 },
+    { id:'TR50', nome:'Tirzepatide 50mg', preco:264.6, descricao:'Agonista dual GLP-1/GIP — dose alta. Reduz apetite e melhora sensibilidade insulínica.', estoque:20 },
+    { id:'TR60', nome:'Tirzepatide 60mg', preco:307.8, descricao:'Agonista dual GLP-1/GIP — dose máxima de manutenção. Protocolos para obesidade grave.', estoque:20 },
+    { id:'2S10', nome:'SS-31 10mg', preco:162.0, descricao:'Peptídeo mitocondrial (Szeto-Schiller). Reduz estresse oxidativo mitocondrial. Longevidade e neuroproteção.', estoque:20 },
+    { id:'2S50', nome:'SS-31 50mg', preco:345.6, descricao:'SS-31 dose alta. Proteção mitocondrial intensa em patologias isquêmicas e envelhecimento.', estoque:20 },
+    { id:'TB10', nome:'TB500 10mg', preco:199.8, descricao:'Thymosin Beta-4. Promove angiogênese e migração celular. Recuperação de lesões musculares e tendíneas.', estoque:20 },
+    { id:'TSM10', nome:'Tesamorelin 10mg', preco:226.8, descricao:'Análogo do GHRH. Aprovado FDA para lipodistrofia. Reduz gordura visceral e melhora perfil lipídico.', estoque:20 },
+    { id:'TSM20', nome:'Tesamorelin 20mg', preco:340.2, descricao:'Tesamorelin dose alta. Protocolos intensivos de redução de gordura visceral.', estoque:20 },
+    { id:'MS20', nome:'MOTS-C 20mg', preco:216.0, descricao:'Peptídeo mitocondrial. Ativa AMPK, melhora captação de glicose. Longevidade e performance esportiva.', estoque:20 },
+    { id:'MS40', nome:'MOTS-C 40mg', preco:270.0, descricao:'MOTS-C dose alta. Potencializa eficiência mitocondrial. Atletas de alto rendimento.', estoque:20 },
+    { id:'NJ500', nome:'NAD+ 500mg', preco:162.0, descricao:'Cofator do metabolismo celular. Ativa sirtuínas. Longevidade, fadiga crônica e recuperação metabólica.', estoque:20 },
+    { id:'NJ1000', nome:'NAD+ 1000mg', preco:183.6, descricao:'NAD+ dose alta. Doenças neurodegenerativas e recuperação pós-viral.', estoque:20 },
+    { id:'GLOW70', nome:'GLOW70', preco:286.2, descricao:'Stack: BPC-157 + GHK-CU + TB500. Recuperação e rejuvenescimento sinérgico.', estoque:20 },
+    { id:'KLOW80', nome:'KLOW80', preco:324.0, descricao:'GLOW70 + KPV anti-inflamatório. Para lesões inflamadas e recuperação pós-cirúrgica.', estoque:20 },
+    { id:'MT1', nome:'Melatonin I 10mg', preco:151.2, descricao:'Hormônio pineal. Antioxidante e imunomodulador. Insônia e distúrbios circadianos.', estoque:20 },
+    { id:'MT2', nome:'Melatonin II 10mg', preco:151.2, descricao:'Melatonina formulação alternativa. Regulação do sono e ritmo circadiano.', estoque:20 },
+    { id:'PT141', nome:'PT-141 10mg', preco:151.2, descricao:'Agonista MC3R/MC4R. Aprovado FDA para disfunção sexual hipoativa feminina.', estoque:20 },
+    { id:'DS10', nome:'DSIP 10mg', preco:151.2, descricao:'Delta Sleep-Inducing Peptide. Melhora o sono delta. Insônia crônica.', estoque:20 },
+    { id:'SK10', nome:'Selank 10mg', preco:159.3, descricao:'Análogo da tuftosina. Ansiolítico e nootrópico. Modula GABA e BDNF.', estoque:20 },
+    { id:'SK30', nome:'Selank 30mg', preco:189.0, descricao:'Selank dose alta para ansiedade severa e neuroproteção intensiva.', estoque:20 },
+    { id:'ET10', nome:'Epithalon 10mg', preco:145.8, descricao:'Tetrapeptídeo pineal. Ativa telomerase. Antienvelhecimento e imunomodulação.', estoque:20 },
+    { id:'ET50', nome:'Epithalon 50mg', preco:237.6, descricao:'Epithalon dose alta. Protocolo intensivo de longevidade.', estoque:20 },
+    { id:'BPC10', nome:'BPC-157 10mg', preco:162.0, descricao:'Body Protective Compound. Promove angiogênese e cicatrização GI.', estoque:20 },
+    { id:'BPC20', nome:'BPC-157 20mg', preco:189.0, descricao:'BPC-157 dose alta para lesões extensas. Atletas de alta performance.', estoque:20 },
+    { id:'BB10', nome:'BPC+TB 10mg', preco:189.0, descricao:'Combinação clássica BPC-157 + TB500. Padrão para lesões musculoesqueléticas.', estoque:20 },
+    { id:'BB20', nome:'BPC+TB 20mg', preco:264.6, descricao:'BPC+TB dose alta. Lesões extensas e recuperação pós-cirúrgica ortopédica.', estoque:20 },
+    { id:'XS20', nome:'Semax+Selank 20mg', preco:178.2, descricao:'Stack nootrópico: Semax + Selank. Cognição com controle de ansiedade.', estoque:20 },
+    { id:'AP5', nome:'Adipotide 5mg', preco:216.0, descricao:'Peptídeo pró-apoptótico para vasos adiposos. Uso experimental para obesidade grave.', estoque:20 },
+    { id:'AP10', nome:'Adipotide 10mg', preco:270.0, descricao:'Adipotide dose alta. Apoptose vascular do tecido adiposo.', estoque:20 },
+    { id:'SX5', nome:'Semax 5mg', preco:135.0, descricao:'Análogo do ACTH(4-10). Melhora cognitiva e neuroproteção pós-AVC.', estoque:20 },
+    { id:'KP10', nome:'KPV 10mg', preco:145.8, descricao:'Tripeptídeo anti-inflamatório. Inibe NF-κB. Crohn, colite e dermatite.', estoque:20 },
+    { id:'ADA10', nome:'Adamax 10mg', preco:226.8, descricao:'Peptídeo nootrópico neuroprotetor e adaptogênico.', estoque:20 },
+    { id:'PIN10', nome:'Pinealon 10mg', preco:137.7, descricao:'Tripeptídeo citomedino pineal. Neuroprotetor e antienvelhecimento cerebral.', estoque:20 },
+    { id:'PIN20', nome:'Pinealon 20mg', preco:157.1, descricao:'Pinealon dose alta. Alzheimer, Parkinson e demência vascular.', estoque:20 },
+    { id:'SX10', nome:'Semax 10mg', preco:162.0, descricao:'Semax dose alta. Neurogênese e plasticidade sináptica.', estoque:20 },
+    { id:'CND5', nome:'CJC-1295 no DAC 5mg', preco:162.0, descricao:'Análogo GHRH, meia-vida curta. Combinado com Ipamorelin.', estoque:20 },
+    { id:'CND10', nome:'CJC-1295 no DAC 10mg', preco:243.0, descricao:'CJC-1295 sem DAC, dose alta. Múltiplas aplicações diárias.', estoque:20 },
+    { id:'CP10', nome:'CJC+IPA 10mg', preco:189.0, descricao:'Padrão-ouro de secretagogos de GH: CJC-1295 + Ipamorelin.', estoque:20 },
+    { id:'CD5', nome:'CJC-1295 com DAC 5mg', preco:243.0, descricao:'CJC-1295 com DAC. Dose semanal. Elevação sustentada de GH e IGF-1.', estoque:20 },
+    { id:'CD10', nome:'CJC-1295 com DAC 10mg', preco:378.0, descricao:'CJC-1295 com DAC, dose alta. Deficiência severa de GH e sarcopenia.', estoque:20 },
+    { id:'Serm5', nome:'Sermorelin 5mg', preco:137.7, descricao:'Análogo do GHRH. Secretagogo fisiológico de GH. Anti-aging e sono profundo.', estoque:20 },
+    { id:'Serm10', nome:'Sermorelin 10mg', preco:179.0, descricao:'Sermorelin dose alta. Estímulo intensivo ao GH endógeno.', estoque:20 },
+    { id:'10AD', nome:'AOD9604 10mg', preco:226.8, descricao:'Fragmento C-terminal do GH. Ação lipolítica sem efeitos proliferativos.', estoque:20 },
+    { id:'IP10', nome:'Ipamorelin 10mg', preco:156.6, descricao:'GHRP seletivo. Estimula GH sem elevar cortisol. Anti-aging e massa magra.', estoque:20 },
+    { id:'CU50', nome:'GHK-CU 50mg', preco:113.4, descricao:'Complexo cobre-tripeptídeo. Estimula colágeno e elastina. Antienvelhecimento cutâneo.', estoque:20 },
+    { id:'CU100', nome:'GHK-CU 100mg', preco:124.2, descricao:'GHK-CU dose alta. Rejuvenescimento cutâneo sistêmico e alopecia avançada.', estoque:20 },
+    { id:'KS10', nome:'KissPeptin-10 10mg', preco:178.2, descricao:'Regulador do eixo reprodutivo. Hipogonadismo e fertilidade.', estoque:20 },
+    { id:'TY10', nome:'Thymalin 10mg', preco:147.4, descricao:'Polipeptídeo tímico. Estimula diferenciação de linfócitos T.', estoque:20 },
+    { id:'TA5', nome:'Thymosin Alpha-1 5mg', preco:162.0, descricao:'Imunomodulador tímico. Aprovado em +35 países para hepatite B/C crônica.', estoque:20 },
+    { id:'TA10', nome:'Thymosin Alpha-1 10mg', preco:226.8, descricao:'Thymosin Alpha-1 dose alta. Hepatite crônica e imunodeficiência severa.', estoque:20 },
+    { id:'GTT1500', nome:'Glutathione 1500mg', preco:153.9, descricao:'Antioxidante mestre. Clareamento de pele e detoxificação hepática.', estoque:20 },
+    { id:'GTT600', nome:'Glutathione 600mg', preco:127.9, descricao:'Glutationa dose padrão. Manutenção antioxidante e suporte hepático.', estoque:20 },
+    { id:'XT100', nome:'Botulinum toxin 100iu', preco:143.3, descricao:'Toxina botulínica tipo A. Rugas de expressão e hiperidrose.', estoque:20 },
+    { id:'20AM', nome:'5-amino-1mq 20mg', preco:156.6, descricao:'Inibidor seletivo da NNMT. Aumenta NAD+. Obesidade e resistência insulínica.', estoque:20 },
+    { id:'50AM', nome:'5-amino-1mq 50mg', preco:178.2, descricao:'5-amino-1mq dose alta. Obesidade metabólica severa.', estoque:20 },
+    { id:'G75', nome:'HMG 75 IU', preco:125.5, descricao:'Human Menopausal Gonadotropin. Foliculogênese e espermatogênese.', estoque:20 },
+    { id:'E3K', nome:'EPO 3000 IU', preco:127.9, descricao:'Eritropoietina recombinante. Estimula eritropoiese. Anemia de doença crônica.', estoque:20 },
+    { id:'CBL60', nome:'Cerebrolysin 60mg', preco:131.2, descricao:'Hidrolisado neurotrófico. Alzheimer, AVC isquêmico e reabilitação neurológica.', estoque:20 },
+    { id:'CGL5', nome:'Cagrilintide 5mg', preco:189.0, descricao:'Análogo de longa ação da amilina. Reduz apetite. Combinado com semaglutide.', estoque:20 },
+    { id:'CGL10', nome:'Cagrilintide 10mg', preco:270.0, descricao:'Cagrilintide dose alta. Obesidade severa combinada com GLP-1.', estoque:20 },
+    { id:'NP8-10', nome:'Snap-8 10mg', preco:125.5, descricao:'Octapeptídeo análogo ao Argireline. Alternativa à toxina botulínica.', estoque:20 },
+    { id:'NP8-100', nome:'Snap-8 100mg', preco:239.7, descricao:'Snap-8 dose alta para mesoterapia facial intensiva.', estoque:20 },
+    { id:'CS10', nome:'CagriSema 10mg', preco:186.3, descricao:'GLP-1 agonista + análogo de amilina. Perda de ~22% em estudos clínicos.', estoque:20 },
+    { id:'RC10', nome:'Retatrutide+Cagrili 10mg', preco:226.8, descricao:'Stack experimental: agonista triplo + análogo de amilina. 4 vias metabólicas.', estoque:20 },
+    { id:'KP5', nome:'KPV 5mg', preco:118.8, descricao:'KPV dose conservadora. Manutenção anti-inflamatória.', estoque:20 }
+  ];
+  try {
+    await pool.query('DELETE FROM pep_estoque');
+    let inseridos = 0;
+    for (const p of produtos) {
+      const r = await pool.query(
+        'INSERT INTO pep_estoque (produto_id,nome,preco,descricao,estoque) VALUES ($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING RETURNING id',
+        [p.id, p.nome, p.preco, p.descricao, p.estoque]
+      );
+      if (r.rows.length) inseridos++;
+    }
+    res.json({ ok: true, inseridos, total: produtos.length });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
 // GET /api/admin/estoque
 app.get('/api/admin/estoque', adminMiddleware, async (req, res) => {
   try {

@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Importação — PEPMASTERS</title>
+<meta name="description" content="Calcule o custo total de importação de peptídeos: produto, aduana e frete Paraguai → Brasil.">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --amber:#FFB300; --red:#E8220A; --orange:#FF6B00;
+  --cream:#FFF8F0; --warm-white:#FFFDF9; --dark:#1C0A00; --mid:#3D1A00;
+  --muted:#7A4A2A; --border:#FFD580;
+  --success:#2e7d32; --success-bg:#e8f5e9; --danger:#c62828; --danger-bg:#ffebee;
+  --warn:#e65100; --warn-bg:#fff3e0;
+}
+body {
+  font-family:'Barlow',sans-serif; background:var(--cream); color:var(--dark);
+  min-height:100vh;
+}
+.container { max-width:1500px; margin:0 auto; padding:0 20px; }
+
+/* HEADER (igual ao site) */
+header {
+  background:var(--warm-white); border-bottom:3px solid var(--amber);
+  padding:0 24px; height:68px; display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100; box-shadow:0 2px 20px rgba(255,179,0,.2);
+}
+.logo-wrap { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.logo-wrap img { height:40px; width:40px; object-fit:contain; }
+.logo-text {
+  font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.5rem;
+  background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.back-link { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:.88rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); text-decoration:none; }
+.back-link:hover { color:var(--orange); }
+
+/* HERO */
+.calc-hero {
+  background:linear-gradient(135deg,var(--dark),var(--mid));
+  color:#fff; padding:40px 20px; text-align:center; position:relative; overflow:hidden;
+}
+.calc-hero::before {
+  content:''; position:absolute; top:-50%; right:-10%; width:400px; height:400px;
+  background:rgba(255,179,0,.06); border-radius:50%;
+}
+.calc-hero-content { position:relative; z-index:1; max-width:900px; margin:0 auto; }
+.calc-hero h1 {
+  font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:2.4rem;
+  text-transform:uppercase; letter-spacing:.02em; margin-bottom:8px;
+  background:linear-gradient(135deg,#fff,var(--amber));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.calc-hero p { color:rgba(255,255,255,.7); font-size:1.02rem; }
+
+/* TABS */
+.tabs {
+  display:flex; background:var(--warm-white); border-bottom:3px solid var(--border);
+  padding:0 20px; overflow-x:auto; gap:4px;
+}
+.tab {
+  padding:16px 22px; cursor:pointer; border:none; background:transparent;
+  font-family:'Barlow Condensed',sans-serif; font-size:1rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:.03em; color:var(--muted); transition:all .25s;
+  border-bottom:3px solid transparent; margin-bottom:-3px; white-space:nowrap;
+}
+.tab:hover { color:var(--orange); background:rgba(255,179,0,.06); }
+.tab.active { color:var(--red); border-bottom-color:var(--red); background:var(--cream); }
+.content { padding:28px 20px 60px; }
+.tab-content { display:none; }
+.tab-content.active { display:block; animation:fadeIn .3s; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+
+/* GRIDS */
+.grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; }
+.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+.grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; }
+
+/* PANELS */
+.panel {
+  background:#fff; border-radius:14px; padding:22px;
+  border:1px solid var(--border); box-shadow:0 2px 12px rgba(255,179,0,.08); transition:all .25s;
+}
+.panel:hover { box-shadow:0 6px 22px rgba(255,179,0,.14); }
+.panel-title {
+  font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.3rem; color:var(--dark);
+  margin-bottom:18px; display:flex; align-items:center; gap:10px;
+  padding-bottom:13px; border-bottom:2px solid var(--border); text-transform:uppercase; letter-spacing:.02em;
+}
+
+/* REGRAS BANNER */
+.regras-banner {
+  background:linear-gradient(135deg,var(--dark),var(--mid)); color:#fff;
+  border-radius:14px; padding:22px; margin-bottom:26px;
+}
+.regras-banner h3 { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.1rem; text-transform:uppercase; letter-spacing:.03em; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.regras-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+.regra-item {
+  background:rgba(255,179,0,.08); border-radius:10px; padding:13px 15px;
+  border-left:4px solid var(--amber); font-size:.87rem; line-height:1.5;
+}
+.regra-item strong { display:block; margin-bottom:4px; font-size:.9rem; color:var(--amber); text-transform:uppercase; letter-spacing:.04em; }
+
+/* MODO COMPRA */
+.modo-compra-selector { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px; }
+.modo-card {
+  flex:1; min-width:170px; padding:16px; border:2px solid var(--border);
+  border-radius:12px; cursor:pointer; transition:all .25s; text-align:center; background:#fff;
+}
+.modo-card:hover { border-color:var(--orange); transform:translateY(-2px); }
+.modo-card.active {
+  border-color:var(--red); background:linear-gradient(135deg,var(--red),var(--orange));
+  color:#fff; box-shadow:0 6px 20px rgba(232,34,10,.3);
+}
+.modo-card .modo-icon { font-size:1.8rem; margin-bottom:8px; }
+.modo-card .modo-title { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1rem; margin-bottom:4px; text-transform:uppercase; }
+.modo-card .modo-desc { font-size:.78rem; opacity:.8; line-height:1.4; }
+.modo-section { display:none; }
+.modo-section.active { display:block; animation:fadeIn .3s; }
+
+/* LINHA DE PRODUTO */
+.prod-row {
+  display:flex; align-items:center; gap:14px; padding:13px 15px;
+  border:2px solid var(--border); border-radius:12px; margin-bottom:9px;
+  transition:all .25s; background:#fff; flex-wrap:wrap;
+}
+.prod-row:hover { border-color:var(--orange); background:#FFF8F0; }
+.prod-row.selecionado { border-color:var(--red); background:#FFF3E8; }
+.prod-row.bloqueado { border-color:var(--danger); background:var(--danger-bg); opacity:.7; cursor:not-allowed; }
+.prod-row.bloqueado * { pointer-events:none; }
+.prod-row input[type="checkbox"] { width:21px; height:21px; accent-color:var(--red); flex-shrink:0; }
+.prod-row .pr-codigo { font-weight:800; color:var(--red); min-width:78px; font-size:.92rem; }
+.prod-row .pr-nome   { flex:1; font-weight:600; color:var(--dark); font-size:.92rem; min-width:160px; }
+.prod-row .pr-preco  { font-size:.88rem; color:var(--success); font-weight:700; white-space:nowrap; }
+.prod-row .pr-qtd    { display:flex; align-items:center; gap:8px; }
+.prod-row .pr-qtd input { width:68px; padding:6px; border:2px solid var(--border); border-radius:8px; text-align:center; font-weight:700; }
+.prod-row .pr-subtotal { font-weight:800; color:var(--dark); min-width:108px; text-align:right; font-size:.92rem; }
+.prod-row .pr-block-msg { font-size:.76em; color:var(--danger); font-weight:600; width:100%; padding-top:4px; }
+
+/* MEIA CAIXA */
+.meia-caixa-builder { background:#FFF8F0; border:2px solid var(--red); border-radius:14px; padding:20px; margin-bottom:18px; }
+.meia-caixa-builder h4 { font-family:'Barlow Condensed',sans-serif; font-weight:700; color:var(--dark); margin-bottom:14px; display:flex; align-items:center; gap:8px; text-transform:uppercase; }
+.meia-slots { display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:center; }
+.meia-slot { background:#fff; border:2px dashed var(--border); border-radius:10px; padding:14px; min-height:78px; display:flex; flex-direction:column; gap:8px; transition:all .25s; }
+.meia-slot.preenchido { border:2px solid var(--red); background:#FFF3E8; border-style:solid; }
+.meia-slot label { font-size:.78rem; color:var(--muted); font-weight:700; text-transform:uppercase; }
+.meia-slot select { border:2px solid var(--border); border-radius:8px; padding:8px 10px; font-size:.88rem; width:100%; font-family:inherit; }
+.meia-slot select:focus { outline:none; border-color:var(--red); }
+.meia-separador { text-align:center; font-size:1.4rem; color:var(--red); font-weight:800; }
+.meia-info { background:var(--success-bg); border-radius:8px; padding:10px 13px; font-size:.84rem; color:var(--success); font-weight:600; margin-top:10px; }
+
+/* CAIXA SORTIDA */
+.sortida-builder { background:#FFF8F0; border:2px solid var(--red); border-radius:14px; padding:20px; }
+.sortida-builder h4 { font-family:'Barlow Condensed',sans-serif; font-weight:700; color:var(--dark); margin-bottom:14px; display:flex; align-items:center; gap:8px; text-transform:uppercase; }
+.sortida-linha { display:flex; align-items:center; gap:11px; padding:9px 13px; background:#fff; border:2px solid var(--border); border-radius:10px; margin-bottom:8px; }
+.sortida-linha.erro { border-color:var(--danger); background:var(--danger-bg); }
+.sortida-linha.ok   { border-color:var(--success); background:var(--success-bg); }
+.sortida-linha select { flex:2; padding:8px 10px; border:2px solid var(--border); border-radius:8px; font-size:.88rem; font-family:inherit; }
+.sortida-linha select:focus { outline:none; border-color:var(--red); }
+.sortida-linha .sl-qtd { display:flex; align-items:center; gap:6px; }
+.sortida-linha .sl-qtd input { width:64px; padding:7px; border:2px solid var(--border); border-radius:8px; text-align:center; font-weight:700; }
+.sortida-linha .sl-preco  { font-size:.84rem; color:var(--success); font-weight:700; min-width:92px; text-align:right; }
+.sortida-linha .sl-remove { background:var(--danger-bg); border:none; color:var(--danger); border-radius:6px; padding:6px 10px; cursor:pointer; font-size:1rem; }
+.sortida-linha .sl-msg    { font-size:.74em; color:var(--danger); font-weight:600; width:100%; margin-top:2px; }
+.sortida-total-vials { background:linear-gradient(135deg,var(--red),var(--orange)); color:#fff; border-radius:10px; padding:14px 18px; text-align:center; margin-top:14px; }
+.sortida-total-vials .stv-num { font-family:'Barlow Condensed',sans-serif; font-size:2.2rem; font-weight:900; }
+.sortida-total-vials .stv-label { font-size:.82rem; opacity:.92; }
+.btn-add-linha { width:100%; padding:11px; border:2px dashed var(--red); border-radius:10px; background:transparent; color:var(--red); font-weight:700; cursor:pointer; font-size:.92rem; margin-top:10px; transition:all .25s; font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; }
+.btn-add-linha:hover { background:var(--red); color:#fff; }
+
+/* FORMS / BTNs */
+.form-group { margin-bottom:18px; }
+.form-label { display:block; font-weight:600; margin-bottom:7px; color:var(--mid); font-size:.9rem; }
+.form-control { width:100%; padding:11px 15px; border:2px solid var(--border); border-radius:10px; font-size:.95rem; transition:all .25s; font-family:inherit; }
+.form-control:focus { outline:none; border-color:var(--red); box-shadow:0 0 0 4px rgba(232,34,10,.08); }
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:13px 26px;
+  border:none; border-radius:10px; font-size:.95rem; font-weight:700; cursor:pointer; transition:all .25s;
+  text-decoration:none; font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.03em;
+}
+.btn-primary { background:linear-gradient(135deg,var(--red),var(--orange)); color:#fff; box-shadow:0 4px 16px rgba(232,34,10,.3); }
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(232,34,10,.4); }
+.btn-success { background:linear-gradient(135deg,#11998e,#38ef7d); color:#fff; }
+.btn-danger  { background:linear-gradient(135deg,#eb3349,#f5576c); color:#fff; }
+.btn-warning { background:linear-gradient(135deg,var(--orange),var(--amber)); color:#fff; }
+.btn-block { width:100%; }
+
+/* RESULTADO */
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:18px; margin-bottom:28px; }
+.stat-card { background:#fff; padding:20px; border-radius:14px; border:1px solid var(--border); text-align:center; transition:all .25s; position:relative; overflow:hidden; }
+.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,var(--red),var(--orange),var(--amber)); }
+.stat-card:hover { transform:translateY(-3px); box-shadow:0 8px 22px rgba(255,179,0,.16); }
+.stat-icon { font-size:2rem; margin-bottom:8px; }
+.stat-label { color:var(--muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; font-weight:700; }
+.stat-value { font-family:'Barlow Condensed',sans-serif; font-size:1.7rem; font-weight:900; color:var(--dark); margin:6px 0; }
+.stat-subtext { font-size:.78rem; color:var(--muted); }
+.resultado-box { background:linear-gradient(135deg,var(--dark),var(--mid)); color:#fff; padding:30px; border-radius:14px; box-shadow:0 10px 36px rgba(28,10,0,.3); }
+.resultado-item { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.15); }
+.resultado-item:last-child { border-bottom:none; }
+.resultado-item .label { font-size:.98rem; opacity:.92; }
+.resultado-item .value { font-size:1.15rem; font-weight:700; color:var(--amber); }
+.resultado-total { margin-top:18px; padding-top:18px; border-top:2px solid rgba(255,179,0,.4); font-family:'Barlow Condensed',sans-serif; font-size:1.6rem; font-weight:900; text-align:center; }
+.comparador { background:linear-gradient(135deg,#FFF8E1,#FFECB3); padding:20px; border-radius:14px; margin-top:26px; border:2px solid var(--amber); }
+.comparador-title { font-family:'Barlow Condensed',sans-serif; font-size:1.1rem; color:var(--mid); font-weight:900; margin-bottom:16px; display:flex; align-items:center; gap:9px; text-transform:uppercase; }
+.comparador-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:11px; }
+.comparador-card { background:#fff; padding:16px; border-radius:10px; text-align:center; border:2px solid var(--amber); transition:all .25s; }
+.comparador-card:hover { transform:translateY(-2px); box-shadow:0 5px 14px rgba(255,179,0,.3); }
+.comparador-card .titulo { font-size:.82rem; color:var(--muted); margin-bottom:7px; font-weight:600; }
+.comparador-card .valor { font-family:'Barlow Condensed',sans-serif; font-size:1.4rem; font-weight:900; color:var(--success); }
+.comparador-card .diferenca { font-size:.78rem; margin-top:6px; padding:3px 7px; border-radius:5px; display:inline-block; }
+.comparador-card .diferenca.positivo { background:var(--danger-bg); color:var(--danger); }
+.comparador-card .diferenca.negativo { background:var(--success-bg); color:var(--success); }
+.action-buttons { display:flex; gap:13px; flex-wrap:wrap; margin-top:22px; }
+.action-buttons .btn { flex:1; min-width:165px; }
+
+/* ALERT */
+.alert { padding:13px 17px; border-radius:10px; margin-bottom:17px; display:flex; align-items:flex-start; gap:9px; font-size:.88rem; border-left:4px solid; }
+.alert-info { background:#E3F2FD; color:#0d47a1; border-color:#2196F3; }
+.alert-success { background:var(--success-bg); color:var(--success); border-color:#4CAF50; }
+.alert-warning { background:var(--warn-bg); color:var(--warn); border-color:var(--orange); }
+.alert-danger { background:var(--danger-bg); color:var(--danger); border-color:#F44336; }
+.badge { display:inline-block; padding:5px 11px; border-radius:20px; font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+.badge-primary { background:var(--red); color:#fff; }
+.badge-success { background:#11998E; color:#fff; }
+.badge-warning { background:var(--orange); color:#fff; }
+.badge-danger { background:var(--danger); color:#fff; }
+
+/* SEARCH */
+.search-box { position:relative; margin-bottom:15px; }
+.search-box input { width:100%; padding:11px 16px 11px 42px; border:2px solid var(--border); border-radius:10px; font-size:.95rem; transition:all .25s; font-family:inherit; }
+.search-box input:focus { outline:none; border-color:var(--red); box-shadow:0 0 0 4px rgba(232,34,10,.08); }
+.search-box::before { content:'🔍'; position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:1.05rem; }
+.filtros { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:17px; }
+.filtro-btn { padding:7px 14px; border:2px solid var(--border); background:#fff; border-radius:20px; cursor:pointer; transition:all .25s; font-weight:700; font-size:.84rem; font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; }
+.filtro-btn:hover { border-color:var(--red); color:var(--red); }
+.filtro-btn.active { background:var(--red); color:#fff; border-color:var(--red); }
+
+/* PROD CARDS (catálogo) */
+.produto-card { background:#fff; border:2px solid var(--border); border-radius:14px; padding:0; transition:all .25s; overflow:hidden; display:flex; flex-direction:column; }
+.produto-card:hover { border-color:var(--red); box-shadow:0 8px 24px rgba(232,34,10,.16); transform:translateY(-3px); }
+.pc-header { padding:13px 15px 9px; background:linear-gradient(135deg,#FFF8F0,#FFF3E0); border-bottom:2px solid var(--border); }
+.pc-codigo { font-family:'Barlow Condensed',sans-serif; font-size:1rem; font-weight:900; color:var(--red); }
+.pc-nome { font-size:.92rem; font-weight:700; color:var(--dark); margin-top:4px; line-height:1.3; }
+.pc-body { padding:12px 15px; flex:1; display:flex; flex-direction:column; gap:9px; }
+.pc-indicacao { font-size:.78rem; line-height:1.5; color:var(--mid); background:var(--cream); border-left:3px solid var(--red); padding:8px 10px; border-radius:0 8px 8px 0; }
+.pc-composicao { font-size:.74rem; color:var(--muted); font-style:italic; }
+.pc-precos { display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; margin-top:3px; }
+.pc-preco-item { text-align:center; padding:6px 3px; border-radius:7px; }
+.pc-preco-item .plabel { font-size:.64em; color:var(--muted); margin-bottom:2px; font-weight:700; text-transform:uppercase; }
+.pc-preco-item .pvalue { font-size:.88rem; font-weight:800; }
+.pc-footer { padding:9px 15px 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:5px; }
+.pc-cat { display:inline-block; padding:4px 11px; background:var(--red); color:#fff; border-radius:20px; font-size:.7rem; font-weight:700; text-transform:uppercase; }
+
+/* HISTÓRICO */
+.empty-state { text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state-icon { font-size:3.4rem; margin-bottom:16px; opacity:.4; }
+.empty-state-title { font-family:'Barlow Condensed',sans-serif; font-size:1.3rem; margin-bottom:8px; font-weight:700; }
+.empty-state-text { font-size:.92rem; opacity:.75; }
+
+/* FRETE RADIO */
+.radio-group { display:flex; gap:12px; flex-wrap:wrap; }
+.radio-option { flex:1; min-width:185px; }
+.radio-option input[type="radio"] { display:none; }
+.radio-option label { display:block; padding:12px 17px; border:2px solid var(--border); border-radius:10px; cursor:pointer; transition:all .25s; text-align:center; font-weight:600; background:#fff; }
+.radio-option input[type="radio"]:checked + label { border-color:var(--red); background:linear-gradient(135deg,var(--red),var(--orange)); color:#fff; transform:translateY(-2px); box-shadow:0 5px 14px rgba(232,34,10,.3); }
+
+/* VALIDAÇÃO */
+.validation-box { border-radius:12px; padding:15px 19px; margin:15px 0; border:2px solid; }
+.validation-box.ok { background:var(--success-bg); border-color:#4CAF50; color:var(--success); }
+.validation-box.erro { background:var(--danger-bg); border-color:#F44336; color:var(--danger); }
+.validation-box.aviso { background:var(--warn-bg); border-color:var(--orange); color:var(--warn); }
+.validation-box ul { margin:8px 0 0 20px; }
+.validation-box li { font-size:.88rem; margin-bottom:4px; }
+
+/* FOOTER (igual ao site) */
+footer { background:var(--dark); color:#fff; padding:52px 24px 0; margin-top:50px; }
+.footer-grid { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:36px; padding-bottom:44px; border-bottom:1px solid rgba(255,179,0,.2); }
+.footer-brand p { font-size:.84rem; color:rgba(255,255,255,.5); line-height:1.7; margin-top:12px; max-width:260px; }
+.footer-col h4 { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:.78rem; letter-spacing:.18em; text-transform:uppercase; color:var(--amber); margin-bottom:14px; }
+.footer-col a { display:block; font-size:.86rem; color:rgba(255,255,255,.6); text-decoration:none; margin-bottom:8px; transition:color .2s; }
+.footer-col a:hover { color:var(--amber); }
+.footer-bottom { max-width:1200px; margin:0 auto; padding:18px 0; text-align:center; font-size:.78rem; color:rgba(255,255,255,.3); }
+.admin-link { display:block; text-align:center; padding:8px; font-size:.75rem; color:rgba(255,255,255,.15); text-decoration:none; }
+.admin-link:hover { color:var(--amber); }
+
+@media (max-width:1200px) { .grid-4 { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:900px) { .meia-slots { grid-template-columns:1fr; } .meia-separador { transform:rotate(90deg); } .footer-grid { grid-template-columns:1fr 1fr; } }
+@media (max-width:768px) {
+  .calc-hero h1 { font-size:1.7rem; }
+  .tabs { padding:0 14px; } .tab { padding:13px 16px; font-size:.88rem; }
+  .content { padding:18px 14px; }
+  .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; }
+  .action-buttons { flex-direction:column; } .action-buttons .btn { width:100%; }
+  .modo-compra-selector { flex-direction:column; }
+  .prod-row { flex-wrap:wrap; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo-wrap">
+    <img src="Capturar.PNG" alt="Logo"/>
+    <span class="logo-text">PEPMASTERS</span>
+  </a>
+  <a href="index.html" class="back-link">← Voltar à loja</a>
+</header>
+
+<div class="calc-hero">
+  <div class="calc-hero-content">
+    <h1>🧮 Calculadora de Importação</h1>
+    <p>Simule o custo total — produto, aduana e frete Paraguai → Brasil — antes de fechar seu pedido.</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="mudarTab('calculadora',event)">🧮 Calculadora</button>
+    <button class="tab" onclick="mudarTab('produtos',event)">📦 Produtos</button>
+    <button class="tab" onclick="mudarTab('historico',event)">📜 Histórico</button>
+    <button class="tab" onclick="mudarTab('analise',event)">📊 Análise</button>
+    <button class="tab" onclick="mudarTab('configuracoes',event)">⚙️ Configurações</button>
+  </div>
+  <div class="content">
+    <!-- TAB: CALCULADORA -->
+    <div id="tab-calculadora" class="tab-content active">
+      <div class="regras-banner">
+        <h3>📋 Regras de Compra do Grupo</h3>
+        <div class="regras-grid">
+          <div class="regra-item"><strong>❌ Concentrações duplicadas</strong>Não é permitido comprar o mesmo peptídeo em concentrações diferentes (ex: RT40 + RT60).</div>
+          <div class="regra-item"><strong>📦 Caixa Fechada</strong>10 vials do mesmo produto. Sem restrições adicionais.</div>
+          <div class="regra-item"><strong>½ + ½ Meia Caixa</strong>5 vials de produto A + 5 vials de produto B. Produtos diferentes obrigatoriamente.</div>
+          <div class="regra-item"><strong>🎲 Caixa Sortida</strong>Múltiplos produtos em pares (2, 4, 6 vials). Quantidades ímpares são proibidas. Total deve fechar em múltiplo de 10.</div>
+        </div>
+      </div>
+      <div class="grid-2" style="margin-bottom:28px;">
+        <div class="panel">
+          <div class="panel-title">💰 Precificação</div>
+          <div style="background:linear-gradient(135deg,#11998e,#38ef7d);color:white;padding:22px;border-radius:12px;text-align:center;">
+            <div style="font-size:0.85em;opacity:0.9;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Tabela de Preços</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:2.2em;font-weight:900;">100% R$</div>
+            <div style="font-size:0.82em;opacity:0.9;margin-top:10px;">Produto + Aduana já em Reais</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">🚚 Frete Paraguai → Brasil</div>
+          <div class="radio-group">
+            <div class="radio-option">
+              <input type="radio" name="tipoFrete" id="freteRecomendado" value="recomendado" checked>
+              <label for="freteRecomendado">✅ Padrão<br><small>R$ <span id="fretePadraoLabel">50,00</span>/vial</small></label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" name="tipoFrete" id="fretePersonalizado" value="personalizado">
+              <label for="fretePersonalizado">🔧 Personalizado<br><small>Definir valor</small></label>
+            </div>
+          </div>
+          <div id="fretePersonalizadoDiv" style="display:none;margin-top:16px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Valor por vial (R$):</label>
+              <input type="number" class="form-control" id="valorFretePersonalizado" step="0.01" placeholder="Ex: 50.00">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel" style="margin-bottom:28px;">
+        <div class="panel-title">🛒 Modo de Compra</div>
+        <div class="modo-compra-selector">
+          <div class="modo-card active" id="modoCard_fechada" onclick="selecionarModo('fechada')">
+            <div class="modo-icon">📦</div>
+            <div class="modo-title">Caixa Fechada</div>
+            <div class="modo-desc">10 vials do mesmo produto por caixa</div>
+          </div>
+          <div class="modo-card" id="modoCard_meia" onclick="selecionarModo('meia')">
+            <div class="modo-icon">½</div>
+            <div class="modo-title">Meia + Meia</div>
+            <div class="modo-desc">5 vials de A + 5 vials de B</div>
+          </div>
+          <div class="modo-card" id="modoCard_sortida" onclick="selecionarModo('sortida')">
+            <div class="modo-icon">🎲</div>
+            <div class="modo-title">Caixa Sortida</div>
+            <div class="modo-desc">Até 10 produtos em pares (2/4/6 vials)</div>
+          </div>
+        </div>
+        <div id="modo_fechada" class="modo-section active">
+          <div class="alert alert-info">💡 Selecione os produtos e a quantidade de <strong>caixas (10 vials cada)</strong>. O sistema bloqueia automaticamente concentrações duplicadas da mesma família.</div>
+          <div class="search-box"><input type="text" id="searchFechada" placeholder="Buscar produto..." onkeyup="filtrarListaFechada()"></div>
+          <div class="filtros" id="filtrosFechada">
+            <button class="filtro-btn active" onclick="filtrarCatFechada('todos',event)">Todos</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('glp1',event)">GLP-1</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('recuperacao',event)">Recuperação</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('hormonio',event)">Hormônios</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('longevidade',event)">Longevidade</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('nootrop',event)">Nootrópicos</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('estetica',event)">Estética</button>
+            <button class="filtro-btn" onclick="filtrarCatFechada('combo',event)">Combos</button>
+          </div>
+          <div id="listaFechada"></div>
+          <div id="validacaoFechada"></div>
+        </div>
+        <div id="modo_meia" class="modo-section">
+          <div class="alert alert-info">💡 Selecione <strong>dois produtos diferentes</strong>. Cada um contribui com <strong>5 vials</strong>. Não é permitido selecionar produtos da mesma família.</div>
+          <div class="meia-caixa-builder">
+            <h4>🔧 Monte sua Meia + Meia</h4>
+            <div class="meia-slots">
+              <div class="meia-slot" id="meiaSlotA">
+                <label>Produto A — 5 vials</label>
+                <select id="meiaSelA" onchange="validarMeia()"><option value="">— Selecione —</option></select>
+                <div id="meiaInfoA" style="font-size:0.82em;color:#666;"></div>
+              </div>
+              <div class="meia-separador">+</div>
+              <div class="meia-slot" id="meiaSlotB">
+                <label>Produto B — 5 vials</label>
+                <select id="meiaSelB" onchange="validarMeia()"><option value="">— Selecione —</option></select>
+                <div id="meiaInfoB" style="font-size:0.82em;color:#666;"></div>
+              </div>
+            </div>
+            <div id="meiaCaixaInfo" class="meia-info" style="display:none;"></div>
+          </div>
+          <div id="validacaoMeia"></div>
+        </div>
+        <div id="modo_sortida" class="modo-section">
+          <div class="alert alert-info">💡 Monte sua caixa com <strong>diferentes produtos</strong>. Cada item deve ser adquirido em quantidade <strong>par (2, 4, 6, 8 vials)</strong>. O total deve fechar em <strong>10 vials</strong>.</div>
+          <div class="sortida-builder">
+            <h4>🎲 Monte sua Caixa Sortida (total: 10 vials)</h4>
+            <div id="sortidaLinhas"></div>
+            <button class="btn-add-linha" onclick="adicionarLinhaSortida()">+ Adicionar Produto</button>
+            <div class="sortida-total-vials">
+              <div class="stv-label">Total de Vials</div>
+              <div class="stv-num"><span id="sortidaTotalVials">0</span> / 10</div>
+              <div class="stv-label" id="sortidaStatusMsg">Adicione produtos até completar 10 vials</div>
+            </div>
+          </div>
+          <div id="validacaoSortida"></div>
+        </div>
+        <div style="margin-top:24px;padding-top:22px;border-top:2px solid var(--border);">
+          <div class="grid-2" style="gap:20px;align-items:end;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Quantidade de Caixas:</label>
+              <input type="number" class="form-control" id="qtdCaixas" min="1" value="1" onchange="atualizarCalculo()">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="calcularTotal()" style="font-size:1.05em;padding:16px;">🧮 Calcular Total do Pedido</button>
+          </div>
+        </div>
+      </div>
+      <div id="resultadoSection" style="display:none;">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon">💊</div><div class="stat-label">Produtos (R$)</div><div class="stat-value" id="totalProdutoBRL">R$ 0</div><div class="stat-subtext">Custo dos peptídeos</div></div>
+          <div class="stat-card"><div class="stat-icon">🛃</div><div class="stat-label">Aduana (R$)</div><div class="stat-value" id="totalAduanaBRL">R$ 0</div><div class="stat-subtext">Taxa alfandegária</div></div>
+          <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-label">Total Vials</div><div class="stat-value" id="totalVials">0</div><div class="stat-subtext">Unidades totais</div></div>
+          <div class="stat-card"><div class="stat-icon">🚚</div><div class="stat-label">Frete PY→BR</div><div class="stat-value" id="freteTotal">R$ 0</div><div class="stat-subtext">Após chegada ao PY</div></div>
+          <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Custo/Vial</div><div class="stat-value" id="custoVial">R$ 0</div><div class="stat-subtext">Valor médio unitário</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">📋 Detalhamento do Pedido</div>
+          <div id="resumoProdutos" style="margin-bottom:20px;padding:16px;background:var(--cream);border-radius:10px;font-size:0.9em;"></div>
+          <div class="resultado-box">
+            <div class="resultado-item"><span class="label">💊 Produtos (R$):</span><span class="value" id="detProdutoBRL">R$ 0,00</span></div>
+            <div class="resultado-item"><span class="label">🛃 Aduana (R$):</span><span class="value" id="detAduanaBRL">R$ 0,00</span></div>
+            <div class="resultado-item"><span class="label">📦 Subtotal S/ Frete:</span><span class="value" id="detSubtotalBRL">R$ 0,00</span></div>
+            <div class="resultado-item"><span class="label">🚚 Frete (R$ <span id="fretePorVialDisplay">50,00</span>/vial × <span id="totalVialsDisplay">0</span> vials):</span><span class="value" id="detFreteBRL">R$ 0,00</span></div>
+            <div class="resultado-total">💰 TOTAL: <span id="totalFinalBRL">R$ 0,00</span></div>
+          </div>
+        </div>
+        <div class="comparador">
+          <div class="comparador-title">📈 Cenários de Frete PY→BR</div>
+          <div class="comparador-grid">
+            <div class="comparador-card"><div class="titulo">R$ 30/vial</div><div class="valor" id="cenarioF30">R$ 0</div><div class="diferenca negativo" id="difF30">-R$ 0</div></div>
+            <div class="comparador-card"><div class="titulo">R$ 40/vial</div><div class="valor" id="cenarioF40">R$ 0</div><div class="diferenca negativo" id="difF40">-R$ 0</div></div>
+            <div class="comparador-card"><div class="titulo">R$ 50/vial</div><div class="valor" id="cenarioF50">R$ 0</div><span class="badge badge-primary" style="margin-top:6px;">Ref.</span></div>
+            <div class="comparador-card"><div class="titulo">R$ 60/vial</div><div class="valor" id="cenarioF60">R$ 0</div><div class="diferenca positivo" id="difF60">+R$ 0</div></div>
+            <div class="comparador-card"><div class="titulo">R$ 70/vial</div><div class="valor" id="cenarioF70">R$ 0</div><div class="diferenca positivo" id="difF70">+R$ 0</div></div>
+          </div>
+          <div class="alert alert-info" style="margin-top:16px;margin-bottom:0;">💡 <span id="analiseTexto">Complete o cálculo para ver a análise.</span></div>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-success" onclick="salvarHistorico()">💾 Salvar Histórico</button>
+          <button class="btn btn-primary" onclick="exportarTXT()">📄 Exportar TXT</button>
+          <button class="btn btn-success" onclick="compartilharWhatsApp()">📱 WhatsApp</button>
+          <button class="btn btn-warning" onclick="limparCalculo()">🔄 Nova Cotação</button>
+        </div>
+      </div>
+    </div>
+    <!-- TAB: PRODUTOS -->
+    <div id="tab-produtos" class="tab-content">
+      <div class="panel">
+        <div class="panel-title">📦 Catálogo Completo de Peptídeos</div>
+        <div class="alert alert-info">💡 Preços em R$. Cada card exibe indicação clínica e estrutura de custos.</div>
+        <div class="search-box"><input type="text" id="searchCatalogo" placeholder="Buscar no catálogo..." onkeyup="filtrarCatalogo()"></div>
+        <div class="filtros">
+          <button class="filtro-btn active" onclick="filtrarCatalogoCat('todos',event)">Todos</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('glp1',event)">GLP-1</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('recuperacao',event)">Recuperação</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('hormonio',event)">Hormônios</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('longevidade',event)">Longevidade</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('nootrop',event)">Nootrópicos</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('estetica',event)">Estética</button>
+          <button class="filtro-btn" onclick="filtrarCatalogoCat('combo',event)">Combos</button>
+        </div>
+        <div id="produtosGrid" class="grid-3" style="margin-top:22px;"></div>
+      </div>
+    </div>
+    <!-- TAB: HISTÓRICO -->
+    <div id="tab-historico" class="tab-content">
+      <div class="panel">
+        <div class="panel-title">📜 Histórico de Cálculos</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <span class="badge badge-primary" id="historicoCount">0 registros</span>
+          <button class="btn btn-danger" onclick="limparHistorico()">🗑️ Limpar Histórico</button>
+        </div>
+        <div id="historicoContainer"></div>
+      </div>
+    </div>
+    <!-- TAB: ANÁLISE -->
+    <div id="tab-analise" class="tab-content">
+      <div class="panel">
+        <div class="panel-title">📊 Análise Estatística</div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-label">Total Calculado</div><div class="stat-value" id="analiseTotalCalculos">0</div><div class="stat-subtext">Pedidos realizados</div></div>
+          <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Valor Médio</div><div class="stat-value" id="analiseMediaValor">R$ 0</div><div class="stat-subtext">Por pedido</div></div>
+          <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-label">Média de Vials</div><div class="stat-value" id="analiseMediaVials">0</div><div class="stat-subtext">Por pedido</div></div>
+          <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-label">Produto Top</div><div class="stat-value" style="font-size:1.5em;" id="analiseProdutoTop">-</div><div class="stat-subtext">Mais pedido</div></div>
+        </div>
+      </div>
+    </div>
+    <!-- TAB: CONFIGURAÇÕES -->
+    <div id="tab-configuracoes" class="tab-content">
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-title">⚙️ Configurações</div>
+          <div class="form-group">
+            <label class="form-label">Frete Padrão por Vial — PY→BR (R$):</label>
+            <input type="number" class="form-control" id="configFretePadrao" value="50" step="0.01" onchange="atualizarLabelFrete()">
+          </div>
+          <button class="btn btn-primary btn-block" onclick="salvarConfiguracoes()">💾 Salvar</button>
+          <div class="alert alert-success" style="margin-top:16px;display:none;" id="configSalva">✅ Configurações salvas!</div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">📱 Sobre</div>
+          <div style="line-height:2.1;">
+            <p><strong>Calculadora PEPMASTERS</strong></p>
+            <p>Use esta ferramenta para simular o custo total de importação antes de finalizar seu pedido na loja.</p>
+            <p style="margin-top:12px;"><a href="index.html" style="color:var(--red);font-weight:700;">→ Voltar para a loja</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="logo-wrap" style="margin-bottom:0">
+        <img src="Capturar.PNG" alt="Logo" style="height:36px;width:36px;object-fit:contain"/>
+        <span class="logo-text">PEPMASTERS</span>
+      </a>
+      <p>Performance através da ciência. Peptídeos bioativos com qualidade e segurança para atletas e entusiastas.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Institucional</h4>
+      <a href="quem-somos.html">Quem Somos</a>
+      <a href="members.html">Membros</a>
+      <a href="termos-de-uso.html">Termos de Uso</a>
+      <a href="politica-privacidade.html">Política de Privacidade</a>
+    </div>
+    <div class="footer-col">
+      <h4>Suporte</h4>
+      <a href="duvidas-frequentes.html">Dúvidas Frequentes</a>
+      <a href="envio-e-prazos.html">Envio e Prazos</a>
+      <a href="trocas-e-devolucoes.html">Trocas e Devoluções</a>
+    </div>
+    <div class="footer-col">
+      <h4>Minha Conta</h4>
+      <a href="meus-pedidos.html">Meus Pedidos</a>
+      <a href="perfil.html">Meu Perfil</a>
+      <a href="rastrear-pedido.html">Rastrear Pedido</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 PEPMASTERS. Todos os direitos reservados.</p>
+    <a href="admin-login.html" class="admin-link">Área do Administrador</a>
+  </div>
+</footer>
+
+<script>
+const APP_VERSION = '1.0';
+let modoAtual = 'fechada';
+let ultimoCalculo = null;
+let sortidaLinhaCount = 0;
+let historicoCalculos = JSON.parse(localStorage.getItem('historicoCalculosPep')) || [];
+const FAMILIAS = {
+    retatrutide:  ['RT30','RT40','RT60'],
+    tirzepatide:  ['TR30','TR40','TR50','TR60'],
+    ss31:         ['2S10','2S50'],
+    tesamorelin:  ['TSM10','TSM20'],
+    motsc:        ['MS20','MS40'],
+    epithalon:    ['ET10','ET50'],
+    bpc157:       ['BPC10','BPC20'],
+    selank:       ['SK10','SK30'],
+    pinealon:     ['PIN10','PIN20'],
+    cjcnodac:     ['CND5','CND10'],
+    cjcdac:       ['CD5','CD10'],
+    sermorelin:   ['Serm5','Serm10'],
+    adipotide:    ['AP5','AP10'],
+    semax:        ['SX5','SX10'],
+    ghkcu:        ['CU50','CU100'],
+    glutathione:  ['GTT600','GTT1500'],
+    nad:          ['NJ500','NJ1000'],
+    thymosinA:    ['TA5','TA10'],
+    cagrilintide: ['CGL5','CGL10'],
+    aminomq:      ['20AM','50AM'],
+    snap8:        ['NP8-10','NP8-100'],
+};
+const MAPA_FAMILIA = {};
+Object.entries(FAMILIAS).forEach(([fam, codigos]) => { codigos.forEach(c => { MAPA_FAMILIA[c] = fam; }); });
+function getFamilia(codigo) { return MAPA_FAMILIA[codigo] || null; }
+function familiasConflitam(codigoA, codigoB) {
+    const fA = getFamilia(codigoA); const fB = getFamilia(codigoB);
+    return fA && fB && fA === fB && codigoA !== codigoB;
+}
+const PRODUTOS = [
+    {codigo:'RT30',   nome:'Retatrutide 30mg',        produtoBRL:1539, aduanaBRL:1350, composicao:'Retatrutide 30mg - 10 vials', indicacao:'Agonista triplo GLP-1/GIP/Glucagon. Perda de peso de até 24–28% (fase 2/3, Eli Lilly). Indicado para obesidade, diabetes tipo 2 e síndrome metabólica. Dose semanal SC com escalonamento.', categoria:'glp1'},
+    {codigo:'RT40',   nome:'Retatrutide 40mg',        produtoBRL:2106, aduanaBRL:1350, composicao:'Retatrutide 40mg - 10 vials', indicacao:'Agonista triplo GLP-1/GIP/Glucagon — dose intermediária. Maior magnitude de perda de peso entre incretinomiméticos modernos. Protocolo de escalada posológica para obesidade severa.', categoria:'glp1'},
+    {codigo:'RT60',   nome:'Retatrutide 60mg',        produtoBRL:2592, aduanaBRL:1350, composicao:'Retatrutide 60mg - 10 vials', indicacao:'Agonista triplo GLP-1/GIP/Glucagon — dose alta. Resultados fase 3: perda de até 28,3% em 80 semanas, comparável à cirurgia bariátrica.', categoria:'glp1'},
+    {codigo:'TR30',   nome:'Tirzepatide 30mg',        produtoBRL:891,  aduanaBRL:1350, composicao:'Tirzepatide 30mg - 10 vials', indicacao:'Agonista dual GLP-1/GIP aprovado FDA (Mounjaro/Zepbound). Perda de 15–22% do peso. Indicado para diabetes tipo 2 e obesidade. Dose semanal SC.', categoria:'glp1'},
+    {codigo:'TR40',   nome:'Tirzepatide 40mg',        produtoBRL:1150, aduanaBRL:1350, composicao:'Tirzepatide 40mg - 10 vials', indicacao:'Agonista dual GLP-1/GIP — dose intermediária. Superior ao semaglutide em comparativos diretos de perda de peso e controle glicêmico.', categoria:'glp1'},
+    {codigo:'TR50',   nome:'Tirzepatide 50mg',        produtoBRL:1296, aduanaBRL:1350, composicao:'Tirzepatide 50mg - 10 vials', indicacao:'Agonista dual GLP-1/GIP — dose alta. Reduz apetite, retarda esvaziamento gástrico e melhora sensibilidade insulínica periférica.', categoria:'glp1'},
+    {codigo:'TR60',   nome:'Tirzepatide 60mg',        produtoBRL:1728, aduanaBRL:1350, composicao:'Tirzepatide 60mg - 10 vials', indicacao:'Agonista dual GLP-1/GIP — dose máxima de manutenção. Protocolos off-label para obesidade grave após escalada completa. Monitoramento pancreático obrigatório.', categoria:'glp1'},
+    {codigo:'2S10',   nome:'SS-31 10mg',              produtoBRL:810,  aduanaBRL:810,  composicao:'SS-31 10mg - 10 vials', indicacao:'Peptídeo mitocondrial (Szeto-Schiller). Reduz estresse oxidativo mitocondrial, melhora produção de ATP e protege contra apoptose. Longevidade, insuficiência cardíaca e doenças neurodegenerativas.', categoria:'longevidade'},
+    {codigo:'2S50',   nome:'SS-31 50mg',              produtoBRL:2646, aduanaBRL:810,  composicao:'SS-31 50mg - 10 vials', indicacao:'SS-31 dose alta. Proteção mitocondrial intensa em patologias isquêmicas, nefropatia e envelhecimento acelerado. Protocolo de rejuvenescimento celular.', categoria:'longevidade'},
+    {codigo:'TB10',   nome:'TB500 10mg',              produtoBRL:1188, aduanaBRL:810,  composicao:'TB500 (Thymosin B4 Acetate) 10mg - 10 vials', indicacao:'Thymosin Beta-4. Regula actina, promove angiogênese e migração celular. Recuperação de lesões musculares, tendíneas e ligamentares. Cicatrização tecidual acelerada.', categoria:'recuperacao'},
+    {codigo:'TSM10',  nome:'Tesamorelin 10mg',        produtoBRL:1458, aduanaBRL:810,  composicao:'Tesamorelin 10mg - 10 vials', indicacao:'Análogo do GHRH. Aprovado FDA para lipodistrofia em HIV. Estimula secreção pulsátil de GH, reduz gordura visceral e melhora perfil lipídico.', categoria:'hormonio'},
+    {codigo:'TSM20',  nome:'Tesamorelin 20mg',        produtoBRL:2592, aduanaBRL:810,  composicao:'Tesamorelin 20mg - 10 vials', indicacao:'Tesamorelin dose alta. Protocolos intensivos de redução de gordura visceral e deficiência de GH. Monitoramento de IGF-1 obrigatório.', categoria:'hormonio'},
+    {codigo:'MS20',   nome:'MOTS-C 20mg',             produtoBRL:1350, aduanaBRL:810,  composicao:'MOTS-C 20mg - 10 vials', indicacao:'Peptídeo mitocondrial. Ativa AMPK, melhora captação de glicose e oxidação de gordura. Longevidade, sensibilidade insulínica, performance esportiva e composição corporal.', categoria:'longevidade'},
+    {codigo:'MS40',   nome:'MOTS-C 40mg',             produtoBRL:1890, aduanaBRL:810,  composicao:'MOTS-C 40mg - 10 vials', indicacao:'MOTS-C dose alta. Potencializa eficiência mitocondrial e resiliência ao estresse celular via AMPK/NRF2. Atletas de alto rendimento e longevidade avançada.', categoria:'longevidade'},
+    {codigo:'NJ500',  nome:'NAD+ 500mg',              produtoBRL:810,  aduanaBRL:810,  composicao:'NAD+ 500mg - 10 vials', indicacao:'Cofator do metabolismo celular. Ativa sirtuínas (SIRT1-7) e enzimas de reparo de DNA (PARP). Longevidade, fadiga crônica, declínio cognitivo e recuperação metabólica.', categoria:'longevidade'},
+    {codigo:'NJ1000', nome:'NAD+ 1000mg',             produtoBRL:1026, aduanaBRL:810,  composicao:'NAD+ 1000mg - 10 vials', indicacao:'NAD+ dose alta para reposição intensiva. Doenças neurodegenerativas (Alzheimer, Parkinson), envelhecimento acelerado e recuperação pós-viral. Administração IV supervisionada.', categoria:'longevidade'},
+    {codigo:'GLOW70', nome:'GLOW70',                  produtoBRL:2052, aduanaBRL:810,  composicao:'BPC157 10mg + GHK-CU 50mg + TB500 10mg = 70mg - 10 vials', indicacao:'Stack de recuperação e rejuvenescimento: BPC-157 (cicatrização) + GHK-CU (colágeno) + TB500 (angiogênese). Protocolo sinérgico para lesões complexas e anti-aging.', categoria:'combo'},
+    {codigo:'KLOW80', nome:'KLOW80',                  produtoBRL:2430, aduanaBRL:810,  composicao:'BPC157 10mg + GHK-CU 50mg + TB500 10mg + KPV 10mg = 80mg - 10 vials', indicacao:'GLOW70 + KPV (anti-inflamatório NF-κB). IBD, artrite, lesões musculares inflamadas e recuperação pós-cirúrgica com edema.', categoria:'combo'},
+    {codigo:'MT1',    nome:'Melatonin I 10mg',        produtoBRL:702,  aduanaBRL:810,  composicao:'Melatonin I 10mg - 10 vials', indicacao:'Hormônio pineal. Antioxidante e imunomodulador. Insônia, jet lag, distúrbios circadianos, antienvelhecimento e suporte oncológico adjuvante.', categoria:'sono'},
+    {codigo:'MT2',    nome:'Melatonin II 10mg',       produtoBRL:702,  aduanaBRL:810,  composicao:'Melatonin II 10mg - 10 vials', indicacao:'Melatonina formulação alternativa. Regulação do sono e ritmo circadiano. Indicada quando há necessidade de formulação distinta por protocolo ou tolerabilidade.', categoria:'sono'},
+    {codigo:'PT141',  nome:'PT-141 10mg',             produtoBRL:702,  aduanaBRL:810,  composicao:'PT-141 (Bremelanotide) 10mg - 10 vials', indicacao:'Agonista MC3R/MC4R. Aprovado FDA (Vyleesi) para disfunção sexual hipoativa feminina. Indicado também para disfunção erétil masculina resistente a PDE5i.', categoria:'sexual'},
+    {codigo:'DS10',   nome:'DSIP 10mg',               produtoBRL:702,  aduanaBRL:810,  composicao:'DSIP 10mg - 10 vials', indicacao:'Delta Sleep-Inducing Peptide. Induz e melhora o sono delta (estágio 3-4). Insônia crônica, modulação de cortisol e suporte em síndromes de dor crônica.', categoria:'sono'},
+    {codigo:'SK10',   nome:'Selank 10mg',             produtoBRL:783,  aduanaBRL:810,  composicao:'Selank 10mg - 10 vials', indicacao:'Análogo da tuftosina. Ansiolítico e nootrópico. Modula GABA e BDNF. Ansiedade generalizada, depressão leve, déficit cognitivo e memória de trabalho.', categoria:'nootrop'},
+    {codigo:'SK30',   nome:'Selank 30mg',             produtoBRL:1080, aduanaBRL:810,  composicao:'Selank 30mg - 10 vials', indicacao:'Selank dose alta para ansiedade severa e neuroproteção intensiva. Sem sedação nem dependência. Neurologia clínica e medicina do estresse.', categoria:'nootrop'},
+    {codigo:'ET10',   nome:'Epithalon 10mg',          produtoBRL:648,  aduanaBRL:810,  composicao:'Epithalon 10mg - 10 vials', indicacao:'Tetrapeptídeo pineal. Ativa telomerase, restaura comprimento dos telômeros. Antienvelhecimento, regulação circadiana, imunomodulação e prevenção oncológica.', categoria:'longevidade'},
+    {codigo:'ET50',   nome:'Epithalon 50mg',          produtoBRL:1566, aduanaBRL:810,  composicao:'Epithalon 50mg - 10 vials', indicacao:'Epithalon dose alta. Protocolo intensivo de longevidade. Potencializa ação antioxidante, normaliza função neuroendócrina e aumenta vida útil celular.', categoria:'longevidade'},
+    {codigo:'BPC10',  nome:'BPC-157 10mg',            produtoBRL:810,  aduanaBRL:810,  composicao:'BPC-157 10mg - 10 vials', indicacao:'Body Protective Compound. Ativa FAK-paxilina, promove angiogênese e cicatrização GI. Lesões musculoesqueléticas, úlceras gástricas e colite inflamatória.', categoria:'recuperacao'},
+    {codigo:'BPC20',  nome:'BPC-157 20mg',            produtoBRL:1080, aduanaBRL:810,  composicao:'BPC-157 20mg - 10 vials', indicacao:'BPC-157 dose alta para lesões extensas. Modula óxido nítrico e reduz inflamação sistêmica. Atletas de alta performance e recuperação pós-cirúrgica.', categoria:'recuperacao'},
+    {codigo:'BB10',   nome:'BPC+TB 10mg',             produtoBRL:1080, aduanaBRL:810,  composicao:'BPC 5mg + TB 5mg = 10mg - 10 vials', indicacao:'Combinação clássica BPC-157 + TB500. Reparo GI (BPC) + remodelação tecidual/angiogênese (TB500). Padrão para lesões musculoesqueléticas e tendíneas.', categoria:'combo'},
+    {codigo:'BB20',   nome:'BPC+TB 20mg',             produtoBRL:1836, aduanaBRL:810,  composicao:'BPC 10mg + TB 10mg = 20mg - 10 vials', indicacao:'BPC+TB dose alta. Lesões extensas ou crônicas, recuperação pós-cirúrgica ortopédica e rupturas ligamentares. Protocolo de 6–12 semanas.', categoria:'combo'},
+    {codigo:'XS20',   nome:'Semax+Selank 20mg',       produtoBRL:972,  aduanaBRL:810,  composicao:'Semax 10mg + Selank 10mg = 20mg - 10 vials', indicacao:'Stack nootrópico: Semax (cognição, BDNF) + Selank (ansiolítico, GABA). Otimização cognitiva com controle de ansiedade, foco, memória e neuroproteção.', categoria:'combo'},
+    {codigo:'AP5',    nome:'Adipotide 5mg',           produtoBRL:1350, aduanaBRL:810,  composicao:'Adipotide 5mg - 10 vials', indicacao:'Peptídeo pró-apoptótico seletivo para vasos adiposos. Induz apoptose em gordura visceral e subcutânea. Uso experimental para obesidade grave.', categoria:'emagrecimento'},
+    {codigo:'AP10',   nome:'Adipotide 10mg',          produtoBRL:1890, aduanaBRL:810,  composicao:'Adipotide 10mg - 10 vials', indicacao:'Adipotide dose alta. Apoptose vascular do tecido adiposo. Monitoramento renal rigoroso necessário (potencial nefrotoxicidade em doses elevadas).', categoria:'emagrecimento'},
+    {codigo:'SX5',    nome:'Semax 5mg',               produtoBRL:540,  aduanaBRL:810,  composicao:'Semax 5mg - 10 vials', indicacao:'Análogo do ACTH(4-10). Aumenta BDNF e NGF no SNC. Melhora cognitiva, neuroproteção pós-AVC, TDAH, fadiga mental e reabilitação neurológica.', categoria:'nootrop'},
+    {codigo:'KP10',   nome:'KPV 10mg',                produtoBRL:648,  aduanaBRL:810,  composicao:'KPV 10mg - 10 vials', indicacao:'Tripeptídeo anti-inflamatório. Inibe NF-κB e reduz IL-6, TNF-α. Crohn, colite, dermatite e inflamação sistêmica.', categoria:'recuperacao'},
+    {codigo:'ADA10',  nome:'Adamax 10mg',             produtoBRL:1458, aduanaBRL:810,  composicao:'Adamax 10mg - 10 vials', indicacao:'Peptídeo nootrópico neuroprotetor e adaptogênico. Cognição, resistência ao estresse neuronal. Modulação de BDNF e vias dopaminérgicas.', categoria:'nootrop'},
+    {codigo:'PIN10',  nome:'Pinealon 10mg',           produtoBRL:567,  aduanaBRL:810,  composicao:'Pinealon 10mg - 10 vials', indicacao:'Tripeptídeo citomedino pineal. Neuroprotetor e antienvelhecimento cerebral. Declínio cognitivo, neurodegeneração, distúrbios do sono e longevidade do SNC.', categoria:'nootrop'},
+    {codigo:'PIN20',  nome:'Pinealon 20mg',           produtoBRL:761,  aduanaBRL:810,  composicao:'Pinealon 20mg - 10 vials', indicacao:'Pinealon dose alta. Alzheimer, Parkinson e demência vascular. Restaura função mitocondrial neuronal e reduz estresse oxidativo cerebral.', categoria:'nootrop'},
+    {codigo:'SX10',   nome:'Semax 10mg',              produtoBRL:810,  aduanaBRL:810,  composicao:'Semax 10mg - 10 vials', indicacao:'Semax dose alta. Neurogênese e plasticidade sináptica. Reabilitação neurológica, declínio cognitivo e otimização de performance mental.', categoria:'nootrop'},
+    {codigo:'CND5',   nome:'CJC-1295 no DAC 5mg',    produtoBRL:810,  aduanaBRL:810,  composicao:'CJC-1295 without DAC 5mg - 10 vials', indicacao:'Análogo GHRH, meia-vida curta. Mimetiza pico fisiológico de GH. Combinado com Ipamorelin para secreção pulsátil. Massa magra e recuperação.', categoria:'hormonio'},
+    {codigo:'CND10',  nome:'CJC-1295 no DAC 10mg',   produtoBRL:1620, aduanaBRL:810,  composicao:'CJC-1295 without DAC 10mg - 10 vials', indicacao:'CJC-1295 sem DAC, dose alta. Múltiplas aplicações diárias. Estimulação de GH sem supressão do eixo hipotalâmico-hipofisário.', categoria:'hormonio'},
+    {codigo:'CP10',   nome:'CJC+IPA 10mg',           produtoBRL:1080, aduanaBRL:810,  composicao:'CJC-1295 no DAC 5mg + Ipamorelin 5mg = 10mg - 10 vials', indicacao:'Padrão-ouro de secretagogos de GH. CJC-1295 (GHRH) + Ipamorelin (GHRP) em receptores distintos, efeito sinérgico. Anti-aging, ganho muscular e lipólise.', categoria:'combo'},
+    {codigo:'CD5',    nome:'CJC-1295 com DAC 5mg',   produtoBRL:1620, aduanaBRL:810,  composicao:'CJC-1295 With DAC 5mg - 10 vials', indicacao:'CJC-1295 com DAC. Meia-vida de 6–8 dias, dose semanal. Elevação sustentada de GH e IGF-1. Anti-aging, ganho muscular e redução de gordura.', categoria:'hormonio'},
+    {codigo:'CD10',   nome:'CJC-1295 com DAC 10mg',  produtoBRL:2970, aduanaBRL:810,  composicao:'CJC-1295 With DAC 10mg - 10 vials', indicacao:'CJC-1295 com DAC, dose alta. Deficiência severa de GH, sarcopenia e envelhecimento acelerado. Monitoramento de IGF-1 e glicemia obrigatório.', categoria:'hormonio'},
+    {codigo:'Serm5',  nome:'Sermorelin 5mg',          produtoBRL:567,  aduanaBRL:810,  composicao:'Sermorelin Acetate 5mg - 10 vials', indicacao:'Análogo do GHRH (primeiros 29 AA). Secretagogo fisiológico de GH. Deficiência de GH, anti-aging, melhora do sono profundo e recuperação muscular.', categoria:'hormonio'},
+    {codigo:'Serm10', nome:'Sermorelin 10mg',         produtoBRL:980,  aduanaBRL:810,  composicao:'Sermorelin Acetate 10mg - 10 vials', indicacao:'Sermorelin dose alta. Estímulo intensivo ao GH endógeno. Administração SC noturna para coincidir com pico fisiológico durante sono profundo.', categoria:'hormonio'},
+    {codigo:'10AD',   nome:'AOD9604 10mg',            produtoBRL:1458, aduanaBRL:810,  composicao:'AOD9604 10mg - 10 vials', indicacao:'Fragmento C-terminal do GH (176-191). Ação lipolítica sem efeitos proliferativos. Redução de gordura visceral localizada sem afetar IGF-1 nem glicemia.', categoria:'emagrecimento'},
+    {codigo:'IP10',   nome:'Ipamorelin 10mg',         produtoBRL:756,  aduanaBRL:810,  composicao:'Ipamorelin 10mg - 10 vials', indicacao:'GHRP seletivo 3ª geração. Estimula GH sem elevar cortisol ou prolactina. Anti-aging, massa magra, recuperação e sono. Combinado com CJC-1295.', categoria:'hormonio'},
+    {codigo:'CU50',   nome:'GHK-CU 50mg',            produtoBRL:324,  aduanaBRL:810,  composicao:'GHK-CU 50mg - 10 vials', indicacao:'Complexo cobre-tripeptídeo. Estimula colágeno, elastina e glicosaminoglicanos. Antienvelhecimento cutâneo, cicatrização, queda de cabelo e reparação tecidual.', categoria:'estetica'},
+    {codigo:'CU100',  nome:'GHK-CU 100mg',           produtoBRL:432,  aduanaBRL:810,  composicao:'GHK-CU 100mg - 10 vials', indicacao:'GHK-CU dose alta. Rejuvenescimento cutâneo sistêmico, alopecia androgenética avançada e remodelação de matriz extracelular.', categoria:'estetica'},
+    {codigo:'KS10',   nome:'KissPeptin-10 10mg',      produtoBRL:972,  aduanaBRL:810,  composicao:'KissPeptin-10 10mg - 10 vials', indicacao:'Regulador do eixo reprodutivo. Estimula GnRH→LH/FSH→testosterona. Hipogonadismo hipogonadotrófico, fertilidade e restauração do eixo HPG pós-ciclo.', categoria:'hormonio'},
+    {codigo:'TY10',   nome:'Thymalin 10mg',           produtoBRL:664,  aduanaBRL:810,  composicao:'Thymalin 10mg - 10 vials', indicacao:'Polipeptídeo tímico. Estimula diferenciação de linfócitos T. Imunodeficiências, imunosenescência, infecções recorrentes e suporte oncológico.', categoria:'imunidade'},
+    {codigo:'TA5',    nome:'Thymosin Alpha-1 5mg',    produtoBRL:810,  aduanaBRL:810,  composicao:'Thymosin Alpha-1 5mg - 10 vials', indicacao:'Imunomodulador tímico. Aprovado em +35 países para hepatite B/C crônica. Ativa células NK e linfócitos T. Imunodeficiências, câncer adjuvante e infecções virais.', categoria:'imunidade'},
+    {codigo:'TA10',   nome:'Thymosin Alpha-1 10mg',   produtoBRL:1458, aduanaBRL:810,  composicao:'Thymosin Alpha-1 10mg - 10 vials', indicacao:'Thymosin Alpha-1 dose alta. Hepatite crônica, imunodeficiência severa e adjuvância em quimioterapia. Reduz infecções oportunistas em imunossuprimidos.', categoria:'imunidade'},
+    {codigo:'GTT1500',nome:'Glutathione 1500mg',      produtoBRL:729,  aduanaBRL:810,  composicao:'Glutathione 1500mg - 10 vials', indicacao:'Antioxidante mestre. Clareamento de pele (inibe tirosinase), detoxificação hepática e proteção contra estresse oxidativo. Administração IV para whitening e hepatoproteção.', categoria:'estetica'},
+    {codigo:'GTT600', nome:'Glutathione 600mg',       produtoBRL:469,  aduanaBRL:810,  composicao:'Glutathione 600mg - 10 vials', indicacao:'Glutationa dose padrão. Manutenção antioxidante, suporte hepático e clareamento cutâneo moderado. Protocolo 2–3×/semana IV ou push SC.', categoria:'estetica'},
+    {codigo:'XT100',  nome:'Botulinum toxin 100iu',   produtoBRL:623,  aduanaBRL:810,  composicao:'Botulinum toxin 100iu - 10 vials', indicacao:'Toxina botulínica tipo A. Bloqueia acetilcolina na junção neuromuscular. Rugas de expressão, hiperidrose, bruxismo e distúrbios de motilidade.', categoria:'estetica'},
+    {codigo:'20AM',   nome:'5-amino-1mq 20mg',        produtoBRL:756,  aduanaBRL:810,  composicao:'5-amino-1mq 20mg - 10 vials', indicacao:'Inibidor seletivo da NNMT. Aumenta NAD+, ativa AMPK e promove lipólise. Obesidade, resistência à insulina e longevidade metabólica.', categoria:'emagrecimento'},
+    {codigo:'50AM',   nome:'5-amino-1mq 50mg',        produtoBRL:972,  aduanaBRL:810,  composicao:'5-amino-1mq 50mg - 10 vials', indicacao:'5-amino-1mq dose alta. Obesidade metabólica severa e síndrome metabólica. Combinado com NAD+ para restauração mitocondrial e redução de gordura visceral.', categoria:'emagrecimento'},
+    {codigo:'G75',    nome:'HMG 75 IU',               produtoBRL:445,  aduanaBRL:810,  composicao:'HMG 75 IU - 10 vials', indicacao:'Human Menopausal Gonadotropin (LH+FSH). Foliculogênese e espermatogênese. Infertilidade feminina e masculina, preservação testicular em TRT.', categoria:'hormonio'},
+    {codigo:'E3K',    nome:'EPO 3000 IU',             produtoBRL:469,  aduanaBRL:810,  composicao:'EPO 3000 IU - 10 vials', indicacao:'Eritropoietina recombinante. Estimula eritropoiese. Anemia de doença crônica, renal e quimioterapia. Aumento de VO₂máx em protocolos supervisionados.', categoria:'performance'},
+    {codigo:'CBL60',  nome:'Cerebrolysin 60mg',       produtoBRL:502,  aduanaBRL:810,  composicao:'Cerebrolysin 60mg - 10 vials', indicacao:'Hidrolisado com fatores neurotróficos. Alzheimer, AVC isquêmico, TCE e reabilitação neurológica. Aprovado em vários países europeus.', categoria:'nootrop'},
+    {codigo:'CGL5',   nome:'Cagrilintide 5mg',        produtoBRL:1080, aduanaBRL:810,  composicao:'Cagrilintide 5mg - 10 vials', indicacao:'Análogo de longa ação da amilina. Reduz apetite e retarda esvaziamento gástrico. Combinado com semaglutide (CagriSema): perda de peso ~22% em fase 3.', categoria:'glp1'},
+    {codigo:'CGL10',  nome:'Cagrilintide 10mg',       produtoBRL:1890, aduanaBRL:810,  composicao:'Cagrilintide 10mg - 10 vials', indicacao:'Cagrilintide dose alta. Obesidade severa em combinação com GLP-1 agonistas. Escalonamento para protocolo CagriSema avançado.', categoria:'glp1'},
+    {codigo:'NP8-10', nome:'Snap-8 10mg',             produtoBRL:445,  aduanaBRL:810,  composicao:'Snap-8 10mg - 10 vials', indicacao:'Octapeptídeo análogo ao Argireline. Inibe complexo SNARE, reduz contração facial. Alternativa menos invasiva à toxina botulínica em mesoterapia.', categoria:'estetica'},
+    {codigo:'NP8-100',nome:'Snap-8 100mg',            produtoBRL:1587, aduanaBRL:810,  composicao:'Snap-8 100mg - 10 vials', indicacao:'Snap-8 dose alta para mesoterapia facial intensiva ou formulações cosméticas profissionais. Mesmo mecanismo SNARE em concentração para tratamentos extensos.', categoria:'estetica'},
+    {codigo:'CS10',   nome:'CagriSema 10mg',          produtoBRL:1053, aduanaBRL:810,  composicao:'Cagrilintide 5mg + Semaglutide 5mg = 10mg - 10 vials', indicacao:'CagriSema (Novo Nordisk, fase 3). GLP-1 agonista + análogo de amilina. Perda de ~22% em estudos clínicos. Sinergia por mecanismos complementares de saciedade.', categoria:'combo'},
+    {codigo:'RC10',   nome:'Retatrutide+Cagrili 10mg',produtoBRL:1458, aduanaBRL:810,  composicao:'Retatrutide 5mg + Cagrilintide 5mg = 10mg - 10 vials', indicacao:'Stack experimental de máxima potência: agonista triplo + análogo de amilina. 4 vias metabólicas simultâneas (GLP-1, GIP, Glucagon, amilina).', categoria:'combo'},
+    {codigo:'KP5',    nome:'KPV 5mg',                 produtoBRL:378,  aduanaBRL:810,  composicao:'KPV 5mg - 10 vials', indicacao:'KPV dose conservadora. Manutenção anti-inflamatória. Inibição NF-κB com perfil de dose reduzido para pacientes com maior sensibilidade.', categoria:'recuperacao'},
+];
+window.addEventListener('DOMContentLoaded', () => {
+    carregarListaFechada(); carregarSelectsMeia(); adicionarLinhaSortida();
+    carregarProdutosGrid(); carregarHistorico(); atualizarEstatisticas();
+    configurarEventListeners(); carregarConfiguracoes();
+});
+function configurarEventListeners() {
+    document.querySelectorAll('input[name="tipoFrete"]').forEach(r => {
+        r.addEventListener('change', function() {
+            document.getElementById('fretePersonalizadoDiv').style.display = this.value === 'personalizado' ? 'block' : 'none';
+        });
+    });
+}
+function carregarConfiguracoes() {
+    const v = localStorage.getItem('configFretePadraoPep') || 50;
+    document.getElementById('configFretePadrao').value = v;
+    atualizarLabelFrete();
+}
+function atualizarLabelFrete() {
+    const v = parseFloat(document.getElementById('configFretePadrao').value || 50);
+    document.getElementById('fretePadraoLabel').textContent = fmt(v);
+}
+function mudarTab(nome, event) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + nome).classList.add('active');
+    if (nome === 'analise') atualizarEstatisticas();
+}
+function selecionarModo(modo) {
+    modoAtual = modo;
+    document.querySelectorAll('.modo-card').forEach(c => c.classList.remove('active'));
+    document.getElementById(`modoCard_${modo}`).classList.add('active');
+    document.querySelectorAll('.modo-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(`modo_${modo}`).classList.add('active');
+    document.getElementById('resultadoSection').style.display = 'none';
+}
+function carregarListaFechada() {
+    const cont = document.getElementById('listaFechada');
+    cont.innerHTML = '';
+    PRODUTOS.forEach(p => {
+        const semFrete = p.produtoBRL + p.aduanaBRL;
+        const div = document.createElement('div');
+        div.className = 'prod-row'; div.id = `row_${p.codigo}`;
+        div.dataset.categoria = p.categoria; div.dataset.nome = p.nome.toLowerCase(); div.dataset.codigo = p.codigo.toLowerCase();
+        div.innerHTML = `
+            <input type="checkbox" id="chk_${p.codigo}" onchange="onCheckFechada('${p.codigo}')">
+            <span class="pr-codigo">${p.codigo}</span>
+            <span class="pr-nome">${p.nome}</span>
+            <span class="pr-preco">R$ ${fmt(semFrete)}</span>
+            <div class="pr-qtd"><span style="font-size:0.82em;color:#888;">Caixas:</span>
+                <input type="number" id="qtd_${p.codigo}" min="0" value="0" onchange="onQtdFechada('${p.codigo}')" style="width:70px;"></div>
+            <span class="pr-subtotal" id="sub_${p.codigo}">R$ 0,00</span>
+            <span class="pr-block-msg" id="msg_${p.codigo}"></span>`;
+        cont.appendChild(div);
+    });
+}
+function onCheckFechada(codigo) {
+    const chk = document.getElementById(`chk_${codigo}`).checked;
+    const qtdEl = document.getElementById(`qtd_${codigo}`);
+    if (chk && parseInt(qtdEl.value) === 0) qtdEl.value = 1;
+    if (!chk) { qtdEl.value = 0; document.getElementById(`sub_${codigo}`).textContent = 'R$ 0,00'; }
+    atualizarBloqueiosFamilia(); atualizarSubtotalFechada(codigo); mostrarValidacaoFechada();
+}
+function onQtdFechada(codigo) {
+    const qtd = parseInt(document.getElementById(`qtd_${codigo}`).value) || 0;
+    document.getElementById(`chk_${codigo}`).checked = qtd > 0;
+    atualizarSubtotalFechada(codigo); atualizarBloqueiosFamilia(); mostrarValidacaoFechada();
+}
+function atualizarSubtotalFechada(codigo) {
+    const qtd = parseInt(document.getElementById(`qtd_${codigo}`).value) || 0;
+    const p = PRODUTOS.find(x => x.codigo === codigo); if (!p) return;
+    document.getElementById(`sub_${codigo}`).textContent = `R$ ${fmt((p.produtoBRL + p.aduanaBRL) * qtd)}`;
+}
+function atualizarBloqueiosFamilia() {
+    const selecionados = PRODUTOS.filter(p => document.getElementById(`chk_${p.codigo}`)?.checked).map(p => p.codigo);
+    PRODUTOS.forEach(p => {
+        const row = document.getElementById(`row_${p.codigo}`); const msg = document.getElementById(`msg_${p.codigo}`); const chk = document.getElementById(`chk_${p.codigo}`);
+        if (!row || !msg) return;
+        const conflito = selecionados.find(sel => sel !== p.codigo && familiasConflitam(p.codigo, sel));
+        if (conflito && !chk.checked) {
+            row.classList.add('bloqueado');
+            const nomeConflito = PRODUTOS.find(x => x.codigo === conflito)?.nome || conflito;
+            msg.textContent = `⛔ Bloqueado — mesma família de "${nomeConflito}"`;
+        } else { row.classList.remove('bloqueado'); msg.textContent = ''; }
+    });
+}
+function mostrarValidacaoFechada() {
+    const erros = [];
+    PRODUTOS.forEach(p => {
+        const row = document.getElementById(`row_${p.codigo}`);
+        if (row?.classList.contains('bloqueado') && document.getElementById(`chk_${p.codigo}`)?.checked) erros.push(`${p.codigo} — mesma família já selecionada`);
+    });
+    const box = document.getElementById('validacaoFechada');
+    const selecionados = PRODUTOS.filter(p => document.getElementById(`chk_${p.codigo}`)?.checked);
+    if (!selecionados.length) { box.innerHTML = ''; return; }
+    if (erros.length) box.innerHTML = `<div class="validation-box erro">⛔ <strong>Conflito de família:</strong><ul>${erros.map(e=>`<li>${e}</li>`).join('')}</ul></div>`;
+    else box.innerHTML = `<div class="validation-box ok">✅ <strong>${selecionados.length} produto(s) selecionado(s) sem conflitos.</strong></div>`;
+}
+function filtrarListaFechada() {
+    const q = document.getElementById('searchFechada').value.toLowerCase();
+    document.querySelectorAll('#listaFechada .prod-row').forEach(r => { r.style.display = (r.dataset.nome.includes(q) || r.dataset.codigo.includes(q)) ? '' : 'none'; });
+}
+function filtrarCatFechada(cat, event) {
+    document.querySelectorAll('#filtrosFechada .filtro-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    document.querySelectorAll('#listaFechada .prod-row').forEach(r => { r.style.display = (cat === 'todos' || r.dataset.categoria === cat) ? '' : 'none'; });
+}
+function carregarSelectsMeia() {
+    ['meiaSelA','meiaSelB'].forEach(id => {
+        const sel = document.getElementById(id);
+        PRODUTOS.forEach(p => { const opt = document.createElement('option'); opt.value = p.codigo; opt.textContent = `${p.codigo} — ${p.nome} (R$ ${fmt(p.produtoBRL + p.aduanaBRL)})`; sel.appendChild(opt); });
+    });
+}
+function validarMeia() {
+    const codA = document.getElementById('meiaSelA').value; const codB = document.getElementById('meiaSelB').value;
+    const slotA = document.getElementById('meiaSlotA'); const slotB = document.getElementById('meiaSlotB');
+    const info = document.getElementById('meiaCaixaInfo'); const vBox = document.getElementById('validacaoMeia');
+    const pA = PRODUTOS.find(p => p.codigo === codA); const pB = PRODUTOS.find(p => p.codigo === codB);
+    document.getElementById('meiaInfoA').textContent = pA ? `R$ ${fmt(pA.produtoBRL+pA.aduanaBRL)} / 5 vials` : '';
+    document.getElementById('meiaInfoB').textContent = pB ? `R$ ${fmt(pB.produtoBRL+pB.aduanaBRL)} / 5 vials` : '';
+    slotA.classList.toggle('preenchido', !!codA); slotB.classList.toggle('preenchido', !!codB);
+    if (!codA || !codB) { info.style.display='none'; vBox.innerHTML=''; return; }
+    if (codA === codB) { vBox.innerHTML = `<div class="validation-box erro">⛔ <strong>Produtos iguais:</strong> selecione dois produtos diferentes para meia+meia.</div>`; info.style.display='none'; return; }
+    if (familiasConflitam(codA, codB)) { vBox.innerHTML = `<div class="validation-box erro">⛔ <strong>Mesma família:</strong> <em>${pA.nome}</em> e <em>${pB.nome}</em> são concentrações diferentes do mesmo peptídeo. Escolha produtos de famílias distintas.</div>`; info.style.display='none'; return; }
+    const subA = (pA.produtoBRL + pA.aduanaBRL) * 5 / 10; const subB = (pB.produtoBRL + pB.aduanaBRL) * 5 / 10; const totalCaixa = subA + subB;
+    info.style.display='block'; info.innerHTML = `✅ <strong>${pA.nome}</strong> (5×) + <strong>${pB.nome}</strong> (5×) — S/ frete: <strong>R$ ${fmt(totalCaixa)}</strong> por caixa`;
+    vBox.innerHTML = `<div class="validation-box ok">✅ Combinação válida! Produtos de famílias distintas.</div>`;
+}
+function adicionarLinhaSortida() {
+    const totalAtual = calcularTotalVialsSortida();
+    if (totalAtual >= 10) { alert('⚠️ A caixa já está completa com 10 vials.'); return; }
+    sortidaLinhaCount++; const id = `sortLinha_${sortidaLinhaCount}`;
+    const div = document.createElement('div'); div.className = 'sortida-linha'; div.id = id;
+    div.innerHTML = `
+        <select id="sortSel_${sortidaLinhaCount}" onchange="validarSortida()"><option value="">— Selecione —</option>
+            ${PRODUTOS.map(p=>`<option value="${p.codigo}">${p.codigo} — ${p.nome} (R$ ${fmt(p.produtoBRL+p.aduanaBRL)})</option>`).join('')}</select>
+        <div class="sl-qtd"><span style="font-size:0.8em;color:#888;">Vials:</span>
+            <input type="number" id="sortQtd_${sortidaLinhaCount}" min="2" max="8" step="2" value="2" onchange="validarSortida()"></div>
+        <span class="sl-preco" id="sortPreco_${sortidaLinhaCount}">R$ 0,00</span>
+        <button class="sl-remove" onclick="removerLinhaSortida('${id}',${sortidaLinhaCount})" title="Remover">✕</button>
+        <span class="sl-msg" id="sortMsg_${sortidaLinhaCount}"></span>`;
+    document.getElementById('sortidaLinhas').appendChild(div); validarSortida();
+}
+function removerLinhaSortida(divId, num) { document.getElementById(divId)?.remove(); validarSortida(); }
+function calcularTotalVialsSortida() {
+    let total = 0;
+    document.querySelectorAll('#sortidaLinhas .sortida-linha').forEach(linha => { const num = linha.id.replace('sortLinha_',''); total += parseInt(document.getElementById(`sortQtd_${num}`)?.value||0); });
+    return total;
+}
+function validarSortida() {
+    const linhas = document.querySelectorAll('#sortidaLinhas .sortida-linha'); const erros = []; const selecionados = []; let totalVials = 0;
+    linhas.forEach(linha => {
+        const num = linha.id.replace('sortLinha_',''); const cod = document.getElementById(`sortSel_${num}`)?.value || '';
+        const qtd = parseInt(document.getElementById(`sortQtd_${num}`)?.value||0); const msgEl= document.getElementById(`sortMsg_${num}`); const preco= document.getElementById(`sortPreco_${num}`);
+        const p = PRODUTOS.find(x => x.codigo === cod);
+        if (p && qtd > 0) { const vp = (p.produtoBRL + p.aduanaBRL) / 10; preco.textContent = `R$ ${fmt(vp * qtd)}`; } else { preco.textContent = 'R$ 0,00'; }
+        linha.classList.remove('erro','ok'); if (!cod) return; if (msgEl) msgEl.textContent = ''; let erroLocal = false;
+        if (qtd % 2 !== 0) { const msg = `⚠️ Quantidade ímpar (${qtd}) não permitida. Use 2, 4, 6 ou 8.`; if (msgEl) msgEl.textContent = msg; erros.push(`${cod}: ${msg}`); erroLocal = true; }
+        if (selecionados.find(s => s.codigo === cod)) { const msg = `⛔ ${cod} já adicionado na caixa.`; if (msgEl) msgEl.textContent = msg; erros.push(msg); erroLocal = true; }
+        const conflito = selecionados.find(s => familiasConflitam(s.codigo, cod));
+        if (conflito) { const nomeConf = PRODUTOS.find(x => x.codigo === conflito.codigo)?.nome || conflito.codigo; const msg = `⛔ Mesma família de "${nomeConf}".`; if (msgEl) msgEl.textContent = msg; erros.push(`${cod}: ${msg}`); erroLocal = true; }
+        linha.classList.add(erroLocal ? 'erro' : 'ok'); selecionados.push({codigo:cod, qtd, num}); totalVials += qtd;
+    });
+    document.getElementById('sortidaTotalVials').textContent = totalVials;
+    const statusEl = document.getElementById('sortidaStatusMsg');
+    if (totalVials < 10) { statusEl.textContent = `Adicione mais ${10 - totalVials} vial(is)`; statusEl.style.color='rgba(255,200,100,0.95)'; }
+    else if (totalVials === 10) { statusEl.textContent = '✅ Caixa completa!'; statusEl.style.color='rgba(150,255,150,0.95)'; }
+    else { statusEl.textContent = `⚠️ Excesso de ${totalVials - 10} vial(is)`; statusEl.style.color='rgba(255,130,130,0.95)'; }
+    const vBox = document.getElementById('validacaoSortida');
+    if (erros.length) vBox.innerHTML = `<div class="validation-box erro">⛔ <strong>Corrija os erros:</strong><ul>${erros.map(e=>`<li>${e}</li>`).join('')}</ul></div>`;
+    else if (totalVials === 10) vBox.innerHTML = `<div class="validation-box ok">✅ Caixa sortida válida — 10 vials, sem conflitos.</div>`;
+    else vBox.innerHTML = totalVials > 0 ? `<div class="validation-box aviso">⚠️ Total de ${totalVials}/10 vials. Complete a caixa.</div>` : '';
+}
+function getFretePorVial() {
+    const tipo = document.querySelector('input[name="tipoFrete"]:checked').value;
+    return tipo === 'recomendado' ? parseFloat(document.getElementById('configFretePadrao').value || 50) : parseFloat(document.getElementById('valorFretePersonalizado').value || 50);
+}
+function calcularTotal() {
+    const qtdCaixas = parseInt(document.getElementById('qtdCaixas').value) || 1;
+    if (qtdCaixas < 1) { alert('⚠️ Quantidade de caixas inválida.'); return; }
+    let itens = []; let erroValidacao = false;
+    if (modoAtual === 'fechada') {
+        const selecionados = PRODUTOS.filter(p => document.getElementById(`chk_${p.codigo}`)?.checked && (parseInt(document.getElementById(`qtd_${p.codigo}`)?.value)||0) > 0);
+        if (!selecionados.length) { alert('⚠️ Selecione ao menos um produto.'); return; }
+        for (let i = 0; i < selecionados.length; i++) { for (let j = i+1; j < selecionados.length; j++) { if (familiasConflitam(selecionados[i].codigo, selecionados[j].codigo)) { alert(`⛔ Conflito: "${selecionados[i].nome}" e "${selecionados[j].nome}" são da mesma família. Remova um deles.`); erroValidacao = true; break; } } if (erroValidacao) break; }
+        if (erroValidacao) return;
+        selecionados.forEach(p => { const qtdBox = parseInt(document.getElementById(`qtd_${p.codigo}`).value) || 0; itens.push({ nome:p.nome, codigo:p.codigo, qtdVials:qtdBox*10*qtdCaixas, produtoBRL:p.produtoBRL*qtdBox*qtdCaixas, aduanaBRL:p.aduanaBRL*qtdBox*qtdCaixas }); });
+    } else if (modoAtual === 'meia') {
+        const codA = document.getElementById('meiaSelA').value; const codB = document.getElementById('meiaSelB').value;
+        if (!codA || !codB) { alert('⚠️ Selecione os dois produtos para a meia caixa.'); return; }
+        if (codA === codB) { alert('⛔ Produtos iguais. Selecione produtos diferentes.'); return; }
+        if (familiasConflitam(codA, codB)) { alert('⛔ Produtos da mesma família. Escolha produtos distintos.'); return; }
+        const pA = PRODUTOS.find(p => p.codigo === codA); const pB = PRODUTOS.find(p => p.codigo === codB);
+        itens.push({ nome:pA.nome, codigo:pA.codigo, qtdVials:5*qtdCaixas, produtoBRL:(pA.produtoBRL/10)*5*qtdCaixas, aduanaBRL:(pA.aduanaBRL/10)*5*qtdCaixas });
+        itens.push({ nome:pB.nome, codigo:pB.codigo, qtdVials:5*qtdCaixas, produtoBRL:(pB.produtoBRL/10)*5*qtdCaixas, aduanaBRL:(pB.aduanaBRL/10)*5*qtdCaixas });
+    } else if (modoAtual === 'sortida') {
+        const linhas = document.querySelectorAll('#sortidaLinhas .sortida-linha'); const coletados = []; let totalVials = 0; let erros = [];
+        linhas.forEach(linha => {
+            const num = linha.id.replace('sortLinha_',''); const cod = document.getElementById(`sortSel_${num}`)?.value||''; const qtd = parseInt(document.getElementById(`sortQtd_${num}`)?.value||0);
+            if (!cod) return;
+            if (qtd % 2 !== 0) { erros.push(`${cod}: quantidade ímpar`); return; }
+            if (coletados.find(c=>c.codigo===cod)) { erros.push(`${cod}: duplicado`); return; }
+            const conflito = coletados.find(c => familiasConflitam(c.codigo, cod)); if (conflito) { erros.push(`${cod}: mesma família de ${conflito.codigo}`); return; }
+            coletados.push({codigo:cod,qtd}); totalVials += qtd;
+        });
+        if (erros.length) { alert('⛔ Corrija os erros na caixa sortida:\n' + erros.join('\n')); return; }
+        if (!coletados.length) { alert('⚠️ Adicione ao menos um produto.'); return; }
+        if (totalVials !== 10) { alert(`⚠️ A caixa sortida deve ter exatamente 10 vials. Atual: ${totalVials}.`); return; }
+        coletados.forEach(c => { const p = PRODUTOS.find(x => x.codigo === c.codigo); const vp = p.produtoBRL / 10; const va = p.aduanaBRL / 10; itens.push({ nome:p.nome, codigo:p.codigo, qtdVials:c.qtd*qtdCaixas, produtoBRL:vp*c.qtd*qtdCaixas, aduanaBRL:va*c.qtd*qtdCaixas }); });
+    }
+    const totalProduto = itens.reduce((a,i) => a + i.produtoBRL, 0); const totalAduana = itens.reduce((a,i) => a + i.aduanaBRL, 0); const totalVials = itens.reduce((a,i) => a + i.qtdVials, 0);
+    const subtotal = totalProduto + totalAduana; const fretePV = getFretePorVial(); const freteBRL = totalVials * fretePV; const totalFinal = subtotal + freteBRL; const custoVial = totalFinal / totalVials;
+    document.getElementById('totalProdutoBRL').textContent = `R$ ${fmt(totalProduto)}`; document.getElementById('totalAduanaBRL').textContent = `R$ ${fmt(totalAduana)}`;
+    document.getElementById('totalVials').textContent = totalVials; document.getElementById('freteTotal').textContent = `R$ ${fmt(freteBRL)}`; document.getElementById('custoVial').textContent = `R$ ${fmt(custoVial)}`;
+    document.getElementById('detProdutoBRL').textContent = `R$ ${fmt(totalProduto)}`; document.getElementById('detAduanaBRL').textContent = `R$ ${fmt(totalAduana)}`; document.getElementById('detSubtotalBRL').textContent = `R$ ${fmt(subtotal)}`;
+    document.getElementById('fretePorVialDisplay').textContent = fmt(fretePV); document.getElementById('totalVialsDisplay').textContent = totalVials; document.getElementById('detFreteBRL').textContent = `R$ ${fmt(freteBRL)}`; document.getElementById('totalFinalBRL').textContent = `R$ ${fmt(totalFinal)}`;
+    document.getElementById('resumoProdutos').innerHTML = `<strong>📦 Resumo (${qtdCaixas} cx — modo: ${modoAtual}):</strong><br><br>${itens.map(it => `• <strong>${it.codigo}</strong> — ${it.nome} × ${it.qtdVials} vials &nbsp; S/frete: R$ ${fmt(it.produtoBRL+it.aduanaBRL)}`).join('<br>')}`;
+    document.getElementById('resultadoSection').style.display = 'block';
+    document.getElementById('resultadoSection').scrollIntoView({ behavior:'smooth', block:'nearest' });
+    calcularCenarios(subtotal, totalVials, totalFinal);
+    ultimoCalculo = { data: new Date().toLocaleString('pt-BR'), modo: modoAtual, qtdCaixas, itens, totalProduto, totalAduana, subtotal, freteBRL, totalFinal, totalVials, custoVial, fretePV, produtosTexto: itens.map(i => `${i.qtdVials}v ${i.codigo}`).join(' | ') };
+}
+function atualizarCalculo() { if (ultimoCalculo) calcularTotal(); }
+function calcularCenarios(subtotalBRL, totalVials, totalAtual) {
+    [30,40,50,60,70].forEach(f => { const total = subtotalBRL + totalVials * f; document.getElementById(`cenarioF${f}`).textContent = `R$ ${fmt(total)}`; const el = document.getElementById(`difF${f}`); if (el) { const d=total-totalAtual; el.textContent = `${d>=0?'+':''}R$ ${fmt(d)}`; } });
+    document.getElementById('analiseTexto').textContent = `Cada R$ 10,00 de variação no frete impacta R$ ${fmt(totalVials * 10)} no total (${totalVials} vials).`;
+}
+function carregarProdutosGrid() {
+    const grid = document.getElementById('produtosGrid'); grid.innerHTML = '';
+    PRODUTOS.forEach(p => {
+        const semFrete = p.produtoBRL + p.aduanaBRL; const card = document.createElement('div'); card.className = 'produto-card';
+        card.dataset.categoria = p.categoria; card.dataset.nome = p.nome.toLowerCase(); card.dataset.codigo = p.codigo.toLowerCase();
+        card.innerHTML = `
+            <div class="pc-header"><div class="pc-codigo">${p.codigo}</div><div class="pc-nome">${p.nome}</div></div>
+            <div class="pc-body">
+                <div class="pc-indicacao">🔬 ${p.indicacao}</div>
+                <div class="pc-composicao">📦 ${p.composicao}</div>
+                <div class="pc-precos">
+                    <div class="pc-preco-item" style="background:#FFF3E8;"><div class="plabel">Produto</div><div class="pvalue" style="color:var(--red);">R$ ${fmt(p.produtoBRL)}</div></div>
+                    <div class="pc-preco-item" style="background:#FFF8E1;"><div class="plabel">Aduana</div><div class="pvalue" style="color:var(--warn);">R$ ${fmt(p.aduanaBRL)}</div></div>
+                    <div class="pc-preco-item" style="background:var(--success-bg);"><div class="plabel">S/ Frete</div><div class="pvalue" style="color:var(--success);">R$ ${fmt(semFrete)}</div></div>
+                </div>
+            </div>
+            <div class="pc-footer"><span class="pc-cat">${getCategoriaLabel(p.categoria)}</span>${getFamilia(p.codigo) ? `<span style="font-size:0.72em;color:var(--muted);">Família: ${getFamilia(p.codigo)}</span>` : ''}</div>`;
+        grid.appendChild(card);
+    });
+}
+function filtrarCatalogoCat(cat, event) {
+    document.querySelectorAll('#tab-produtos .filtros .filtro-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active');
+    document.querySelectorAll('#produtosGrid .produto-card').forEach(c => { c.style.display = (cat === 'todos' || c.dataset.categoria === cat) ? '' : 'none'; });
+}
+function filtrarCatalogo() {
+    const q = document.getElementById('searchCatalogo').value.toLowerCase();
+    document.querySelectorAll('#produtosGrid .produto-card').forEach(c => { c.style.display = (c.dataset.nome.includes(q) || c.dataset.codigo.includes(q)) ? '' : 'none'; });
+}
+function getCategoriaLabel(cat) { return {glp1:'GLP-1',recuperacao:'Recuperação',hormonio:'Hormônio',longevidade:'Longevidade',nootrop:'Nootrópico',estetica:'Estética',combo:'Combo',sono:'Sono',sexual:'Sexual',imunidade:'Imunidade',emagrecimento:'Emagrecimento',performance:'Performance'}[cat] || cat; }
+function salvarHistorico() {
+    if (!ultimoCalculo) { alert('⚠️ Calcule um pedido antes.'); return; }
+    historicoCalculos.unshift(ultimoCalculo); if (historicoCalculos.length > 100) historicoCalculos.length = 100;
+    localStorage.setItem('historicoCalculosPep', JSON.stringify(historicoCalculos)); carregarHistorico(); atualizarEstatisticas(); alert('✅ Salvo no histórico!');
+}
+function carregarHistorico() {
+    const cont = document.getElementById('historicoContainer'); const badge = document.getElementById('historicoCount');
+    badge.textContent = `${historicoCalculos.length} registro${historicoCalculos.length !== 1 ? 's' : ''}`;
+    if (!historicoCalculos.length) { cont.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">Nenhum cálculo salvo</div><div class="empty-state-text">Os pedidos aparecerão aqui após serem salvos.</div></div>`; return; }
+    cont.innerHTML = '';
+    historicoCalculos.forEach((item, i) => {
+        const card = document.createElement('div'); card.className = 'panel'; card.style.marginBottom = '18px';
+        const modoLabel = {fechada:'📦 Fechada',meia:'½ Meia+Meia',sortida:'🎲 Sortida'}[item.modo] || item.modo;
+        card.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;">
+                <div><h4 style="color:var(--dark);margin-bottom:8px;">📅 ${item.data}</h4>
+                <span class="badge badge-primary">${modoLabel}</span> <span class="badge badge-success">${item.totalVials} vials</span> <span class="badge badge-warning">${item.qtdCaixas} cx</span></div>
+                <button class="btn btn-danger" onclick="removerHistorico(${i})" style="padding:8px 14px;">🗑️</button></div>
+            <div style="background:var(--cream);padding:12px;border-radius:8px;margin-bottom:14px;font-size:0.88em;">${item.produtosTexto}</div>
+            <div class="grid-4" style="gap:10px;">
+                ${[['Produtos',`R$ ${fmt(item.totalProduto)}`,'var(--red)'],['Aduana',`R$ ${fmt(item.totalAduana)}`,'var(--warn)'],['Frete',`R$ ${fmt(item.freteBRL)}`,'var(--orange)'],['TOTAL',`R$ ${fmt(item.totalFinal)}`,'var(--success)'],['Custo/Vial',`R$ ${fmt(item.custoVial)}`,'var(--dark)']]
+                .map(([l,v,c]) => `<div style="text-align:center;padding:10px;background:white;border-radius:7px;border:2px solid var(--border);"><div style="font-size:0.78em;color:var(--muted);margin-bottom:3px;">${l}</div><div style="font-size:1.05em;font-weight:700;color:${c};">${v}</div></div>`).join('')}
+            </div>`;
+        cont.appendChild(card);
+    });
+}
+function removerHistorico(i) { if (!confirm('Remover este registro?')) return; historicoCalculos.splice(i,1); localStorage.setItem('historicoCalculosPep', JSON.stringify(historicoCalculos)); carregarHistorico(); atualizarEstatisticas(); }
+function limparHistorico() { if (!confirm('⚠️ Limpar TODO o histórico?')) return; historicoCalculos = []; localStorage.removeItem('historicoCalculosPep'); carregarHistorico(); atualizarEstatisticas(); }
+function atualizarEstatisticas() {
+    if (!historicoCalculos.length) { document.getElementById('analiseTotalCalculos').textContent = '0'; document.getElementById('analiseMediaValor').textContent = 'R$ 0'; document.getElementById('analiseMediaVials').textContent = '0'; document.getElementById('analiseProdutoTop').textContent = '-'; return; }
+    document.getElementById('analiseTotalCalculos').textContent = historicoCalculos.length;
+    const soma = historicoCalculos.reduce((a,i) => a + i.totalFinal, 0); document.getElementById('analiseMediaValor').textContent = `R$ ${fmt(soma / historicoCalculos.length)}`;
+    const sv = historicoCalculos.reduce((a,i) => a + i.totalVials, 0); document.getElementById('analiseMediaVials').textContent = Math.round(sv / historicoCalculos.length);
+    const cnt = {}; historicoCalculos.forEach(h => (h.itens||[]).forEach(it => { cnt[it.codigo] = (cnt[it.codigo]||0) + it.qtdVials; }));
+    let top='-', mx=0; Object.entries(cnt).forEach(([k,v]) => { if (v > mx) { mx=v; top=k; } }); document.getElementById('analiseProdutoTop').textContent = top;
+}
+function exportarTXT() {
+    if (!ultimoCalculo) { alert('⚠️ Calcule antes.'); return; } const c = ultimoCalculo;
+    const modoLabel = {fechada:'Caixa Fechada',meia:'Meia + Meia',sortida:'Caixa Sortida'}[c.modo]||c.modo;
+    const txt = `PEPMASTERS — ORÇAMENTO DE IMPORTAÇÃO\n${'='.repeat(50)}\nDATA: ${c.data}\nMODO: ${modoLabel} | CAIXAS: ${c.qtdCaixas}\n${'-'.repeat(50)}\nITENS\n${'-'.repeat(50)}\n${c.itens.map(it=>`  • ${it.codigo} — ${it.nome}\n    Vials: ${it.qtdVials} | Produto: R$ ${fmt(it.produtoBRL)} | Aduana: R$ ${fmt(it.aduanaBRL)} | S/Frete: R$ ${fmt(it.produtoBRL+it.aduanaBRL)}`).join('\n')}\n${'-'.repeat(50)}\nFINANCEIRO\n${'-'.repeat(50)}\nProdutos: R$ ${fmt(c.totalProduto)}\nAduana: R$ ${fmt(c.totalAduana)}\nSubtotal: R$ ${fmt(c.subtotal)}\nFrete PY→BR: R$ ${fmt(c.freteBRL)} (R$ ${fmt(c.fretePV)}/vial × ${c.totalVials} vials)\n${'='.repeat(50)}\nTOTAL FINAL: R$ ${fmt(c.totalFinal)}\n${'='.repeat(50)}\nVials: ${c.totalVials} | Custo/Vial: R$ ${fmt(c.custoVial)}\nGerado: ${new Date().toLocaleString('pt-BR')} — PEPMASTERS Calculator`;
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'})); a.download = `pepmasters_${Date.now()}.txt`; a.click(); URL.revokeObjectURL(a.href);
+}
+function compartilharWhatsApp() {
+    if (!ultimoCalculo) { alert('⚠️ Calcule antes.'); return; } const c = ultimoCalculo;
+    const modoLabel = {fechada:'📦 Fechada',meia:'½ Meia+Meia',sortida:'🎲 Sortida'}[c.modo]||c.modo;
+    const msg = `*PEPMASTERS — Orçamento* 💊\n📅 *Data:* ${c.data}\n📦 *Modo:* ${modoLabel} | *Caixas:* ${c.qtdCaixas}\n${'━'.repeat(20)}\n*Itens:*\n${c.itens.map(it=>`  • ${it.qtdVials}v — ${it.codigo} ${it.nome}`).join('\n')}\n${'━'.repeat(20)}\n💊 *Produtos:* R$ ${fmt(c.totalProduto)}\n🛃 *Aduana:* R$ ${fmt(c.totalAduana)}\n🚚 *Frete:* R$ ${fmt(c.freteBRL)} (R$ ${fmt(c.fretePV)}/vial)\n💰 *TOTAL: R$ ${fmt(c.totalFinal)}*\n📊 ${c.totalVials} vials | R$ ${fmt(c.custoVial)}/vial\n${'━'.repeat(20)}\n_PEPMASTERS Calculator_`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+}
+function limparCalculo() {
+    if (!confirm('Limpar e iniciar nova cotação?')) return;
+    PRODUTOS.forEach(p => { const chk = document.getElementById(`chk_${p.codigo}`); const qtd = document.getElementById(`qtd_${p.codigo}`); const sub = document.getElementById(`sub_${p.codigo}`); const row = document.getElementById(`row_${p.codigo}`); const msg = document.getElementById(`msg_${p.codigo}`); if (chk) chk.checked = false; if (qtd) qtd.value = 0; if (sub) sub.textContent = 'R$ 0,00'; if (row) row.classList.remove('bloqueado'); if (msg) msg.textContent = ''; });
+    document.getElementById('validacaoFechada').innerHTML = '';
+    document.getElementById('meiaSelA').value = ''; document.getElementById('meiaSelB').value = ''; document.getElementById('meiaCaixaInfo').style.display = 'none'; document.getElementById('validacaoMeia').innerHTML = '';
+    document.getElementById('sortidaLinhas').innerHTML = ''; sortidaLinhaCount = 0; adicionarLinhaSortida(); document.getElementById('validacaoSortida').innerHTML = '';
+    document.getElementById('qtdCaixas').value = 1; document.getElementById('resultadoSection').style.display = 'none'; ultimoCalculo = null; alert('✅ Pronto para nova cotação!');
+}
+function salvarConfiguracoes() {
+    localStorage.setItem('configFretePadraoPep', document.getElementById('configFretePadrao').value); atualizarLabelFrete();
+    const el = document.getElementById('configSalva'); el.style.display = 'block'; setTimeout(() => el.style.display='none', 3000);
+}
+function fmt(v) { return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+document.addEventListener('keydown', e => { if (e.ctrlKey && e.key==='Enter') calcularTotal(); if (e.ctrlKey && e.key==='s') { e.preventDefault(); salvarHistorico(); } });
+</script>
+</body>
+</html>

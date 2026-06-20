@@ -475,6 +475,7 @@ window.PEPMASTERS_I18N = {
   "register.email.placeholder": { en:"your@email.com", pt:"seu@email.com", es:"tu@email.com", de:"ihre@email.com", fr:"votre@email.com" },
   "register.cpf.placeholder": { en:"ID number", pt:"000.000.000-00", es:"Número de identificación", de:"Steuernummer", fr:"Numéro d'identification" },
   "register.phone.placeholder": { en:"Phone number", pt:"(00) 00000-0000", es:"Número de teléfono", de:"Telefonnummer", fr:"Numéro de téléphone" },
+  "nav.calculator": { en:"Import Calculator", pt:"Calculadora de Importação", es:"Calculadora de Importación", de:"Importrechner", fr:"Calculateur d'Importation" },
   "members.popular":          { en:"Most popular",    pt:"Mais popular",      es:"Más popular",       de:"Am beliebtesten",   fr:"Le plus populaire" },
   "members.plan.free":        { en:"Free",            pt:"Grátis",            es:"Gratis",            de:"Kostenlos",         fr:"Gratuit" },
   "members.per.month":        { en:"/month",          pt:"/mês",              es:"/mes",              de:"/Monat",            fr:"/mois" },
