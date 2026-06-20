@@ -273,8 +273,11 @@
             <span>Desconto <span class="desconto-tag" id="descontoTag"></span></span>
             <span id="descontoValor" style="color:#22c55e">— R$ 0,00</span>
           </div>
-          <div class="resumo-linha"><span data-i18n="checkout.freight">Frete</span><span data-i18n="checkout.shipping.calc">A calcular</span></div>
+          <div class="resumo-linha"><span data-i18n="checkout.freight">Frete</span><span id="resumoFrete">R$ 0,00</span></div>
           <div class="resumo-total"><span data-i18n="checkout.total">Total</span><span class="valor" id="resumoTotal">R$ 0,00</span></div>
+          <div style="text-align:center;margin-top:8px">
+            <a href="calculadora.html" target="_blank" style="font-size:.78rem;color:var(--muted);text-decoration:underline" data-i18n="checkout.verify.calc">🧮 Confira o valor com a calculadora de importação</a>
+          </div>
         </div>
 
         <!-- Cupom -->
@@ -423,6 +426,8 @@
     if (nivelMembroAtual) atualizarTotaisComMembro();
   }
 
+  const FRETE_POR_VIAL = 50; // R$ por vial — frete Paraguai → Brasil (mesmo valor padrão da calculadora)
+
   function atualizarTotais() {
     const subtotal = carrinho.reduce((s, i) => s + i.preco * i.quantidade, 0);
     let desconto = 0;
@@ -448,8 +453,16 @@
       document.getElementById('descontoRow').style.display = 'none';
     }
 
-    const total = subtotalComMembro - desconto;
+    const totalProdutos = subtotalComMembro - desconto;
+
+    // Frete real: R$ por vial × total de vials no carrinho (não sofre desconto)
+    const totalVials = carrinho.reduce((s, i) => s + i.quantidade, 0);
+    const freteTotal  = totalVials * FRETE_POR_VIAL;
+
+    const total = totalProdutos + freteTotal;
     document.getElementById('resumoSubtotal').textContent = 'R$ ' + subtotal.toFixed(2).replace('.',',');
+    var freteEl = document.getElementById('resumoFrete');
+    if (freteEl) freteEl.textContent = 'R$ ' + freteTotal.toFixed(2).replace('.',',') + ' (' + totalVials + ' vials × R$ ' + FRETE_POR_VIAL.toFixed(2).replace('.',',') + ')';
     document.getElementById('resumoTotal').textContent    = 'R$ ' + total.toFixed(2).replace('.',',');
 
     // Desabilitar PIX acima de R$6.000

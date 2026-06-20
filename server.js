@@ -741,7 +741,14 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       }
     }
 
-    const total = subtotalComMembro - desconto;
+    const totalProdutos = subtotalComMembro - desconto;
+
+    // Frete real: R$50 por vial (mesmo padrão da calculadora), não sofre desconto
+    const FRETE_POR_VIAL = 50;
+    const totalVialsPedido = carrinho.reduce((s, i) => s + parseInt(i.quantidade), 0);
+    const freteTotal = totalVialsPedido * FRETE_POR_VIAL;
+
+    const total = totalProdutos + freteTotal;
 
     // montar nomes dos produtos para exibição
     const produto_nome = carrinho.map(i => i.nome + (i.quantidade > 1 ? ' x' + i.quantidade : '')).join(', ');
