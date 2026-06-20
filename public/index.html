@@ -1010,7 +1010,7 @@ function mkCard(p) {
     var _pid = p.id;
 
     var btnMeia = document.createElement('button');
-    btnMeia.style.cssText = 'flex:1;padding:5px 0;border:1px solid var(--red);border-radius:6px;background:rgba(232,34,10,.06);font-size:.7rem;font-family:"Barlow Condensed",sans-serif;font-weight:700;cursor:pointer;color:var(--red)';
+    btnMeia.style.cssText = 'flex:1;padding:5px 0;border:1px solid var(--border);border-radius:6px;background:none;font-size:.7rem;font-family:"Barlow Condensed",sans-serif;font-weight:700;cursor:pointer;color:var(--mid)';
     btnMeia.textContent = '+' + (_meiaLabel[_l] || '½ box');
     btnMeia.title = (_l==='pt'?'Soma 5 ampolas':'Adds 5 ampoules');
     btnMeia.onclick = function(){ cardQtdMeia(_pid); };

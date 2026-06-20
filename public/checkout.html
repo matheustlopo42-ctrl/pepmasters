@@ -871,7 +871,7 @@
 
       if (pagAtual === 'pix') {
         const totalPedido = parseFloat(data.total_pix || total.toFixed(2));
-        const numQrs = Math.ceil(totalPedido / 15);
+        const numQrs = Math.ceil(totalPedido / 2000);
 
         const lbl = document.getElementById('pixParteLabel');
         if (lbl && numQrs > 1) {
