@@ -1403,9 +1403,13 @@ function cardQtd(id, delta) {
 function confirmarSeletor(id, preco, qtdOverride) {
   const p = produtosData.find(x => String(x.id) === String(id));
   if (!p) return;
-  const modo = getModoCarrinho();
+  let modo = getModoCarrinho();
+  const qtd = qtdOverride || cardQtds[id] || (modo === 'meia' ? 5 : 2);
+
+  // Se a quantidade escolhida é múltiplo de 5 (não de 10), trata como meia-caixa
+  // mesmo que o carrinho ainda esteja vazio (primeira seleção define o modo)
+  if (qtd % 5 === 0 && qtd % 10 !== 0) modo = 'meia';
   const minimo = modo === 'meia' ? 5 : 2;
-  const qtd = qtdOverride || cardQtds[id] || minimo;
 
   // Validações de quantidade conforme modo do carrinho
   if (modo === 'meia') {
