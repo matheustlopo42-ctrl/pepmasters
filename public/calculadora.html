@@ -972,6 +972,9 @@ function carregarListaFechada() {
     cont.innerHTML = '';
     PRODUTOS.forEach(p => {
         const semFrete = p.produtoBRL + p.aduanaBRL;
+        const fam = getFamilia(p.codigo);
+        const maxAttr = fam ? 'max="1"' : '';
+        const titleAttr = fam ? `title="Máx. 1 caixa por concentração — limite de 10 ampolas por família (${fam})"` : '';
         const div = document.createElement('div');
         div.className = 'prod-row'; div.id = `row_${p.codigo}`;
         div.dataset.categoria = p.categoria; div.dataset.nome = p.nome.toLowerCase(); div.dataset.codigo = p.codigo.toLowerCase();
@@ -981,7 +984,7 @@ function carregarListaFechada() {
             <span class="pr-nome">${p.nome}</span>
             <span class="pr-preco">R$ ${fmt(semFrete)}</span>
             <div class="pr-qtd"><span style="font-size:0.82em;color:#888;">Caixas:</span>
-                <input type="number" id="qtd_${p.codigo}" min="0" value="0" onchange="onQtdFechada('${p.codigo}')" style="width:70px;"></div>
+                <input type="number" id="qtd_${p.codigo}" min="0" ${maxAttr} value="0" onchange="onQtdFechada('${p.codigo}')" style="width:70px;" ${titleAttr}></div>
             <span class="pr-subtotal" id="sub_${p.codigo}">R$ 0,00</span>
             <span class="pr-block-msg" id="msg_${p.codigo}"></span>`;
         cont.appendChild(div);
@@ -995,7 +998,13 @@ function onCheckFechada(codigo) {
     atualizarBloqueiosFamilia(); atualizarSubtotalFechada(codigo); mostrarValidacaoFechada();
 }
 function onQtdFechada(codigo) {
-    const qtd = parseInt(document.getElementById(`qtd_${codigo}`).value) || 0;
+    let qtd = parseInt(document.getElementById(`qtd_${codigo}`).value) || 0;
+    // Produtos com família definida: máximo 1 caixa (10 ampolas já é o limite da família)
+    if (getFamilia(codigo) && qtd > 1) {
+        qtd = 1;
+        document.getElementById(`qtd_${codigo}`).value = 1;
+        alert('⛔ Máximo 1 caixa (10 ampolas) por concentração — limite de 10 ampolas combinadas por família.');
+    }
     document.getElementById(`chk_${codigo}`).checked = qtd > 0;
     atualizarSubtotalFechada(codigo); atualizarBloqueiosFamilia(); mostrarValidacaoFechada();
 }
