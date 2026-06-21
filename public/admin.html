@@ -118,7 +118,7 @@
       <thead>
         <tr class="${p.pagamento === 'cripto' && p.status === 'pix_pending' ? 'cripto-pending' : ''}">
           <th class="checkbox-col"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"></th>
-          <th>ID</th><th>Cliente</th><th>Email</th><th>Produto</th><th>Total</th>
+          <th>ID</th><th>Cliente</th><th>Email</th><th>Endereço</th><th>Produto</th><th>Total</th>
           <th>Cupom</th><th>Pagamento</th><th>Status</th><th>Rastreio</th><th>Data</th>
         </tr>
       </thead>
@@ -169,6 +169,9 @@
           <td>#${p.id}</td>
           <td>${p.nome || '—'}</td>
           <td>${p.email || '—'}</td>
+          <td>
+            ${(p.rua || p.cidade) ? `<button onclick='mostrarEndereco(${JSON.stringify({nome:p.nome,cep:p.cep,rua:p.rua,numero:p.numero,bairro:p.bairro,cidade:p.cidade,complemento:p.complemento,telefone:p.telefone,retirada:p.retirada_paraguai}).replace(/'/g,"&#39;")})' style="padding:4px 8px;background:#FFF3E8;border:1px solid #FFD580;border-radius:6px;cursor:pointer;font-size:.72rem;font-weight:700;color:#3D1A00">📍 Ver</button>` : (p.retirada_paraguai ? '<span style="font-size:.72rem;color:#7A4A2A">📦 Retirada PY</span>' : '<span style="color:#ccc">—</span>')}
+          </td>
           <td>${p.produto_nome || '—'}</td>
           <td>R$ ${parseFloat(p.total || 0).toFixed(2).replace('.',',')}</td>
           <td>${p.cupom || '—'}</td>
@@ -197,6 +200,19 @@
         </tr>
       `;
     });
+  }
+
+  function mostrarEndereco(d) {
+    var texto = d.retirada
+      ? '📦 RETIRADA PESSOAL NO PARAGUAI (sem envio)\n\nNome: ' + (d.nome || '—') + '\nTelefone: ' + (d.telefone || '—')
+      : 'Nome: ' + (d.nome || '—') +
+        '\nTelefone: ' + (d.telefone || '—') +
+        '\nCEP: ' + (d.cep || '—') +
+        '\nRua: ' + (d.rua || '—') + ', ' + (d.numero || 's/n') +
+        '\nBairro: ' + (d.bairro || '—') +
+        '\nCidade/UF: ' + (d.cidade || '—') +
+        (d.complemento ? '\nComplemento: ' + d.complemento : '');
+    alert('📍 Endereço de Entrega\n\n' + texto);
   }
 
   async function confirmarCripto(id) {
