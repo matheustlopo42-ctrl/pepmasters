@@ -95,6 +95,10 @@
     footer{background:var(--dark);color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:.8rem}
     footer a{color:rgba(255,179,0,.5);text-decoration:none}
     @media(max-width:768px){.checkout-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}}
+    @media(max-width:480px){
+      #cripto-tokens .token-btn{width:auto;flex:1;min-width:80px}
+      #cripto-tokens .token-row{gap:5px}
+    }
 
     /* FOOTER */
     footer{background:var(--dark);color:#fff;padding:52px 24px 0;margin-top:60px}
@@ -229,10 +233,6 @@
             <div class="token-group">
               <div class="token-group-label">🔷 Polygon (MATIC)</div>
               <div class="token-row">
-                <button id="btn-usdtpoly" class="pay-tab token-btn" onclick="selecionarToken('USDTPOLYGON')">
-                  <div style="font-weight:700">USDT</div>
-                  <div style="font-size:.6rem;opacity:.65;margin-top:2px">MetaMask</div>
-                </button>
                 <button id="btn-usdcpoly" class="pay-tab token-btn" onclick="selecionarToken('USDCPOLYGON')">
                   <div style="font-weight:700">USDC</div>
                   <div style="font-size:.6rem;opacity:.65;margin-top:2px">MetaMask</div>
@@ -619,7 +619,7 @@
       var el = document.getElementById(id);
       if (el) el.classList.remove('active');
     });
-    var btnMap = { 'USDTTRX':'btn-usdttrx','USDTPOLYGON':'btn-usdtpoly','USDCPOLYGON':'btn-usdcpoly','USDTETH':'btn-usdteth','USDCETH':'btn-usdceth','USDCSOLANA':'btn-usdcsol' };
+    var btnMap = { 'USDTTRX':'btn-usdttrx','USDCPOLYGON':'btn-usdcpoly','USDTETH':'btn-usdteth','USDCETH':'btn-usdceth','USDCSOLANA':'btn-usdcsol' };
     var activeBtn = document.getElementById(btnMap[token]);
     if (activeBtn) activeBtn.classList.add('active');
     // Se já tem pedido criado, regenerar endereço NOWPayments com novo token
