@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Painel do Fornecedor — PEPMASTERS Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--dark:#1C0A00;--mid:#3D1A00}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:#0f0800;min-height:100vh;color:#fff}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:#110500;border-right:2px solid rgba(255,179,0,.15);padding:24px 0;display:flex;flex-direction:column;z-index:100}
+    .sidebar-logo{display:flex;align-items:center;gap:8px;padding:0 20px 20px;border-bottom:1px solid rgba(255,179,0,.1)}
+    .sidebar-logo img{height:30px;width:30px;object-fit:contain}
+    .sidebar-logo span{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .club-badge{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.62rem;padding:1px 6px;border-radius:3px;text-transform:uppercase}
+    .sidebar-info{padding:14px 20px;border-bottom:1px solid rgba(255,179,0,.08)}
+    .sidebar-nome{font-weight:600;font-size:.88rem;color:#fff;margin-bottom:2px}
+    .sidebar-nivel{font-size:.72rem;color:rgba(255,179,0,.7)}
+    .sidebar a{display:block;padding:10px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;transition:all .2s;border-left:3px solid transparent}
+    .sidebar a:hover,.sidebar a.active{color:#fff;background:rgba(255,179,0,.08);border-left-color:var(--amber)}
+    .sidebar-footer{margin-top:auto;padding:14px 20px;border-top:1px solid rgba(255,179,0,.08);display:flex;flex-direction:column;gap:6px}
+    .sidebar-footer a{font-size:.78rem;color:rgba(255,255,255,.28);text-decoration:none}
+    .sidebar-footer a:hover{color:var(--amber)}
+    .main{margin-left:220px;padding:28px}
+    .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+    h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;text-transform:uppercase;color:var(--amber)}
+    .btn{padding:9px 20px;border-radius:9px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s;border:none}
+    .btn-primary{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff}
+    .btn-primary:hover{opacity:.85}
+    .btn-secondary{background:rgba(255,179,0,.1);border:1px solid rgba(255,179,0,.25);color:var(--amber)}
+    .btn-secondary:hover{background:rgba(255,179,0,.2)}
+    .btn-danger{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#f87171}
+    .btn-sm{padding:5px 12px;font-size:.75rem}
+
+    /* TABS */
+    .tabs{display:flex;gap:2px;background:rgba(255,255,255,.04);border-radius:12px;padding:4px;margin-bottom:24px;width:fit-content}
+    .tab{padding:8px 18px;border-radius:9px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;color:rgba(255,255,255,.45);background:none;border:none;transition:all .2s}
+    .tab.active{background:rgba(255,179,0,.12);color:var(--amber)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    /* STATS */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+    .stat-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,179,0,.1);border-radius:13px;padding:18px}
+    .stat-label{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:5px}
+    .stat-value{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;color:var(--amber)}
+    .stat-sub{font-size:.72rem;color:rgba(255,255,255,.28);margin-top:3px}
+
+    /* CARDS */
+    .card{background:rgba(255,255,255,.04);border-radius:13px;border:1px solid rgba(255,179,0,.1);padding:20px;margin-bottom:16px}
+    .card-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,179,0,.75);margin-bottom:16px}
+
+    /* TABELAS */
+    .table-wrap{background:rgba(255,255,255,.03);border-radius:12px;border:1px solid rgba(255,179,0,.08);overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:.83rem}
+    th{padding:10px 13px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,179,0,.55);border-bottom:1px solid rgba(255,179,0,.08)}
+    td{padding:10px 13px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;color:rgba(255,255,255,.8)}
+    tr:last-child td{border:none}
+    tr:hover td{background:rgba(255,179,0,.03)}
+
+    /* STATUS BADGES */
+    .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+    .badge-pendente{background:rgba(234,179,8,.15);color:#fbbf24}
+    .badge-pago{background:rgba(34,197,94,.15);color:#4ade80}
+    .badge-enviado{background:rgba(59,130,246,.15);color:#93c5fd}
+    .badge-concluido{background:rgba(34,197,94,.12);color:#86efac}
+    .badge-em_disputa{background:rgba(239,68,68,.15);color:#fca5a5}
+    .badge-aprovado{background:rgba(34,197,94,.15);color:#4ade80}
+    .badge-reprovado{background:rgba(239,68,68,.15);color:#fca5a5}
+    .badge-aguardando_pagamento{background:rgba(255,179,0,.12);color:rgba(255,179,0,.8)}
+
+    /* FORM */
+    .form-group{margin-bottom:14px}
+    label{display:block;font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.36);margin-bottom:4px}
+    input,textarea,select{width:100%;padding:9px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,179,0,.18);border-radius:8px;font-size:.87rem;color:#fff;font-family:'Barlow',sans-serif;outline:none;transition:border-color .2s}
+    input:focus,textarea:focus,select:focus{border-color:var(--orange)}
+    input::placeholder,textarea::placeholder{color:rgba(255,255,255,.2)}
+    select option{background:#1C0A00}
+    textarea{resize:vertical;min-height:80px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+    /* SALDO */
+    .saldo-box{background:linear-gradient(135deg,rgba(255,179,0,.08),rgba(255,107,0,.05));border:1px solid rgba(255,179,0,.2);border-radius:14px;padding:22px;text-align:center;margin-bottom:20px}
+    .saldo-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.38);margin-bottom:6px}
+    .saldo-valor{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.5rem;color:var(--amber)}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:22px;right:22px;background:#1a0800;color:#fff;padding:10px 16px;border-radius:9px;font-size:.83rem;border-left:4px solid var(--amber);box-shadow:0 8px 28px rgba(0,0,0,.5);transform:translateY(10px);opacity:0;transition:all .3s;z-index:9999;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    #toast.error{border-left-color:var(--red)}
+    #toast.success{border-left-color:#22c55e}
+
+    .empty{text-align:center;padding:32px;color:rgba(255,255,255,.25);font-size:.85rem}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#1a0800;border-radius:16px;padding:28px;max-width:480px;width:100%;border-top:3px solid var(--amber);max-height:90vh;overflow-y:auto}
+    .modal-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;color:#fff;margin-bottom:18px}
+    .modal-actions{display:flex;gap:10px;margin-top:18px}
+
+    /* LOGIN */
+    #loginSection{display:flex;align-items:center;justify-content:center;min-height:100vh;margin-left:0}
+    .login-card{background:#1a0800;border-radius:20px;padding:36px;max-width:380px;width:100%;border-top:3px solid var(--amber)}
+    .login-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;color:#fff;margin-bottom:4px}
+    .login-sub{font-size:.82rem;color:rgba(255,255,255,.38);margin-bottom:24px}
+    .btn-login{width:100%;padding:12px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;margin-top:6px}
+    #loginErro{background:rgba(239,68,68,.1);border-left:3px solid var(--red);padding:9px 13px;border-radius:8px;font-size:.83rem;color:#f87171;margin-bottom:14px;display:none}
+
+    @media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.stats-grid{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginSection">
+  <div class="login-card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px">
+      <img src="Capturar.PNG" style="height:32px;width:32px;object-fit:contain"/>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;background:linear-gradient(135deg,#E8220A,#FF6B00,#FFB300);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">PEPMASTERS</span>
+      <span style="background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.62rem;padding:1px 6px;border-radius:3px">CLUB</span>
+    </div>
+    <div class="login-title">Painel do Fornecedor</div>
+    <div class="login-sub">Acesse para gerenciar produtos e pedidos</div>
+    <div id="loginErro"></div>
+    <div class="form-group"><label>Email</label><input type="email" id="l-email" placeholder="seu@email.com"/></div>
+    <div class="form-group"><label>Senha</label><input type="password" id="l-senha" placeholder="••••••"/></div>
+    <button class="btn-login" onclick="fazerLogin()">Entrar no Painel</button>
+    <p style="text-align:center;margin-top:16px;font-size:.8rem;color:rgba(255,255,255,.3)">Não tem cadastro? <a href="club-fornecedor-cadastro.html" style="color:var(--amber);text-decoration:none">Cadastre-se</a></p>
+  </div>
+</div>
+
+<!-- PAINEL -->
+<div id="painelSection" style="display:none">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <img src="Capturar.PNG" alt="Logo"/>
+      <span>PEPMASTERS</span>
+      <span class="club-badge">Club</span>
+    </div>
+    <div class="sidebar-info">
+      <div class="sidebar-nome" id="sb-nome">—</div>
+      <div class="sidebar-nivel" id="sb-nivel">—</div>
+    </div>
+    <a href="#" class="active" onclick="setTab('dashboard',this)">📊 Dashboard</a>
+    <a href="#" onclick="setTab('produtos',this)">📦 Meus Produtos</a>
+    <a href="#" onclick="setTab('pedidos',this)">🛒 Pedidos</a>
+    <a href="#" onclick="setTab('saldo',this)">💰 Saldo</a>
+    <a href="#" onclick="setTab('perfil',this)">⚙️ Perfil</a>
+    <div class="sidebar-footer">
+      <a href="club-marketplace.html">← Ver Marketplace</a>
+      <a href="#" onclick="sair()">Sair</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard" class="tab-content active">
+      <div class="page-header">
+        <h1>📊 Dashboard</h1>
+      </div>
+      <div class="stats-grid" id="dashStats">
+        <div class="stat-card"><div class="stat-label">Saldo Disponível</div><div class="stat-value" id="d-saldo">—</div></div>
+        <div class="stat-card"><div class="stat-label">Pedidos Pagos</div><div class="stat-value" id="d-pagos">—</div></div>
+        <div class="stat-card"><div class="stat-label">Pedidos Concluídos</div><div class="stat-value" id="d-concluidos">—</div></div>
+        <div class="stat-card"><div class="stat-label">Produtos Ativos</div><div class="stat-value" id="d-produtos">—</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Pedidos Recentes</div>
+        <div id="dashPedidos"><div class="empty">Carregando...</div></div>
+      </div>
+    </div>
+
+    <!-- PRODUTOS -->
+    <div id="tab-produtos" class="tab-content">
+      <div class="page-header">
+        <h1>📦 Meus Produtos</h1>
+        <button class="btn btn-primary" onclick="abrirModalProduto()">+ Novo Produto</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="tProdutos"><tr><td colspan="6"><div class="empty">Carregando...</div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PEDIDOS -->
+    <div id="tab-pedidos" class="tab-content">
+      <div class="page-header"><h1>🛒 Pedidos</h1></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Pedido</th><th>Produto</th><th>Cliente</th><th>Total</th><th>Repasse</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="tPedidos"><tr><td colspan="7"><div class="empty">Carregando...</div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SALDO -->
+    <div id="tab-saldo" class="tab-content">
+      <div class="page-header"><h1>💰 Saldo</h1></div>
+      <div class="saldo-box">
+        <div class="saldo-label">Saldo Disponível para Saque</div>
+        <div class="saldo-valor" id="saldoValor">R$ 0,00</div>
+      </div>
+      <div class="card">
+        <div class="card-title">💸 Solicitar Saque</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Valor (R$)</label>
+            <input type="number" id="s-valor" placeholder="0.00" min="10" step="0.01"/>
+          </div>
+          <div class="form-group">
+            <label>Método</label>
+            <select id="s-metodo">
+              <option value="pix">PIX</option>
+              <option value="usdt_tron">USDT (Tron TRC-20)</option>
+              <option value="usdc_polygon">USDC (Polygon)</option>
+              <option value="usdc_solana">USDC (Solana)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Chave PIX / Endereço de Carteira</label>
+          <input type="text" id="s-destino" placeholder="CPF, email, telefone ou endereço cripto"/>
+        </div>
+        <button class="btn btn-primary" onclick="solicitarSaque()">Solicitar Saque</button>
+      </div>
+    </div>
+
+    <!-- PERFIL -->
+    <div id="tab-perfil" class="tab-content">
+      <div class="page-header"><h1>⚙️ Perfil da Loja</h1></div>
+      <div class="card">
+        <div class="card-title">Informações da Loja</div>
+        <div class="form-group"><label>Descrição</label><textarea id="p-desc" placeholder="Conte sobre sua loja..."></textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label>WhatsApp</label><input type="text" id="p-wpp" placeholder="5511999999999"/></div>
+          <div class="form-group"><label>Instagram</label><input type="text" id="p-insta" placeholder="@sujaloja"/></div>
+        </div>
+        <button class="btn btn-primary" onclick="salvarPerfil()">Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRODUTO -->
+<div class="modal-overlay" id="modalProduto">
+  <div class="modal-box">
+    <div class="modal-title" id="mpTitulo">Novo Produto</div>
+    <div class="form-group"><label>Nome *</label><input type="text" id="mp-nome" placeholder="Ex: BPC-157 10mg"/></div>
+    <div class="form-group"><label>Descrição</label><textarea id="mp-desc" placeholder="Descreva o produto..."></textarea></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Categoria</label>
+        <select id="mp-cat">
+          <option value="glp1">GLP-1 / Emagrecimento</option>
+          <option value="recuperacao">Recuperação</option>
+          <option value="longevidade">Longevidade</option>
+          <option value="hormonio">Hormônios</option>
+          <option value="nootrop">Nootrópicos</option>
+          <option value="acessorio">Acessórios</option>
+          <option value="outro">Outro</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Estoque</label><input type="number" id="mp-estoque" placeholder="0" min="0"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Preço (R$) *</label><input type="number" id="mp-preco" placeholder="0.00" min="0" step="0.01"/></div>
+      <div class="form-group"><label>URL da Imagem</label><input type="text" id="mp-img" placeholder="https://..."/></div>
+    </div>
+    <p style="font-size:.75rem;color:rgba(255,255,255,.3);margin-bottom:14px">⚠️ Produtos novos ou editados ficam com status "pendente" até aprovação da equipe Pepmasters.</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="fecharModalProduto()" style="flex:1">Cancelar</button>
+      <button class="btn btn-primary" id="btnSalvarProd" onclick="salvarProduto()" style="flex:2">Salvar Produto</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ENVIO -->
+<div class="modal-overlay" id="modalEnvio">
+  <div class="modal-box">
+    <div class="modal-title">📦 Marcar como Enviado</div>
+    <p style="font-size:.83rem;color:rgba(255,255,255,.45);margin-bottom:16px">Após marcar como enviado, o pagamento será liberado automaticamente em 5 dias caso o cliente não abra disputa.</p>
+    <div class="form-group"><label>Código de Rastreio (opcional)</label><input type="text" id="e-rastreio" placeholder="Ex: BR123456789BR"/></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="fecharModalEnvio()" style="flex:1">Cancelar</button>
+      <button class="btn btn-primary" id="btnMarcarEnvio" onclick="confirmarEnvio()" style="flex:2">✅ Confirmar Envio</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+let authToken = localStorage.getItem('club_forn_token') || '';
+let fornecedor = null;
+let prodEditId  = null;
+let pedidoEnvioId = null;
+
+// ── LOGIN ─────────────────────────────────────────────────
+if (authToken) tentarAutoLogin();
+
+async function tentarAutoLogin() {
+  try {
+    const r = await fetch('/api/club/fornecedor/perfil', { headers: { Authorization: 'Bearer ' + authToken } });
+    if (r.ok) { fornecedor = (await r.json()); mostrarPainel(); }
+    else { localStorage.removeItem('club_forn_token'); authToken = ''; }
+  } catch {}
+}
+
+async function fazerLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const senha = document.getElementById('l-senha').value;
+  const erro  = document.getElementById('loginErro');
+  erro.style.display = 'none';
+  if (!email || !senha) { erro.textContent = 'Preencha email e senha.'; erro.style.display='block'; return; }
+  try {
+    const r = await fetch('/api/club/fornecedor/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, senha })
+    });
+    const d = await r.json();
+    if (!r.ok) { erro.textContent = d.erro || 'Credenciais inválidas.'; erro.style.display='block'; return; }
+    authToken  = d.token;
+    fornecedor = d.fornecedor;
+    localStorage.setItem('club_forn_token', authToken);
+    mostrarPainel();
+  } catch { erro.textContent = 'Erro de conexão.'; erro.style.display='block'; }
+}
+
+function mostrarPainel() {
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('painelSection').style.display = 'block';
+  const nivelIcons = { bronze:'🥉', prata:'🥈', ouro:'🥇', diamante:'💎' };
+  document.getElementById('sb-nome').textContent  = fornecedor.nome_loja;
+  document.getElementById('sb-nivel').textContent = (nivelIcons[fornecedor.nivel]||'🥉') + ' ' + fornecedor.nivel;
+  document.getElementById('p-desc').value  = fornecedor.descricao || '';
+  document.getElementById('p-wpp').value   = fornecedor.whatsapp  || '';
+  document.getElementById('p-insta').value = fornecedor.instagram || '';
+  carregarDashboard();
+}
+
+function sair() {
+  localStorage.removeItem('club_forn_token');
+  location.reload();
+}
+
+// ── TABS ──────────────────────────────────────────────────
+function setTab(tab, el) {
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sidebar a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if (el) el.classList.add('active');
+  if (tab==='produtos') carregarProdutos();
+  if (tab==='pedidos')  carregarPedidos();
+  if (tab==='saldo')    carregarSaldo();
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────
+async function carregarDashboard() {
+  try {
+    const r = await fetch('/api/club/fornecedor/dashboard', { headers: { Authorization: 'Bearer ' + authToken } });
+    const d = await r.json();
+    document.getElementById('d-saldo').textContent    = 'R$ ' + parseFloat(d.saldo||0).toFixed(2).replace('.',',');
+    document.getElementById('d-produtos').textContent = d.total_produtos;
+    let pagos=0, concluidos=0;
+    (d.pedidos_por_status||[]).forEach(s => {
+      if (s.status==='pago' || s.status==='enviado') pagos += parseInt(s.total);
+      if (s.status==='concluido') concluidos += parseInt(s.total);
+    });
+    document.getElementById('d-pagos').textContent      = pagos;
+    document.getElementById('d-concluidos').textContent = concluidos;
+    // Pedidos recentes
+    const pr = await fetch('/api/club/fornecedor/pedidos', { headers: { Authorization: 'Bearer ' + authToken } });
+    const pedidos = (await pr.json()).slice(0,5);
+    document.getElementById('dashPedidos').innerHTML = pedidos.length
+      ? '<div class="table-wrap"><table><thead><tr><th>#</th><th>Produto</th><th>Cliente</th><th>Total</th><th>Status</th></tr></thead><tbody>' +
+        pedidos.map(p=>`<tr><td>#${p.id}</td><td>${p.produto_nome}</td><td>${p.nome_cliente||'—'}</td><td>R$ ${parseFloat(p.total).toFixed(2).replace('.',',')}</td><td>${badgeStatus(p.status)}</td></tr>`).join('') +
+        '</tbody></table></div>'
+      : '<div class="empty">Nenhum pedido ainda.</div>';
+  } catch(e) { console.error(e); }
+}
+
+// ── PRODUTOS ──────────────────────────────────────────────
+async function carregarProdutos() {
+  const tb = document.getElementById('tProdutos');
+  try {
+    const r = await fetch('/api/club/fornecedor/produtos', { headers: { Authorization: 'Bearer ' + authToken } });
+    const data = await r.json();
+    if (!data.length) { tb.innerHTML = '<tr><td colspan="6"><div class="empty">Nenhum produto cadastrado.</div></td></tr>'; return; }
+    tb.innerHTML = data.map(p=>`<tr>
+      <td style="font-weight:600">${p.nome}</td>
+      <td>${p.categoria||'—'}</td>
+      <td>R$ ${parseFloat(p.preco).toFixed(2).replace('.',',')}</td>
+      <td>${p.estoque}</td>
+      <td>${badgeStatus(p.status)}</td>
+      <td style="display:flex;gap:6px">
+        <button class="btn btn-secondary btn-sm" onclick="editarProduto(${JSON.stringify(p).replace(/"/g,'&quot;')})">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="deletarProduto(${p.id})">Excluir</button>
+      </td></tr>`).join('');
+  } catch { tb.innerHTML = '<tr><td colspan="6"><div class="empty">Erro ao carregar.</div></td></tr>'; }
+}
+
+function abrirModalProduto() {
+  prodEditId = null;
+  document.getElementById('mpTitulo').textContent = 'Novo Produto';
+  ['mp-nome','mp-desc','mp-preco','mp-img'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('mp-estoque').value = '0';
+  document.getElementById('mp-cat').value = 'glp1';
+  document.getElementById('modalProduto').classList.add('open');
+}
+
+function editarProduto(p) {
+  prodEditId = p.id;
+  document.getElementById('mpTitulo').textContent = 'Editar Produto';
+  document.getElementById('mp-nome').value    = p.nome || '';
+  document.getElementById('mp-desc').value    = p.descricao || '';
+  document.getElementById('mp-cat').value     = p.categoria || 'glp1';
+  document.getElementById('mp-preco').value   = p.preco || '';
+  document.getElementById('mp-estoque').value = p.estoque || 0;
+  document.getElementById('mp-img').value     = p.imagem_url || '';
+  document.getElementById('modalProduto').classList.add('open');
+}
+
+function fecharModalProduto() { document.getElementById('modalProduto').classList.remove('open'); }
+
+async function salvarProduto() {
+  const nome    = document.getElementById('mp-nome').value.trim();
+  const preco   = document.getElementById('mp-preco').value;
+  if (!nome || !preco) { showToast('Nome e preço são obrigatórios.', 'error'); return; }
+  const body = {
+    nome, descricao: document.getElementById('mp-desc').value.trim(),
+    categoria: document.getElementById('mp-cat').value,
+    preco: parseFloat(preco), estoque: parseInt(document.getElementById('mp-estoque').value)||0,
+    imagem_url: document.getElementById('mp-img').value.trim()||null
+  };
+  const btn = document.getElementById('btnSalvarProd');
+  btn.disabled = true; btn.textContent = '⏳ Salvando...';
+  try {
+    const url    = prodEditId ? '/api/club/fornecedor/produto/'+prodEditId : '/api/club/fornecedor/produto';
+    const method = prodEditId ? 'PUT' : 'POST';
+    const r = await fetch(url, { method, headers: { 'Content-Type':'application/json', Authorization:'Bearer '+authToken }, body: JSON.stringify(body) });
+    const d = await r.json();
+    if (!r.ok) { showToast(d.erro||'Erro.', 'error'); return; }
+    showToast(prodEditId ? 'Produto atualizado!' : 'Produto enviado para aprovação!', 'success');
+    fecharModalProduto(); carregarProdutos();
+  } catch { showToast('Erro de conexão.', 'error'); }
+  finally { btn.disabled=false; btn.textContent='Salvar Produto'; }
+}
+
+async function deletarProduto(id) {
+  if (!confirm('Excluir este produto?')) return;
+  try {
+    await fetch('/api/club/fornecedor/produto/'+id, { method:'DELETE', headers:{ Authorization:'Bearer '+authToken } });
+    showToast('Produto excluído.', 'success'); carregarProdutos();
+  } catch { showToast('Erro.', 'error'); }
+}
+
+// ── PEDIDOS ───────────────────────────────────────────────
+async function carregarPedidos() {
+  const tb = document.getElementById('tPedidos');
+  try {
+    const r = await fetch('/api/club/fornecedor/pedidos', { headers: { Authorization:'Bearer '+authToken } });
+    const data = await r.json();
+    if (!data.length) { tb.innerHTML='<tr><td colspan="7"><div class="empty">Nenhum pedido ainda.</div></td></tr>'; return; }
+    tb.innerHTML = data.map(p=>`<tr>
+      <td>#${p.id}<br><span style="font-size:.7rem;color:rgba(255,255,255,.3)">${new Date(p.criado_em).toLocaleDateString('pt-BR')}</span></td>
+      <td>${p.produto_nome}</td>
+      <td>${p.nome_cliente||'—'}<br><span style="font-size:.7rem;color:rgba(255,255,255,.3)">${p.telefone_cliente||''}</span></td>
+      <td>R$ ${parseFloat(p.total).toFixed(2).replace('.',',')}</td>
+      <td style="color:#4ade80">R$ ${parseFloat(p.valor_fornecedor||0).toFixed(2).replace('.',',')}</td>
+      <td>${badgeStatus(p.status)}</td>
+      <td>${p.status==='pago' ? `<button class="btn btn-secondary btn-sm" onclick="abrirModalEnvio(${p.id})">📦 Enviar</button>` : p.status==='enviado' ? `<span style="font-size:.72rem;color:rgba(255,255,255,.3)">${p.codigo_rastreio||'enviado'}</span>` : '—'}</td>
+    </tr>`).join('');
+  } catch { tb.innerHTML='<tr><td colspan="7"><div class="empty">Erro ao carregar.</div></td></tr>'; }
+}
+
+function abrirModalEnvio(id) {
+  pedidoEnvioId = id;
+  document.getElementById('e-rastreio').value = '';
+  document.getElementById('modalEnvio').classList.add('open');
+}
+function fecharModalEnvio() { document.getElementById('modalEnvio').classList.remove('open'); }
+
+async function confirmarEnvio() {
+  const rastreio = document.getElementById('e-rastreio').value.trim();
+  const btn = document.getElementById('btnMarcarEnvio');
+  btn.disabled=true; btn.textContent='⏳ Salvando...';
+  try {
+    const r = await fetch(`/api/club/fornecedor/pedido/${pedidoEnvioId}/enviar`, {
+      method:'PUT', headers:{'Content-Type':'application/json', Authorization:'Bearer '+authToken},
+      body: JSON.stringify({ codigo_rastreio: rastreio||null })
+    });
+    const d = await r.json();
+    if (!r.ok) { showToast(d.erro||'Erro.','error'); return; }
+    showToast('Pedido marcado como enviado! Pagamento liberado em 5 dias.','success');
+    fecharModalEnvio(); carregarPedidos();
+  } catch { showToast('Erro de conexão.','error'); }
+  finally { btn.disabled=false; btn.textContent='✅ Confirmar Envio'; }
+}
+
+// ── SALDO ─────────────────────────────────────────────────
+async function carregarSaldo() {
+  try {
+    const r = await fetch('/api/club/fornecedor/saldo', { headers:{ Authorization:'Bearer '+authToken } });
+    const d = await r.json();
+    document.getElementById('saldoValor').textContent = 'R$ ' + parseFloat(d.saldo||0).toFixed(2).replace('.',',');
+  } catch {}
+}
+
+async function solicitarSaque() {
+  const valor   = parseFloat(document.getElementById('s-valor').value);
+  const metodo  = document.getElementById('s-metodo').value;
+  const destino = document.getElementById('s-destino').value.trim();
+  if (!valor || !destino) { showToast('Preencha valor e destino.','error'); return; }
+  try {
+    const r = await fetch('/api/club/fornecedor/saque', {
+      method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer '+authToken},
+      body: JSON.stringify({ valor, metodo, destino })
+    });
+    const d = await r.json();
+    if (!r.ok) { showToast(d.erro||'Erro.','error'); return; }
+    showToast('Saque solicitado! Processamos em até 24h.','success');
+    carregarSaldo();
+  } catch { showToast('Erro de conexão.','error'); }
+}
+
+// ── PERFIL ────────────────────────────────────────────────
+async function salvarPerfil() {
+  try {
+    const r = await fetch('/api/club/fornecedor/perfil', {
+      method:'PUT', headers:{'Content-Type':'application/json', Authorization:'Bearer '+authToken},
+      body: JSON.stringify({ descricao: document.getElementById('p-desc').value.trim(), whatsapp: document.getElementById('p-wpp').value.trim(), instagram: document.getElementById('p-insta').value.trim() })
+    });
+    if (r.ok) showToast('Perfil atualizado!','success');
+    else showToast('Erro ao salvar.','error');
+  } catch { showToast('Erro de conexão.','error'); }
+}
+
+// ── UTILITÁRIOS ───────────────────────────────────────────
+function badgeStatus(s) {
+  const map = { pago:'badge-pago', enviado:'badge-enviado', concluido:'badge-concluido', em_disputa:'badge-em_disputa', pendente:'badge-pendente', aprovado:'badge-aprovado', reprovado:'badge-reprovado', aguardando_pagamento:'badge-aguardando_pagamento' };
+  return `<span class="badge ${map[s]||'badge-pendente'}">${s?.replace(/_/g,' ')||'—'}</span>`;
+}
+function showToast(msg, tipo) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show'+(tipo==='error'?' error':tipo==='success'?' success':'');
+  setTimeout(()=>t.className='', 3500);
+}
+document.addEventListener('keydown', e => { if (e.key==='Enter' && document.getElementById('loginSection').style.display!=='none') fazerLogin(); });
+</script>
+</body>
+</html>

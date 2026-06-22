@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin Club — PEPMASTERS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--dark:#1C0A00}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:#0f0800;min-height:100vh;color:#fff}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:#110500;border-right:2px solid rgba(255,179,0,.15);padding:24px 0;display:flex;flex-direction:column;z-index:100}
+    .sidebar-logo{display:flex;align-items:center;gap:8px;padding:0 20px 20px;border-bottom:1px solid rgba(255,179,0,.1)}
+    .sidebar-logo img{height:30px;width:30px;object-fit:contain}
+    .sidebar-logo span{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .club-badge{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.62rem;padding:1px 6px;border-radius:3px}
+    .sidebar-badge{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,179,0,.45);padding:0 20px;margin-top:10px;margin-bottom:4px}
+    .sidebar a{display:block;padding:10px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;transition:all .2s;border-left:3px solid transparent}
+    .sidebar a:hover,.sidebar a.active{color:#fff;background:rgba(255,179,0,.08);border-left-color:var(--amber)}
+    .sidebar-footer{margin-top:auto;padding:14px 20px;border-top:1px solid rgba(255,179,0,.08)}
+    .sidebar-footer a{font-size:.78rem;color:rgba(255,255,255,.28);text-decoration:none;display:block;margin-bottom:6px}
+    .sidebar-footer a:hover{color:var(--amber)}
+    .main{margin-left:220px;padding:28px}
+    h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;text-transform:uppercase;color:var(--amber);margin-bottom:20px}
+    .btn{padding:7px 16px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:all .2s;border:none}
+    .btn-success{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:#4ade80}
+    .btn-success:hover{background:rgba(34,197,94,.25)}
+    .btn-danger{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#f87171}
+    .btn-danger:hover{background:rgba(239,68,68,.25)}
+    .btn-warning{background:rgba(234,179,8,.12);border:1px solid rgba(234,179,8,.28);color:#fbbf24}
+    .btn-warning:hover{background:rgba(234,179,8,.22)}
+    .btn-primary{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff}
+    .btn-sm{padding:4px 10px;font-size:.72rem}
+    .tabs{display:flex;gap:2px;background:rgba(255,255,255,.04);border-radius:10px;padding:3px;width:fit-content;margin-bottom:22px}
+    .tab{padding:7px 16px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;color:rgba(255,255,255,.42);background:none;border:none;transition:all .2s;position:relative}
+    .tab.active{background:rgba(255,179,0,.12);color:var(--amber)}
+    .tab .badge-count{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;border-radius:50%;width:16px;height:16px;font-size:.6rem;display:flex;align-items:center;justify-content:center;font-weight:700}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+    .table-wrap{background:rgba(255,255,255,.03);border-radius:12px;border:1px solid rgba(255,179,0,.08);overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:.82rem}
+    th{padding:10px 12px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.67rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,179,0,.52);border-bottom:1px solid rgba(255,179,0,.08)}
+    td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;color:rgba(255,255,255,.78)}
+    tr:last-child td{border:none}
+    tr:hover td{background:rgba(255,179,0,.025)}
+    .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+    .badge-pendente{background:rgba(234,179,8,.15);color:#fbbf24}
+    .badge-ativo{background:rgba(34,197,94,.15);color:#4ade80}
+    .badge-rejeitado{background:rgba(239,68,68,.15);color:#f87171}
+    .badge-aprovado{background:rgba(34,197,94,.15);color:#4ade80}
+    .badge-aberta{background:rgba(239,68,68,.15);color:#fca5a5}
+    .badge-resolvida{background:rgba(34,197,94,.12);color:#86efac}
+    .badge-pago{background:rgba(34,197,94,.15);color:#4ade80}
+    .badge-enviado{background:rgba(59,130,246,.15);color:#93c5fd}
+    .badge-concluido{background:rgba(34,197,94,.12);color:#86efac}
+    .nivel-select{background:rgba(255,255,255,.08);border:1px solid rgba(255,179,0,.2);border-radius:6px;color:#fff;padding:4px 8px;font-size:.78rem;font-family:'Barlow',sans-serif;outline:none}
+    .nivel-select option{background:#1C0A00}
+    .disputa-card{background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:13px;padding:18px;margin-bottom:14px}
+    .disputa-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+    .disputa-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;color:#fff}
+    .disputa-meta{font-size:.75rem;color:rgba(255,255,255,.38);margin-top:3px;line-height:1.5}
+    .disputa-desc{font-size:.82rem;color:rgba(255,255,255,.55);background:rgba(0,0,0,.2);border-radius:8px;padding:10px 12px;margin-bottom:12px;line-height:1.6}
+    .disputa-actions{display:flex;gap:8px}
+    .empty{text-align:center;padding:32px;color:rgba(255,255,255,.25);font-size:.83rem}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#1a0800;border-radius:16px;padding:26px;max-width:440px;width:100%;border-top:3px solid var(--amber)}
+    .modal-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem;color:#fff;margin-bottom:14px}
+    label{display:block;font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.36);margin-bottom:4px;margin-top:10px}
+    input,select,textarea{width:100%;padding:8px 11px;background:rgba(255,255,255,.07);border:1px solid rgba(255,179,0,.18);border-radius:7px;font-size:.85rem;color:#fff;font-family:'Barlow',sans-serif;outline:none}
+    input:focus,select:focus,textarea:focus{border-color:var(--orange)}
+    select option{background:#1C0A00}
+    textarea{resize:vertical;min-height:70px}
+    .modal-actions{display:flex;gap:8px;margin-top:16px}
+    #toast{position:fixed;bottom:22px;right:22px;background:#1a0800;color:#fff;padding:10px 16px;border-radius:9px;font-size:.82rem;border-left:4px solid var(--amber);box-shadow:0 8px 28px rgba(0,0,0,.5);transform:translateY(10px);opacity:0;transition:all .3s;z-index:9999;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    #toast.error{border-left-color:var(--red)}
+    #toast.success{border-left-color:#22c55e}
+    @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}}
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <img src="Capturar.PNG" alt="Logo"/>
+    <span>PEPMASTERS</span>
+    <span class="club-badge">Club</span>
+  </div>
+  <div class="sidebar-badge">Admin Club</div>
+  <a href="#" class="active" onclick="setTab('fornecedores',this)">🏪 Fornecedores</a>
+  <a href="#" onclick="setTab('produtos',this)">📦 Produtos</a>
+  <a href="#" onclick="setTab('pedidos',this)">🛒 Pedidos</a>
+  <a href="#" onclick="setTab('disputas',this)" id="linkDisputas">⚠️ Disputas</a>
+  <a href="#" onclick="setTab('saques',this)">💸 Saques</a>
+  <div class="sidebar-footer">
+    <a href="admin-dashboard.html">← Admin Loja</a>
+    <a href="club-marketplace.html">Ver Marketplace</a>
+  </div>
+</div>
+
+<div class="main">
+  <!-- FORNECEDORES -->
+  <div id="tab-fornecedores" class="tab-content active">
+    <h1>🏪 Fornecedores</h1>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Loja</th><th>Email</th><th>Nível</th><th>Vendas</th><th>Pedidos OK</th><th>Disputas</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody id="tFornecedores"><tr><td colspan="8"><div class="empty">Carregando...</div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PRODUTOS -->
+  <div id="tab-produtos" class="tab-content">
+    <h1>📦 Produtos Pendentes</h1>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Produto</th><th>Loja</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody id="tProdutos"><tr><td colspan="7"><div class="empty">Carregando...</div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PEDIDOS -->
+  <div id="tab-pedidos" class="tab-content">
+    <h1>🛒 Pedidos Club</h1>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Pedido</th><th>Produto</th><th>Loja</th><th>Cliente</th><th>Total</th><th>Repasse</th><th>Status</th></tr></thead>
+        <tbody id="tPedidos"><tr><td colspan="7"><div class="empty">Carregando...</div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DISPUTAS -->
+  <div id="tab-disputas" class="tab-content">
+    <h1>⚠️ Disputas Abertas</h1>
+    <div id="disputasLista"><div class="empty">Carregando...</div></div>
+  </div>
+
+  <!-- SAQUES -->
+  <div id="tab-saques" class="tab-content">
+    <h1>💸 Saques Pendentes</h1>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Fornecedor</th><th>Valor</th><th>Método</th><th>Destino</th><th>Data</th><th>Ações</th></tr></thead>
+        <tbody id="tSaques"><tr><td colspan="6"><div class="empty">Carregando...</div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RESOLVER DISPUTA -->
+<div class="modal-overlay" id="modalDisputa">
+  <div class="modal-box">
+    <div class="modal-title" id="mdTitulo">Resolver Disputa</div>
+    <label>Resolução / Observação</label>
+    <textarea id="md-resolucao" placeholder="Descreva a decisão e o motivo..."></textarea>
+    <label>Decisão</label>
+    <select id="md-decisao">
+      <option value="cliente">✅ Favorável ao cliente (estornar)</option>
+      <option value="fornecedor">🏪 Favorável ao fornecedor (liberar)</option>
+    </select>
+    <div class="modal-actions">
+      <button class="btn btn-warning" onclick="fecharModalDisputa()" style="flex:1">Cancelar</button>
+      <button class="btn btn-primary" id="btnResolver" onclick="confirmarResolver()" style="flex:2">Confirmar Decisão</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const token = localStorage.getItem('pep_admin_token');
+if (!token) location.href = 'admin-login.html';
+let disputaAtualId = null;
+
+// ── TABS ──────────────────────────────────────────────────
+function setTab(tab, el) {
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sidebar a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if (el) el.classList.add('active');
+  const loaders = { fornecedores:carregarFornecedores, produtos:carregarProdutos, pedidos:carregarPedidos, disputas:carregarDisputas, saques:carregarSaques };
+  if (loaders[tab]) loaders[tab]();
+}
+
+// ── FORNECEDORES ──────────────────────────────────────────
+async function carregarFornecedores() {
+  const tb = document.getElementById('tFornecedores');
+  try {
+    const r = await fetch('/api/admin/club/fornecedores', { headers:{ Authorization:'Basic '+token } });
+    const data = await r.json();
+    if (!data.length) { tb.innerHTML='<tr><td colspan="8"><div class="empty">Nenhum fornecedor.</div></td></tr>'; return; }
+    tb.innerHTML = data.map(f=>`<tr>
+      <td><strong>${f.nome_loja}</strong><br><span style="font-size:.7rem;color:rgba(255,255,255,.3)">${f.total_produtos||0} produtos</span></td>
+      <td style="font-size:.8rem">${f.email}</td>
+      <td>
+        <select class="nivel-select" onchange="atualizarFornecedor(${f.id},{nivel:this.value})">
+          ${['bronze','prata','ouro','diamante'].map(n=>`<option value="${n}" ${f.nivel===n?'selected':''}>${{bronze:'🥉 Bronze',prata:'🥈 Prata',ouro:'🥇 Ouro',diamante:'💎 Diamante'}[n]}</option>`).join('')}
+        </select>
+      </td>
+      <td>R$ ${parseFloat(f.total_vendas||0).toFixed(2).replace('.',',')}</td>
+      <td>${f.pedidos_ok||0}</td>
+      <td>${f.disputas||0}</td>
+      <td><span class="badge badge-${f.status}">${f.status}</span></td>
+      <td style="display:flex;gap:5px;flex-wrap:wrap">
+        ${f.status==='pendente'?`<button class="btn btn-success btn-sm" onclick="atualizarFornecedor(${f.id},{status:'ativo'})">Aprovar</button><button class="btn btn-danger btn-sm" onclick="atualizarFornecedor(${f.id},{status:'rejeitado'})">Rejeitar</button>`:''}
+        ${f.status==='ativo'?`<button class="btn btn-danger btn-sm" onclick="atualizarFornecedor(${f.id},{status:'suspenso'})">Suspender</button>`:''}
+        ${f.status==='suspenso'?`<button class="btn btn-success btn-sm" onclick="atualizarFornecedor(${f.id},{status:'ativo'})">Reativar</button>`:''}
+      </td>
+    </tr>`).join('');
+  } catch(e) { tb.innerHTML='<tr><td colspan="8"><div class="empty">Erro: '+e.message+'</div></td></tr>'; }
+}
+
+async function atualizarFornecedor(id, body) {
+  try {
+    const r = await fetch('/api/admin/club/fornecedor/'+id, { method:'PUT', headers:{'Content-Type':'application/json', Authorization:'Basic '+token}, body:JSON.stringify(body) });
+    if (r.ok) { showToast('Fornecedor atualizado!','success'); carregarFornecedores(); }
+    else showToast('Erro.','error');
+  } catch { showToast('Erro de conexão.','error'); }
+}
+
+// ── PRODUTOS ──────────────────────────────────────────────
+async function carregarProdutos() {
+  const tb = document.getElementById('tProdutos');
+  try {
+    const r = await fetch('/api/admin/club/produtos', { headers:{ Authorization:'Basic '+token } });
+    const data = await r.json();
+    if (!data.length) { tb.innerHTML='<tr><td colspan="7"><div class="empty">Nenhum produto.</div></td></tr>'; return; }
+    tb.innerHTML = data.map(p=>`<tr>
+      <td><strong>${p.nome}</strong>${p.imagem_url?`<br><a href="${p.imagem_url}" target="_blank" style="font-size:.7rem;color:rgba(255,179,0,.6)">ver imagem</a>`:''}</td>
+      <td>${p.nome_loja}</td>
+      <td>${p.categoria||'—'}</td>
+      <td>R$ ${parseFloat(p.preco).toFixed(2).replace('.',',')}</td>
+      <td>${p.estoque}</td>
+      <td><span class="badge badge-${p.status}">${p.status}</span></td>
+      <td style="display:flex;gap:5px">
+        ${p.status!=='aprovado'?`<button class="btn btn-success btn-sm" onclick="statusProduto(${p.id},'aprovado')">Aprovar</button>`:''}
+        ${p.status!=='reprovado'?`<button class="btn btn-danger btn-sm" onclick="statusProduto(${p.id},'reprovado')">Reprovar</button>`:''}
+      </td>
+    </tr>`).join('');
+  } catch(e) { tb.innerHTML='<tr><td colspan="7"><div class="empty">Erro.</div></td></tr>'; }
+}
+
+async function statusProduto(id, status) {
+  try {
+    const r = await fetch('/api/admin/club/produto/'+id, { method:'PUT', headers:{'Content-Type':'application/json', Authorization:'Basic '+token}, body:JSON.stringify({status}) });
+    if (r.ok) { showToast('Produto '+status+'!','success'); carregarProdutos(); }
+  } catch { showToast('Erro.','error'); }
+}
+
+// ── PEDIDOS ───────────────────────────────────────────────
+async function carregarPedidos() {
+  const tb = document.getElementById('tPedidos');
+  try {
+    const r = await fetch('/api/admin/club/pedidos', { headers:{ Authorization:'Basic '+token } });
+    const data = await r.json();
+    if (!data.length) { tb.innerHTML='<tr><td colspan="7"><div class="empty">Nenhum pedido.</div></td></tr>'; return; }
+    tb.innerHTML = data.map(p=>`<tr>
+      <td>#${p.id}<br><span style="font-size:.7rem;color:rgba(255,255,255,.3)">${new Date(p.criado_em).toLocaleDateString('pt-BR')}</span></td>
+      <td>${p.produto_nome}</td>
+      <td>${p.nome_loja}</td>
+      <td>${p.nome_cliente||'—'}</td>
+      <td>R$ ${parseFloat(p.total).toFixed(2).replace('.',',')}</td>
+      <td style="color:#4ade80">R$ ${parseFloat(p.valor_fornecedor||0).toFixed(2).replace('.',',')}</td>
+      <td><span class="badge badge-${p.status}">${p.status?.replace(/_/g,' ')||'—'}</span></td>
+    </tr>`).join('');
+  } catch { tb.innerHTML='<tr><td colspan="7"><div class="empty">Erro.</div></td></tr>'; }
+}
+
+// ── DISPUTAS ──────────────────────────────────────────────
+async function carregarDisputas() {
+  const el = document.getElementById('disputasLista');
+  try {
+    const r = await fetch('/api/admin/club/disputas', { headers:{ Authorization:'Basic '+token } });
+    const data = await r.json();
+    // Atualizar badge
+    const link = document.getElementById('linkDisputas');
+    if (data.length) link.innerHTML = `⚠️ Disputas <span style="background:var(--red);color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;margin-left:4px">${data.length}</span>`;
+    if (!data.length) { el.innerHTML='<div class="empty">Nenhuma disputa aberta. ✅</div>'; return; }
+    el.innerHTML = data.map(d=>`
+      <div class="disputa-card">
+        <div class="disputa-header">
+          <div>
+            <div class="disputa-title">⚠️ Disputa #${d.id} — Pedido #${d.pedido_id}</div>
+            <div class="disputa-meta">
+              Motivo: <strong>${d.motivo?.replace(/_/g,' ')}</strong><br>
+              Cliente: ${d.nome_cliente||'—'} · Loja: ${d.nome_loja}<br>
+              Produto: ${d.produto_nome} · Total: R$ ${parseFloat(d.total||0).toFixed(2).replace('.',',')} · Repasse: R$ ${parseFloat(d.valor_fornecedor||0).toFixed(2).replace('.',',')}<br>
+              Aberta em: ${new Date(d.criado_em).toLocaleDateString('pt-BR')}
+            </div>
+          </div>
+          <span class="badge badge-aberta">Aberta</span>
+        </div>
+        <div class="disputa-desc">"${d.descricao||'Sem descrição'}"</div>
+        <div class="disputa-actions">
+          <button class="btn btn-danger" onclick="abrirResolver(${d.id},'Disputa #${d.id} — ${(d.motivo||'').replace(/_/g,' ')}')">⚖️ Resolver Disputa</button>
+        </div>
+      </div>`).join('');
+  } catch { el.innerHTML='<div class="empty">Erro ao carregar.</div>'; }
+}
+
+function abrirResolver(id, titulo) {
+  disputaAtualId = id;
+  document.getElementById('mdTitulo').textContent = titulo;
+  document.getElementById('md-resolucao').value = '';
+  document.getElementById('modalDisputa').classList.add('open');
+}
+function fecharModalDisputa() { document.getElementById('modalDisputa').classList.remove('open'); }
+
+async function confirmarResolver() {
+  const resolucao = document.getElementById('md-resolucao').value.trim();
+  const decisao   = document.getElementById('md-decisao').value;
+  if (!resolucao) { showToast('Descreva a resolução.','error'); return; }
+  const btn = document.getElementById('btnResolver');
+  btn.disabled=true; btn.textContent='⏳ Salvando...';
+  try {
+    const r = await fetch('/api/admin/club/disputa/'+disputaAtualId, {
+      method:'PUT', headers:{'Content-Type':'application/json', Authorization:'Basic '+token},
+      body: JSON.stringify({ resolucao, favoravel_cliente: decisao==='cliente' })
+    });
+    const d = await r.json();
+    if (!r.ok) { showToast(d.erro||'Erro.','error'); return; }
+    showToast(decisao==='cliente' ? '✅ Estorno processado para o cliente.' : '✅ Pagamento liberado para o fornecedor.', 'success');
+    fecharModalDisputa(); carregarDisputas();
+  } catch { showToast('Erro de conexão.','error'); }
+  finally { btn.disabled=false; btn.textContent='Confirmar Decisão'; }
+}
+
+// ── SAQUES ────────────────────────────────────────────────
+async function carregarSaques() {
+  const tb = document.getElementById('tSaques');
+  try {
+    const r = await fetch('/api/admin/club/saques', { headers:{ Authorization:'Basic '+token } });
+    const data = await r.json();
+    if (!data.length) { tb.innerHTML='<tr><td colspan="6"><div class="empty">Nenhum saque pendente.</div></td></tr>'; return; }
+    tb.innerHTML = data.map(s=>`<tr>
+      <td>${s.nome_loja}</td>
+      <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;color:var(--amber)">R$ ${parseFloat(s.valor).toFixed(2).replace('.',',')}</td>
+      <td>${s.metodo}</td>
+      <td style="font-size:.78rem;word-break:break-all">${s.destino}</td>
+      <td style="font-size:.75rem;color:rgba(255,255,255,.35)">${new Date(s.criado_em).toLocaleDateString('pt-BR')}</td>
+      <td style="display:flex;gap:6px">
+        <button class="btn btn-success btn-sm" onclick="atualizarSaque(${s.id},'processado')">✅ Pago</button>
+        <button class="btn btn-danger btn-sm" onclick="atualizarSaque(${s.id},'cancelado')">Cancelar</button>
+      </td>
+    </tr>`).join('');
+  } catch { tb.innerHTML='<tr><td colspan="6"><div class="empty">Erro.</div></td></tr>'; }
+}
+
+async function atualizarSaque(id, status) {
+  try {
+    const r = await fetch('/api/admin/club/saque/'+id, { method:'PUT', headers:{'Content-Type':'application/json', Authorization:'Basic '+token}, body:JSON.stringify({status}) });
+    if (r.ok) { showToast(status==='processado'?'Saque marcado como pago!':'Saque cancelado.','success'); carregarSaques(); }
+  } catch { showToast('Erro.','error'); }
+}
+
+// ── UTILITÁRIOS ───────────────────────────────────────────
+function showToast(msg, tipo) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className='show'+(tipo==='error'?' error':tipo==='success'?' success':'');
+  setTimeout(()=>t.className='',3500);
+}
+
+// Carregar inicial
+carregarFornecedores();
+// Verificar disputas para badge
+fetch('/api/admin/club/disputas', { headers:{ Authorization:'Basic '+token } })
+  .then(r=>r.json()).then(data=>{
+    if (data.length) {
+      const link = document.getElementById('linkDisputas');
+      link.innerHTML = `⚠️ Disputas <span style="background:var(--red);color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;margin-left:4px">${data.length}</span>`;
+    }
+  }).catch(()=>{});
+</script>
+</body>
+</html>

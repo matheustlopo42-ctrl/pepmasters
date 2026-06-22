@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>PEPMASTERS Club — Marketplace</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:var(--cream);min-height:100vh;display:flex;flex-direction:column}
+
+    /* HEADER */
+    header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(255,179,0,.15)}
+    .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo-wrap img{height:36px;width:36px;object-fit:contain}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .club-badge{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;padding:2px 8px;border-radius:4px;text-transform:uppercase;margin-left:4px}
+    .header-right{display:flex;align-items:center;gap:10px}
+    .btn-sm{padding:6px 14px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;text-decoration:none;transition:all .2s}
+    .btn-outline{border:2px solid var(--border);color:var(--mid);background:none}
+    .btn-outline:hover{border-color:var(--orange);color:var(--orange)}
+    .btn-solid{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;box-shadow:0 3px 12px rgba(232,34,10,.25)}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,var(--dark),#2a0e00);padding:52px 24px;text-align:center;color:#fff}
+    .hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.6rem;text-transform:uppercase;background:linear-gradient(135deg,#fff,var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px}
+    .hero p{font-size:.95rem;color:rgba(255,255,255,.55);max-width:560px;margin:0 auto 24px;line-height:1.7}
+    .hero-badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+    .hero-badge{background:rgba(255,179,0,.12);border:1px solid rgba(255,179,0,.25);color:rgba(255,179,0,.9);padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:600}
+
+    /* FILTROS */
+    .filters-bar{background:#fff;border-bottom:1px solid var(--border);padding:14px 24px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;position:sticky;top:64px;z-index:90}
+    .search-input{flex:1;min-width:200px;padding:9px 14px;border:2px solid var(--border);border-radius:10px;font-family:'Barlow',sans-serif;font-size:.88rem;color:var(--dark);outline:none;transition:border-color .2s}
+    .search-input:focus{border-color:var(--orange)}
+    .filter-btns{display:flex;gap:6px;flex-wrap:wrap}
+    .filter-btn{padding:6px 14px;border:2px solid var(--border);border-radius:20px;background:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);cursor:pointer;transition:all .2s}
+    .filter-btn.active{border-color:var(--orange);color:var(--orange);background:#FFF3E0}
+
+    /* CONTEÚDO */
+    .content{max-width:1200px;margin:0 auto;padding:28px 24px;flex:1}
+    .section-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;text-transform:uppercase;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+    /* FORNECEDORES */
+    .fornecedores-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;margin-bottom:32px;scrollbar-width:thin}
+    .fornecedor-card{background:#fff;border:2px solid var(--border);border-radius:14px;padding:16px 18px;min-width:200px;cursor:pointer;transition:all .2s;flex-shrink:0;text-align:center}
+    .fornecedor-card:hover{border-color:var(--orange);transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,107,0,.12)}
+    .fornecedor-card.selected{border-color:var(--orange);background:#FFF3E0}
+    .forn-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:#fff;margin:0 auto 8px}
+    .forn-nome{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;color:var(--dark);margin-bottom:4px}
+    .forn-nivel{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+    .nivel-bronze{color:#cd7f32}.nivel-prata{color:#888}.nivel-ouro{color:#B8860B}.nivel-diamante{color:#4a9eff}
+    .forn-stats{font-size:.72rem;color:var(--muted);margin-top:4px}
+
+    /* PRODUTOS GRID */
+    .produtos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+    .produto-card{background:#fff;border-radius:16px;border:1px solid #FFE5B0;box-shadow:0 2px 12px rgba(255,179,0,.08);overflow:hidden;transition:all .2s;cursor:pointer;display:flex;flex-direction:column}
+    .produto-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(255,107,0,.15)}
+    .prod-img{height:160px;background:linear-gradient(135deg,#FFF8F0,#FFE5B0);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0}
+    .prod-img img{width:100%;height:100%;object-fit:cover}
+    .prod-body{padding:16px;flex:1;display:flex;flex-direction:column}
+    .prod-fornecedor{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--orange);margin-bottom:4px;display:flex;align-items:center;gap:5px}
+    .prod-nome{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:var(--dark);margin-bottom:6px;line-height:1.3}
+    .prod-desc{font-size:.8rem;color:var(--muted);line-height:1.5;margin-bottom:10px;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .prod-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+    .prod-preco{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;color:var(--dark)}
+    .prod-estoque{font-size:.72rem;color:var(--muted)}
+    .btn-comprar{padding:8px 16px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;cursor:pointer;transition:opacity .2s}
+    .btn-comprar:hover{opacity:.85}
+
+    /* SELOS */
+    .selo-icon{font-size:.85rem}
+
+    /* MODAL PRODUTO */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#fff;border-radius:20px;padding:32px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+    .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted)}
+    .modal-close:hover{color:var(--dark)}
+    .modal-img{height:200px;background:linear-gradient(135deg,#FFF8F0,#FFE5B0);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:4rem;margin-bottom:20px;overflow:hidden}
+    .modal-img img{width:100%;height:100%;object-fit:cover}
+    .modal-fornecedor{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:12px;background:var(--cream);border-radius:10px}
+    .modal-forn-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;color:#fff;flex-shrink:0}
+    .modal-forn-info{flex:1}
+    .modal-forn-nome{font-weight:700;font-size:.9rem;color:var(--dark)}
+    .modal-forn-stats{font-size:.72rem;color:var(--muted)}
+    .modal-nome{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;color:var(--dark);margin-bottom:8px}
+    .modal-desc{font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:18px}
+    .modal-preco{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;color:var(--dark);margin-bottom:6px}
+    .modal-estoque{font-size:.78rem;color:var(--muted);margin-bottom:18px}
+    .modal-form label{display:block;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);margin-bottom:5px;margin-top:12px}
+    .modal-form input,.modal-form select{width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:10px;font-size:.9rem;font-family:'Barlow',sans-serif;color:var(--dark);outline:none;transition:border-color .2s}
+    .modal-form input:focus,.modal-form select:focus{border-color:var(--orange)}
+    .custódia-info{background:#FFF3E0;border:1px solid #FFD580;border-radius:10px;padding:12px 14px;font-size:.8rem;color:var(--mid);margin:16px 0;line-height:1.6}
+    .btn-finalizar{width:100%;padding:13px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;border-radius:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-top:8px;box-shadow:0 4px 16px rgba(232,34,10,.3)}
+    .btn-finalizar:hover{opacity:.9}
+    .btn-finalizar:disabled{opacity:.4;cursor:not-allowed}
+
+    /* EMPTY */
+    .empty{text-align:center;padding:60px 24px;color:var(--muted)}
+    .empty-icon{font-size:3rem;margin-bottom:12px}
+    .loading{text-align:center;padding:60px;color:var(--muted);font-size:.9rem}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:22px;right:22px;background:var(--dark);color:#fff;padding:11px 18px;border-radius:10px;font-size:.85rem;border-left:4px solid var(--amber);box-shadow:0 8px 28px rgba(0,0,0,.35);transform:translateY(10px);opacity:0;transition:all .3s;z-index:9999;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    #toast.error{border-left-color:var(--red)}
+    #toast.success{border-left-color:#22c55e}
+
+    footer{background:var(--dark);color:rgba(255,255,255,.4);text-align:center;padding:20px;font-size:.8rem;margin-top:auto}
+    footer a{color:rgba(255,179,0,.5);text-decoration:none}
+
+    @media(max-width:600px){.hero h1{font-size:1.9rem}.produtos-grid{grid-template-columns:1fr 1fr}.hero-badges{gap:6px}.header-right .btn-sm:first-child{display:none}}
+    @media(max-width:400px){.produtos-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo-wrap">
+    <img src="Capturar.PNG" alt="Logo"/>
+    <span class="logo-text">PEPMASTERS</span>
+    <span class="club-badge">Club</span>
+  </a>
+  <div class="header-right">
+    <a href="club-meus-pedidos.html" class="btn-sm btn-outline">Meus Pedidos</a>
+    <a href="club-fornecedor-cadastro.html" class="btn-sm btn-outline">Seja Fornecedor</a>
+    <a href="index.html" class="btn-sm btn-solid">Loja</a>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Marketplace com Custódia</h1>
+  <p>Compre peptídeos de fornecedores verificados com segurança total. O pagamento só é liberado após você receber o produto.</p>
+  <div class="hero-badges">
+    <span class="hero-badge">🔒 Pagamento em custódia</span>
+    <span class="hero-badge">✅ Fornecedores verificados</span>
+    <span class="hero-badge">🛡️ Proteção total ao comprador</span>
+    <span class="hero-badge">⚡ PIX e Cripto</span>
+  </div>
+</div>
+
+<div class="filters-bar">
+  <input type="text" class="search-input" id="busca" placeholder="🔍  Buscar produto..." oninput="filtrar()"/>
+  <div class="filter-btns">
+    <button class="filter-btn active" data-cat="" onclick="setCategoria(this)">Todos</button>
+    <button class="filter-btn" data-cat="glp1" onclick="setCategoria(this)">GLP-1</button>
+    <button class="filter-btn" data-cat="recuperacao" onclick="setCategoria(this)">Recuperação</button>
+    <button class="filter-btn" data-cat="longevidade" onclick="setCategoria(this)">Longevidade</button>
+    <button class="filter-btn" data-cat="hormonio" onclick="setCategoria(this)">Hormônios</button>
+    <button class="filter-btn" data-cat="nootrop" onclick="setCategoria(this)">Nootrópicos</button>
+    <button class="filter-btn" data-cat="acessorio" onclick="setCategoria(this)">Acessórios</button>
+  </div>
+</div>
+
+<div class="content">
+  <!-- Fornecedores -->
+  <div class="section-title">🏪 Fornecedores Verificados</div>
+  <div class="fornecedores-scroll" id="fornecedoresList">
+    <div class="loading">Carregando...</div>
+  </div>
+
+  <!-- Produtos -->
+  <div class="section-title">📦 Produtos Disponíveis <span id="totalProd" style="font-size:.85rem;font-weight:400;color:var(--muted)"></span></div>
+  <div id="produtosGrid" class="produtos-grid">
+    <div class="loading">Carregando produtos...</div>
+  </div>
+</div>
+
+<!-- MODAL COMPRA -->
+<div class="modal-overlay" id="modalCompra">
+  <div class="modal-box">
+    <button class="modal-close" onclick="fecharModal()">✕</button>
+    <div class="modal-img" id="modalImg">🧬</div>
+    <div class="modal-fornecedor" id="modalFornecedor"></div>
+    <div class="modal-nome" id="modalNome"></div>
+    <div class="modal-desc" id="modalDesc"></div>
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px">
+      <div class="modal-preco" id="modalPreco"></div>
+      <div id="modalTotal" style="font-size:.88rem;color:var(--muted)"></div>
+    </div>
+    <div class="modal-estoque" id="modalEstoque"></div>
+
+    <div class="modal-form">
+      <label>Quantidade</label>
+      <input type="number" id="m-qtd" value="1" min="1" oninput="atualizarTotal()"/>
+      <label>Seu nome *</label>
+      <input type="text" id="m-nome" placeholder="Nome completo"/>
+      <label>Email</label>
+      <input type="email" id="m-email" placeholder="seu@email.com"/>
+      <label>WhatsApp</label>
+      <input type="text" id="m-telefone" placeholder="5511999999999"/>
+      <label>Endereço de entrega</label>
+      <input type="text" id="m-endereco" placeholder="Rua, nº, cidade, estado, CEP"/>
+      <label>Forma de pagamento</label>
+      <select id="m-pagamento" onchange="toggleCripto()">
+        <option value="pix">PIX</option>
+        <option value="cripto">Cripto (USDT/USDC)</option>
+      </select>
+      <div id="criptoOpts" style="display:none;margin-top:8px">
+        <label>Token</label>
+        <select id="m-token">
+          <option value="USDTTRX">USDT — Tron TRC-20</option>
+          <option value="USDCPOLYGON">USDC — Polygon</option>
+          <option value="USDTETH">USDT — Ethereum</option>
+          <option value="USDCETH">USDC — Ethereum</option>
+          <option value="USDCSOLANA">USDC — Solana</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="custódia-info">
+      🔒 <strong>Pagamento protegido por custódia.</strong> O valor fica retido na Pepmasters e só é liberado para o fornecedor após você receber o produto (ou automaticamente em 5 dias sem disputa). Taxa: 5%.
+    </div>
+
+    <button class="btn-finalizar" id="btnFinalizar" onclick="finalizarCompra()">Confirmar Pedido</button>
+  </div>
+</div>
+
+<!-- MODAL RESULTADO -->
+<div class="modal-overlay" id="modalResultado">
+  <div class="modal-box" style="text-align:center">
+    <div id="resIcone" style="font-size:3.5rem;margin-bottom:14px"></div>
+    <div id="resTitulo" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;color:var(--dark);margin-bottom:8px"></div>
+    <div id="resDesc" style="font-size:.88rem;color:var(--muted);margin-bottom:20px;line-height:1.7"></div>
+    <div id="resQr" style="margin-bottom:16px"></div>
+    <div id="resCopia" style="margin-bottom:16px"></div>
+    <a href="club-meus-pedidos.html" style="display:inline-block;padding:11px 24px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border-radius:10px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase">Ver Meus Pedidos</a>
+    <br><button onclick="document.getElementById('modalResultado').classList.remove('open')" style="margin-top:12px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:.85rem">Continuar comprando</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<footer>© 2025 PEPMASTERS Club — <a href="index.html">Voltar à loja</a> · <a href="club-fornecedor-cadastro.html">Seja um Fornecedor</a></footer>
+
+<script>
+let todosProdutos = [];
+let todosForns    = [];
+let prodAtual     = null;
+let categoriaAtiva = '';
+
+const nivelIcons = { bronze:'🥉', prata:'🥈', ouro:'🥇', diamante:'💎' };
+
+// ── Carregar dados ────────────────────────────────────────
+async function carregar() {
+  try {
+    const [prods, forns] = await Promise.all([
+      fetch('/api/club/produtos').then(r=>r.json()),
+      fetch('/api/club/fornecedores').then(r=>r.json()),
+    ]);
+    todosProdutos = prods;
+    todosForns    = forns;
+    renderFornecedores();
+    renderProdutos();
+  } catch(e) {
+    document.getElementById('produtosGrid').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><p>Erro ao carregar. Tente novamente.</p></div>';
+  }
+}
+
+// ── Fornecedores ──────────────────────────────────────────
+function renderFornecedores() {
+  const el = document.getElementById('fornecedoresList');
+  if (!todosForns.length) { el.innerHTML = '<p style="color:var(--muted);font-size:.85rem;padding:8px">Nenhum fornecedor ainda.</p>'; return; }
+  el.innerHTML = todosForns.map(f => `
+    <div class="fornecedor-card" onclick="filtrarFornecedor(${f.id})" id="fc-${f.id}">
+      <div class="forn-avatar">${f.nome_loja[0].toUpperCase()}</div>
+      <div class="forn-nome">${f.nome_loja}</div>
+      <div class="forn-nivel nivel-${f.nivel}">${nivelIcons[f.nivel]||'🥉'} ${f.nivel}</div>
+      <div class="forn-stats">${f.pedidos_ok} entregas · ${f.disputas} disputas</div>
+    </div>`).join('');
+}
+
+let fornFiltro = null;
+function filtrarFornecedor(id) {
+  if (fornFiltro === id) {
+    fornFiltro = null;
+    document.querySelectorAll('.fornecedor-card').forEach(c=>c.classList.remove('selected'));
+  } else {
+    fornFiltro = id;
+    document.querySelectorAll('.fornecedor-card').forEach(c=>c.classList.remove('selected'));
+    document.getElementById('fc-'+id)?.classList.add('selected');
+  }
+  renderProdutos();
+}
+
+// ── Produtos ──────────────────────────────────────────────
+function setCategoria(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  categoriaAtiva = btn.getAttribute('data-cat');
+  renderProdutos();
+}
+
+function filtrar() { renderProdutos(); }
+
+function renderProdutos() {
+  const busca = document.getElementById('busca').value.toLowerCase();
+  let lista = todosProdutos.filter(p => {
+    if (categoriaAtiva && p.categoria !== categoriaAtiva) return false;
+    if (fornFiltro && p.fornecedor_id !== fornFiltro) return false;
+    if (busca && !p.nome.toLowerCase().includes(busca) && !p.descricao?.toLowerCase().includes(busca)) return false;
+    return true;
+  });
+
+  document.getElementById('totalProd').textContent = `(${lista.length})`;
+  const grid = document.getElementById('produtosGrid');
+
+  if (!lista.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><p>Nenhum produto encontrado.</p></div>';
+    return;
+  }
+
+  grid.innerHTML = lista.map(p => {
+    const forn = todosForns.find(f=>f.id===p.fornecedor_id);
+    const imgHtml = p.imagem_url
+      ? `<img src="${p.imagem_url}" alt="${p.nome}"/>`
+      : '🧬';
+    return `
+    <div class="produto-card" onclick="abrirProduto(${p.id})">
+      <div class="prod-img">${imgHtml}</div>
+      <div class="prod-body">
+        <div class="prod-fornecedor">
+          <span class="selo-icon">${nivelIcons[forn?.nivel||'bronze']||'🥉'}</span>
+          ${forn?.nome_loja||'—'}
+        </div>
+        <div class="prod-nome">${p.nome}</div>
+        <div class="prod-desc">${p.descricao||''}</div>
+        <div class="prod-footer">
+          <div>
+            <div class="prod-preco">R$ ${parseFloat(p.preco).toFixed(2).replace('.',',')}</div>
+            <div class="prod-estoque">${p.estoque} em estoque</div>
+          </div>
+          <button class="btn-comprar" onclick="event.stopPropagation();abrirProduto(${p.id})">Comprar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Modal produto ─────────────────────────────────────────
+function abrirProduto(id) {
+  const p    = todosProdutos.find(x=>x.id===id);
+  const forn = todosForns.find(f=>f.id===p.fornecedor_id);
+  prodAtual  = p;
+
+  document.getElementById('modalImg').innerHTML = p.imagem_url
+    ? `<img src="${p.imagem_url}" alt="${p.nome}"/>`
+    : '🧬';
+  document.getElementById('modalFornecedor').innerHTML = `
+    <div class="modal-forn-avatar">${forn?.nome_loja[0]?.toUpperCase()||'?'}</div>
+    <div class="modal-forn-info">
+      <div class="modal-forn-nome">${nivelIcons[forn?.nivel||'bronze']} ${forn?.nome_loja||'—'}</div>
+      <div class="modal-forn-stats">${forn?.pedidos_ok||0} entregas · ${forn?.disputas||0} disputas</div>
+    </div>`;
+  document.getElementById('modalNome').textContent    = p.nome;
+  document.getElementById('modalDesc').textContent    = p.descricao || '';
+  document.getElementById('modalPreco').textContent   = 'R$ ' + parseFloat(p.preco).toFixed(2).replace('.',',');
+  document.getElementById('modalEstoque').textContent = p.estoque + ' unidades em estoque';
+  document.getElementById('m-qtd').value = 1;
+  document.getElementById('m-qtd').max  = p.estoque;
+  atualizarTotal();
+
+  // Preencher dados se logado
+  const nome  = localStorage.getItem('pep_nome');
+  const token = localStorage.getItem('pep_token');
+  if (nome) document.getElementById('m-nome').value = nome;
+
+  document.getElementById('modalCompra').classList.add('open');
+}
+
+function fecharModal() {
+  document.getElementById('modalCompra').classList.remove('open');
+  prodAtual = null;
+}
+
+function atualizarTotal() {
+  if (!prodAtual) return;
+  const qtd = parseInt(document.getElementById('m-qtd').value) || 1;
+  const total = (prodAtual.preco * qtd).toFixed(2).replace('.',',');
+  document.getElementById('modalTotal').textContent = qtd > 1 ? `= R$ ${total}` : '';
+}
+
+function toggleCripto() {
+  const pag = document.getElementById('m-pagamento').value;
+  document.getElementById('criptoOpts').style.display = pag === 'cripto' ? 'block' : 'none';
+}
+
+// ── Finalizar compra ──────────────────────────────────────
+async function finalizarCompra() {
+  if (!prodAtual) return;
+  const nome = document.getElementById('m-nome').value.trim();
+  if (!nome) { showToast('Informe seu nome.', 'error'); return; }
+
+  const btn = document.getElementById('btnFinalizar');
+  btn.disabled = true; btn.textContent = '⏳ Processando...';
+
+  const pagamento   = document.getElementById('m-pagamento').value;
+  const crypto_token = document.getElementById('m-token')?.value || null;
+
+  try {
+    const res = await fetch('/api/club/pedido', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        produto_id:       prodAtual.id,
+        quantidade:       parseInt(document.getElementById('m-qtd').value) || 1,
+        nome_cliente:     nome,
+        email_cliente:    document.getElementById('m-email').value.trim() || null,
+        telefone_cliente: document.getElementById('m-telefone').value.trim() || null,
+        endereco:         document.getElementById('m-endereco').value.trim() || null,
+        pagamento,
+        crypto_token: pagamento === 'cripto' ? crypto_token : null,
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.erro || 'Erro ao criar pedido.', 'error'); return; }
+
+    fecharModal();
+    mostrarResultado(data, pagamento);
+  } catch { showToast('Erro de conexão.', 'error'); }
+  finally { btn.disabled = false; btn.textContent = 'Confirmar Pedido'; }
+}
+
+function mostrarResultado(data, pagamento) {
+  document.getElementById('resIcone').textContent = '✅';
+  document.getElementById('resTitulo').textContent = 'Pedido #' + data.pedido_id + ' criado!';
+  document.getElementById('resDesc').innerHTML =
+    `Total: <strong>R$ ${parseFloat(data.total).toFixed(2).replace('.',',')}</strong><br>` +
+    `Taxa Pepmasters: R$ ${parseFloat(data.taxa).toFixed(2).replace('.',',')}<br><br>` +
+    (pagamento === 'pix' ? '📲 Escaneie o QR code ou copie o código PIX abaixo para pagar.' : '🔐 Envie o valor exato para o endereço de carteira abaixo.');
+
+  const resQr    = document.getElementById('resQr');
+  const resCopia = document.getElementById('resCopia');
+
+  if (pagamento === 'pix') {
+    resQr.innerHTML = data.qrcode_url
+      ? `<img src="${data.qrcode_url}" style="width:180px;height:180px;border-radius:10px;border:3px solid var(--amber)"/>`
+      : '';
+    if (data.copia_cola) {
+      resCopia.innerHTML = `
+        <div style="background:#f5f5f5;border-radius:8px;padding:10px;font-size:.72rem;font-family:monospace;word-break:break-all;margin-bottom:8px">${data.copia_cola}</div>
+        <button onclick="copiar('${data.copia_cola.replace(/'/g,"\\'")}',this)" style="padding:8px 18px;background:var(--amber);border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer">📋 Copiar PIX</button>`;
+    }
+  } else {
+    resQr.innerHTML = '';
+    resCopia.innerHTML = data.nowpay_address
+      ? `<div style="font-size:.78rem;color:var(--muted);margin-bottom:4px">Endereço:</div>
+         <div style="background:#f5f5f5;border-radius:8px;padding:10px;font-size:.75rem;font-family:monospace;word-break:break-all;margin-bottom:8px">${data.nowpay_address}</div>
+         <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem;color:var(--dark)">Enviar: ${data.nowpay_amount} ${data.nowpay_currency?.toUpperCase()}</div>`
+      : '<p style="color:var(--muted);font-size:.85rem">Dados de pagamento enviados por email.</p>';
+  }
+  document.getElementById('modalResultado').classList.add('open');
+}
+
+async function copiar(texto, btn) {
+  try {
+    await navigator.clipboard.writeText(texto);
+    btn.textContent = '✅ Copiado!';
+    setTimeout(() => btn.textContent = '📋 Copiar PIX', 2500);
+  } catch {}
+}
+
+function showToast(msg, tipo) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (tipo === 'error' ? ' error' : tipo === 'success' ? ' success' : '');
+  setTimeout(() => t.className = '', 3500);
+}
+
+document.addEventListener('click', e => {
+  if (e.target === document.getElementById('modalCompra')) fecharModal();
+});
+
+carregar();
+</script>
+</body>
+</html>

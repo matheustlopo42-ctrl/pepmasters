@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Meus Pedidos — PEPMASTERS Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:var(--cream);min-height:100vh;display:flex;flex-direction:column}
+    header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 16px rgba(255,179,0,.15);position:sticky;top:0;z-index:100}
+    .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo-wrap img{height:36px;width:36px;object-fit:contain}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .club-badge{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;padding:2px 8px;border-radius:4px;text-transform:uppercase;margin-left:4px}
+    .back-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none}
+    .back-link:hover{color:var(--orange)}
+    main{flex:1;max-width:860px;margin:0 auto;padding:32px 24px;width:100%}
+    h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;text-transform:uppercase;color:var(--dark);margin-bottom:6px}
+    .subtitle{font-size:.85rem;color:var(--muted);margin-bottom:28px}
+
+    /* SALDO */
+    .saldo-strip{background:linear-gradient(135deg,var(--dark),#2a0e00);border-radius:14px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;color:#fff}
+    .saldo-info .label{font-size:.7rem;text-transform:uppercase;letter-spacing:.09em;color:rgba(255,255,255,.4);margin-bottom:3px}
+    .saldo-info .valor{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;color:var(--amber)}
+    .btn-saque{padding:9px 18px;background:rgba(255,179,0,.15);border:1px solid rgba(255,179,0,.3);color:var(--amber);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;border-radius:9px;cursor:pointer;transition:all .2s}
+    .btn-saque:hover{background:rgba(255,179,0,.25)}
+
+    /* PEDIDOS */
+    .pedido-card{background:#fff;border-radius:16px;border:1px solid #FFE5B0;box-shadow:0 2px 12px rgba(255,179,0,.07);padding:20px;margin-bottom:14px}
+    .pedido-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+    .pedido-id{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem;color:var(--dark)}
+    .pedido-data{font-size:.72rem;color:var(--muted);margin-top:2px}
+    .pedido-status{padding:4px 12px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+    .s-aguardando_pagamento{background:#fff3cd;color:#92400e}
+    .s-pago{background:#dcfce7;color:#15803d}
+    .s-enviado{background:#dbeafe;color:#1e40af}
+    .s-concluido{background:#d1fae5;color:#065f46}
+    .s-em_disputa{background:#fee2e2;color:#991b1b}
+    .s-estornado{background:#f3f4f6;color:#6b7280}
+    .pedido-body{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:.84rem;margin-bottom:14px}
+    .pedido-field .label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:2px}
+    .pedido-field .val{color:var(--dark);font-weight:500}
+    .pedido-total{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem;color:var(--dark)}
+    .pedido-footer{display:flex;gap:10px;flex-wrap:wrap;padding-top:14px;border-top:1px solid #FFE5B0}
+    .btn-sm{padding:8px 16px;border-radius:9px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;transition:all .2s;border:none}
+    .btn-disputa{background:#fee2e2;color:#991b1b}
+    .btn-disputa:hover{background:#fecaca}
+    .btn-outline{background:none;border:2px solid var(--border);color:var(--mid)}
+    .btn-outline:hover{border-color:var(--orange);color:var(--orange)}
+
+    /* TIMELINE */
+    .timeline{display:flex;gap:0;margin-bottom:14px}
+    .timeline-step{flex:1;text-align:center;position:relative}
+    .timeline-step::before{content:'';position:absolute;top:12px;left:-50%;right:50%;height:2px;background:#FFE5B0;z-index:0}
+    .timeline-step:first-child::before{display:none}
+    .timeline-dot{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;margin:0 auto 4px;position:relative;z-index:1}
+    .timeline-dot.done{background:var(--amber);border-color:var(--amber);color:#fff}
+    .timeline-dot.active{border-color:var(--orange);color:var(--orange)}
+    .timeline-label{font-size:.62rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+
+    /* MODAL DISPUTA */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#fff;border-radius:18px;padding:28px;max-width:480px;width:100%;border-top:4px solid var(--red)}
+    .modal-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;color:var(--dark);margin-bottom:6px}
+    .modal-sub{font-size:.83rem;color:var(--muted);margin-bottom:18px;line-height:1.6}
+    label{display:block;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);margin-bottom:5px;margin-top:12px}
+    select,textarea{width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:10px;font-size:.88rem;font-family:'Barlow',sans-serif;color:var(--dark);background:var(--warm-white);outline:none;transition:border-color .2s}
+    select:focus,textarea:focus{border-color:var(--orange)}
+    textarea{resize:vertical;min-height:90px}
+    select option{background:#fff}
+    .btn-abrir-disputa{width:100%;padding:12px;background:linear-gradient(135deg,#b91c1c,#ef4444);color:#fff;border:none;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;text-transform:uppercase;cursor:pointer;margin-top:14px}
+    .btn-cancelar{width:100%;padding:10px;background:none;border:2px solid var(--border);color:var(--muted);border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;text-transform:uppercase;cursor:pointer;margin-top:8px}
+
+    /* LOGIN */
+    .login-card{background:#fff;border-radius:18px;padding:32px;max-width:400px;margin:60px auto;border:1px solid #FFE5B0;box-shadow:0 4px 20px rgba(255,179,0,.1)}
+    .login-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;color:var(--dark);margin-bottom:4px}
+    .login-sub{font-size:.83rem;color:var(--muted);margin-bottom:20px}
+    input{width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:10px;font-size:.9rem;font-family:'Barlow',sans-serif;color:var(--dark);background:var(--warm-white);outline:none;transition:border-color .2s;margin-bottom:12px}
+    input:focus{border-color:var(--orange)}
+    .btn-login-cliente{width:100%;padding:12px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;text-transform:uppercase;cursor:pointer}
+
+    .empty{text-align:center;padding:48px 20px;color:var(--muted)}
+    .empty-icon{font-size:3rem;margin-bottom:12px}
+    #toast{position:fixed;bottom:22px;right:22px;background:var(--dark);color:#fff;padding:10px 16px;border-radius:9px;font-size:.83rem;border-left:4px solid var(--amber);box-shadow:0 8px 28px rgba(0,0,0,.35);transform:translateY(10px);opacity:0;transition:all .3s;z-index:9999;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    #toast.error{border-left-color:var(--red)}
+    #toast.success{border-left-color:#22c55e}
+    footer{background:var(--dark);color:rgba(255,255,255,.4);text-align:center;padding:20px;font-size:.8rem;margin-top:auto}
+    footer a{color:rgba(255,179,0,.5);text-decoration:none}
+    @media(max-width:600px){.pedido-body{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <a href="club-marketplace.html" class="logo-wrap">
+    <img src="Capturar.PNG" alt="Logo"/>
+    <span class="logo-text">PEPMASTERS</span>
+    <span class="club-badge">Club</span>
+  </a>
+  <a href="club-marketplace.html" class="back-link">← Marketplace</a>
+</header>
+
+<main>
+  <div id="loginArea" style="display:none">
+    <div class="login-card">
+      <div class="login-title">Meus Pedidos</div>
+      <div class="login-sub">Faça login para ver seus pedidos do Club</div>
+      <label>Email</label>
+      <input type="email" id="l-email" placeholder="seu@email.com"/>
+      <label>Senha</label>
+      <input type="password" id="l-senha" placeholder="••••••"/>
+      <button class="btn-login-cliente" onclick="fazerLogin()">Entrar</button>
+      <p style="text-align:center;margin-top:14px;font-size:.8rem;color:var(--muted)">Não tem conta? <a href="cadastro.html" style="color:var(--orange)">Cadastre-se</a></p>
+    </div>
+  </div>
+
+  <div id="painelArea" style="display:none">
+    <h1>Meus Pedidos</h1>
+    <p class="subtitle">Acompanhe seus pedidos e abra disputas se necessário.</p>
+
+    <div class="saldo-strip" id="saldoStrip" style="display:none">
+      <div class="saldo-info">
+        <div class="label">Saldo em Crédito</div>
+        <div class="valor" id="saldoValor">R$ 0,00</div>
+      </div>
+      <div>
+        <p style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:6px">Crédito de estornos disponível</p>
+        <button class="btn-saque" onclick="sacarCredito()">Solicitar Saque</button>
+      </div>
+    </div>
+
+    <div id="pedidosLista"></div>
+  </div>
+</main>
+
+<!-- MODAL DISPUTA -->
+<div class="modal-overlay" id="modalDisputa">
+  <div class="modal-box">
+    <div class="modal-title">⚠️ Abrir Disputa</div>
+    <div class="modal-sub">Ao abrir uma disputa, o pagamento fica retido até a equipe Pepmasters analisar o caso. Descreva o problema com detalhes.</div>
+    <label>Motivo</label>
+    <select id="d-motivo">
+      <option value="nao_recebido">Produto não chegou</option>
+      <option value="produto_errado">Produto diferente do anunciado</option>
+      <option value="produto_danificado">Produto danificado</option>
+      <option value="fornecedor_sumiu">Fornecedor não responde</option>
+      <option value="outro">Outro motivo</option>
+    </select>
+    <label>Descrição detalhada</label>
+    <textarea id="d-desc" placeholder="Descreva o que aconteceu com o máximo de detalhes possível..."></textarea>
+    <button class="btn-abrir-disputa" onclick="confirmarDisputa()">Abrir Disputa</button>
+    <button class="btn-cancelar" onclick="fecharDisputa()">Cancelar</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<footer>© 2025 PEPMASTERS Club — <a href="club-marketplace.html">Marketplace</a></footer>
+
+<script>
+let authToken = localStorage.getItem('pep_token') || '';
+let pedidoDisputaId = null;
+const nivelIcons = { bronze:'🥉', prata:'🥈', ouro:'🥇', diamante:'💎' };
+
+// ── Verificar login ───────────────────────────────────────
+if (authToken) {
+  document.getElementById('painelArea').style.display = 'block';
+  carregarPedidos();
+  carregarSaldo();
+} else {
+  document.getElementById('loginArea').style.display = 'block';
+}
+
+async function fazerLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const senha = document.getElementById('l-senha').value;
+  if (!email || !senha) { showToast('Preencha email e senha.','error'); return; }
+  try {
+    const r = await fetch('/api/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, senha })
+    });
+    const d = await r.json();
+    if (!r.ok) { showToast(d.erro||'Credenciais inválidas.','error'); return; }
+    authToken = d.token;
+    localStorage.setItem('pep_token', authToken);
+    localStorage.setItem('pep_nome', d.nome);
+    document.getElementById('loginArea').style.display  = 'none';
+    document.getElementById('painelArea').style.display = 'block';
+    carregarPedidos();
+    carregarSaldo();
+  } catch { showToast('Erro de conexão.','error'); }
+}
+
+// ── Pedidos ───────────────────────────────────────────────
+async function carregarPedidos() {
+  const lista = document.getElementById('pedidosLista');
+  try {
+    const r = await fetch('/api/club/meus-pedidos', { headers:{ Authorization:'Bearer '+authToken } });
+    if (r.status === 401) { document.getElementById('painelArea').style.display='none'; document.getElementById('loginArea').style.display='block'; return; }
+    const pedidos = await r.json();
+    if (!pedidos.length) {
+      lista.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><p>Você ainda não fez pedidos no Club.</p><br><a href="club-marketplace.html" style="color:var(--orange);font-weight:600">Ver Marketplace →</a></div>';
+      return;
+    }
+    lista.innerHTML = pedidos.map(p => renderPedido(p)).join('');
+  } catch(e) { lista.innerHTML = '<div class="empty">Erro ao carregar pedidos.</div>'; }
+}
+
+function renderPedido(p) {
+  const statusClass = 's-' + p.status;
+  const statusLabel = { aguardando_pagamento:'Aguard. Pagamento', pago:'Pago', enviado:'Enviado', concluido:'Entregue', em_disputa:'Em Disputa', estornado:'Estornado' }[p.status] || p.status;
+
+  const passos = ['aguardando_pagamento','pago','enviado','concluido'];
+  const stepAtual = passos.indexOf(p.status);
+  const timelineHtml = ['Pagamento','Confirmado','Enviado','Entregue'].map((label,i) => {
+    const done   = i < stepAtual || p.status === 'concluido';
+    const active = i === stepAtual && p.status !== 'concluido';
+    return `<div class="timeline-step">
+      <div class="timeline-dot ${done?'done':active?'active':''}">
+        ${done?'✓':i+1}
+      </div>
+      <div class="timeline-label">${label}</div>
+    </div>`;
+  }).join('');
+
+  const podeDisputa = ['pago','enviado'].includes(p.status);
+  const diasRestantes = p.status === 'enviado' && p.enviado_em
+    ? Math.max(0, 5 - Math.floor((Date.now() - new Date(p.enviado_em)) / (1000*60*60*24)))
+    : null;
+
+  return `<div class="pedido-card">
+    <div class="pedido-header">
+      <div>
+        <div class="pedido-id">Pedido #${p.id}</div>
+        <div class="pedido-data">${new Date(p.criado_em).toLocaleDateString('pt-BR')} · ${p.nome_loja}</div>
+      </div>
+      <span class="pedido-status ${statusClass}">${statusLabel}</span>
+    </div>
+
+    ${p.status !== 'em_disputa' && p.status !== 'estornado' ? `<div class="timeline">${timelineHtml}</div>` : ''}
+
+    <div class="pedido-body">
+      <div class="pedido-field"><div class="label">Produto</div><div class="val">${p.produto_nome}</div></div>
+      <div class="pedido-field"><div class="label">Quantidade</div><div class="val">${p.quantidade}x</div></div>
+      <div class="pedido-field"><div class="label">Total Pago</div><div class="pedido-total">R$ ${parseFloat(p.total).toFixed(2).replace('.',',')}</div></div>
+      ${p.codigo_rastreio ? `<div class="pedido-field"><div class="label">Rastreio</div><div class="val">${p.codigo_rastreio}</div></div>` : ''}
+    </div>
+
+    ${diasRestantes !== null ? `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:9px 13px;font-size:.8rem;color:#1e40af;margin-bottom:12px">⏱️ Pagamento liberado ao fornecedor em <strong>${diasRestantes} dia(s)</strong> automaticamente. Abra uma disputa agora se houver problema.</div>` : ''}
+
+    <div class="pedido-footer">
+      ${podeDisputa ? `<button class="btn-sm btn-disputa" onclick="abrirDisputa(${p.id})">⚠️ Abrir Disputa</button>` : ''}
+      ${p.status === 'concluido' ? '<span style="font-size:.8rem;color:var(--muted)">✅ Pedido concluído. Obrigado!</span>' : ''}
+      ${p.status === 'em_disputa' ? '<span style="font-size:.8rem;color:#991b1b">⚠️ Disputa em análise pela equipe Pepmasters.</span>' : ''}
+      ${p.status === 'estornado' ? '<span style="font-size:.8rem;color:#6b7280">💰 Valor estornado para seu crédito.</span>' : ''}
+    </div>
+  </div>`;
+}
+
+// ── Saldo ─────────────────────────────────────────────────
+async function carregarSaldo() {
+  try {
+    const r = await fetch('/api/club/saldo', { headers:{ Authorization:'Bearer '+authToken } });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (parseFloat(d.saldo) > 0) {
+      document.getElementById('saldoStrip').style.display = 'flex';
+      document.getElementById('saldoValor').textContent = 'R$ ' + parseFloat(d.saldo).toFixed(2).replace('.',',');
+    }
+  } catch {}
+}
+
+function sacarCredito() {
+  showToast('Entre em contato via WhatsApp para solicitar o saque do crédito.', 'success');
+}
+
+// ── Disputa ───────────────────────────────────────────────
+function abrirDisputa(id) {
+  pedidoDisputaId = id;
+  document.getElementById('d-desc').value = '';
+  document.getElementById('modalDisputa').classList.add('open');
+}
+function fecharDisputa() { document.getElementById('modalDisputa').classList.remove('open'); }
+
+async function confirmarDisputa() {
+  const motivo = document.getElementById('d-motivo').value;
+  const desc   = document.getElementById('d-desc').value.trim();
+  if (!desc) { showToast('Descreva o problema.','error'); return; }
+  try {
+    const r = await fetch('/api/club/disputa', {
+      method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer '+authToken},
+      body: JSON.stringify({ pedido_id: pedidoDisputaId, motivo, descricao: desc })
+    });
+    const d = await r.json();
+    if (!r.ok) { showToast(d.erro||'Erro.','error'); return; }
+    showToast('Disputa aberta! Nossa equipe analisará em até 48h.','success');
+    fecharDisputa(); carregarPedidos();
+  } catch { showToast('Erro de conexão.','error'); }
+}
+
+function showToast(msg, tipo) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show'+(tipo==='error'?' error':tipo==='success'?' success':'');
+  setTimeout(()=>t.className='', 3500);
+}
+document.addEventListener('click', e => {
+  if (e.target === document.getElementById('modalDisputa')) fecharDisputa();
+});
+</script>
+</body>
+</html>
