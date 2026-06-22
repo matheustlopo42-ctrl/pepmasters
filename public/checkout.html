@@ -48,8 +48,10 @@
     .pay-tab.active{border-color:var(--orange);color:var(--orange);background:#FFF3E0}
     .pay-tab:disabled{opacity:.4;cursor:not-allowed}
     #cripto-tokens{text-align:center}
-    #cripto-tokens .token-row{display:flex;gap:8px;justify-content:center;margin-top:8px}
-    #cripto-tokens .token-btn{flex:none!important;width:110px;padding:10px;text-align:center;float:none!important}
+    #cripto-tokens .token-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+    #cripto-tokens .token-btn{flex:none!important;width:100px;padding:8px 6px;text-align:center;float:none!important}
+    .token-group{margin-bottom:10px}
+    .token-group-label{font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.4);margin-bottom:5px;font-weight:600}
     .pay-panel{display:none}
     .pay-panel.active{display:block}
     /* PIX */
@@ -215,47 +217,47 @@
             <div style="text-align:center;margin-bottom:8px">
               <p id="cryptoNetworkInfo" style="font-size:.82rem;color:var(--muted);margin:0">🔶 <strong>Tron TRC-20</strong> — Binance, TronLink. Taxas mínimas.</p>
             </div>
-            <div style="margin-bottom:6px">
-              <div style="font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.35);margin-bottom:4px">🔶 Tron TRC-20</div>
-              <div class="token-row" style="justify-content:flex-start">
+            <div class="token-group">
+              <div class="token-group-label">🔶 Tron TRC-20</div>
+              <div class="token-row">
                 <button id="btn-usdttrx" class="pay-tab token-btn active" onclick="selecionarToken('USDTTRX')">
                   <div style="font-weight:700">USDT</div>
-                  <div style="font-size:.62rem;opacity:.7;margin-top:2px">Binance · TronLink</div>
+                  <div style="font-size:.6rem;opacity:.65;margin-top:2px">Binance · TronLink</div>
                 </button>
               </div>
             </div>
-            <div style="margin-bottom:6px">
-              <div style="font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.35);margin-bottom:4px">🔷 Polygon (MATIC)</div>
-              <div class="token-row" style="justify-content:flex-start">
+            <div class="token-group">
+              <div class="token-group-label">🔷 Polygon (MATIC)</div>
+              <div class="token-row">
                 <button id="btn-usdtpoly" class="pay-tab token-btn" onclick="selecionarToken('USDTPOLYGON')">
                   <div style="font-weight:700">USDT</div>
-                  <div style="font-size:.62rem;opacity:.7;margin-top:2px">MetaMask · Trust Wallet</div>
+                  <div style="font-size:.6rem;opacity:.65;margin-top:2px">MetaMask</div>
                 </button>
                 <button id="btn-usdcpoly" class="pay-tab token-btn" onclick="selecionarToken('USDCPOLYGON')">
                   <div style="font-weight:700">USDC</div>
-                  <div style="font-size:.62rem;opacity:.7;margin-top:2px">MetaMask · Trust Wallet</div>
+                  <div style="font-size:.6rem;opacity:.65;margin-top:2px">MetaMask</div>
                 </button>
               </div>
             </div>
-            <div style="margin-bottom:6px">
-              <div style="font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.35);margin-bottom:4px">⬡ Ethereum (ERC-20)</div>
-              <div class="token-row" style="justify-content:flex-start">
+            <div class="token-group">
+              <div class="token-group-label">⬡ Ethereum (ERC-20)</div>
+              <div class="token-row">
                 <button id="btn-usdteth" class="pay-tab token-btn" onclick="selecionarToken('USDTETH')">
                   <div style="font-weight:700">USDT</div>
-                  <div style="font-size:.62rem;opacity:.7;margin-top:2px">MetaMask · Ledger</div>
+                  <div style="font-size:.6rem;opacity:.65;margin-top:2px">MetaMask</div>
                 </button>
                 <button id="btn-usdceth" class="pay-tab token-btn" onclick="selecionarToken('USDCETH')">
                   <div style="font-weight:700">USDC</div>
-                  <div style="font-size:.62rem;opacity:.7;margin-top:2px">MetaMask · Ledger</div>
+                  <div style="font-size:.6rem;opacity:.65;margin-top:2px">MetaMask</div>
                 </button>
               </div>
             </div>
-            <div style="margin-bottom:6px">
-              <div style="font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.35);margin-bottom:4px">◎ Solana</div>
-              <div class="token-row" style="justify-content:flex-start">
+            <div class="token-group" style="margin-bottom:0">
+              <div class="token-group-label">◎ Solana</div>
+              <div class="token-row">
                 <button id="btn-usdcsol" class="pay-tab token-btn" onclick="selecionarToken('USDCSOLANA')">
                   <div style="font-weight:700">USDC</div>
-                  <div style="font-size:.62rem;opacity:.7;margin-top:2px">Phantom · Solflare</div>
+                  <div style="font-size:.6rem;opacity:.65;margin-top:2px">Phantom</div>
                 </button>
               </div>
             </div>
