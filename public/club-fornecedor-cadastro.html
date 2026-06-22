@@ -151,7 +151,7 @@
   </div>
 </main>
 
-<footer>© 2025 PEPMASTERS Club — <a href="club-marketplace.html">Marketplace</a></footer>
+<footer>© 2025 PEPMASTERS Club — <a href="club-marketplace.html">Marketplace</a> · <a href="club-fornecedor-painel.html">Painel do Fornecedor</a></footer>
 
 <script>
 async function cadastrar() {
@@ -179,8 +179,9 @@ async function cadastrar() {
     });
     const data = await res.json();
     if (!res.ok) { mostrarErro(data.erro || 'Erro ao cadastrar.'); return; }
-    mostrarOk('✅ Cadastro enviado com sucesso! Em breve nossa equipe analisará seu pedido e você receberá um email com a confirmação.');
+    mostrarOk('✅ Cadastro enviado com sucesso! Aguarde aprovação. Redirecionando para o painel...');
     document.getElementById('btnCadastrar').style.display = 'none';
+    setTimeout(() => { location.href = 'club-fornecedor-painel.html'; }, 2500);
   } catch { mostrarErro('Erro de conexão. Tente novamente.'); }
   finally { btn.disabled = false; btn.textContent = 'Enviar Cadastro para Aprovação'; }
 }
@@ -196,5 +197,7 @@ function mostrarOk(msg) {
 
 document.addEventListener('keydown', e => { if (e.key === 'Enter') cadastrar(); });
 </script>
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
 </body>
 </html>
