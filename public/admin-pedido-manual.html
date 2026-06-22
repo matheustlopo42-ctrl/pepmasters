@@ -8,7 +8,6 @@
     :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--dark:#1C0A00;--mid:#3D1A00}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Barlow',sans-serif;background:var(--dark);min-height:100vh;color:#fff}
-
     .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:#110500;border-right:2px solid rgba(255,179,0,.15);padding:24px 0;display:flex;flex-direction:column;z-index:100}
     .sidebar-logo{display:flex;align-items:center;gap:8px;padding:0 20px 24px;border-bottom:1px solid rgba(255,179,0,.1)}
     .sidebar-logo img{height:32px;width:32px;object-fit:contain}
@@ -19,116 +18,116 @@
     .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid rgba(255,179,0,.1)}
     .sidebar-footer a{font-size:.82rem;color:rgba(255,255,255,.3);text-decoration:none}
     .sidebar-footer a:hover{color:var(--amber)}
-
     .main{margin-left:220px;padding:32px;max-width:960px}
     h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
-    .subtitle{font-size:.85rem;color:rgba(255,255,255,.35);margin-bottom:24px}
-
-    .card{background:rgba(255,255,255,.04);border-radius:14px;padding:22px;border:1px solid rgba(255,179,0,.12);margin-bottom:18px}
-    .card-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,179,0,.8);margin-bottom:16px;display:flex;align-items:center;gap:8px}
-
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .subtitle{font-size:.82rem;color:rgba(255,255,255,.32);margin-bottom:22px}
+    .card{background:rgba(255,255,255,.04);border-radius:14px;padding:20px;border:1px solid rgba(255,179,0,.12);margin-bottom:16px}
+    .card-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.92rem;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,179,0,.8);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
     .form-grid.thirds{grid-template-columns:1fr 1fr 1fr}
-    .form-group{display:flex;flex-direction:column;gap:5px}
-    label{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.38)}
-    input,textarea,select{width:100%;padding:9px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,179,0,.18);border-radius:8px;font-size:.88rem;color:#fff;font-family:'Barlow',sans-serif;outline:none;transition:border-color .2s}
+    .form-grid.quarts{grid-template-columns:1fr 1fr 1fr 1fr}
+    .form-group{display:flex;flex-direction:column;gap:4px}
+    label{font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.36)}
+    input,textarea,select{width:100%;padding:8px 11px;background:rgba(255,255,255,.07);border:1px solid rgba(255,179,0,.18);border-radius:7px;font-size:.87rem;color:#fff;font-family:'Barlow',sans-serif;outline:none;transition:border-color .2s}
     input:focus,textarea:focus,select:focus{border-color:var(--orange)}
-    input::placeholder,textarea::placeholder{color:rgba(255,255,255,.22)}
+    input::placeholder,textarea::placeholder{color:rgba(255,255,255,.2)}
     select option{background:#1C0A00;color:#fff}
-    textarea{resize:vertical;min-height:60px}
+    textarea{resize:vertical;min-height:56px}
 
     /* BUSCA CLIENTE */
     .search-wrap{position:relative}
-    .search-results{position:absolute;top:100%;left:0;right:0;background:#1a0a00;border:1px solid rgba(255,179,0,.25);border-radius:8px;margin-top:4px;z-index:200;display:none;max-height:200px;overflow-y:auto}
+    .search-results{position:absolute;top:100%;left:0;right:0;background:#1a0a00;border:1px solid rgba(255,179,0,.25);border-radius:8px;margin-top:3px;z-index:200;display:none;max-height:190px;overflow-y:auto}
     .search-results.open{display:block}
-    .search-item{padding:9px 13px;cursor:pointer;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.05);transition:background .15s}
+    .search-item{padding:8px 12px;cursor:pointer;font-size:.84rem;border-bottom:1px solid rgba(255,255,255,.05);transition:background .15s}
     .search-item:last-child{border:none}
     .search-item:hover{background:rgba(255,179,0,.08)}
     .item-nome{font-weight:600}
-    .item-sub{font-size:.72rem;color:rgba(255,255,255,.38);margin-top:2px}
+    .item-sub{font-size:.7rem;color:rgba(255,255,255,.36);margin-top:1px}
 
     /* SELETOR DE PRODUTOS */
     .prod-search-wrap{position:relative;margin-bottom:10px}
-    .prod-dropdown{position:absolute;top:100%;left:0;right:0;background:#1a0a00;border:1px solid rgba(255,179,0,.25);border-radius:8px;margin-top:4px;z-index:200;display:none;max-height:240px;overflow-y:auto}
+    .prod-dropdown{position:absolute;top:100%;left:0;right:0;background:#1a0a00;border:1px solid rgba(255,179,0,.25);border-radius:8px;margin-top:3px;z-index:200;display:none;max-height:260px;overflow-y:auto}
     .prod-dropdown.open{display:block}
-    .prod-opt{padding:9px 13px;cursor:pointer;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.05);transition:background .15s;display:flex;justify-content:space-between;align-items:center}
+    .prod-opt{padding:9px 13px;cursor:pointer;font-size:.84rem;border-bottom:1px solid rgba(255,255,255,.05);transition:background .15s;display:flex;justify-content:space-between;align-items:center}
     .prod-opt:last-child{border:none}
-    .prod-opt:hover{background:rgba(255,179,0,.08)}
+    .prod-opt:hover:not(.disabled){background:rgba(255,179,0,.08)}
+    .prod-opt.disabled{opacity:.38;cursor:not-allowed}
     .prod-opt-nome{font-weight:600;color:#fff}
-    .prod-opt-preco{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;color:var(--amber)}
-    .prod-opt-estoque{font-size:.7rem;color:rgba(255,255,255,.35);margin-top:2px}
+    .prod-opt-preco{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.92rem;color:var(--amber);white-space:nowrap;margin-left:12px}
+    .prod-opt-sub{font-size:.68rem;color:rgba(255,255,255,.34);margin-top:1px}
 
-    /* TABELA DE ITENS */
-    .itens-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:4px}
-    .itens-table th{padding:8px 10px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,179,0,.6);border-bottom:1px solid rgba(255,179,0,.1)}
-    .itens-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+    /* TABELA ITENS */
+    .itens-table{width:100%;border-collapse:collapse;font-size:.84rem}
+    .itens-table th{padding:7px 10px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,179,0,.55);border-bottom:1px solid rgba(255,179,0,.1)}
+    .itens-table td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
     .itens-table tr:last-child td{border:none}
-    .qty-input{width:64px;padding:5px 8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,179,0,.18);border-radius:6px;color:#fff;font-size:.88rem;text-align:center;font-family:'Barlow',sans-serif;outline:none}
-    .qty-input:focus{border-color:var(--orange)}
-    .btn-rem{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.25);color:#f87171;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.75rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;transition:all .2s}
-    .btn-rem:hover{background:rgba(239,68,68,.3)}
-    .empty-itens{text-align:center;padding:20px;color:rgba(255,255,255,.25);font-size:.85rem}
+    .qty-wrap{display:flex;align-items:center;gap:6px}
+    .qty-btn{width:26px;height:26px;background:rgba(255,179,0,.1);border:1px solid rgba(255,179,0,.2);border-radius:5px;color:var(--amber);font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0}
+    .qty-btn:hover{background:rgba(255,179,0,.22)}
+    .qty-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1rem;min-width:28px;text-align:center}
+    .btn-rem{background:rgba(239,68,68,.13);border:1px solid rgba(239,68,68,.22);color:#f87171;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:.72rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;transition:all .2s}
+    .btn-rem:hover{background:rgba(239,68,68,.28)}
+    .empty-itens{text-align:center;padding:18px;color:rgba(255,255,255,.22);font-size:.83rem}
 
-    /* ALERTAS DE LIMITE */
-    .alert-box{border-radius:8px;padding:10px 14px;font-size:.82rem;margin-top:10px;display:none}
-    .alert-box.warn{background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);color:#fbbf24}
-    .alert-box.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171}
+    /* BADGES DE ERRO */
+    .err-badge{display:inline-block;background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.35);color:#fca5a5;border-radius:4px;font-size:.68rem;font-weight:700;padding:2px 7px;margin-left:6px;text-transform:uppercase}
+
+    /* ALERTAS */
+    .alert-box{border-radius:8px;padding:9px 13px;font-size:.8rem;margin-top:10px;display:none;line-height:1.5}
+    .alert-box.warn{background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.28);color:#fbbf24}
+    .alert-box.error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.28);color:#f87171}
     .alert-box.show{display:block}
 
     /* TOTAIS */
-    .totais-box{background:rgba(255,179,0,.06);border:1px solid rgba(255,179,0,.15);border-radius:10px;padding:14px 18px;margin-top:12px}
-    .totais-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
-    .totais-row.total{border-top:1px solid rgba(255,179,0,.15);margin-top:8px;padding-top:12px}
-    .totais-label{font-size:.78rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em}
-    .totais-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;color:#fff}
-    .totais-row.total .totais-val{font-size:1.5rem;color:var(--amber)}
+    .totais-box{background:rgba(255,179,0,.05);border:1px solid rgba(255,179,0,.14);border-radius:9px;padding:12px 16px;margin-top:10px}
+    .totais-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
+    .totais-row.total{border-top:1px solid rgba(255,179,0,.13);margin-top:7px;padding-top:10px}
+    .totais-label{font-size:.75rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.05em}
+    .totais-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1rem;color:#fff}
+    .totais-row.total .totais-val{font-size:1.45rem;color:var(--amber)}
 
     /* SPLIT */
-    .split-preview{background:rgba(255,179,0,.06);border:1px solid rgba(255,179,0,.2);border-radius:10px;padding:12px 16px;margin-top:10px;display:none}
+    .split-preview{background:rgba(255,179,0,.05);border:1px solid rgba(255,179,0,.18);border-radius:9px;padding:11px 15px;margin-top:10px;display:none}
     .split-preview.show{display:block}
-    .sp-title{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,179,0,.7);margin-bottom:8px}
-    .split-parts{display:flex;gap:8px;flex-wrap:wrap}
-    .split-part{background:rgba(255,255,255,.06);border-radius:8px;padding:7px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700}
-    .split-part span{display:block;font-size:.65rem;font-weight:400;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+    .sp-title{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,179,0,.65);margin-bottom:7px}
+    .split-parts{display:flex;gap:7px;flex-wrap:wrap}
+    .split-part{background:rgba(255,255,255,.06);border-radius:7px;padding:6px 12px;font-family:'Barlow Condensed',sans-serif;font-size:.92rem;font-weight:700}
+    .split-part span{display:block;font-size:.62rem;font-weight:400;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px}
 
     /* BOTÕES */
-    .btn-primary{padding:11px 26px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s}
+    .btn-primary{padding:11px 24px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.92rem;letter-spacing:.08em;text-transform:uppercase;border:none;border-radius:9px;cursor:pointer;transition:opacity .2s}
     .btn-primary:hover{opacity:.85}
-    .btn-primary:disabled{opacity:.35;cursor:not-allowed}
-    .btn-secondary{padding:11px 18px;background:none;border:1px solid rgba(255,179,0,.3);color:rgba(255,179,0,.8);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.06em;text-transform:uppercase;border-radius:10px;cursor:pointer;transition:all .2s}
+    .btn-primary:disabled{opacity:.32;cursor:not-allowed}
+    .btn-secondary{padding:11px 16px;background:none;border:1px solid rgba(255,179,0,.28);color:rgba(255,179,0,.75);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.86rem;letter-spacing:.06em;text-transform:uppercase;border-radius:9px;cursor:pointer;transition:all .2s}
     .btn-secondary:hover{border-color:var(--amber);color:var(--amber)}
-    .btn-wpp{padding:11px 18px;background:#25D366;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;text-decoration:none;transition:opacity .2s}
+    .btn-wpp{padding:11px 16px;background:#25D366;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.86rem;text-transform:uppercase;border:none;border-radius:9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
     .btn-wpp:hover{opacity:.85}
 
     /* RESULTADO */
     #resultado{display:none}
-    .result-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:18px}
-    .result-id{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.2rem;color:var(--amber)}
-    .qr-grid{display:grid;gap:14px}
-    .qr-card{background:rgba(255,255,255,.05);border-radius:12px;padding:18px;border:1px solid rgba(255,179,0,.12)}
-    .qr-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-    .qr-label{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;text-transform:uppercase;color:rgba(255,255,255,.7)}
-    .qr-valor{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;color:var(--amber)}
-    .qr-body{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
-    .qr-img-wrap{background:#fff;border-radius:10px;padding:7px;flex-shrink:0}
-    .qr-img-wrap img{display:block;width:150px;height:150px;object-fit:contain}
-    .qr-img-placeholder{width:150px;height:150px;background:rgba(255,255,255,.05);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:rgba(255,255,255,.3);text-align:center;padding:14px}
-    .qr-actions{display:flex;flex-direction:column;gap:7px;flex:1;min-width:180px}
-    .copia-cola-wrap{background:rgba(0,0,0,.3);border-radius:7px;padding:8px 10px;font-size:.7rem;color:rgba(255,255,255,.45);word-break:break-all;max-height:70px;overflow-y:auto;font-family:monospace}
-    .btn-copy{padding:7px 14px;background:rgba(255,179,0,.1);border:1px solid rgba(255,179,0,.22);color:var(--amber);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;border-radius:7px;cursor:pointer;transition:all .2s;width:100%;text-align:center;text-decoration:none;display:block}
-    .btn-copy:hover{background:rgba(255,179,0,.2)}
-    .btn-copy.copied{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.35);color:#4ade80}
-    .actions-bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,179,0,.1)}
-
-    #toast{position:fixed;bottom:24px;right:24px;background:#1a0800;color:#fff;padding:11px 18px;border-radius:10px;font-size:.85rem;border-left:4px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(10px);opacity:0;transition:all .3s;z-index:9999;pointer-events:none}
+    .result-id{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;color:var(--amber)}
+    .qr-grid{display:grid;gap:13px}
+    .qr-card{background:rgba(255,255,255,.05);border-radius:12px;padding:16px;border:1px solid rgba(255,179,0,.12)}
+    .qr-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}
+    .qr-label{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.9rem;text-transform:uppercase;color:rgba(255,255,255,.65)}
+    .qr-valor{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.25rem;color:var(--amber)}
+    .qr-body{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+    .qr-img-wrap{background:#fff;border-radius:9px;padding:6px;flex-shrink:0}
+    .qr-img-wrap img{display:block;width:145px;height:145px;object-fit:contain}
+    .qr-img-placeholder{width:145px;height:145px;background:rgba(255,255,255,.04);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.73rem;color:rgba(255,255,255,.28);text-align:center;padding:12px}
+    .qr-actions{display:flex;flex-direction:column;gap:6px;flex:1;min-width:170px}
+    .copia-cola-wrap{background:rgba(0,0,0,.3);border-radius:6px;padding:7px 9px;font-size:.68rem;color:rgba(255,255,255,.42);word-break:break-all;max-height:65px;overflow-y:auto;font-family:monospace}
+    .btn-copy{padding:6px 12px;background:rgba(255,179,0,.1);border:1px solid rgba(255,179,0,.2);color:var(--amber);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.77rem;text-transform:uppercase;border-radius:6px;cursor:pointer;transition:all .2s;width:100%;text-align:center;text-decoration:none;display:block}
+    .btn-copy:hover{background:rgba(255,179,0,.18)}
+    .btn-copy.copied{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:#4ade80}
+    .actions-bar{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,179,0,.1)}
+    #toast{position:fixed;bottom:22px;right:22px;background:#1a0800;color:#fff;padding:10px 16px;border-radius:9px;font-size:.83rem;border-left:4px solid var(--amber);box-shadow:0 8px 28px rgba(0,0,0,.5);transform:translateY(10px);opacity:0;transition:all .3s;z-index:9999;pointer-events:none}
     #toast.show{transform:translateY(0);opacity:1}
     #toast.error{border-left-color:var(--red)}
-
-    @media(max-width:768px){.sidebar{display:none}.main{margin-left:0;padding:18px}.form-grid,.form-grid.thirds{grid-template-columns:1fr}.qr-body{flex-direction:column}}
+    @media(max-width:768px){.sidebar{display:none}.main{margin-left:0;padding:16px}.form-grid,.form-grid.thirds,.form-grid.quarts{grid-template-columns:1fr}.qr-body{flex-direction:column}}
   </style>
 </head>
 <body>
-
 <div class="sidebar">
   <div class="sidebar-logo"><img src="Capturar.PNG" alt="Logo"/><span>PEPMASTERS</span></div>
   <div class="sidebar-badge">Admin</div>
@@ -144,13 +143,13 @@
 
 <div class="main">
   <h1>➕ Novo Pedido Manual</h1>
-  <p class="subtitle">Pedidos via WhatsApp · máx. R$ 2.000/QR · máx. R$ 6.000/CPF (3 QRs) · máx. 50 ampolas por pedido</p>
+  <p class="subtitle">Regras: pares (2/4/6/8/10 por produto) · máx. 10 vials da mesma família · sem concentrações duplicadas · máx. 50 ampolas · máx. R$ 6.000</p>
 
   <div id="formSection">
 
     <!-- BUSCA CLIENTE -->
     <div class="card">
-      <div class="card-title">🔍 Buscar Cliente Cadastrado <span style="font-size:.68rem;font-weight:400;color:rgba(255,255,255,.25);text-transform:none;margin-left:4px">opcional</span></div>
+      <div class="card-title">🔍 Buscar Cliente Cadastrado <span style="font-size:.66rem;font-weight:400;color:rgba(255,255,255,.22);text-transform:none;margin-left:4px">opcional</span></div>
       <div class="search-wrap">
         <input type="text" id="buscaCliente" placeholder="Nome, email ou CPF..." autocomplete="off" oninput="buscarCliente(this.value)"/>
         <div class="search-results" id="searchResults"></div>
@@ -160,17 +159,17 @@
     <!-- DADOS DO CLIENTE -->
     <div class="card">
       <div class="card-title">👤 Dados do Cliente</div>
-      <div class="form-grid" style="margin-bottom:12px">
+      <div class="form-grid" style="margin-bottom:10px">
         <div class="form-group">
           <label>Nome completo *</label>
           <input type="text" id="f-nome" placeholder="João da Silva"/>
         </div>
         <div class="form-group">
           <label>WhatsApp / Telefone</label>
-          <input type="text" id="f-telefone" placeholder="5511999999999" oninput="formatarFone(this)"/>
+          <input type="text" id="f-telefone" placeholder="5511999999999"/>
         </div>
       </div>
-      <div class="form-grid thirds">
+      <div class="form-grid thirds" style="margin-bottom:10px">
         <div class="form-group">
           <label>Email</label>
           <input type="email" id="f-email" placeholder="cliente@email.com"/>
@@ -180,8 +179,32 @@
           <input type="text" id="f-cpf" placeholder="000.000.000-00" maxlength="14" oninput="formatarCpf(this)"/>
         </div>
         <div class="form-group">
-          <label>Endereço / Cidade</label>
-          <input type="text" id="f-endereco" placeholder="São Paulo, SP"/>
+          <label>CEP *</label>
+          <input type="text" id="f-cep" placeholder="00000-000" maxlength="9" oninput="formatarCep(this)"/>
+        </div>
+      </div>
+      <div class="form-grid" style="margin-bottom:10px">
+        <div class="form-group">
+          <label>Rua / Logradouro *</label>
+          <input type="text" id="f-rua" placeholder="Rua das Flores"/>
+        </div>
+        <div class="form-group">
+          <label>Número *</label>
+          <input type="text" id="f-numero" placeholder="123"/>
+        </div>
+      </div>
+      <div class="form-grid thirds">
+        <div class="form-group">
+          <label>Complemento / Apto</label>
+          <input type="text" id="f-complemento" placeholder="Apto 42, Bloco B"/>
+        </div>
+        <div class="form-group">
+          <label>Cidade *</label>
+          <input type="text" id="f-cidade" placeholder="São Paulo"/>
+        </div>
+        <div class="form-group">
+          <label>Estado *</label>
+          <input type="text" id="f-estado" placeholder="SP" maxlength="2" style="text-transform:uppercase"/>
         </div>
       </div>
     </div>
@@ -189,65 +212,48 @@
     <!-- PRODUTOS -->
     <div class="card">
       <div class="card-title">📦 Produtos do Pedido</div>
-
-      <!-- Busca de produto -->
       <div class="prod-search-wrap">
         <input type="text" id="prodBusca" placeholder="🔍  Buscar produto pelo nome..." autocomplete="off" oninput="filtrarProdutos(this.value)"/>
         <div class="prod-dropdown" id="prodDropdown"></div>
       </div>
 
-      <!-- Tabela de itens adicionados -->
       <table class="itens-table" id="itensTable">
         <thead>
           <tr>
             <th>Produto</th>
-            <th style="width:80px;text-align:center">Qtd</th>
-            <th style="width:100px;text-align:right">Preço unit.</th>
-            <th style="width:110px;text-align:right">Subtotal</th>
-            <th style="width:60px"></th>
+            <th style="width:110px;text-align:center">Qtd (vials)</th>
+            <th style="width:95px;text-align:right">Unit.</th>
+            <th style="width:105px;text-align:right">Subtotal</th>
+            <th style="width:48px"></th>
           </tr>
         </thead>
         <tbody id="itensBody">
-          <tr id="emptyRow"><td colspan="5"><div class="empty-itens">Nenhum produto adicionado ainda.<br>Busque acima para adicionar.</div></td></tr>
+          <tr id="emptyRow"><td colspan="5"><div class="empty-itens">Nenhum produto adicionado.<br>Busque acima para adicionar.</div></td></tr>
         </tbody>
       </table>
 
-      <!-- Alertas -->
-      <div class="alert-box warn" id="alertAmpolas">⚠️ Limite: máx. <strong>50 ampolas</strong> por pedido.</div>
-      <div class="alert-box error" id="alertValor">🚫 Valor máximo por pedido é <strong>R$ 6.000</strong> (3 QRs de R$ 2.000).</div>
-      <div class="alert-box warn" id="alertQrs">⚠️ Este pedido precisará de <strong id="alertQrsNum">2</strong> QR codes PIX.</div>
+      <div class="alert-box error" id="alertErros"></div>
+      <div class="alert-box warn"  id="alertAvisos"></div>
 
-      <!-- Totais -->
       <div class="totais-box" id="totaisBox" style="display:none">
-        <div class="totais-row">
-          <span class="totais-label">Itens</span>
-          <span class="totais-val" id="tot-itens" style="font-size:.95rem">0</span>
-        </div>
-        <div class="totais-row">
-          <span class="totais-label">Ampolas</span>
-          <span class="totais-val" id="tot-ampolas" style="font-size:.95rem">0</span>
-        </div>
-        <div class="totais-row total">
-          <span class="totais-label">Total</span>
-          <span class="totais-val" id="tot-valor">R$ 0,00</span>
-        </div>
+        <div class="totais-row"><span class="totais-label">Produtos</span><span class="totais-val" id="tot-itens" style="font-size:.9rem">0</span></div>
+        <div class="totais-row"><span class="totais-label">Total de ampolas</span><span class="totais-val" id="tot-ampolas" style="font-size:.9rem">0 / 50</span></div>
+        <div class="totais-row total"><span class="totais-label">Total</span><span class="totais-val" id="tot-valor">R$ 0,00</span></div>
       </div>
 
-      <!-- Split preview -->
       <div class="split-preview" id="splitPreview">
         <div class="sp-title">📊 Split de QR codes PIX</div>
         <div class="split-parts" id="splitParts"></div>
-        <p style="font-size:.7rem;color:rgba(255,255,255,.28);margin-top:8px">Valores com variações de R$ 0,03 para evitar bloqueio bancário em PIX múltiplos.</p>
+        <p style="font-size:.68rem;color:rgba(255,255,255,.26);margin-top:7px">Variações de R$ 0,03 por parte para evitar bloqueio bancário.</p>
       </div>
 
-      <!-- Observação -->
-      <div class="form-group" style="margin-top:14px">
+      <div class="form-group" style="margin-top:13px">
         <label>Observação interna</label>
-        <textarea id="f-obs" placeholder="Ex: cupom aplicado manualmente, retirada no Paraguai..."></textarea>
+        <textarea id="f-obs" placeholder="Ex: cupom aplicado, retirada no Paraguai, pedido urgente..."></textarea>
       </div>
     </div>
 
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div style="display:flex;gap:9px;flex-wrap:wrap">
       <button class="btn-primary" id="btnGerar" onclick="gerarPedido()">⚡ Gerar Pedido + QR Codes</button>
       <button class="btn-secondary" onclick="limparForm()">🗑️ Limpar tudo</button>
     </div>
@@ -255,12 +261,12 @@
 
   <!-- RESULTADO -->
   <div id="resultado">
-    <div class="result-header">
+    <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px">
       <div>
-        <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.35);margin-bottom:4px">Pedido criado</div>
+        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.32);margin-bottom:3px">Pedido criado</div>
         <div class="result-id" id="res-id">#—</div>
       </div>
-      <div id="res-info" style="font-size:.88rem;color:rgba(255,255,255,.45);line-height:1.7"></div>
+      <div id="res-info" style="font-size:.86rem;color:rgba(255,255,255,.42);line-height:1.7;margin-top:6px"></div>
     </div>
     <div class="qr-grid" id="qrGrid"></div>
     <div class="actions-bar" id="actionsBar"></div>
@@ -273,12 +279,26 @@
 const token = localStorage.getItem('pep_admin_token');
 if (!token) location.href = 'admin-login.html';
 
+// ── Famílias (mesmas do calculadora.html) ─────────────────
+const FAMILIAS = {
+  retatrutide:['RT30','RT40','RT60'], tirzepatide:['TR30','TR40','TR50','TR60'],
+  ss31:['2S10','2S50'], tesamorelin:['TSM10','TSM20'], motsc:['MS20','MS40'],
+  epithalon:['ET10','ET50'], bpc157:['BPC10','BPC20'], selank:['SK10','SK30'],
+  pinealon:['PIN10','PIN20'], cjcnodac:['CND5','CND10'], cjcdac:['CD5','CD10'],
+  sermorelin:['Serm5','Serm10'], adipotide:['AP5','AP10'], semax:['SX5','SX10'],
+  ghkcu:['CU50','CU100'], glutathione:['GTT600','GTT1500'], nad:['NJ500','NJ1000'],
+  thymosinA:['TA5','TA10'], cagrilintide:['CGL5','CGL10'], aminomq:['20AM','50AM'],
+  snap8:['NP8-10','NP8-100'],
+};
+const MAPA_FAMILIA = {};
+Object.entries(FAMILIAS).forEach(([fam, codigos]) => codigos.forEach(c => MAPA_FAMILIA[c] = fam));
+function getFamilia(codigo) { return MAPA_FAMILIA[codigo] || null; }
+
 // ── Estado ────────────────────────────────────────────────
-let todosProdutos = [];  // lista do estoque
-let itensPedido   = [];  // { id, nome, preco, quantidade }
+let todosProdutos = [];
+let itensPedido   = []; // { id, codigo, nome, preco, quantidade }
 window._usuarioId = null;
 
-// ── Carregar produtos do estoque ─────────────────────────
 async function carregarProdutos() {
   try {
     const r = await fetch('/api/admin/estoque', { headers: { Authorization: 'Basic ' + token } });
@@ -287,7 +307,7 @@ async function carregarProdutos() {
 }
 carregarProdutos();
 
-// ── Busca de cliente ─────────────────────────────────────
+// ── Busca cliente ─────────────────────────────────────────
 let buscaTimeout = null;
 function buscarCliente(q) {
   clearTimeout(buscaTimeout);
@@ -302,13 +322,11 @@ function buscarCliente(q) {
         `<div class="search-item" onclick='preencherCliente(${JSON.stringify(u)})'>
           <div class="item-nome">${u.nome}</div>
           <div class="item-sub">${u.email||''} ${u.cpf?'· '+u.cpf:''} ${u.telefone?'· '+u.telefone:''}</div>
-        </div>`
-      ).join('');
+        </div>`).join('');
       el.classList.add('open');
     } catch {}
   }, 300);
 }
-
 function preencherCliente(u) {
   document.getElementById('f-nome').value     = u.nome || '';
   document.getElementById('f-email').value    = u.email || '';
@@ -319,9 +337,8 @@ function preencherCliente(u) {
   window._usuarioId = u.id;
   showToast('Cliente ' + u.nome.split(' ')[0] + ' preenchido!');
 }
-
 document.addEventListener('click', e => {
-  if (!e.target.closest('.search-wrap'))   document.getElementById('searchResults').classList.remove('open');
+  if (!e.target.closest('.search-wrap'))      document.getElementById('searchResults').classList.remove('open');
   if (!e.target.closest('.prod-search-wrap')) document.getElementById('prodDropdown').classList.remove('open');
 });
 
@@ -330,37 +347,51 @@ function filtrarProdutos(q) {
   const dd = document.getElementById('prodDropdown');
   const termo = q.trim().toLowerCase();
   const lista = termo.length < 1
-    ? todosProdutos.slice(0, 30)
-    : todosProdutos.filter(p => p.nome.toLowerCase().includes(termo)).slice(0, 30);
-
+    ? todosProdutos.slice(0, 40)
+    : todosProdutos.filter(p => p.nome.toLowerCase().includes(termo)).slice(0, 40);
   if (!lista.length) { dd.classList.remove('open'); return; }
-
   dd.innerHTML = lista.map(p => {
     const esgotado = (p.estoque || 0) <= 0;
-    return `<div class="prod-opt ${esgotado ? 'style="opacity:.45;pointer-events:none"' : ''}" onclick="adicionarProduto(${p.id})">
+    const jaAdded  = itensPedido.find(i => i.id === p.id);
+    const disabled = esgotado ? 'disabled' : '';
+    const sub = esgotado ? 'Sem estoque' : `Estoque: ${p.estoque} · ${jaAdded ? 'Já adicionado — clique p/ +1' : 'Clique p/ adicionar'}`;
+    return `<div class="prod-opt ${disabled}" ${esgotado ? '' : `onclick="adicionarProduto(${p.id})"`}>
       <div>
         <div class="prod-opt-nome">${p.nome}</div>
-        <div class="prod-opt-estoque">Estoque: ${p.estoque || 0} unid.</div>
+        <div class="prod-opt-sub">${sub}</div>
       </div>
       <div class="prod-opt-preco">${fmt(p.preco)}</div>
     </div>`;
   }).join('');
   dd.classList.add('open');
 }
+document.getElementById('prodBusca').addEventListener('focus', function() { filtrarProdutos(this.value); });
 
 function adicionarProduto(id) {
   const prod = todosProdutos.find(p => p.id === id);
   if (!prod) return;
-
   const existente = itensPedido.find(i => i.id === id);
   if (existente) {
-    existente.quantidade++;
+    existente.quantidade += 2; // incrementa em par
   } else {
-    itensPedido.push({ id: prod.id, nome: prod.nome, preco: parseFloat(prod.preco), quantidade: 1 });
+    itensPedido.push({ id: prod.id, codigo: prod.codigo || '', nome: prod.nome, preco: parseFloat(prod.preco), quantidade: 2 });
   }
-
   document.getElementById('prodDropdown').classList.remove('open');
   document.getElementById('prodBusca').value = '';
+  renderItens();
+}
+
+function alterarQtd(id, delta) {
+  const item = itensPedido.find(i => i.id === id);
+  if (!item) return;
+  const nova = item.quantidade + delta;
+  if (nova <= 0) { removerItem(id); return; }
+  // Sempre em pares
+  item.quantidade = nova % 2 === 0 ? nova : nova + 1;
+  // Máx 10 por família / 10 por produto
+  const prod = todosProdutos.find(p => p.id === id);
+  const maxEst = prod ? (prod.estoque || 999) : 999;
+  item.quantidade = Math.min(item.quantidade, maxEst, 10);
   renderItens();
 }
 
@@ -369,128 +400,146 @@ function removerItem(id) {
   renderItens();
 }
 
-function atualizarQtd(id, val) {
-  const item = itensPedido.find(i => i.id === id);
-  if (!item) return;
-  const n = parseInt(val);
-  if (isNaN(n) || n <= 0) { removerItem(id); return; }
+// ── Validações ────────────────────────────────────────────
+function validarItens() {
+  const erros  = [];
+  const avisos = [];
 
-  // Verificar estoque disponível
-  const prod = todosProdutos.find(p => p.id === id);
-  const maxEstoque = prod ? (prod.estoque || 999) : 999;
-  item.quantidade = Math.min(n, maxEstoque);
-  renderItens();
+  // 1. Quantidade ímpar
+  itensPedido.forEach(item => {
+    if (item.quantidade % 2 !== 0) erros.push(`${item.nome}: quantidade ímpar (${item.quantidade}). Use pares: 2, 4, 6, 8 ou 10.`);
+  });
+
+  // 2. Total deve ser múltiplo de 10
+  const totalAmpolas = itensPedido.reduce((s, i) => s + i.quantidade, 0);
+  if (itensPedido.length > 0 && totalAmpolas % 10 !== 0) {
+    avisos.push(`Total de ampolas (${totalAmpolas}) não é múltiplo de 10. Caixas fecham em 10, 20, 30, 40 ou 50 vials.`);
+  }
+
+  // 3. Concentrações duplicadas da mesma família
+  const familiaMap = {};
+  itensPedido.forEach(item => {
+    const fam = getFamilia(item.codigo);
+    if (!fam) return;
+    if (!familiaMap[fam]) familiaMap[fam] = [];
+    familiaMap[fam].push(item.nome);
+  });
+  Object.entries(familiaMap).forEach(([fam, nomes]) => {
+    if (nomes.length > 1) erros.push(`Concentrações duplicadas (${fam}): ${nomes.join(' + ')}. Escolha apenas uma concentração por família.`);
+  });
+
+  // 4. Máx. 10 vials por família
+  itensPedido.forEach(item => {
+    const fam = getFamilia(item.codigo);
+    if (!fam) return;
+    const totalFam = itensPedido.filter(i => getFamilia(i.codigo) === fam).reduce((s, i) => s + i.quantidade, 0);
+    if (totalFam > 10) erros.push(`Família "${fam}": ${totalFam} vials (máx. 10).`);
+  });
+
+  // 5. Máx. 50 ampolas
+  if (totalAmpolas > 50) erros.push(`Total de ampolas: ${totalAmpolas} (máx. 50 por pedido).`);
+
+  // 6. Valor máximo
+  const totalValor = itensPedido.reduce((s, i) => s + i.preco * i.quantidade, 0);
+  if (totalValor > 6000) erros.push(`Valor total ${fmt(totalValor)} excede R$ 6.000 (limite de 3 QRs PIX).`);
+
+  return { erros, avisos, totalAmpolas, totalValor };
 }
 
-// ── Renderizar tabela de itens ───────────────────────────
+// ── Renderizar tabela ─────────────────────────────────────
 function renderItens() {
   const tbody = document.getElementById('itensBody');
 
   if (!itensPedido.length) {
-    tbody.innerHTML = '<tr id="emptyRow"><td colspan="5"><div class="empty-itens">Nenhum produto adicionado ainda.<br>Busque acima para adicionar.</div></td></tr>';
+    tbody.innerHTML = '<tr id="emptyRow"><td colspan="5"><div class="empty-itens">Nenhum produto adicionado.<br>Busque acima para adicionar.</div></td></tr>';
     document.getElementById('totaisBox').style.display = 'none';
     document.getElementById('splitPreview').classList.remove('show');
-    esconderAlertas();
+    document.getElementById('alertErros').classList.remove('show');
+    document.getElementById('alertAvisos').classList.remove('show');
     return;
   }
 
-  tbody.innerHTML = itensPedido.map(item => `
-    <tr>
-      <td style="font-weight:600">${item.nome}</td>
+  const { erros, avisos, totalAmpolas, totalValor } = validarItens();
+
+  // Verificar quais itens têm erros de família
+  const familiaMap = {};
+  itensPedido.forEach(item => {
+    const fam = getFamilia(item.codigo);
+    if (fam) { if (!familiaMap[fam]) familiaMap[fam] = []; familiaMap[fam].push(item.id); }
+  });
+  const idComErroFamilia = new Set();
+  Object.values(familiaMap).forEach(ids => { if (ids.length > 1) ids.forEach(id => idComErroFamilia.add(id)); });
+
+  tbody.innerHTML = itensPedido.map(item => {
+    const temErroPar    = item.quantidade % 2 !== 0;
+    const temErroFam    = idComErroFamilia.has(item.id);
+    const badgePar      = temErroPar  ? '<span class="err-badge">ímpar!</span>' : '';
+    const badgeFam      = temErroFam  ? '<span class="err-badge">família!</span>' : '';
+    return `<tr>
+      <td style="font-weight:600">${item.nome}${badgePar}${badgeFam}</td>
       <td style="text-align:center">
-        <input class="qty-input" type="number" value="${item.quantidade}" min="1" max="50"
-          onchange="atualizarQtd(${item.id}, this.value)"
-          oninput="atualizarQtd(${item.id}, this.value)"/>
+        <div class="qty-wrap" style="justify-content:center">
+          <button class="qty-btn" onclick="alterarQtd(${item.id},-2)">−</button>
+          <span class="qty-val">${item.quantidade}</span>
+          <button class="qty-btn" onclick="alterarQtd(${item.id},+2)">+</button>
+        </div>
       </td>
-      <td style="text-align:right;color:rgba(255,255,255,.6)">${fmt(item.preco)}</td>
-      <td style="text-align:right;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--amber)">${fmt(item.preco * item.quantidade)}</td>
+      <td style="text-align:right;color:rgba(255,255,255,.55)">${fmt(item.preco)}</td>
+      <td style="text-align:right;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.98rem;color:var(--amber)">${fmt(item.preco * item.quantidade)}</td>
       <td style="text-align:center"><button class="btn-rem" onclick="removerItem(${item.id})">✕</button></td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
 
-  // Calcular totais
-  const totalAmpolas = itensPedido.reduce((s, i) => s + i.quantidade, 0);
-  const totalValor   = itensPedido.reduce((s, i) => s + i.preco * i.quantidade, 0);
-  const numQrs       = Math.ceil(totalValor / 2000);
-
+  // Totais
   document.getElementById('tot-itens').textContent   = itensPedido.length + ' produto(s)';
-  document.getElementById('tot-ampolas').textContent = totalAmpolas + ' ampola(s)';
+  document.getElementById('tot-ampolas').textContent = totalAmpolas + ' / 50';
   document.getElementById('tot-valor').textContent   = fmt(totalValor);
   document.getElementById('totaisBox').style.display = 'block';
 
-  // Alertas de limite
-  const alertAmp = document.getElementById('alertAmpolas');
-  const alertVal = document.getElementById('alertValor');
-  const alertQrs = document.getElementById('alertQrs');
-
-  alertAmp.classList.toggle('show', totalAmpolas > 50);
-  alertVal.classList.toggle('show', totalValor > 6000);
-  alertQrs.classList.toggle('show', numQrs > 1 && totalValor <= 6000);
-  if (numQrs > 1) document.getElementById('alertQrsNum').textContent = numQrs;
+  // Alertas
+  const elErros  = document.getElementById('alertErros');
+  const elAvisos = document.getElementById('alertAvisos');
+  if (erros.length) {
+    elErros.innerHTML = '🚫 <strong>Erros a corrigir:</strong><ul style="margin:6px 0 0 16px">' + erros.map(e => `<li>${e}</li>`).join('') + '</ul>';
+    elErros.classList.add('show');
+  } else { elErros.classList.remove('show'); }
+  if (avisos.length) {
+    elAvisos.innerHTML = '⚠️ ' + avisos.join('<br>⚠️ ');
+    elAvisos.classList.add('show');
+  } else { elAvisos.classList.remove('show'); }
 
   // Split preview
+  const numQrs = Math.ceil(totalValor / 2000);
   if (totalValor > 0 && totalValor <= 6000) {
     const vals = calcularSplit(totalValor, numQrs);
     document.getElementById('splitParts').innerHTML = vals.map((v, i) =>
-      `<div class="split-part"><span>QR ${i+1}</span>${fmt(v)}</div>`
-    ).join('');
+      `<div class="split-part"><span>QR ${i+1}</span>${fmt(v)}</div>`).join('');
     document.getElementById('splitPreview').classList.add('show');
-  } else {
-    document.getElementById('splitPreview').classList.remove('show');
-  }
-}
-
-function esconderAlertas() {
-  ['alertAmpolas','alertValor','alertQrs'].forEach(id => document.getElementById(id).classList.remove('show'));
-}
-
-// ── Utilitários ──────────────────────────────────────────
-function calcularSplit(total, n) {
-  if (n <= 1) return [parseFloat(total.toFixed(2))];
-  const base = Math.floor((total / n) * 100) / 100;
-  const vals = [];
-  let soma = 0;
-  for (let i = 0; i < n - 1; i++) {
-    const v = parseFloat((base + (i + 1) * 0.03).toFixed(2));
-    vals.push(v);
-    soma += v;
-  }
-  vals.push(parseFloat((total - soma).toFixed(2)));
-  return vals;
-}
-
-function fmt(v) { return 'R$ ' + parseFloat(v).toFixed(2).replace('.', ','); }
-
-function formatarCpf(el) {
-  let v = el.value.replace(/\D/g, '');
-  if (v.length > 11) v = v.slice(0, 11);
-  v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-  el.value = v;
-}
-
-function formatarFone(el) {
-  el.value = el.value.replace(/[^\d+\s\-()\u0020]/g, '');
+  } else { document.getElementById('splitPreview').classList.remove('show'); }
 }
 
 // ── Gerar pedido ─────────────────────────────────────────
 async function gerarPedido() {
-  const nome  = document.getElementById('f-nome').value.trim();
-  if (!nome)           { showToast('Informe o nome do cliente.', true); return; }
+  const nome = document.getElementById('f-nome').value.trim();
+  if (!nome) { showToast('Informe o nome do cliente.', true); return; }
   if (!itensPedido.length) { showToast('Adicione pelo menos um produto.', true); return; }
 
-  const totalAmpolas = itensPedido.reduce((s, i) => s + i.quantidade, 0);
-  const totalValor   = itensPedido.reduce((s, i) => s + i.preco * i.quantidade, 0);
+  const { erros, totalAmpolas, totalValor } = validarItens();
+  if (erros.length) { showToast('Corrija os erros antes de continuar.', true); return; }
+  if (totalValor <= 0) { showToast('Valor inválido.', true); return; }
 
-  if (totalAmpolas > 50) { showToast('Máximo 50 ampolas por pedido.', true); return; }
-  if (totalValor > 6000) { showToast('Valor máximo é R$ 6.000 (3 QRs de R$ 2.000).', true); return; }
-  if (totalValor <= 0)   { showToast('Valor inválido.', true); return; }
+  const rua    = document.getElementById('f-rua').value.trim();
+  const numero = document.getElementById('f-numero').value.trim();
+  const cidade = document.getElementById('f-cidade').value.trim();
+  const estado = document.getElementById('f-estado').value.trim();
+  const cep    = document.getElementById('f-cep').value.trim();
+  const comp   = document.getElementById('f-complemento').value.trim();
 
-  // Montar descrição do produto a partir dos itens
-  const produto_nome = itensPedido.map(i => `${i.nome} x${i.quantidade}`).join(', ');
+  const enderecoCompleto = [rua, numero, comp, cidade, estado, cep].filter(Boolean).join(', ');
+  const produto_nome = itensPedido.map(i => `${i.nome} ×${i.quantidade}`).join(', ');
 
   const btn = document.getElementById('btnGerar');
-  btn.disabled = true;
-  btn.textContent = '⏳ Gerando...';
+  btn.disabled = true; btn.textContent = '⏳ Gerando...';
 
   try {
     const res = await fetch('/api/admin/pedido-manual', {
@@ -501,7 +550,7 @@ async function gerarPedido() {
         email:        document.getElementById('f-email').value.trim() || null,
         telefone:     document.getElementById('f-telefone').value.trim() || null,
         cpf:          document.getElementById('f-cpf').value.trim() || null,
-        endereco:     document.getElementById('f-endereco').value.trim() || null,
+        endereco:     enderecoCompleto || null,
         produto_nome,
         total:        totalValor,
         observacao:   document.getElementById('f-obs').value.trim() || null,
@@ -512,91 +561,85 @@ async function gerarPedido() {
     if (!res.ok) { showToast(data.erro || 'Erro ao gerar pedido.', true); return; }
     mostrarResultado(data, nome, produto_nome, totalValor);
   } catch { showToast('Erro de conexão.', true); }
-  finally {
-    btn.disabled = false;
-    btn.textContent = '⚡ Gerar Pedido + QR Codes';
-  }
+  finally { btn.disabled = false; btn.textContent = '⚡ Gerar Pedido + QR Codes'; }
 }
 
-// ── Mostrar resultado ────────────────────────────────────
+// ── Resultado ─────────────────────────────────────────────
 function mostrarResultado(data, nome, produto, total) {
   document.getElementById('formSection').style.display = 'none';
   const res = document.getElementById('resultado');
   res.style.display = 'block';
-
   document.getElementById('res-id').textContent = '#' + data.pedido_id;
   document.getElementById('res-info').innerHTML =
-    `<strong>${nome}</strong><br>${produto}<br>` +
+    `<strong>${nome}</strong><br><span style="font-size:.78rem">${produto}</span><br>` +
     `<span style="font-size:1.1rem;color:var(--amber);font-family:'Barlow Condensed',sans-serif;font-weight:900">${fmt(total)}</span>`;
 
   const grid = document.getElementById('qrGrid');
   grid.style.gridTemplateColumns = data.num_qrs === 1 ? '1fr' : data.num_qrs === 2 ? '1fr 1fr' : '1fr 1fr 1fr';
   grid.innerHTML = '';
-
   data.qrs.forEach(qr => {
     const card = document.createElement('div');
     card.className = 'qr-card';
     const imgHtml = qr.qrcode_url
       ? `<div class="qr-img-wrap"><img src="${qr.qrcode_url}" alt="QR ${qr.parte}"/></div>`
       : `<div class="qr-img-placeholder">${qr.erro ? '⚠️ ' + qr.erro : 'QR indisponível'}</div>`;
-
     const cc = qr.copia_cola || '';
     const ccHtml = cc
-      ? `<div class="copia-cola-wrap">${cc}</div>
-         <button class="btn-copy" id="bcp-${qr.parte}" onclick="copiar(${qr.parte},\`${cc.replace(/`/g,'\\`')}\`)">📋 Copiar Copia e Cola</button>`
+      ? `<div class="copia-cola-wrap">${cc}</div><button class="btn-copy" id="bcp-${qr.parte}" onclick="copiar(${qr.parte},\`${cc.replace(/`/g,'\\`')}\`)">📋 Copiar Copia e Cola</button>`
       : '';
     const dlHtml = qr.qrcode_url
-      ? `<a class="btn-copy" href="${qr.qrcode_url}" download="qr-${data.pedido_id}-p${qr.parte}.png">⬇️ Baixar QR</a>`
-      : '';
-
+      ? `<a class="btn-copy" href="${qr.qrcode_url}" download="qr-${data.pedido_id}-p${qr.parte}.png">⬇️ Baixar QR</a>` : '';
     card.innerHTML = `
       <div class="qr-card-header">
-        <div class="qr-label">${data.num_qrs > 1 ? `PIX ${qr.parte} / ${data.num_qrs}` : 'QR Code PIX'}</div>
+        <div class="qr-label">${data.num_qrs > 1 ? `PIX ${qr.parte}/${data.num_qrs}` : 'QR Code PIX'}</div>
         <div class="qr-valor">${fmt(qr.valor)}</div>
       </div>
-      <div class="qr-body">
-        ${imgHtml}
-        <div class="qr-actions">${ccHtml}${dlHtml}</div>
-      </div>`;
+      <div class="qr-body">${imgHtml}<div class="qr-actions">${ccHtml}${dlHtml}</div></div>`;
     grid.appendChild(card);
   });
 
-  // Botões de ação
   const bar = document.getElementById('actionsBar');
   bar.innerHTML = '';
-
   if (data.whatsapp_link) {
     const a = document.createElement('a');
-    a.className = 'btn-wpp';
-    a.href = data.whatsapp_link;
-    a.target = '_blank';
-    a.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      Enviar via WhatsApp`;
+    a.className = 'btn-wpp'; a.href = data.whatsapp_link; a.target = '_blank';
+    a.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Enviar via WhatsApp`;
     bar.appendChild(a);
   }
-
-  const newBtn = document.createElement('button');
-  newBtn.className = 'btn-secondary';
-  newBtn.textContent = '➕ Novo Pedido';
-  newBtn.onclick = () => {
-    document.getElementById('formSection').style.display = 'block';
-    res.style.display = 'none';
-    limparForm();
-  };
-  bar.appendChild(newBtn);
-
-  const verBtn = document.createElement('a');
-  verBtn.className = 'btn-secondary';
-  verBtn.href = 'admin.html';
-  verBtn.style.cssText = 'text-decoration:none;display:inline-flex;align-items:center';
-  verBtn.textContent = '📋 Ver Pedidos';
-  bar.appendChild(verBtn);
-
+  const nb = document.createElement('button');
+  nb.className = 'btn-secondary'; nb.textContent = '➕ Novo Pedido';
+  nb.onclick = () => { document.getElementById('formSection').style.display='block'; res.style.display='none'; limparForm(); };
+  bar.appendChild(nb);
+  const vb = document.createElement('a');
+  vb.className = 'btn-secondary'; vb.href = 'admin.html';
+  vb.style.cssText = 'text-decoration:none;display:inline-flex;align-items:center';
+  vb.textContent = '📋 Ver Pedidos'; bar.appendChild(vb);
   res.scrollIntoView({ behavior: 'smooth' });
   showToast(`✅ Pedido #${data.pedido_id} criado com ${data.num_qrs} QR(s)!`);
 }
 
-// ── Copiar ───────────────────────────────────────────────
+// ── Utilitários ──────────────────────────────────────────
+function calcularSplit(total, n) {
+  if (n <= 1) return [parseFloat(total.toFixed(2))];
+  const base = Math.floor((total / n) * 100) / 100;
+  const vals = []; let soma = 0;
+  for (let i = 0; i < n - 1; i++) { const v = parseFloat((base + (i+1)*0.03).toFixed(2)); vals.push(v); soma += v; }
+  vals.push(parseFloat((total - soma).toFixed(2)));
+  return vals;
+}
+function fmt(v) { return 'R$ ' + parseFloat(v).toFixed(2).replace('.', ','); }
+function formatarCpf(el) {
+  let v = el.value.replace(/\D/g,'');
+  if (v.length > 11) v = v.slice(0,11);
+  v = v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+  el.value = v;
+}
+function formatarCep(el) {
+  let v = el.value.replace(/\D/g,'');
+  if (v.length > 8) v = v.slice(0,8);
+  if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5);
+  el.value = v;
+}
 async function copiar(parte, texto) {
   try {
     await navigator.clipboard.writeText(texto);
@@ -604,29 +647,17 @@ async function copiar(parte, texto) {
     if (btn) { btn.textContent = '✅ Copiado!'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = '📋 Copiar Copia e Cola'; btn.classList.remove('copied'); }, 2500); }
   } catch { showToast('Erro ao copiar.', true); }
 }
-
-// ── Limpar ───────────────────────────────────────────────
 function limparForm() {
-  ['f-nome','f-email','f-telefone','f-cpf','f-endereco','f-obs','buscaCliente','prodBusca'].forEach(id => {
+  ['f-nome','f-email','f-telefone','f-cpf','f-cep','f-rua','f-numero','f-complemento','f-cidade','f-estado','f-obs','buscaCliente','prodBusca'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
-  itensPedido = [];
-  window._usuarioId = null;
-  renderItens();
+  itensPedido = []; window._usuarioId = null; renderItens();
 }
-
-// ── Toast ────────────────────────────────────────────────
 function showToast(msg, isError) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show' + (isError ? ' error' : '');
+  t.textContent = msg; t.className = 'show' + (isError ? ' error' : '');
   setTimeout(() => { t.className = isError ? 'error' : ''; }, 3500);
 }
-
-// Abrir dropdown de produtos ao focar
-document.getElementById('prodBusca').addEventListener('focus', function() {
-  filtrarProdutos(this.value);
-});
 </script>
 </body>
 </html>
