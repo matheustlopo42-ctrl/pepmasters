@@ -108,7 +108,7 @@ const PAYPAL_CLIENT_ID     = process.env.PAYPAL_CLIENT_ID     || '';
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET || '';
 const PAYPAL_BASE_URL      = 'https://api-m.paypal.com';
 const EMAIL_PASS          = process.env.EMAIL_PASS          || 'pplezzjcvzyakzdc';
-const CRYPTO_WALLET       = process.env.CRYPTO_WALLET       || '0xA4aC98643142878cFa37E1550f512E785aCCd9F4';
+const CRYPTO_WALLET       = process.env.CRYPTO_WALLET       || '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || '';  // opcional, aumenta rate limit
 const WA_PHONE            = process.env.WA_PHONE            || '';   // preencher no Render
 const WA_APIKEY           = process.env.WA_APIKEY           || '';   // preencher no Render
@@ -195,9 +195,7 @@ async function initDB() {
       'desconto NUMERIC(10,2) DEFAULT 0', 'total NUMERIC(10,2)',
       'pagamento TEXT', 'cupom TEXT', 'status TEXT DEFAULT \'pix_pending\'',
       'pixgo_id TEXT', 'codigo_rastreio TEXT',
-      'crypto_valor NUMERIC(18,6) DEFAULT 0', 'crypto_token TEXT',
-      'observacao TEXT', 'quantidade INT DEFAULT 1',
-      'endereco TEXT'
+      'crypto_valor NUMERIC(18,6) DEFAULT 0', 'crypto_token TEXT'
     ];
     for (const col of pedidosCols) {
       const colName = col.split(' ')[0];
@@ -282,6 +280,124 @@ async function initDB() {
     await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS ref_code TEXT`).catch(() => {});
     await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS pix_partes_pagas INT DEFAULT 0`).catch(() => {});
     await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS retirada_paraguai BOOLEAN DEFAULT FALSE`).catch(() => {});
+
+    // ── PEPMASTERS CLUB ──────────────────────────────────
+
+    // Fornecedores
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS club_fornecedores (
+        id            SERIAL PRIMARY KEY,
+        usuario_id    INT REFERENCES pep_usuarios(id),
+        nome_loja     TEXT NOT NULL,
+        descricao     TEXT,
+        nivel         TEXT DEFAULT 'bronze',
+        status        TEXT DEFAULT 'pendente',
+        taxa_pct      NUMERIC(5,2) DEFAULT 5.00,
+        mensalidade   NUMERIC(10,2) DEFAULT 0,
+        mensalidade_status TEXT DEFAULT 'pendente',
+        mensalidade_vence  TIMESTAMPTZ,
+        total_vendas  NUMERIC(12,2) DEFAULT 0,
+        pedidos_ok    INT DEFAULT 0,
+        disputas      INT DEFAULT 0,
+        saldo         NUMERIC(12,2) DEFAULT 0,
+        logo_url      TEXT,
+        whatsapp      TEXT,
+        instagram     TEXT,
+        criado_em     TIMESTAMPTZ DEFAULT NOW()
+      )
+    `).catch(()=>{});
+
+    // Produtos do Club
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS club_produtos (
+        id            SERIAL PRIMARY KEY,
+        fornecedor_id INT NOT NULL REFERENCES club_fornecedores(id),
+        nome          TEXT NOT NULL,
+        descricao     TEXT,
+        categoria     TEXT,
+        preco         NUMERIC(10,2) NOT NULL,
+        estoque       INT DEFAULT 0,
+        imagem_url    TEXT,
+        status        TEXT DEFAULT 'pendente',
+        criado_em     TIMESTAMPTZ DEFAULT NOW()
+      )
+    `).catch(()=>{});
+
+    // Pedidos do Club (com custódia)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS club_pedidos (
+        id              SERIAL PRIMARY KEY,
+        usuario_id      INT REFERENCES pep_usuarios(id),
+        fornecedor_id   INT NOT NULL REFERENCES club_fornecedores(id),
+        produto_id      INT NOT NULL REFERENCES club_produtos(id),
+        nome_cliente    TEXT,
+        email_cliente   TEXT,
+        telefone_cliente TEXT,
+        endereco        TEXT,
+        produto_nome    TEXT,
+        quantidade      INT DEFAULT 1,
+        preco_unit      NUMERIC(10,2),
+        total           NUMERIC(10,2),
+        taxa            NUMERIC(10,2),
+        valor_fornecedor NUMERIC(10,2),
+        pagamento       TEXT DEFAULT 'pix',
+        status          TEXT DEFAULT 'aguardando_pagamento',
+        pixgo_id        TEXT,
+        qrcode_url      TEXT,
+        copia_cola      TEXT,
+        crypto_token    TEXT,
+        nowpay_id       TEXT,
+        nowpay_address  TEXT,
+        nowpay_amount   NUMERIC(18,6),
+        codigo_rastreio TEXT,
+        enviado_em      TIMESTAMPTZ,
+        liberado_em     TIMESTAMPTZ,
+        criado_em       TIMESTAMPTZ DEFAULT NOW()
+      )
+    `).catch(()=>{});
+
+    // Disputas
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS club_disputas (
+        id            SERIAL PRIMARY KEY,
+        pedido_id     INT NOT NULL REFERENCES club_pedidos(id),
+        usuario_id    INT REFERENCES pep_usuarios(id),
+        motivo        TEXT,
+        descricao     TEXT,
+        status        TEXT DEFAULT 'aberta',
+        resolucao     TEXT,
+        resolvido_por TEXT,
+        criado_em     TIMESTAMPTZ DEFAULT NOW(),
+        resolvido_em  TIMESTAMPTZ
+      )
+    `).catch(()=>{});
+
+    // Saldo/extrato dos clientes (estorno vira crédito)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS club_saldo_clientes (
+        id            SERIAL PRIMARY KEY,
+        usuario_id    INT NOT NULL REFERENCES pep_usuarios(id),
+        tipo          TEXT,
+        valor         NUMERIC(10,2),
+        descricao     TEXT,
+        pedido_id     INT,
+        criado_em     TIMESTAMPTZ DEFAULT NOW()
+      )
+    `).catch(()=>{});
+
+    // Saques de fornecedores
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS club_saques (
+        id            SERIAL PRIMARY KEY,
+        fornecedor_id INT NOT NULL REFERENCES club_fornecedores(id),
+        valor         NUMERIC(10,2),
+        metodo        TEXT,
+        destino       TEXT,
+        status        TEXT DEFAULT 'pendente',
+        criado_em     TIMESTAMPTZ DEFAULT NOW(),
+        processado_em TIMESTAMPTZ
+      )
+    `).catch(()=>{});
 
 
 
@@ -890,20 +1006,12 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     enviarWhatsApp('Novo pedido PEPMASTERS #' + pedidoId + '\nCliente: ' + nome + '\nItens: ' + itensTexto + '\nTotal: R$ ' + total.toFixed(2).replace('.',',') + '\nPag: ' + pagamento.toUpperCase());
 
     if (EMAIL_DESTINO) {
-      // Wallets por rede
-      const WALLETS = {
-        'TRON':        { addr: 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB',           rede: 'Tron TRC-20',    explorer: 'https://tronscan.org/#/address/TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB',           moeda: 'USDT' },
-        'USDTTRX':     { addr: 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB',           rede: 'Tron TRC-20',    explorer: 'https://tronscan.org/#/address/TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB',           moeda: 'USDT' },
-        'USDTETH':     { addr: '0xA4aC98643142878cFa37E1550f512E785aCCd9F4',    rede: 'Ethereum (ERC-20)', explorer: 'https://etherscan.io/address/0xA4aC98643142878cFa37E1550f512E785aCCd9F4',      moeda: 'USDT' },
-        'USDCPOLYGON': { addr: '0xA4aC98643142878cFa37E1550f512E785aCCd9F4',    rede: 'Polygon (MATIC)', explorer: 'https://polygonscan.com/address/0xA4aC98643142878cFa37E1550f512E785aCCd9F4',   moeda: 'USDC' },
-        'USDCETH':     { addr: '0xA4aC98643142878cFa37E1550f512E785aCCd9F4',    rede: 'Ethereum (ERC-20)', explorer: 'https://etherscan.io/address/0xA4aC98643142878cFa37E1550f512E785aCCd9F4',   moeda: 'USDC' },
-        'USDCSOLANA':  { addr: 'Fm3P6yep2jzVWPjK4tzYZ7sGCr7eP1MCMrf2azbqqAuA', rede: 'Solana',          explorer: 'https://solscan.io/account/Fm3P6yep2jzVWPjK4tzYZ7sGCr7eP1MCMrf2azbqqAuA',    moeda: 'USDC' },
-      };
-      const walletInfo = WALLETS[crypto_token] || WALLETS['USDCPOLYGON'];
-      const isTron = crypto_token === 'TRON' || crypto_token === 'USDTTRX';
-      const rede = walletInfo.rede;
-      const carteira = walletInfo.addr;
-      const explorer = walletInfo.explorer;
+      const isTron = crypto_token === 'TRON';
+      const rede = isTron ? 'Tron TRC-20' : 'Polygon (MATIC)';
+      const carteira = isTron ? 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB' : '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
+      const explorer = isTron
+        ? 'https://tronscan.org/#/address/TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB'
+        : 'https://polygonscan.com/address/0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
       const cryptoInfo = (pagamento === 'cripto' && crypto_valor)
         ? `<br><br>💰 <b>Cripto esperado:</b> ${crypto_valor} ${isTron ? 'USDT' : (crypto_token || 'USDT')}<br>` +
           `🌐 <b>Rede:</b> ${rede}<br>` +
@@ -937,7 +1045,7 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       if (NOWPAYMENTS_API_KEY) {
         try {
           // Mapear token do frontend para moeda NOWPayments
-          const moedaMap = { 'USDTPOLYGON':'usdtmatic', 'USDCPOLYGON':'usdcmatic', 'USDTTRX':'usdttrc20', 'TRON':'usdttrc20', 'USDT':'usdtmatic', 'USDC':'usdcmatic', 'USDTETH':'usdterc20', 'USDCETH':'usdcerc20', 'USDCSOLANA':'usdcsol' };
+          const moedaMap = { 'USDTPOLYGON':'usdtmatic', 'USDCPOLYGON':'usdcmatic', 'USDTTRX':'usdttrc20', 'USDT':'usdtmatic', 'USDC':'usdcmatic', 'TRON':'usdttrc20' };
           const moeda = moedaMap[crypto_token] || 'usdtmatic';
           // Converter BRL para USD
           let totalUsd = total;
@@ -2260,7 +2368,7 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
             valorUsd = (valor / brlRate).toFixed(2);
           } catch { valorUsd = (valor / 5.5).toFixed(2); }
 
-          const moedaMap = { 'USDTPOLYGON':'usdtmatic', 'USDCPOLYGON':'usdcmatic', 'USDTTRX':'usdttrc20', 'TRON':'usdttrc20', 'USDTETH':'usdterc20', 'USDCETH':'usdcerc20', 'USDCSOLANA':'usdcsol' };
+          const moedaMap = { 'USDTPOLYGON':'usdtmatic', 'USDCPOLYGON':'usdcmatic', 'USDTTRX':'usdttrc20', 'TRON':'usdttrc20' };
           const moedaMbr = moedaMap[crypto_token] || 'usdtmatic';
 
           const npRes = await fetch('https://api.nowpayments.io/v1/payment', {
@@ -2302,17 +2410,8 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
       const uDados = await pool.query(`SELECT nome, email FROM pep_usuarios WHERE id=$1`, [usuario_id]);
       const uNome = uDados.rows[0]?.nome || '—';
       const uEmail = uDados.rows[0]?.email || '—';
-      const WALLETS_MBR = {
-        'TRON':        { addr: 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB',           rede: 'Tron TRC-20',      moeda: 'USDT' },
-        'USDTTRX':     { addr: 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB',           rede: 'Tron TRC-20',      moeda: 'USDT' },
-        'USDTETH':     { addr: '0xA4aC98643142878cFa37E1550f512E785aCCd9F4',    rede: 'Ethereum ERC-20',  moeda: 'USDT' },
-        'USDCPOLYGON': { addr: '0xA4aC98643142878cFa37E1550f512E785aCCd9F4',    rede: 'Polygon (MATIC)',  moeda: 'USDC' },
-        'USDCETH':     { addr: '0xA4aC98643142878cFa37E1550f512E785aCCd9F4',    rede: 'Ethereum ERC-20',  moeda: 'USDC' },
-        'USDCSOLANA':  { addr: 'Fm3P6yep2jzVWPjK4tzYZ7sGCr7eP1MCMrf2azbqqAuA', rede: 'Solana',           moeda: 'USDC' },
-      };
-      const wMbr = WALLETS_MBR[crypto_token] || WALLETS_MBR['USDTTRX'];
-      const isCriptoMbr = pagamento === 'cripto' && cryptoValor > 0;
-      const carteiraMbr = wMbr.addr;
+      const isTronMbr = pagamento === 'cripto' && cryptoValor > 0;
+      const carteiraMbr = 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB';
       enviarEmail(EMAIL_DESTINO,
         '🆕 Nova assinatura Members — ' + (plano || 'pago') + ' — PEPMASTERS',
         '<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#1C0A00;color:#fff;border-radius:12px">' +
@@ -2322,7 +2421,7 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
         '<b>Plano:</b> ' + (plano || '—') + '<br>' +
         '<b>Valor:</b> R$ ' + parseFloat(valor||0).toFixed(2).replace('.',',') + '<br>' +
         '<b>Pagamento:</b> ' + pagamento.toUpperCase() +
-        (isCriptoMbr ? '<br><br>💰 <b>Cripto esperado:</b> ' + cryptoValor + ' ' + wMbr.moeda + '<br>🌐 <b>Rede:</b> ' + wMbr.rede + '<br>👛 <b>Carteira:</b> <code>' + carteiraMbr + '</code>' : '') +
+        (isTronMbr ? '<br><br>💰 <b>Cripto esperado:</b> ' + cryptoValor + ' USDT<br>🌐 <b>Rede:</b> Tron TRC-20<br>👛 <b>Carteira:</b> <code>' + carteiraMbr + '</code><br>🔍 <a href="https://tronscan.org/#/address/' + carteiraMbr + '" style="color:#FFB300">Verificar no Tronscan →</a>' : '') +
         '</div>'
       ).catch(()=>{});
     }
@@ -2582,142 +2681,6 @@ app.get('/api/admin/db-uso', adminMiddleware, async (req, res) => {
     const pct = Math.round((bytes / limite) * 100);
     res.json({ ...r.rows[0], pct, limite_gb: '1GB', usado: r.rows[0].tamanho });
   } catch (err) { res.status(500).json({ erro: err.message }); }
-});
-
-// ─────────────────────────────────────────────────────────────
-// POST /api/admin/pedido-manual — Admin cria pedido e gera QR(s) PIX
-// ─────────────────────────────────────────────────────────────
-app.post('/api/admin/pedido-manual', adminMiddleware, async (req, res) => {
-  const {
-    nome, email, telefone, cpf, endereco,
-    produto_nome, total, observacao,
-    usuario_id // opcional: vínculo com conta cadastrada
-  } = req.body;
-
-  if (!nome || !total || !produto_nome) {
-    return res.status(400).json({ erro: 'Nome, produto e total são obrigatórios.' });
-  }
-
-  const valorTotal = parseFloat(total);
-  if (isNaN(valorTotal) || valorTotal <= 0) {
-    return res.status(400).json({ erro: 'Valor inválido.' });
-  }
-  if (valorTotal > 6000) {
-    return res.status(400).json({ erro: 'Valor máximo por CPF é R$ 6.000 (3 QR codes de R$ 2.000).' });
-  }
-
-  // Calcular número de QR codes necessários (limite R$2.000 por QR)
-  const numQrs = Math.ceil(valorTotal / 2000);
-  const splitValores = calcularSplitPix(valorTotal, numQrs);
-
-  try {
-    // Criar pedido no banco
-    const pedRow = await pool.query(
-      `INSERT INTO pep_pedidos
-         (nome, email, telefone, cpf, endereco, produto_nome, produto_id, quantidade,
-          total, pagamento, status, observacao, usuario_id, criado_em)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'pix','pix_pending',$10,$11,NOW())
-       RETURNING id`,
-      [
-        nome, email || null, telefone || null, cpf || null, endereco || null,
-        produto_nome, 'manual', 1,
-        valorTotal, observacao || null, usuario_id || null
-      ]
-    );
-    const pedidoId = pedRow.rows[0].id;
-
-    // Gerar QR codes no PixGo
-    const qrs = [];
-    let pixgoIdComposite = null;
-
-    if (PIXGO_API_KEY) {
-      const ids = [];
-      for (let i = 0; i < numQrs; i++) {
-        const valorParte = splitValores[i];
-        const externalId = `pep-${pedidoId}-adm-${i + 1}`;
-        try {
-          const pixRes = await fetch('https://pixgo.org/api/v1/payment/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-API-Key': PIXGO_API_KEY },
-            body: JSON.stringify({
-              amount:      valorParte,
-              description: `PEPMASTERS #${pedidoId}${numQrs > 1 ? ` (${i + 1}/${numQrs})` : ''} — ${produto_nome}`,
-              external_id: externalId,
-              webhook_url: BASE_URL + '/webhook/pixgo'
-            })
-          });
-          const pixData = await pixRes.json();
-          if (pixData.success && pixData.data) {
-            qrs.push({
-              parte:        i + 1,
-              valor:        valorParte,
-              qrcode_url:   pixData.data.qr_image_url || null,
-              copia_cola:   pixData.data.qr_code      || null,
-              payment_id:   pixData.data.payment_id || pixData.data.id || null,
-            });
-            ids.push(pixData.data.payment_id || pixData.data.id || externalId);
-          } else {
-            qrs.push({ parte: i + 1, valor: valorParte, erro: pixData.message || 'Erro PixGo' });
-          }
-        } catch (e) {
-          qrs.push({ parte: i + 1, valor: valorParte, erro: e.message });
-        }
-      }
-      // Salvar pixgo_ids no pedido
-      pixgoIdComposite = ids.join(',');
-      await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixgoIdComposite, pedidoId]);
-    } else {
-      // PixGo não configurado — retornar dados sem QR
-      for (let i = 0; i < numQrs; i++) {
-        qrs.push({ parte: i + 1, valor: splitValores[i], qrcode_url: null, copia_cola: null, erro: 'PIXGO_API_KEY não configurado' });
-      }
-    }
-
-    // Notificar admin por WhatsApp
-    enviarWhatsApp(
-      `📋 Pedido manual #${pedidoId}\nCliente: ${nome}${telefone ? ' | ' + telefone : ''}\nProduto: ${produto_nome}\nTotal: R$ ${valorTotal.toFixed(2).replace('.', ',')}\nQR codes: ${numQrs}`
-    );
-
-    console.log(`[Admin] Pedido manual #${pedidoId} criado — R$ ${valorTotal} — ${numQrs} QR(s)`);
-
-    res.json({
-      ok: true,
-      pedido_id: pedidoId,
-      total: valorTotal,
-      num_qrs: numQrs,
-      qrs,
-      whatsapp_link: telefone
-        ? `https://wa.me/${telefone.replace(/\D/g,'')}?text=${encodeURIComponent(
-            `Olá ${nome.split(' ')[0]}! Seguem os dados do seu pedido PEPMASTERS #${pedidoId}.\n\n` +
-            `*Produto:* ${produto_nome}\n*Total: R$ ${valorTotal.toFixed(2).replace('.', ',')}*\n\n` +
-            (numQrs > 1
-              ? `⚠️ O valor foi dividido em ${numQrs} PIX:\n` +
-                splitValores.map((v, i) => `• PIX ${i+1}: R$ ${v.toFixed(2).replace('.', ',')}`).join('\n') +
-                `\n\nEnviarei os QR codes a seguir. Pague *todos* para confirmar o pedido! ✅`
-              : `Escaneie o QR code para pagar via PIX e confirmar seu pedido! ✅`)
-          )}`
-        : null
-    });
-
-  } catch (err) {
-    console.error('[Admin pedido manual]', err.message, err.stack?.split('\n')[1]);
-    res.status(500).json({ erro: 'Erro ao criar pedido: ' + err.message });
-  }
-});
-
-// GET /api/admin/buscar-usuario — busca cliente cadastrado por nome/email/cpf
-app.get('/api/admin/buscar-usuario', adminMiddleware, async (req, res) => {
-  const q = (req.query.q || '').trim();
-  if (q.length < 3) return res.json([]);
-  try {
-    const r = await pool.query(
-      `SELECT id, nome, email, cpf, telefone FROM pep_usuarios
-       WHERE nome ILIKE $1 OR email ILIKE $1 OR cpf ILIKE $1
-       LIMIT 10`,
-      [`%${q}%`]
-    );
-    res.json(r.rows);
-  } catch { res.json([]); }
 });
 
 // Deletar pedidos (admin)
@@ -3316,6 +3279,644 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
+// ═══════════════════════════════════════════════════════════
+//  PEPMASTERS CLUB — Endpoints
+// ═══════════════════════════════════════════════════════════
+
+const CLUB_TAXA = 5; // % padrão
+const CLUB_LIBERACAO_DIAS = 5; // dias para liberar automaticamente após envio
+
+// Middleware de fornecedor autenticado
+async function clubFornecedorMiddleware(req, res, next) {
+  const auth = req.headers['authorization'] || '';
+  if (!auth.startsWith('Bearer ')) return res.status(401).json({ erro: 'Não autorizado.' });
+  try {
+    const decoded = jwt.verify(auth.replace('Bearer ', ''), JWT_SECRET);
+    const r = await pool.query('SELECT f.* FROM club_fornecedores f WHERE f.usuario_id=$1 AND f.status=$2', [decoded.id, 'ativo']);
+    if (!r.rows.length) return res.status(403).json({ erro: 'Fornecedor não ativo.' });
+    req.fornecedor = r.rows[0];
+    req.usuario = decoded;
+    next();
+  } catch { res.status(401).json({ erro: 'Token inválido.' }); }
+}
+
+// Middleware de cliente autenticado (JWT normal)
+function clubClienteMiddleware(req, res, next) {
+  const auth = req.headers['authorization'] || '';
+  if (!auth.startsWith('Bearer ')) return res.status(401).json({ erro: 'Não autorizado.' });
+  try {
+    const decoded = jwt.verify(auth.replace('Bearer ', ''), JWT_SECRET);
+    req.usuario = decoded;
+    next();
+  } catch { res.status(401).json({ erro: 'Token inválido.' }); }
+}
+
+// ── MARKETPLACE PÚBLICO ───────────────────────────────────
+
+// GET /api/club/produtos — listar produtos aprovados
+app.get('/api/club/produtos', async (req, res) => {
+  try {
+    const { categoria, busca, fornecedor_id } = req.query;
+    let q = `
+      SELECT p.*, f.nome_loja, f.nivel as fornecedor_nivel, f.logo_url as fornecedor_logo
+      FROM club_produtos p
+      JOIN club_fornecedores f ON f.id = p.fornecedor_id
+      WHERE p.status='aprovado' AND f.status='ativo' AND p.estoque > 0
+    `;
+    const params = [];
+    if (categoria) { params.push(categoria); q += ` AND p.categoria=$${params.length}`; }
+    if (busca)     { params.push('%'+busca+'%'); q += ` AND p.nome ILIKE $${params.length}`; }
+    if (fornecedor_id) { params.push(fornecedor_id); q += ` AND p.fornecedor_id=$${params.length}`; }
+    q += ' ORDER BY f.nivel DESC, p.criado_em DESC LIMIT 100';
+    const r = await pool.query(q, params);
+    res.json(r.rows);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// GET /api/club/fornecedores — listar fornecedores ativos
+app.get('/api/club/fornecedores', async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT f.id, f.nome_loja, f.descricao, f.nivel, f.logo_url, f.whatsapp, f.instagram,
+             f.total_vendas, f.pedidos_ok, f.disputas,
+             COUNT(p.id) as total_produtos
+      FROM club_fornecedores f
+      LEFT JOIN club_produtos p ON p.fornecedor_id=f.id AND p.status='aprovado'
+      WHERE f.status='ativo'
+      GROUP BY f.id ORDER BY f.nivel DESC, f.pedidos_ok DESC
+    `);
+    res.json(r.rows);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// GET /api/club/produto/:id
+app.get('/api/club/produto/:id', async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT p.*, f.nome_loja, f.nivel as fornecedor_nivel, f.logo_url as fornecedor_logo,
+             f.whatsapp as fornecedor_wpp, f.pedidos_ok, f.disputas
+      FROM club_produtos p
+      JOIN club_fornecedores f ON f.id = p.fornecedor_id
+      WHERE p.id=$1 AND p.status='aprovado' AND f.status='ativo'
+    `, [req.params.id]);
+    if (!r.rows.length) return res.status(404).json({ erro: 'Produto não encontrado.' });
+    res.json(r.rows[0]);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// ── CADASTRO DE FORNECEDOR ────────────────────────────────
+
+// POST /api/club/fornecedor/cadastro
+app.post('/api/club/fornecedor/cadastro', rateLimit(5, 60000), async (req, res) => {
+  const { nome_loja, descricao, whatsapp, instagram, email, senha, nome } = req.body;
+  if (!nome_loja || !email || !senha || !nome) return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
+  try {
+    // Criar ou encontrar usuário
+    let usuario;
+    const existente = await pool.query('SELECT id FROM pep_usuarios WHERE email=$1', [email]);
+    if (existente.rows.length) {
+      usuario = existente.rows[0];
+    } else {
+      const hash = await bcrypt.hash(senha, 10);
+      const nr = await pool.query(
+        'INSERT INTO pep_usuarios (nome,email,senha_hash) VALUES ($1,$2,$3) RETURNING id',
+        [nome, email, hash]
+      );
+      usuario = nr.rows[0];
+    }
+    // Verificar se já tem fornecedor
+    const jaForn = await pool.query('SELECT id,status FROM club_fornecedores WHERE usuario_id=$1', [usuario.id]);
+    if (jaForn.rows.length) return res.status(400).json({ erro: 'Já existe um cadastro para este email. Status: ' + jaForn.rows[0].status });
+
+    await pool.query(
+      `INSERT INTO club_fornecedores (usuario_id,nome_loja,descricao,whatsapp,instagram,status)
+       VALUES ($1,$2,$3,$4,$5,'pendente')`,
+      [usuario.id, nome_loja, descricao||null, whatsapp||null, instagram||null]
+    );
+    // Notificar admin
+    enviarWhatsApp(`🆕 Novo fornecedor Club: ${nome_loja} (${email}). Aguardando aprovação.`);
+    res.json({ ok: true, msg: 'Cadastro enviado! Aguarde aprovação.' });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// POST /api/club/fornecedor/login
+app.post('/api/club/fornecedor/login', rateLimit(10, 60000), async (req, res) => {
+  const { email, senha } = req.body;
+  try {
+    const r = await pool.query('SELECT * FROM pep_usuarios WHERE email=$1', [email]);
+    if (!r.rows.length) return res.status(401).json({ erro: 'Email ou senha incorretos.' });
+    const u = r.rows[0];
+    const ok = await bcrypt.compare(senha, u.senha_hash || '');
+    if (!ok) return res.status(401).json({ erro: 'Email ou senha incorretos.' });
+    const forn = await pool.query('SELECT * FROM club_fornecedores WHERE usuario_id=$1', [u.id]);
+    if (!forn.rows.length) return res.status(403).json({ erro: 'Nenhum cadastro de fornecedor encontrado.' });
+    const f = forn.rows[0];
+    const token = jwt.sign({ id: u.id, email: u.email, nome: u.nome }, JWT_SECRET, { expiresIn: '30d' });
+    res.json({ token, nome: u.nome, fornecedor: f });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// ── PAINEL DO FORNECEDOR ──────────────────────────────────
+
+// GET /api/club/fornecedor/perfil
+app.get('/api/club/fornecedor/perfil', clubFornecedorMiddleware, async (req, res) => {
+  res.json(req.fornecedor);
+});
+
+// PUT /api/club/fornecedor/perfil
+app.put('/api/club/fornecedor/perfil', clubFornecedorMiddleware, async (req, res) => {
+  const { descricao, whatsapp, instagram } = req.body;
+  try {
+    await pool.query(
+      'UPDATE club_fornecedores SET descricao=$1, whatsapp=$2, instagram=$3 WHERE id=$4',
+      [descricao||null, whatsapp||null, instagram||null, req.fornecedor.id]
+    );
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// GET /api/club/fornecedor/dashboard
+app.get('/api/club/fornecedor/dashboard', clubFornecedorMiddleware, async (req, res) => {
+  try {
+    const fid = req.fornecedor.id;
+    const [pedidos, produtos, saldo] = await Promise.all([
+      pool.query(`SELECT status, COUNT(*) as total, SUM(total) as valor FROM club_pedidos WHERE fornecedor_id=$1 GROUP BY status`, [fid]),
+      pool.query(`SELECT COUNT(*) as total FROM club_produtos WHERE fornecedor_id=$1 AND status='aprovado'`, [fid]),
+      pool.query(`SELECT saldo FROM club_fornecedores WHERE id=$1`, [fid]),
+    ]);
+    res.json({
+      fornecedor: req.fornecedor,
+      pedidos_por_status: pedidos.rows,
+      total_produtos: parseInt(produtos.rows[0]?.total || 0),
+      saldo: parseFloat(saldo.rows[0]?.saldo || 0),
+    });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// ── PRODUTOS DO FORNECEDOR ────────────────────────────────
+
+// GET /api/club/fornecedor/produtos
+app.get('/api/club/fornecedor/produtos', clubFornecedorMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query('SELECT * FROM club_produtos WHERE fornecedor_id=$1 ORDER BY criado_em DESC', [req.fornecedor.id]);
+    res.json(r.rows);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// POST /api/club/fornecedor/produto
+app.post('/api/club/fornecedor/produto', clubFornecedorMiddleware, async (req, res) => {
+  const { nome, descricao, categoria, preco, estoque, imagem_url } = req.body;
+  if (!nome || !preco) return res.status(400).json({ erro: 'Nome e preço são obrigatórios.' });
+  try {
+    const r = await pool.query(
+      `INSERT INTO club_produtos (fornecedor_id,nome,descricao,categoria,preco,estoque,imagem_url,status)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,'pendente') RETURNING id`,
+      [req.fornecedor.id, nome, descricao||null, categoria||null, preco, estoque||0, imagem_url||null]
+    );
+    enviarWhatsApp(`📦 Novo produto Club aguardando aprovação: "${nome}" — ${req.fornecedor.nome_loja}`);
+    res.json({ ok: true, id: r.rows[0].id });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// PUT /api/club/fornecedor/produto/:id
+app.put('/api/club/fornecedor/produto/:id', clubFornecedorMiddleware, async (req, res) => {
+  const { nome, descricao, categoria, preco, estoque, imagem_url } = req.body;
+  try {
+    await pool.query(
+      `UPDATE club_produtos SET nome=$1,descricao=$2,categoria=$3,preco=$4,estoque=$5,imagem_url=$6,status='pendente'
+       WHERE id=$7 AND fornecedor_id=$8`,
+      [nome, descricao||null, categoria||null, preco, estoque||0, imagem_url||null, req.params.id, req.fornecedor.id]
+    );
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// DELETE /api/club/fornecedor/produto/:id
+app.delete('/api/club/fornecedor/produto/:id', clubFornecedorMiddleware, async (req, res) => {
+  try {
+    await pool.query('DELETE FROM club_produtos WHERE id=$1 AND fornecedor_id=$2', [req.params.id, req.fornecedor.id]);
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// ── PEDIDOS DO FORNECEDOR ─────────────────────────────────
+
+// GET /api/club/fornecedor/pedidos
+app.get('/api/club/fornecedor/pedidos', clubFornecedorMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(
+      `SELECT * FROM club_pedidos WHERE fornecedor_id=$1 ORDER BY criado_em DESC LIMIT 100`,
+      [req.fornecedor.id]
+    );
+    res.json(r.rows);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// PUT /api/club/fornecedor/pedido/:id/enviar — marcar como enviado
+app.put('/api/club/fornecedor/pedido/:id/enviar', clubFornecedorMiddleware, async (req, res) => {
+  const { codigo_rastreio } = req.body;
+  try {
+    const r = await pool.query(
+      `UPDATE club_pedidos SET status='enviado', enviado_em=NOW(), codigo_rastreio=$1
+       WHERE id=$2 AND fornecedor_id=$3 AND status='pago' RETURNING *`,
+      [codigo_rastreio||null, req.params.id, req.fornecedor.id]
+    );
+    if (!r.rows.length) return res.status(400).json({ erro: 'Pedido não encontrado ou já enviado.' });
+    const p = r.rows[0];
+    // Notificar cliente por email se tiver
+    if (p.email_cliente) {
+      enviarEmail(p.email_cliente,
+        `📦 Seu pedido Club #${p.id} foi enviado!`,
+        `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+          <h2 style="color:#FFB300">📦 Pedido enviado!</h2>
+          <p>Olá, ${p.nome_cliente?.split(' ')[0] || 'cliente'}!</p>
+          <p>Seu pedido <strong>#${p.id}</strong> de <strong>${p.produto_nome}</strong> foi enviado.</p>
+          ${codigo_rastreio ? `<p>Código de rastreio: <strong>${codigo_rastreio}</strong></p>` : ''}
+          <p>⏳ O pagamento será liberado para o fornecedor automaticamente em <strong>5 dias</strong> caso não haja disputa.</p>
+          <p>Se tiver algum problema, acesse <a href="${BASE_URL}/club/meus-pedidos.html">Meus Pedidos</a> e abra uma disputa.</p>
+        </div>`
+      ).catch(()=>{});
+    }
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// GET /api/club/fornecedor/saldo
+app.get('/api/club/fornecedor/saldo', clubFornecedorMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query('SELECT saldo FROM club_fornecedores WHERE id=$1', [req.fornecedor.id]);
+    res.json({ saldo: parseFloat(r.rows[0]?.saldo || 0) });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// POST /api/club/fornecedor/saque
+app.post('/api/club/fornecedor/saque', clubFornecedorMiddleware, async (req, res) => {
+  const { valor, metodo, destino } = req.body;
+  if (!valor || !metodo || !destino) return res.status(400).json({ erro: 'Informe valor, método e destino.' });
+  try {
+    const saldoR = await pool.query('SELECT saldo FROM club_fornecedores WHERE id=$1', [req.fornecedor.id]);
+    const saldo = parseFloat(saldoR.rows[0]?.saldo || 0);
+    if (parseFloat(valor) > saldo) return res.status(400).json({ erro: 'Saldo insuficiente.' });
+    await pool.query('UPDATE club_fornecedores SET saldo=saldo-$1 WHERE id=$2', [valor, req.fornecedor.id]);
+    await pool.query(
+      'INSERT INTO club_saques (fornecedor_id,valor,metodo,destino,status) VALUES ($1,$2,$3,$4,$5)',
+      [req.fornecedor.id, valor, metodo, destino, 'pendente']
+    );
+    enviarWhatsApp(`💸 Saque Club solicitado: R$ ${parseFloat(valor).toFixed(2)} — ${req.fornecedor.nome_loja} — ${metodo}: ${destino}`);
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// ── COMPRA DO CLIENTE ─────────────────────────────────────
+
+// POST /api/club/pedido — cliente cria pedido
+app.post('/api/club/pedido', rateLimit(10, 60000), async (req, res) => {
+  const { produto_id, quantidade, nome_cliente, email_cliente, telefone_cliente, endereco, pagamento, crypto_token } = req.body;
+  if (!produto_id || !nome_cliente) return res.status(400).json({ erro: 'Dados incompletos.' });
+  try {
+    // Buscar produto
+    const prodR = await pool.query(
+      `SELECT p.*, f.id as fid, f.nome_loja, f.taxa_pct FROM club_produtos p
+       JOIN club_fornecedores f ON f.id=p.fornecedor_id
+       WHERE p.id=$1 AND p.status='aprovado' AND f.status='ativo'`, [produto_id]
+    );
+    if (!prodR.rows.length) return res.status(404).json({ erro: 'Produto não disponível.' });
+    const prod = prodR.rows[0];
+    const qtd = parseInt(quantidade) || 1;
+    if (prod.estoque < qtd) return res.status(400).json({ erro: 'Estoque insuficiente.' });
+
+    const total    = parseFloat((prod.preco * qtd).toFixed(2));
+    const taxa     = parseFloat((total * prod.taxa_pct / 100).toFixed(2));
+    const valForn  = parseFloat((total - taxa).toFixed(2));
+
+    // Criar pedido
+    const pedR = await pool.query(
+      `INSERT INTO club_pedidos
+         (fornecedor_id,produto_id,nome_cliente,email_cliente,telefone_cliente,endereco,
+          produto_nome,quantidade,preco_unit,total,taxa,valor_fornecedor,pagamento,status)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'aguardando_pagamento') RETURNING id`,
+      [prod.fid, produto_id, nome_cliente, email_cliente||null, telefone_cliente||null, endereco||null,
+       prod.nome, qtd, prod.preco, total, taxa, valForn, pagamento||'pix']
+    );
+    const pedidoId = pedR.rows[0].id;
+
+    // Reduzir estoque provisoriamente
+    await pool.query('UPDATE club_produtos SET estoque=estoque-$1 WHERE id=$2', [qtd, produto_id]);
+
+    let qrcode_url = null, copia_cola = null, nowpay_address = null, nowpay_amount = null, nowpay_currency = null;
+
+    // PIX via PixGo
+    if ((pagamento === 'pix' || !pagamento) && PIXGO_API_KEY) {
+      try {
+        const pixRes = await fetch('https://pixgo.org/api/v1/payment/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-API-Key': PIXGO_API_KEY },
+          body: JSON.stringify({
+            amount: total,
+            description: `PEPMASTERS Club #${pedidoId} — ${prod.nome}`,
+            external_id: `club-${pedidoId}`,
+            webhook_url: BASE_URL + '/webhook/club/pixgo'
+          })
+        });
+        const pixData = await pixRes.json();
+        if (pixData.success && pixData.data) {
+          qrcode_url = pixData.data.qr_image_url || null;
+          copia_cola = pixData.data.qr_code || null;
+          const pixgoId = pixData.data.payment_id || pixData.data.id;
+          await pool.query('UPDATE club_pedidos SET pixgo_id=$1, qrcode_url=$2, copia_cola=$3 WHERE id=$4',
+            [pixgoId, qrcode_url, copia_cola, pedidoId]);
+        }
+      } catch(e) { console.error('[Club PIX]', e.message); }
+    }
+
+    // Cripto via NowPayments
+    if (pagamento === 'cripto' && NOWPAYMENTS_API_KEY) {
+      try {
+        const moedaMap = { 'USDTTRX':'usdttrc20','USDCPOLYGON':'usdcmatic','USDTETH':'usdterc20','USDCETH':'usdcerc20','USDCSOLANA':'usdcsol' };
+        const moeda = moedaMap[crypto_token] || 'usdttrc20';
+        let totalUsd = total;
+        try {
+          const cambio = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+          const cj = await cambio.json();
+          totalUsd = (total / (cj.rates?.BRL || 5.5)).toFixed(2);
+        } catch {}
+        const npRes = await fetch('https://api.nowpayments.io/v1/payment', {
+          method: 'POST',
+          headers: { 'x-api-key': NOWPAYMENTS_API_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ price_amount: totalUsd, price_currency: 'usd', pay_currency: moeda,
+            order_id: 'club-'+pedidoId, order_description: 'Club #'+pedidoId,
+            ipn_callback_url: BASE_URL + '/webhook/club/nowpayments' })
+        });
+        const npData = await npRes.json();
+        if (npData.pay_address) {
+          nowpay_address = npData.pay_address;
+          nowpay_amount  = npData.pay_amount;
+          nowpay_currency = npData.pay_currency;
+          await pool.query('UPDATE club_pedidos SET nowpay_id=$1,nowpay_address=$2,nowpay_amount=$3,crypto_token=$4 WHERE id=$5',
+            [npData.payment_id, npData.pay_address, npData.pay_amount, crypto_token, pedidoId]);
+        }
+      } catch(e) { console.error('[Club Cripto]', e.message); }
+    }
+
+    enviarWhatsApp(`🛒 Novo pedido Club #${pedidoId} — ${prod.nome} — ${nome_cliente} — R$ ${total.toFixed(2).replace('.',',')}`);
+    res.json({ ok: true, pedido_id: pedidoId, total, taxa, valor_fornecedor: valForn, qrcode_url, copia_cola, nowpay_address, nowpay_amount, nowpay_currency });
+  } catch(e) { console.error('[Club pedido]', e.message); res.status(500).json({ erro: e.message }); }
+});
+
+// GET /api/club/pedido/:id/status
+app.get('/api/club/pedido/:id/status', async (req, res) => {
+  try {
+    const r = await pool.query('SELECT * FROM club_pedidos WHERE id=$1', [req.params.id]);
+    if (!r.rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+    res.json(r.rows[0]);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// GET /api/club/meus-pedidos — pedidos do cliente logado
+app.get('/api/club/meus-pedidos', clubClienteMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(
+      `SELECT p.*, f.nome_loja FROM club_pedidos p
+       JOIN club_fornecedores f ON f.id=p.fornecedor_id
+       WHERE p.usuario_id=$1 ORDER BY p.criado_em DESC`,
+      [req.usuario.id]
+    );
+    res.json(r.rows);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// GET /api/club/saldo — saldo do cliente
+app.get('/api/club/saldo', clubClienteMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(
+      'SELECT COALESCE(SUM(CASE WHEN tipo=\'credito\' THEN valor WHEN tipo=\'debito\' THEN -valor ELSE 0 END),0) as saldo FROM club_saldo_clientes WHERE usuario_id=$1',
+      [req.usuario.id]
+    );
+    const hist = await pool.query('SELECT * FROM club_saldo_clientes WHERE usuario_id=$1 ORDER BY criado_em DESC LIMIT 20', [req.usuario.id]);
+    res.json({ saldo: parseFloat(r.rows[0].saldo), historico: hist.rows });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// ── DISPUTAS ──────────────────────────────────────────────
+
+// POST /api/club/disputa
+app.post('/api/club/disputa', clubClienteMiddleware, async (req, res) => {
+  const { pedido_id, motivo, descricao } = req.body;
+  if (!pedido_id || !motivo) return res.status(400).json({ erro: 'Informe o pedido e o motivo.' });
+  try {
+    const pedR = await pool.query('SELECT * FROM club_pedidos WHERE id=$1', [pedido_id]);
+    if (!pedR.rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+    const p = pedR.rows[0];
+    if (!['pago','enviado'].includes(p.status)) return res.status(400).json({ erro: 'Disputa só pode ser aberta para pedidos pagos ou enviados.' });
+
+    await pool.query('UPDATE club_pedidos SET status=\'em_disputa\' WHERE id=$1', [pedido_id]);
+    await pool.query(
+      'INSERT INTO club_disputas (pedido_id,usuario_id,motivo,descricao,status) VALUES ($1,$2,$3,$4,\'aberta\')',
+      [pedido_id, req.usuario.id, motivo, descricao||null]
+    );
+    enviarWhatsApp(`⚠️ Disputa Club aberta! Pedido #${pedido_id} — ${motivo} — Cliente: ${p.nome_cliente}`);
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// ── WEBHOOKS DO CLUB ──────────────────────────────────────
+
+// Webhook PIX Club
+app.post('/webhook/club/pixgo', async (req, res) => {
+  try {
+    const { external_id, status, amount } = req.body;
+    if (!external_id?.startsWith('club-')) return res.json({ ok: true });
+    const pedidoId = parseInt(external_id.replace('club-', ''));
+    if (status === 'paid' || status === 'completed') {
+      await pool.query('UPDATE club_pedidos SET status=\'pago\' WHERE id=$1 AND status=\'aguardando_pagamento\'', [pedidoId]);
+      const p = (await pool.query('SELECT * FROM club_pedidos WHERE id=$1', [pedidoId])).rows[0];
+      if (p?.email_cliente) {
+        enviarEmail(p.email_cliente, `✅ Pagamento confirmado — Club #${pedidoId}`,
+          `<p>Olá! Seu pagamento do pedido <strong>#${pedidoId}</strong> foi confirmado. Aguarde o envio do fornecedor.</p>`
+        ).catch(()=>{});
+      }
+      enviarWhatsApp(`✅ Club PIX confirmado! Pedido #${pedidoId} — R$ ${parseFloat(amount||0).toFixed(2)}`);
+    }
+    res.json({ ok: true });
+  } catch(e) { console.error('[Club Webhook PIX]', e.message); res.json({ ok: true }); }
+});
+
+// Webhook NowPayments Club
+app.post('/webhook/club/nowpayments', async (req, res) => {
+  try {
+    const data = req.body;
+    const orderId = data.order_id || '';
+    if (!orderId.startsWith('club-')) return res.json({ ok: true });
+    const pedidoId = parseInt(orderId.replace('club-', ''));
+    if (['finished','confirmed'].includes(data.payment_status)) {
+      await pool.query('UPDATE club_pedidos SET status=\'pago\' WHERE id=$1 AND status=\'aguardando_pagamento\'', [pedidoId]);
+      enviarWhatsApp(`✅ Club Cripto confirmado! Pedido #${pedidoId}`);
+    }
+    res.json({ ok: true });
+  } catch(e) { console.error('[Club Webhook Cripto]', e.message); res.json({ ok: true }); }
+});
+
+// ── LIBERAÇÃO AUTOMÁTICA (job) ────────────────────────────
+async function jobLiberacaoClub() {
+  try {
+    const prazo = new Date(Date.now() - CLUB_LIBERACAO_DIAS * 24 * 60 * 60 * 1000);
+    const pedidos = await pool.query(
+      `SELECT * FROM club_pedidos WHERE status='enviado' AND enviado_em < $1`, [prazo]
+    );
+    for (const p of pedidos.rows) {
+      await pool.query(`UPDATE club_pedidos SET status='concluido', liberado_em=NOW() WHERE id=$1`, [p.id]);
+      await pool.query(`UPDATE club_fornecedores SET saldo=saldo+$1, total_vendas=total_vendas+$2, pedidos_ok=pedidos_ok+1 WHERE id=$3`,
+        [p.valor_fornecedor, p.total, p.fornecedor_id]);
+      console.log(`[Club] Pedido #${p.id} liberado automaticamente — R$ ${p.valor_fornecedor}`);
+    }
+    if (pedidos.rows.length) enviarWhatsApp(`💰 Club: ${pedidos.rows.length} pedido(s) liberado(s) automaticamente.`);
+  } catch(e) { console.error('[Club job liberação]', e.message); }
+}
+
+// ── ADMIN DO CLUB ─────────────────────────────────────────
+
+// GET /api/admin/club/fornecedores
+app.get('/api/admin/club/fornecedores', adminMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT f.*, u.email, u.nome as usuario_nome,
+             COUNT(p.id) as total_produtos,
+             (SELECT COUNT(*) FROM club_pedidos cp WHERE cp.fornecedor_id=f.id) as total_pedidos
+      FROM club_fornecedores f
+      JOIN pep_usuarios u ON u.id=f.usuario_id
+      LEFT JOIN club_produtos p ON p.fornecedor_id=f.id
+      GROUP BY f.id, u.email, u.nome ORDER BY f.criado_em DESC`);
+    res.json(r.rows);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// PUT /api/admin/club/fornecedor/:id — aprovar/rejeitar/atualizar nível
+app.put('/api/admin/club/fornecedor/:id', adminMiddleware, async (req, res) => {
+  const { status, nivel, taxa_pct, mensalidade } = req.body;
+  try {
+    await pool.query(
+      `UPDATE club_fornecedores SET
+        status=COALESCE($1,status), nivel=COALESCE($2,nivel),
+        taxa_pct=COALESCE($3,taxa_pct), mensalidade=COALESCE($4,mensalidade)
+       WHERE id=$5`,
+      [status||null, nivel||null, taxa_pct||null, mensalidade||null, req.params.id]
+    );
+    // Notificar fornecedor se aprovado
+    if (status === 'ativo') {
+      const f = await pool.query('SELECT f.*, u.email, u.nome FROM club_fornecedores f JOIN pep_usuarios u ON u.id=f.usuario_id WHERE f.id=$1', [req.params.id]);
+      if (f.rows.length) {
+        enviarEmail(f.rows[0].email, '✅ Cadastro aprovado — PEPMASTERS Club',
+          `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+            <h2 style="color:#FFB300">✅ Bem-vindo ao PEPMASTERS Club!</h2>
+            <p>Olá, ${f.rows[0].nome.split(' ')[0]}!</p>
+            <p>Seu cadastro como fornecedor foi aprovado. Acesse o painel para cadastrar seus produtos:</p>
+            <a href="${BASE_URL}/club/fornecedor-painel.html" style="padding:12px 28px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px;display:inline-block;margin-top:12px">Acessar Painel →</a>
+          </div>`
+        ).catch(()=>{});
+      }
+    }
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// GET /api/admin/club/produtos — aprovar produtos
+app.get('/api/admin/club/produtos', adminMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT p.*, f.nome_loja FROM club_produtos p
+      JOIN club_fornecedores f ON f.id=p.fornecedor_id
+      ORDER BY p.criado_em DESC`);
+    res.json(r.rows);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// PUT /api/admin/club/produto/:id
+app.put('/api/admin/club/produto/:id', adminMiddleware, async (req, res) => {
+  const { status } = req.body;
+  try {
+    await pool.query('UPDATE club_produtos SET status=$1 WHERE id=$2', [status, req.params.id]);
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// GET /api/admin/club/pedidos
+app.get('/api/admin/club/pedidos', adminMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT p.*, f.nome_loja FROM club_pedidos p
+      JOIN club_fornecedores f ON f.id=p.fornecedor_id
+      ORDER BY p.criado_em DESC LIMIT 200`);
+    res.json(r.rows);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// GET /api/admin/club/disputas
+app.get('/api/admin/club/disputas', adminMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT d.*, p.produto_nome, p.total, p.valor_fornecedor, p.nome_cliente, f.nome_loja
+      FROM club_disputas d
+      JOIN club_pedidos p ON p.id=d.pedido_id
+      JOIN club_fornecedores f ON f.id=p.fornecedor_id
+      WHERE d.status='aberta' ORDER BY d.criado_em DESC`);
+    res.json(r.rows);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// PUT /api/admin/club/disputa/:id — resolver disputa
+app.put('/api/admin/club/disputa/:id', adminMiddleware, async (req, res) => {
+  const { resolucao, favoravel_cliente } = req.body; // favoravel_cliente: true = estorna, false = libera fornecedor
+  try {
+    const d = (await pool.query('SELECT * FROM club_disputas WHERE id=$1', [req.params.id])).rows[0];
+    if (!d) return res.status(404).json({ erro: 'Disputa não encontrada.' });
+    const p = (await pool.query('SELECT * FROM club_pedidos WHERE id=$1', [d.pedido_id])).rows[0];
+
+    if (favoravel_cliente) {
+      // Estornar — creditar saldo do cliente
+      await pool.query('UPDATE club_pedidos SET status=\'estornado\' WHERE id=$1', [p.id]);
+      if (p.usuario_id) {
+        await pool.query(
+          'INSERT INTO club_saldo_clientes (usuario_id,tipo,valor,descricao,pedido_id) VALUES ($1,\'credito\',$2,$3,$4)',
+          [p.usuario_id, p.total, `Estorno pedido #${p.id}`, p.id]
+        );
+      }
+      // Devolver estoque
+      await pool.query('UPDATE club_produtos SET estoque=estoque+$1 WHERE id=$2', [p.quantidade, p.produto_id]);
+    } else {
+      // Liberar para fornecedor
+      await pool.query('UPDATE club_pedidos SET status=\'concluido\', liberado_em=NOW() WHERE id=$1', [p.id]);
+      await pool.query('UPDATE club_fornecedores SET saldo=saldo+$1, total_vendas=total_vendas+$2, pedidos_ok=pedidos_ok+1 WHERE id=$3',
+        [p.valor_fornecedor, p.total, p.fornecedor_id]);
+    }
+
+    await pool.query(
+      'UPDATE club_disputas SET status=\'resolvida\', resolucao=$1, resolvido_por=\'admin\', resolvido_em=NOW() WHERE id=$2',
+      [resolucao||null, req.params.id]
+    );
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// GET /api/admin/club/saques
+app.get('/api/admin/club/saques', adminMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT s.*, f.nome_loja FROM club_saques s
+      JOIN club_fornecedores f ON f.id=s.fornecedor_id
+      WHERE s.status='pendente' ORDER BY s.criado_em DESC`);
+    res.json(r.rows);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// PUT /api/admin/club/saque/:id
+app.put('/api/admin/club/saque/:id', adminMiddleware, async (req, res) => {
+  const { status } = req.body;
+  try {
+    await pool.query('UPDATE club_saques SET status=$1, processado_em=NOW() WHERE id=$2', [status, req.params.id]);
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
 // ─────────────────────────────────────────────
 //  START
 // ─────────────────────────────────────────────
@@ -3329,6 +3930,9 @@ app.listen(PORT, () => {
       console.log('[PEPMASTERS] Banco inicializado com sucesso.');
       setTimeout(jobDiario, 5000);
       setInterval(jobDiario, 24 * 60 * 60 * 1000);
+      // Job de liberação do Club — roda a cada hora
+      setInterval(jobLiberacaoClub, 60 * 60 * 1000);
+      setTimeout(jobLiberacaoClub, 10000);
     } catch (err) {
       console.error('[PEPMASTERS] Falha ao inicializar banco (tentativa ' + tentativa + '):', err.message);
       if (tentativa < 5) {
