@@ -195,7 +195,9 @@ async function initDB() {
       'desconto NUMERIC(10,2) DEFAULT 0', 'total NUMERIC(10,2)',
       'pagamento TEXT', 'cupom TEXT', 'status TEXT DEFAULT \'pix_pending\'',
       'pixgo_id TEXT', 'codigo_rastreio TEXT',
-      'crypto_valor NUMERIC(18,6) DEFAULT 0', 'crypto_token TEXT'
+      'crypto_valor NUMERIC(18,6) DEFAULT 0', 'crypto_token TEXT',
+      'observacao TEXT', 'quantidade INT DEFAULT 1',
+      'endereco TEXT'
     ];
     for (const col of pedidosCols) {
       const colName = col.split(' ')[0];
@@ -2698,8 +2700,8 @@ app.post('/api/admin/pedido-manual', adminMiddleware, async (req, res) => {
     });
 
   } catch (err) {
-    console.error('[Admin pedido manual]', err.message);
-    res.status(500).json({ erro: 'Erro ao criar pedido.' });
+    console.error('[Admin pedido manual]', err.message, err.stack?.split('\n')[1]);
+    res.status(500).json({ erro: 'Erro ao criar pedido: ' + err.message });
   }
 });
 
