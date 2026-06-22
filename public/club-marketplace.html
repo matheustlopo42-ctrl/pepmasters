@@ -156,9 +156,7 @@
         <div class="auth-section">
           <div class="auth-section-label" data-i18n="club.login.client">Cliente</div>
           <div id="clienteArea">
-            <a href="club-meus-pedidos.html" class="auth-item" data-i18n="club.myorders">Meus Pedidos</a>
-            <a href="login.html?redirect=club-meus-pedidos.html" class="auth-item" data-i18n="nav.login">Fazer Login</a>
-            <a href="cadastro.html" class="auth-item" data-i18n="nav.register">Criar Conta</a>
+            <!-- Preenchido dinamicamente pelo JS -->
           </div>
         </div>
         <!-- Seção fornecedor -->
@@ -297,15 +295,18 @@ document.addEventListener('click', e => {
 (function() {
   const token = localStorage.getItem('pep_token');
   const nome  = localStorage.getItem('pep_nome');
+  const clienteArea = document.getElementById('clienteArea');
+  if (!clienteArea) return;
   if (token && nome) {
-    const clienteArea = document.getElementById('clienteArea');
-    if (clienteArea) {
-      clienteArea.innerHTML = `
-        <span class="auth-item active-user">👋 ${nome.split(' ')[0]}</span>
-        <a href="club-meus-pedidos.html" class="auth-item" data-i18n="club.myorders">Meus Pedidos</a>
-        <button class="auth-item" onclick="localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');location.reload()" data-i18n="club.logout">Sair</button>`;
-    }
+    clienteArea.innerHTML = `
+      <span class="auth-item active-user">👋 ${nome.split(' ')[0]}</span>
+      <a href="club-meus-pedidos.html" class="auth-item">Meus Pedidos</a>
+      <button class="auth-item" onclick="localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');location.reload()">Sair</button>`;
     document.getElementById('authBtnLabel').textContent = nome.split(' ')[0];
+  } else {
+    clienteArea.innerHTML = `
+      <a href="login.html?redirect=club-marketplace.html" class="auth-item">Fazer Login</a>
+      <a href="cadastro.html" class="auth-item">Criar Conta</a>`;
   }
 })();
 
