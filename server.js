@@ -108,7 +108,7 @@ const PAYPAL_CLIENT_ID     = process.env.PAYPAL_CLIENT_ID     || '';
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET || '';
 const PAYPAL_BASE_URL      = 'https://api-m.paypal.com';
 const EMAIL_PASS          = process.env.EMAIL_PASS          || 'pplezzjcvzyakzdc';
-const CRYPTO_WALLET       = process.env.CRYPTO_WALLET       || '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
+const CRYPTO_WALLET       = process.env.CRYPTO_WALLET       || '0xA4aC98643142878cFa37E1550f512E785aCCd9F4';
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || '';  // opcional, aumenta rate limit
 const WA_PHONE            = process.env.WA_PHONE            || '';   // preencher no Render
 const WA_APIKEY           = process.env.WA_APIKEY           || '';   // preencher no Render
@@ -888,12 +888,20 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     enviarWhatsApp('Novo pedido PEPMASTERS #' + pedidoId + '\nCliente: ' + nome + '\nItens: ' + itensTexto + '\nTotal: R$ ' + total.toFixed(2).replace('.',',') + '\nPag: ' + pagamento.toUpperCase());
 
     if (EMAIL_DESTINO) {
-      const isTron = crypto_token === 'TRON';
-      const rede = isTron ? 'Tron TRC-20' : 'Polygon (MATIC)';
-      const carteira = isTron ? 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB' : '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
-      const explorer = isTron
-        ? 'https://tronscan.org/#/address/TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB'
-        : 'https://polygonscan.com/address/0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
+      // Wallets por rede
+      const WALLETS = {
+        'TRON':        { addr: 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB',           rede: 'Tron TRC-20',    explorer: 'https://tronscan.org/#/address/TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB',           moeda: 'USDT' },
+        'USDTTRX':     { addr: 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB',           rede: 'Tron TRC-20',    explorer: 'https://tronscan.org/#/address/TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB',           moeda: 'USDT' },
+        'USDTETH':     { addr: '0xA4aC98643142878cFa37E1550f512E785aCCd9F4',    rede: 'Ethereum (ERC-20)', explorer: 'https://etherscan.io/address/0xA4aC98643142878cFa37E1550f512E785aCCd9F4',      moeda: 'USDT' },
+        'USDCPOLYGON': { addr: '0xA4aC98643142878cFa37E1550f512E785aCCd9F4',    rede: 'Polygon (MATIC)', explorer: 'https://polygonscan.com/address/0xA4aC98643142878cFa37E1550f512E785aCCd9F4',   moeda: 'USDC' },
+        'USDCETH':     { addr: '0xA4aC98643142878cFa37E1550f512E785aCCd9F4',    rede: 'Ethereum (ERC-20)', explorer: 'https://etherscan.io/address/0xA4aC98643142878cFa37E1550f512E785aCCd9F4',   moeda: 'USDC' },
+        'USDCSOLANA':  { addr: 'Fm3P6yep2jzVWPjK4tzYZ7sGCr7eP1MCMrf2azbqqAuA', rede: 'Solana',          explorer: 'https://solscan.io/account/Fm3P6yep2jzVWPjK4tzYZ7sGCr7eP1MCMrf2azbqqAuA',    moeda: 'USDC' },
+      };
+      const walletInfo = WALLETS[crypto_token] || WALLETS['USDCPOLYGON'];
+      const isTron = crypto_token === 'TRON' || crypto_token === 'USDTTRX';
+      const rede = walletInfo.rede;
+      const carteira = walletInfo.addr;
+      const explorer = walletInfo.explorer;
       const cryptoInfo = (pagamento === 'cripto' && crypto_valor)
         ? `<br><br>💰 <b>Cripto esperado:</b> ${crypto_valor} ${isTron ? 'USDT' : (crypto_token || 'USDT')}<br>` +
           `🌐 <b>Rede:</b> ${rede}<br>` +
@@ -927,7 +935,7 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       if (NOWPAYMENTS_API_KEY) {
         try {
           // Mapear token do frontend para moeda NOWPayments
-          const moedaMap = { 'USDTPOLYGON':'usdtmatic', 'USDCPOLYGON':'usdcmatic', 'USDTTRX':'usdttrc20', 'USDT':'usdtmatic', 'USDC':'usdcmatic', 'TRON':'usdttrc20' };
+          const moedaMap = { 'USDTPOLYGON':'usdtmatic', 'USDCPOLYGON':'usdcmatic', 'USDTTRX':'usdttrc20', 'TRON':'usdttrc20', 'USDT':'usdtmatic', 'USDC':'usdcmatic', 'USDTETH':'usdterc20', 'USDCETH':'usdcerc20', 'USDCSOLANA':'usdcsol' };
           const moeda = moedaMap[crypto_token] || 'usdtmatic';
           // Converter BRL para USD
           let totalUsd = total;
@@ -2250,7 +2258,7 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
             valorUsd = (valor / brlRate).toFixed(2);
           } catch { valorUsd = (valor / 5.5).toFixed(2); }
 
-          const moedaMap = { 'USDTPOLYGON':'usdtmatic', 'USDCPOLYGON':'usdcmatic', 'USDTTRX':'usdttrc20', 'TRON':'usdttrc20' };
+          const moedaMap = { 'USDTPOLYGON':'usdtmatic', 'USDCPOLYGON':'usdcmatic', 'USDTTRX':'usdttrc20', 'TRON':'usdttrc20', 'USDTETH':'usdterc20', 'USDCETH':'usdcerc20', 'USDCSOLANA':'usdcsol' };
           const moedaMbr = moedaMap[crypto_token] || 'usdtmatic';
 
           const npRes = await fetch('https://api.nowpayments.io/v1/payment', {
@@ -2292,8 +2300,17 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
       const uDados = await pool.query(`SELECT nome, email FROM pep_usuarios WHERE id=$1`, [usuario_id]);
       const uNome = uDados.rows[0]?.nome || '—';
       const uEmail = uDados.rows[0]?.email || '—';
-      const isTronMbr = pagamento === 'cripto' && cryptoValor > 0;
-      const carteiraMbr = 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB';
+      const WALLETS_MBR = {
+        'TRON':        { addr: 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB',           rede: 'Tron TRC-20',      moeda: 'USDT' },
+        'USDTTRX':     { addr: 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB',           rede: 'Tron TRC-20',      moeda: 'USDT' },
+        'USDTETH':     { addr: '0xA4aC98643142878cFa37E1550f512E785aCCd9F4',    rede: 'Ethereum ERC-20',  moeda: 'USDT' },
+        'USDCPOLYGON': { addr: '0xA4aC98643142878cFa37E1550f512E785aCCd9F4',    rede: 'Polygon (MATIC)',  moeda: 'USDC' },
+        'USDCETH':     { addr: '0xA4aC98643142878cFa37E1550f512E785aCCd9F4',    rede: 'Ethereum ERC-20',  moeda: 'USDC' },
+        'USDCSOLANA':  { addr: 'Fm3P6yep2jzVWPjK4tzYZ7sGCr7eP1MCMrf2azbqqAuA', rede: 'Solana',           moeda: 'USDC' },
+      };
+      const wMbr = WALLETS_MBR[crypto_token] || WALLETS_MBR['USDTTRX'];
+      const isCriptoMbr = pagamento === 'cripto' && cryptoValor > 0;
+      const carteiraMbr = wMbr.addr;
       enviarEmail(EMAIL_DESTINO,
         '🆕 Nova assinatura Members — ' + (plano || 'pago') + ' — PEPMASTERS',
         '<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#1C0A00;color:#fff;border-radius:12px">' +
@@ -2303,7 +2320,7 @@ app.post('/api/membros/assinar', authMiddleware, async (req, res) => {
         '<b>Plano:</b> ' + (plano || '—') + '<br>' +
         '<b>Valor:</b> R$ ' + parseFloat(valor||0).toFixed(2).replace('.',',') + '<br>' +
         '<b>Pagamento:</b> ' + pagamento.toUpperCase() +
-        (isTronMbr ? '<br><br>💰 <b>Cripto esperado:</b> ' + cryptoValor + ' USDT<br>🌐 <b>Rede:</b> Tron TRC-20<br>👛 <b>Carteira:</b> <code>' + carteiraMbr + '</code><br>🔍 <a href="https://tronscan.org/#/address/' + carteiraMbr + '" style="color:#FFB300">Verificar no Tronscan →</a>' : '') +
+        (isCriptoMbr ? '<br><br>💰 <b>Cripto esperado:</b> ' + cryptoValor + ' ' + wMbr.moeda + '<br>🌐 <b>Rede:</b> ' + wMbr.rede + '<br>👛 <b>Carteira:</b> <code>' + carteiraMbr + '</code>' : '') +
         '</div>'
       ).catch(()=>{});
     }
@@ -2563,6 +2580,142 @@ app.get('/api/admin/db-uso', adminMiddleware, async (req, res) => {
     const pct = Math.round((bytes / limite) * 100);
     res.json({ ...r.rows[0], pct, limite_gb: '1GB', usado: r.rows[0].tamanho });
   } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// ─────────────────────────────────────────────────────────────
+// POST /api/admin/pedido-manual — Admin cria pedido e gera QR(s) PIX
+// ─────────────────────────────────────────────────────────────
+app.post('/api/admin/pedido-manual', adminMiddleware, async (req, res) => {
+  const {
+    nome, email, telefone, cpf, endereco,
+    produto_nome, total, observacao,
+    usuario_id // opcional: vínculo com conta cadastrada
+  } = req.body;
+
+  if (!nome || !total || !produto_nome) {
+    return res.status(400).json({ erro: 'Nome, produto e total são obrigatórios.' });
+  }
+
+  const valorTotal = parseFloat(total);
+  if (isNaN(valorTotal) || valorTotal <= 0) {
+    return res.status(400).json({ erro: 'Valor inválido.' });
+  }
+  if (valorTotal > 6000) {
+    return res.status(400).json({ erro: 'Valor máximo por CPF é R$ 6.000 (3 QR codes de R$ 2.000).' });
+  }
+
+  // Calcular número de QR codes necessários (limite R$2.000 por QR)
+  const numQrs = Math.ceil(valorTotal / 2000);
+  const splitValores = calcularSplitPix(valorTotal, numQrs);
+
+  try {
+    // Criar pedido no banco
+    const pedRow = await pool.query(
+      `INSERT INTO pep_pedidos
+         (nome, email, telefone, cpf, endereco, produto_nome, produto_id, quantidade,
+          total, pagamento, status, observacao, usuario_id, criado_em)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'pix','pix_pending',$10,$11,NOW())
+       RETURNING id`,
+      [
+        nome, email || null, telefone || null, cpf || null, endereco || null,
+        produto_nome, 'manual', 1,
+        valorTotal, observacao || null, usuario_id || null
+      ]
+    );
+    const pedidoId = pedRow.rows[0].id;
+
+    // Gerar QR codes no PixGo
+    const qrs = [];
+    let pixgoIdComposite = null;
+
+    if (PIXGO_API_KEY) {
+      const ids = [];
+      for (let i = 0; i < numQrs; i++) {
+        const valorParte = splitValores[i];
+        const externalId = `pep-${pedidoId}-adm-${i + 1}`;
+        try {
+          const pixRes = await fetch('https://pixgo.org/api/v1/payment/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-API-Key': PIXGO_API_KEY },
+            body: JSON.stringify({
+              amount:      valorParte,
+              description: `PEPMASTERS #${pedidoId}${numQrs > 1 ? ` (${i + 1}/${numQrs})` : ''} — ${produto_nome}`,
+              external_id: externalId,
+              webhook_url: BASE_URL + '/webhook/pixgo'
+            })
+          });
+          const pixData = await pixRes.json();
+          if (pixData.success && pixData.data) {
+            qrs.push({
+              parte:        i + 1,
+              valor:        valorParte,
+              qrcode_url:   pixData.data.qr_image_url || null,
+              copia_cola:   pixData.data.qr_code      || null,
+              payment_id:   pixData.data.payment_id || pixData.data.id || null,
+            });
+            ids.push(pixData.data.payment_id || pixData.data.id || externalId);
+          } else {
+            qrs.push({ parte: i + 1, valor: valorParte, erro: pixData.message || 'Erro PixGo' });
+          }
+        } catch (e) {
+          qrs.push({ parte: i + 1, valor: valorParte, erro: e.message });
+        }
+      }
+      // Salvar pixgo_ids no pedido
+      pixgoIdComposite = ids.join(',');
+      await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixgoIdComposite, pedidoId]);
+    } else {
+      // PixGo não configurado — retornar dados sem QR
+      for (let i = 0; i < numQrs; i++) {
+        qrs.push({ parte: i + 1, valor: splitValores[i], qrcode_url: null, copia_cola: null, erro: 'PIXGO_API_KEY não configurado' });
+      }
+    }
+
+    // Notificar admin por WhatsApp
+    enviarWhatsApp(
+      `📋 Pedido manual #${pedidoId}\nCliente: ${nome}${telefone ? ' | ' + telefone : ''}\nProduto: ${produto_nome}\nTotal: R$ ${valorTotal.toFixed(2).replace('.', ',')}\nQR codes: ${numQrs}`
+    );
+
+    console.log(`[Admin] Pedido manual #${pedidoId} criado — R$ ${valorTotal} — ${numQrs} QR(s)`);
+
+    res.json({
+      ok: true,
+      pedido_id: pedidoId,
+      total: valorTotal,
+      num_qrs: numQrs,
+      qrs,
+      whatsapp_link: telefone
+        ? `https://wa.me/${telefone.replace(/\D/g,'')}?text=${encodeURIComponent(
+            `Olá ${nome.split(' ')[0]}! Seguem os dados do seu pedido PEPMASTERS #${pedidoId}.\n\n` +
+            `*Produto:* ${produto_nome}\n*Total: R$ ${valorTotal.toFixed(2).replace('.', ',')}*\n\n` +
+            (numQrs > 1
+              ? `⚠️ O valor foi dividido em ${numQrs} PIX:\n` +
+                splitValores.map((v, i) => `• PIX ${i+1}: R$ ${v.toFixed(2).replace('.', ',')}`).join('\n') +
+                `\n\nEnviarei os QR codes a seguir. Pague *todos* para confirmar o pedido! ✅`
+              : `Escaneie o QR code para pagar via PIX e confirmar seu pedido! ✅`)
+          )}`
+        : null
+    });
+
+  } catch (err) {
+    console.error('[Admin pedido manual]', err.message);
+    res.status(500).json({ erro: 'Erro ao criar pedido.' });
+  }
+});
+
+// GET /api/admin/buscar-usuario — busca cliente cadastrado por nome/email/cpf
+app.get('/api/admin/buscar-usuario', adminMiddleware, async (req, res) => {
+  const q = (req.query.q || '').trim();
+  if (q.length < 3) return res.json([]);
+  try {
+    const r = await pool.query(
+      `SELECT id, nome, email, cpf, telefone FROM pep_usuarios
+       WHERE nome ILIKE $1 OR email ILIKE $1 OR cpf ILIKE $1
+       LIMIT 10`,
+      [`%${q}%`]
+    );
+    res.json(r.rows);
+  } catch { res.json([]); }
 });
 
 // Deletar pedidos (admin)
