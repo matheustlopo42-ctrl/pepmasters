@@ -267,7 +267,7 @@ async function carregar() {
 // ── Fornecedores ──────────────────────────────────────────
 function renderFornecedores() {
   const el = document.getElementById('fornecedoresList');
-  if (!todosForns.length) { el.innerHTML = '<p style="color:var(--muted);font-size:.85rem;padding:8px">Nenhum fornecedor ainda.</p>'; return; }
+  if (!todosForns.length) { el.innerHTML = '<p style="color:var(--muted);font-size:.85rem;padding:8px">Nenhum fornecedor ativo ainda. <a href="club-fornecedor-cadastro.html" style="color:var(--orange)">Seja o primeiro →</a></p>'; return; }
   el.innerHTML = todosForns.map(f => `
     <div class="fornecedor-card" onclick="filtrarFornecedor(${f.id})" id="fc-${f.id}">
       <div class="forn-avatar">${f.nome_loja[0].toUpperCase()}</div>
@@ -314,7 +314,24 @@ function renderProdutos() {
   const grid = document.getElementById('produtosGrid');
 
   if (!lista.length) {
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><p>Nenhum produto encontrado.</p></div>';
+    const buscando = document.getElementById('busca').value || categoriaAtiva || fornFiltro;
+    grid.innerHTML = buscando
+      ? `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><p>Nenhum produto encontrado para esse filtro.</p></div>`
+      : `<div style="grid-column:1/-1;text-align:center;padding:60px 24px;max-width:600px;margin:0 auto">
+          <div style="font-size:4rem;margin-bottom:16px">🧬</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;color:var(--dark);margin-bottom:10px">Em breve por aqui!</div>
+          <p style="color:var(--muted);font-size:.9rem;line-height:1.7;margin-bottom:24px">
+            O PEPMASTERS Club está sendo lançado. Em breve fornecedores verificados estarão listando seus produtos aqui com pagamento em custódia e total segurança.
+          </p>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+            <a href="club-fornecedor-cadastro.html" style="padding:12px 24px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border-radius:10px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase">
+              🏪 Seja um Fornecedor
+            </a>
+            <a href="index.html" style="padding:12px 24px;border:2px solid var(--border);color:var(--mid);border-radius:10px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase">
+              ← Ver Loja Principal
+            </a>
+          </div>
+        </div>`;
     return;
   }
 
