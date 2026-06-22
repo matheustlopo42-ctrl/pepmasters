@@ -155,6 +155,26 @@
   </div>
 </div>
 
+<!-- MODAL AVALIAÇÃO -->
+<div class="modal-overlay" id="modalAvaliacao">
+  <div class="modal-box">
+    <div class="modal-title">⭐ Avaliar Fornecedor</div>
+    <div class="modal-sub" id="av-produto"></div>
+    <label>Sua nota</label>
+    <div id="estrelas" style="display:flex;gap:8px;margin:8px 0 16px">
+      <span class="estrela" data-v="1" onclick="setNota(1)" style="font-size:2rem;cursor:pointer;opacity:.3">★</span>
+      <span class="estrela" data-v="2" onclick="setNota(2)" style="font-size:2rem;cursor:pointer;opacity:.3">★</span>
+      <span class="estrela" data-v="3" onclick="setNota(3)" style="font-size:2rem;cursor:pointer;opacity:.3">★</span>
+      <span class="estrela" data-v="4" onclick="setNota(4)" style="font-size:2rem;cursor:pointer;opacity:.3">★</span>
+      <span class="estrela" data-v="5" onclick="setNota(5)" style="font-size:2rem;cursor:pointer;opacity:.3">★</span>
+    </div>
+    <label>Comentário (opcional)</label>
+    <textarea id="av-comentario" placeholder="Conte sua experiência com o fornecedor..."></textarea>
+    <button class="btn-abrir-disputa" style="background:linear-gradient(135deg,#B8860B,#FFB300);margin-top:14px" onclick="enviarAvaliacao()">Enviar Avaliação</button>
+    <button class="btn-cancelar" onclick="fecharAvaliacao()">Cancelar</button>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <footer>© 2025 PEPMASTERS Club — <a href="club-marketplace.html">Marketplace</a></footer>
@@ -253,6 +273,8 @@ function renderPedido(p) {
 
     <div class="pedido-footer">
       ${podeDisputa ? `<button class="btn-sm btn-disputa" onclick="abrirDisputa(${p.id})">⚠️ Abrir Disputa</button>` : ''}
+      ${!p.avaliado && ['enviado','concluido'].includes(p.status) ? `<button class="btn-sm" style="background:#fef3c7;color:#92400e" onclick="abrirAvaliacao(${p.id}, '${p.produto_nome.replace(/'/g,"\\'")}')">⭐ Avaliar</button>` : ''}
+      ${p.avaliado ? '<span style="font-size:.78rem;color:var(--muted)">⭐ Avaliado</span>' : ''}
       ${p.status === 'concluido' ? '<span style="font-size:.8rem;color:var(--muted)">✅ Pedido concluído. Obrigado!</span>' : ''}
       ${p.status === 'em_disputa' ? '<span style="font-size:.8rem;color:#991b1b">⚠️ Disputa em análise pela equipe Pepmasters.</span>' : ''}
       ${p.status === 'estornado' ? '<span style="font-size:.8rem;color:#6b7280">💰 Valor estornado para seu crédito.</span>' : ''}
@@ -305,6 +327,42 @@ function showToast(msg, tipo) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'show'+(tipo==='error'?' error':tipo==='success'?' success':'');
   setTimeout(()=>t.className='', 3500);
+}
+
+// ── Avaliação ─────────────────────────────────────────────
+let pedidoAvaliacaoId = null;
+let notaAtual = 0;
+
+function abrirAvaliacao(id, produto) {
+  pedidoAvaliacaoId = id;
+  notaAtual = 0;
+  document.getElementById('av-produto').textContent = produto;
+  document.getElementById('av-comentario').value = '';
+  setNota(0);
+  document.getElementById('modalAvaliacao').classList.add('open');
+}
+function fecharAvaliacao() { document.getElementById('modalAvaliacao').classList.remove('open'); }
+
+function setNota(n) {
+  notaAtual = n;
+  document.querySelectorAll('.estrela').forEach(e => {
+    e.style.opacity = parseInt(e.getAttribute('data-v')) <= n ? '1' : '.3';
+    e.style.color   = parseInt(e.getAttribute('data-v')) <= n ? '#FFB300' : '#999';
+  });
+}
+
+async function enviarAvaliacao() {
+  if (!notaAtual) { showToast('Selecione uma nota.','error'); return; }
+  try {
+    const r = await fetch('/api/club/avaliacao', {
+      method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer '+authToken},
+      body: JSON.stringify({ pedido_id: pedidoAvaliacaoId, nota: notaAtual, comentario: document.getElementById('av-comentario').value.trim()||null })
+    });
+    const d = await r.json();
+    if (!r.ok) { showToast(d.erro||'Erro.','error'); return; }
+    showToast('⭐ Avaliação enviada! Obrigado!','success');
+    fecharAvaliacao(); carregarPedidos();
+  } catch { showToast('Erro de conexão.','error'); }
 }
 document.addEventListener('click', e => {
   if (e.target === document.getElementById('modalDisputa')) fecharDisputa();

@@ -145,6 +145,7 @@
     <a href="#" onclick="setTab('produtos',this)">📦 Meus Produtos</a>
     <a href="#" onclick="setTab('pedidos',this)">🛒 Pedidos</a>
     <a href="#" onclick="setTab('saldo',this)">💰 Saldo</a>
+    <a href="#" onclick="setTab('avaliacoes',this)">⭐ Avaliações</a>
     <a href="#" onclick="setTab('perfil',this)">⚙️ Perfil</a>
     <div class="sidebar-footer">
       <a href="club-marketplace.html">← Ver Marketplace</a>
@@ -225,6 +226,19 @@
         </div>
         <button class="btn btn-primary" onclick="solicitarSaque()">Solicitar Saque</button>
       </div>
+    </div>
+
+    <!-- AVALIAÇÕES -->
+    <div id="tab-avaliacoes" class="tab-content">
+      <div class="page-header"><h1>⭐ Avaliações</h1></div>
+      <div class="card" style="margin-bottom:16px" id="notaResumo">
+        <div style="text-align:center;padding:16px 0">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:3rem;color:var(--amber)" id="notaMedia">—</div>
+          <div id="notaStars" style="font-size:1.5rem;color:#FFB300;margin:4px 0"></div>
+          <div style="font-size:.8rem;color:rgba(255,255,255,.4)" id="notaTotal"></div>
+        </div>
+      </div>
+      <div id="avaliacoesLista"><div class="empty">Carregando...</div></div>
     </div>
 
     <!-- PERFIL -->
@@ -354,6 +368,7 @@ function setTab(tab, el) {
   if (tab==='produtos') carregarProdutos();
   if (tab==='pedidos')  carregarPedidos();
   if (tab==='saldo')    carregarSaldo();
+  if (tab==='avaliacoes') carregarAvaliacoes();
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────
@@ -522,6 +537,59 @@ async function solicitarSaque() {
     if (!r.ok) { showToast(d.erro||'Erro.','error'); return; }
     showToast('Saque solicitado! Processamos em até 24h.','success');
     carregarSaldo();
+  } catch { showToast('Erro de conexão.','error'); }
+}
+
+// ── AVALIAÇÕES ────────────────────────────────────────────
+function renderStars(n) {
+  const num = Math.round(parseFloat(n)||0);
+  return '★'.repeat(num) + '☆'.repeat(5-num);
+}
+
+async function carregarAvaliacoes() {
+  const lista = document.getElementById('avaliacoesLista');
+  try {
+    const r = await fetch('/api/club/fornecedor/avaliacoes', { headers:{ Authorization:'Bearer '+authToken } });
+    const data = await r.json();
+    // Resumo
+    if (data.length) {
+      const media = (data.reduce((s,a)=>s+a.nota,0)/data.length).toFixed(1);
+      document.getElementById('notaMedia').textContent = media;
+      document.getElementById('notaStars').textContent = renderStars(media);
+      document.getElementById('notaTotal').textContent = data.length + ' avaliação(ões)';
+    }
+    if (!data.length) { lista.innerHTML='<div class="empty">Nenhuma avaliação ainda.</div>'; return; }
+    lista.innerHTML = data.map(a=>`
+      <div class="card" style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div>
+            <span style="color:#FFB300;font-size:1.1rem">${renderStars(a.nota)}</span>
+            <span style="font-size:.78rem;color:rgba(255,255,255,.4);margin-left:8px">${a.cliente_nome?.split(' ')[0]||'Cliente'} · ${a.produto_nome||''}</span>
+          </div>
+          <span style="font-size:.72rem;color:rgba(255,255,255,.3)">${new Date(a.criado_em).toLocaleDateString('pt-BR')}</span>
+        </div>
+        ${a.comentario ? `<div style="font-size:.85rem;color:rgba(255,255,255,.6);margin-bottom:8px">"${a.comentario}"</div>` : ''}
+        ${a.resposta
+          ? `<div style="font-size:.8rem;color:rgba(255,179,0,.7);padding:8px;background:rgba(255,179,0,.06);border-radius:7px">Sua resposta: "${a.resposta}"</div>`
+          : `<div style="display:flex;gap:8px;margin-top:8px">
+               <input type="text" id="resp-${a.id}" placeholder="Responder esta avaliação..." style="flex:1;padding:7px 10px;font-size:.82rem"/>
+               <button class="btn btn-secondary" style="padding:7px 14px;font-size:.78rem" onclick="responderAvaliacao(${a.id})">Responder</button>
+             </div>`
+        }
+      </div>`).join('');
+  } catch { lista.innerHTML='<div class="empty">Erro ao carregar.</div>'; }
+}
+
+async function responderAvaliacao(id) {
+  const resposta = document.getElementById('resp-'+id)?.value.trim();
+  if (!resposta) { showToast('Escreva uma resposta.','error'); return; }
+  try {
+    const r = await fetch(`/api/club/fornecedor/avaliacao/${id}/responder`, {
+      method:'PUT', headers:{'Content-Type':'application/json', Authorization:'Bearer '+authToken},
+      body: JSON.stringify({ resposta })
+    });
+    if (r.ok) { showToast('Resposta enviada!','success'); carregarAvaliacoes(); }
+    else showToast('Erro.','error');
   } catch { showToast('Erro de conexão.','error'); }
 }
 

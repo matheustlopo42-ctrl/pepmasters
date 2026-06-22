@@ -50,6 +50,8 @@
     .forn-nivel{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
     .nivel-bronze{color:#cd7f32}.nivel-prata{color:#888}.nivel-ouro{color:#B8860B}.nivel-diamante{color:#4a9eff}
     .forn-stats{font-size:.72rem;color:var(--muted);margin-top:4px}
+    .nota-stars{color:#FFB300;font-size:.85rem;letter-spacing:1px}
+    .nota-num{font-size:.72rem;color:var(--muted);margin-left:4px}
 
     /* PRODUTOS GRID */
     .produtos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
@@ -212,6 +214,11 @@
       🔒 <strong>Pagamento protegido por custódia.</strong> O valor fica retido na Pepmasters e só é liberado para o fornecedor após você receber o produto (ou automaticamente em 5 dias sem disputa). Taxa: 5%.
     </div>
 
+    <div id="modalAvaliacoes" style="margin-top:14px;border-top:1px solid #FFE5B0;padding-top:14px;display:none">
+      <div style="font-size:.78rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">⭐ Avaliações</div>
+      <div id="avaliacoesLista"></div>
+    </div>
+
     <button class="btn-finalizar" id="btnFinalizar" onclick="finalizarCompra()">Confirmar Pedido</button>
   </div>
 </div>
@@ -266,6 +273,7 @@ function renderFornecedores() {
       <div class="forn-avatar">${f.nome_loja[0].toUpperCase()}</div>
       <div class="forn-nome">${f.nome_loja}</div>
       <div class="forn-nivel nivel-${f.nivel}">${nivelIcons[f.nivel]||'🥉'} ${f.nivel}</div>
+      ${parseFloat(f.nota_media||0) > 0 ? `<div><span class="nota-stars">${renderStars(f.nota_media)}</span><span class="nota-num">${parseFloat(f.nota_media).toFixed(1)} (${f.total_avaliacoes})</span></div>` : ''}
       <div class="forn-stats">${f.pedidos_ok} entregas · ${f.disputas} disputas</div>
     </div>`).join('');
 }
@@ -350,8 +358,14 @@ function abrirProduto(id) {
     <div class="modal-forn-avatar">${forn?.nome_loja[0]?.toUpperCase()||'?'}</div>
     <div class="modal-forn-info">
       <div class="modal-forn-nome">${nivelIcons[forn?.nivel||'bronze']} ${forn?.nome_loja||'—'}</div>
-      <div class="modal-forn-stats">${forn?.pedidos_ok||0} entregas · ${forn?.disputas||0} disputas</div>
+      <div class="modal-forn-stats">
+        ${parseFloat(forn?.nota_media||0) > 0 ? `<span class="nota-stars">${renderStars(forn.nota_media)}</span> ${parseFloat(forn.nota_media).toFixed(1)} · ` : ''}
+        ${forn?.pedidos_ok||0} entregas · ${forn?.disputas||0} disputas
+      </div>
     </div>`;
+
+  // Carregar avaliações
+  carregarAvaliacoesModal(p.fornecedor_id);
   document.getElementById('modalNome').textContent    = p.nome;
   document.getElementById('modalDesc').textContent    = p.descricao || '';
   document.getElementById('modalPreco').textContent   = 'R$ ' + parseFloat(p.preco).toFixed(2).replace('.',',');
@@ -383,6 +397,32 @@ function atualizarTotal() {
 function toggleCripto() {
   const pag = document.getElementById('m-pagamento').value;
   document.getElementById('criptoOpts').style.display = pag === 'cripto' ? 'block' : 'none';
+}
+
+function renderStars(nota) {
+  const n = parseFloat(nota) || 0;
+  return '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math.round(n));
+}
+
+async function carregarAvaliacoesModal(fornecedorId) {
+  try {
+    const r = await fetch(`/api/club/avaliacoes/${fornecedorId}`);
+    const d = await r.json();
+    const el = document.getElementById('modalAvaliacoes');
+    const lista = document.getElementById('avaliacoesLista');
+    if (!d.avaliacoes?.length) { el.style.display='none'; return; }
+    el.style.display = 'block';
+    lista.innerHTML = d.avaliacoes.slice(0,5).map(a => `
+      <div style="padding:10px 0;border-bottom:1px solid #FFE5B0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <span style="color:#FFB300;font-size:.9rem">${renderStars(a.nota)}</span>
+          <span style="font-size:.7rem;color:var(--muted)">${new Date(a.criado_em).toLocaleDateString('pt-BR')}</span>
+        </div>
+        <div style="font-size:.8rem;font-weight:600;color:var(--mid);margin-bottom:2px">${a.cliente_nome?.split(' ')[0] || 'Cliente'}</div>
+        ${a.comentario ? `<div style="font-size:.82rem;color:var(--muted)">"${a.comentario}"</div>` : ''}
+        ${a.resposta ? `<div style="font-size:.78rem;color:var(--orange);margin-top:5px;padding-left:10px;border-left:2px solid var(--orange)">Fornecedor: "${a.resposta}"</div>` : ''}
+      </div>`).join('');
+  } catch {}
 }
 
 // ── Finalizar compra ──────────────────────────────────────
