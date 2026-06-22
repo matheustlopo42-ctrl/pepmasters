@@ -213,21 +213,51 @@
           </div>
           <div id="cripto-tokens" style="display:none;margin-top:10px">
             <div style="text-align:center;margin-bottom:8px">
-              <p id="cryptoNetworkInfo" style="font-size:.82rem;color:var(--muted);margin:0">🔷 <strong>Polygon</strong> — MetaMask, Trust Wallet</p>
+              <p id="cryptoNetworkInfo" style="font-size:.82rem;color:var(--muted);margin:0">🔶 <strong>Tron TRC-20</strong> — Binance, TronLink. Taxas mínimas.</p>
             </div>
-            <div class="token-row">
-              <button id="btn-usdt" class="pay-tab token-btn active" onclick="selecionarToken('USDTPOLYGON')">
-                <div style="font-weight:700">USDT</div>
-                <div style="font-size:.68rem;opacity:.7;margin-top:2px">MetaMask · Trust Wallet</div>
-              </button>
-              <button id="btn-usdc" class="pay-tab token-btn" onclick="selecionarToken('USDCPOLYGON')">
-                <div style="font-weight:700">USDC</div>
-                <div style="font-size:.68rem;opacity:.7;margin-top:2px">MetaMask · Trust Wallet</div>
-              </button>
-              <button id="btn-tron" class="pay-tab token-btn" onclick="selecionarToken('USDTTRX')">
-                <div style="font-weight:700">USDT</div>
-                <div style="font-size:.68rem;opacity:.7;margin-top:2px">Binance · TronLink</div>
-              </button>
+            <div style="margin-bottom:6px">
+              <div style="font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.35);margin-bottom:4px">🔶 Tron TRC-20</div>
+              <div class="token-row" style="justify-content:flex-start">
+                <button id="btn-usdttrx" class="pay-tab token-btn active" onclick="selecionarToken('USDTTRX')">
+                  <div style="font-weight:700">USDT</div>
+                  <div style="font-size:.62rem;opacity:.7;margin-top:2px">Binance · TronLink</div>
+                </button>
+              </div>
+            </div>
+            <div style="margin-bottom:6px">
+              <div style="font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.35);margin-bottom:4px">🔷 Polygon (MATIC)</div>
+              <div class="token-row" style="justify-content:flex-start">
+                <button id="btn-usdtpoly" class="pay-tab token-btn" onclick="selecionarToken('USDTPOLYGON')">
+                  <div style="font-weight:700">USDT</div>
+                  <div style="font-size:.62rem;opacity:.7;margin-top:2px">MetaMask · Trust Wallet</div>
+                </button>
+                <button id="btn-usdcpoly" class="pay-tab token-btn" onclick="selecionarToken('USDCPOLYGON')">
+                  <div style="font-weight:700">USDC</div>
+                  <div style="font-size:.62rem;opacity:.7;margin-top:2px">MetaMask · Trust Wallet</div>
+                </button>
+              </div>
+            </div>
+            <div style="margin-bottom:6px">
+              <div style="font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.35);margin-bottom:4px">⬡ Ethereum (ERC-20)</div>
+              <div class="token-row" style="justify-content:flex-start">
+                <button id="btn-usdteth" class="pay-tab token-btn" onclick="selecionarToken('USDTETH')">
+                  <div style="font-weight:700">USDT</div>
+                  <div style="font-size:.62rem;opacity:.7;margin-top:2px">MetaMask · Ledger</div>
+                </button>
+                <button id="btn-usdceth" class="pay-tab token-btn" onclick="selecionarToken('USDCETH')">
+                  <div style="font-weight:700">USDC</div>
+                  <div style="font-size:.62rem;opacity:.7;margin-top:2px">MetaMask · Ledger</div>
+                </button>
+              </div>
+            </div>
+            <div style="margin-bottom:6px">
+              <div style="font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.35);margin-bottom:4px">◎ Solana</div>
+              <div class="token-row" style="justify-content:flex-start">
+                <button id="btn-usdcsol" class="pay-tab token-btn" onclick="selecionarToken('USDCSOLANA')">
+                  <div style="font-weight:700">USDC</div>
+                  <div style="font-size:.62rem;opacity:.7;margin-top:2px">Phantom · Solflare</div>
+                </button>
+              </div>
             </div>
           </div>
           <div id="cripto-info" style="display:none">
@@ -388,9 +418,11 @@
       badge.innerHTML = '<strong>' + tmpl2.replace('{nivel}',formatNivelNome(nivel)).replace('{pct}',pct) + '</strong>';
     });
   }
-  let cryptoToken = 'USDTPOLYGON';
+  let cryptoToken = 'USDTTRX';
   let cryptoValor = 0;
-  const WALLET    = '0xDA95bb300C7be3E3347d449b14b834Dc3098deAD';
+  const WALLET_ETH_POLY = '0xA4aC98643142878cFa37E1550f512E785aCCd9F4';
+  const WALLET_SOLANA   = 'Fm3P6yep2jzVWPjK4tzYZ7sGCr7eP1MCMrf2azbqqAuA';
+  const WALLET = WALLET_ETH_POLY; // alias
   let cupomDados = null;
   let carrinho   = [];
 
@@ -561,44 +593,50 @@
     document.getElementById('cryptoToken').textContent = cryptoToken;
     document.getElementById('cryptoAddr').textContent  = WALLET;
 
-    if (cryptoToken === 'USDTTRX') {
-      // Tron TRC-20
-      document.getElementById('cryptoAddr').textContent = TRON_WALLET;
-      var tronData = 'tron:' + TRON_WALLET + '?amount=' + parseFloat(cryptoValor) + '&token=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
-      document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(TRON_WALLET);
-      window._cryptoEip681 = TRON_WALLET;
-    } else {
-      // Polygon
-      document.getElementById('cryptoAddr').textContent = WALLET;
-      const contratos = {
-        USDT: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-        USDC: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359'
-      };
-      const contrato = contratos[cryptoToken] || contratos.USDT;
-      const valorWei = Math.round(parseFloat(cryptoValor) * 1000000);
-      const eip681 = 'ethereum:' + contrato + '/transfer?address=' + WALLET + '&uint256=' + valorWei;
-      document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(eip681);
-      window._cryptoEip681 = eip681;
-    }
+    // Wallets e contratos por rede
+    var NETWORK_CONFIG = {
+      'USDTTRX':    { addr: TRON_WALLET,       qrData: TRON_WALLET, label: 'USDT (TRC-20)' },
+      'USDTPOLYGON':{ addr: WALLET_ETH_POLY,   qrData: 'ethereum:0xc2132d05d31c914a87c6611c10748aeb04b58e8f/transfer?address=' + WALLET_ETH_POLY + '&uint256=' + Math.round(parseFloat(cryptoValor)*1000000), label: 'USDT (Polygon)' },
+      'USDCPOLYGON':{ addr: WALLET_ETH_POLY,   qrData: 'ethereum:0x3c499c542cef5e3811e1192ce70d8cc03d5c3359/transfer?address=' + WALLET_ETH_POLY + '&uint256=' + Math.round(parseFloat(cryptoValor)*1000000), label: 'USDC (Polygon)' },
+      'USDTETH':    { addr: WALLET_ETH_POLY,   qrData: 'ethereum:0xdac17f958d2ee523a2206206994597c13d831ec7/transfer?address=' + WALLET_ETH_POLY + '&uint256=' + Math.round(parseFloat(cryptoValor)*1000000), label: 'USDT (ERC-20)' },
+      'USDCETH':    { addr: WALLET_ETH_POLY,   qrData: 'ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48/transfer?address=' + WALLET_ETH_POLY + '&uint256=' + Math.round(parseFloat(cryptoValor)*1000000), label: 'USDC (ERC-20)' },
+      'USDCSOLANA': { addr: WALLET_SOLANA,      qrData: WALLET_SOLANA, label: 'USDC (Solana)' },
+    };
+    var cfg = NETWORK_CONFIG[cryptoToken] || NETWORK_CONFIG['USDTPOLYGON'];
+    document.getElementById('cryptoAddr').textContent = cfg.addr;
+    document.getElementById('cryptoQR').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(cfg.qrData);
+    window._cryptoEip681 = cfg.qrData;
   }
 
   var TRON_WALLET = 'TSgzRZDGQVWxn29u4fUgaipGKRSv31HxCB';
 
   function selecionarToken(token) {
     cryptoToken = token;
-    document.getElementById('btn-usdt').classList.toggle('active', token === 'USDTPOLYGON');
-    document.getElementById('btn-usdc').classList.toggle('active', token === 'USDCPOLYGON');
-    document.getElementById('btn-tron').classList.toggle('active', token === 'USDTTRX');
+    // Resetar todos os botões
+    ['btn-usdttrx','btn-usdtpoly','btn-usdcpoly','btn-usdteth','btn-usdceth','btn-usdcsol'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.remove('active');
+    });
+    var btnMap = { 'USDTTRX':'btn-usdttrx','USDTPOLYGON':'btn-usdtpoly','USDCPOLYGON':'btn-usdcpoly','USDTETH':'btn-usdteth','USDCETH':'btn-usdceth','USDCSOLANA':'btn-usdcsol' };
+    var activeBtn = document.getElementById(btnMap[token]);
+    if (activeBtn) activeBtn.classList.add('active');
     // Se já tem pedido criado, regenerar endereço NOWPayments com novo token
     if (window._pedidoIdAtual) {
       regenerarEnderecoCripto(window._pedidoIdAtual, token);
-      return; // não chamar atualizarCriptoUI para não sobrescrever
+      return;
     }
     // Atualizar info de rede
     var netInfo = document.getElementById('cryptoNetworkInfo');
     if (netInfo) {
-      if (token === 'USDTTRX') netInfo.innerHTML = '🔶 <strong>Tron</strong> — Use Binance, TronLink ou qualquer wallet TRC-20. Taxas mínimas.';
-      else netInfo.innerHTML = '🔷 <strong>Polygon</strong> — Use MetaMask, Trust Wallet ou Coinbase Wallet. Taxas baixas.';
+      var redeInfo = {
+        'USDTTRX':    '🔶 <strong>Tron TRC-20</strong> — Binance, TronLink. Taxas mínimas.',
+        'USDTPOLYGON':'🔷 <strong>Polygon (MATIC)</strong> — MetaMask, Trust Wallet. Taxas baixas.',
+        'USDCPOLYGON':'🔷 <strong>Polygon (MATIC)</strong> — MetaMask, Trust Wallet. Taxas baixas.',
+        'USDTETH':    '⬡ <strong>Ethereum ERC-20</strong> — MetaMask, Ledger. Taxas mais altas.',
+        'USDCETH':    '⬡ <strong>Ethereum ERC-20</strong> — MetaMask, Ledger. Taxas mais altas.',
+        'USDCSOLANA': '◎ <strong>Solana</strong> — Phantom, Solflare. Taxas mínimas.',
+      };
+      netInfo.innerHTML = redeInfo[token] || '';
     }
     atualizarCriptoUI();
   }

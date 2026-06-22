@@ -1,51 +1,194 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Admin Login — PEPMASTERS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <style>
-    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580}
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Barlow',sans-serif;background:var(--dark);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-    .login-card{background:var(--warm-white);border-radius:20px;padding:44px 40px;width:100%;max-width:380px;border-top:4px solid var(--amber);box-shadow:0 20px 60px rgba(0,0,0,.4)}
-    .logo-wrap{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:28px;text-decoration:none}
-    .logo-wrap img{height:40px;width:40px;object-fit:contain}
-    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .admin-badge{display:block;text-align:center;font-size:.75rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:24px}
-    label{display:block;font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);margin-bottom:6px}
-    input{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:10px;font-size:.95rem;font-family:'Barlow',sans-serif;color:var(--dark);background:var(--cream);outline:none;transition:border-color .2s;margin-bottom:18px}
-    input:focus{border-color:var(--orange)}
-    .btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;box-shadow:0 4px 16px rgba(232,34,10,.3);transition:transform .15s}
-    .btn-primary:hover{transform:translateY(-1px)}
-    #msgErro{background:#FFF0EE;border-left:4px solid var(--red);padding:10px 14px;border-radius:8px;font-size:.88rem;color:var(--red);margin-bottom:18px;display:none}
-    .back{display:block;text-align:center;margin-top:18px;font-size:.85rem;color:var(--muted);text-decoration:none}
-    .back:hover{color:var(--orange)}
-  </style>
-</head>
-<body>
-<div class="login-card">
-  <a href="index.html" class="logo-wrap"><img src="Capturar.PNG" alt="Logo"/><span class="logo-text">PEPMASTERS</span></a>
-  <span class="admin-badge">🔒 Área Restrita</span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Admin Login — PEPMASTERS</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --amber: #ffb300;
+        --red: #e8220a;
+        --orange: #ff6b00;
+        --cream: #fff8f0;
+        --warm-white: #fffdf9;
+        --dark: #1c0a00;
+        --mid: #3d1a00;
+        --muted: #7a4a2a;
+        --border: #ffd580;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Barlow", sans-serif;
+        background: var(--dark);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .login-card {
+        background: var(--warm-white);
+        border-radius: 20px;
+        padding: 44px 40px;
+        width: 100%;
+        max-width: 380px;
+        border-top: 4px solid var(--amber);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      }
+      .logo-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 28px;
+        text-decoration: none;
+      }
+      .logo-wrap img {
+        height: 40px;
+        width: 40px;
+        object-fit: contain;
+      }
+      .logo-text {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 900;
+        font-size: 1.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--red),
+          var(--orange),
+          var(--amber)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .admin-badge {
+        display: block;
+        text-align: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+      label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--mid);
+        margin-bottom: 6px;
+      }
+      input {
+        width: 100%;
+        padding: 12px 14px;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-family: "Barlow", sans-serif;
+        color: var(--dark);
+        background: var(--cream);
+        outline: none;
+        transition: border-color 0.2s;
+        margin-bottom: 18px;
+      }
+      input:focus {
+        border-color: var(--orange);
+      }
+      .btn-primary {
+        width: 100%;
+        padding: 13px;
+        background: linear-gradient(135deg, var(--red), var(--orange));
+        color: #fff;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 1.05rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(232, 34, 10, 0.3);
+        transition: transform 0.15s;
+      }
+      .btn-primary:hover {
+        transform: translateY(-1px);
+      }
+      #msgErro {
+        background: #fff0ee;
+        border-left: 4px solid var(--red);
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        color: var(--red);
+        margin-bottom: 18px;
+        display: none;
+      }
+      .back {
+        display: block;
+        text-align: center;
+        margin-top: 18px;
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-decoration: none;
+      }
+      .back:hover {
+        color: var(--orange);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-card">
+      <a href="index.html" class="logo-wrap"
+        ><img src="Capturar.PNG" alt="Logo" /><span class="logo-text"
+          >PEPMASTERS</span
+        ></a
+      >
+      <span class="admin-badge">🔒 Área Restrita</span>
 
-  <div id="msgErro"></div>
+      <div id="msgErro"></div>
 
-  <label>Senha de Administrador</label>
-  <input type="password" id="senha" placeholder="••••••••••••" />
+      <label>Senha de Administrador</label>
+      <input type="password" id="senha" placeholder="••••••••••••" />
 
-  <button class="btn-primary" onclick="entrar()">Acessar Painel</button>
-  <a href="index.html" class="back">← Voltar à loja</a>
-</div>
+      <button class="btn-primary" onclick="entrar()">Acessar Painel</button>
+      <a href="index.html" class="back">← Voltar à loja</a>
+    </div>
 
-<script>
-  function entrar() {
-    const senha = document.getElementById('senha').value;
-    const token = btoa('admin:' + senha);
-    fetch('/api/admin/verificar', { headers: { Authorization: 'Basic ' + token } })
-      .then(r => { if (r.ok) { localStorage.setItem('pep_admin_token', token); location.href = 'admin.html'; } else throw new Error(); })
-      .catch(() => { const el = document.getElementById('msgErro'); el.textContent = 'Senha incorreta.'; el.style.display = 'block'; });
-  }
-  document.addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
-</script>
-</body>
+    <script>
+      function entrar() {
+        const senha = document.getElementById("senha").value;
+        const token = btoa("admin:" + senha);
+        fetch("/api/admin/verificar", {
+          headers: { Authorization: "Basic " + token },
+        })
+          .then((r) => {
+            if (r.ok) {
+              localStorage.setItem("pep_admin_token", token);
+              location.href = "admin.html";
+            } else throw new Error();
+          })
+          .catch(() => {
+            const el = document.getElementById("msgErro");
+            el.textContent = "Senha incorreta.";
+            el.style.display = "block";
+          });
+      }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") entrar();
+      });
+    </script>
+  </body>
 </html>
