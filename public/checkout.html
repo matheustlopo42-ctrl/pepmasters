@@ -749,6 +749,31 @@
     finalizar();
   }
 
+  function abrirWhatsAppPedido(carrinhoFinal, totalProdutos, freteTotal, totalFinal, retirada) {
+    const totalVials = carrinhoFinal.reduce((s,i) => s + i.quantidade, 0);
+    const caixas = Math.max(1, Math.round(totalVials / 10));
+    const agora = new Date();
+    const dataHora = agora.toLocaleDateString('pt-BR') + ', ' + agora.toLocaleTimeString('pt-BR');
+    const fmt = (v) => 'R$ ' + v.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d)(?=,))/g, '.');
+
+    const itensTxt = carrinhoFinal.map(i => '• ' + i.quantidade + 'v – ' + i.id + ' ' + i.nome).join('\n');
+    const custoVial = totalFinal / totalVials;
+
+    let msg = 'Olá. Quero fazer o pedido de ' + String(caixas).padStart(2,'0') + ' caixa' + (caixas !== 1 ? 's' : '') + ':\n\n';
+    msg += 'PEPMASTERS – Orçamento\nData: ' + dataHora + '\nCaixas: ' + caixas + '\n\n';
+    msg += 'Itens:\n' + itensTxt + '\n\n';
+    msg += '• Subtotal: ' + fmt(totalProdutos) + '\n';
+    if (retirada) {
+      msg += '• Frete: Retirada no Paraguai (sem frete)\n';
+    } else {
+      msg += '• Frete: ' + fmt(freteTotal) + ' (R$ 50,00/vial)\n';
+    }
+    msg += '• TOTAL: ' + fmt(totalFinal) + '\n';
+    msg += '• ' + totalVials + ' vials | ' + fmt(custoVial) + '/vial';
+
+    window.open('https://wa.me/595993234604?text=' + encodeURIComponent(msg), '_blank');
+  }
+
   async function finalizarWhatsApp() {
     if (!verificarLogin()) return;
     const nome       = document.getElementById('nome')        ? document.getElementById('nome').value.trim()        : '';
@@ -763,9 +788,17 @@
 
     if (!nome || !email) { mostrarErro('Preencha nome e email antes de continuar.'); return; }
 
-    const itensWA  = carrinho.map(i => i.nome + ' x' + i.quantidade + ' (R$ ' + (i.preco * i.quantidade).toFixed(2) + ')').join('%0A');
-    const totalVal = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0).toFixed(2);
-    const endereco = [rua, numero, complemento, bairro, cidade, cep].filter(Boolean).join(', ');
+    const subtotalWA = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
+    let descontoMembroWA = 0;
+    if (nivelMembroAtual) {
+      var descontosNivelWA = { bronze: 5, prata: 10, ouro: 12, diamante: 15 };
+      descontoMembroWA = subtotalWA * ((descontosNivelWA[nivelMembroAtual] || 0) / 100);
+    }
+    const totalProdutosWA = subtotalWA - descontoMembroWA;
+    const totalVialsWA = carrinho.reduce((s,i) => s + i.quantidade, 0);
+    const retiradaWA = document.getElementById('checkRetirada')?.checked || false;
+    const freteWA = retiradaWA ? 0 : totalVialsWA * FRETE_POR_VIAL;
+    const totalWA = totalProdutosWA + freteWA;
 
     // Criar pedido no banco e enviar email
     try {
@@ -779,21 +812,14 @@
           nome, email, telefone,
           endereco: { cep, rua, numero, bairro, cidade, complemento },
           carrinho, pagamento: 'whatsapp', cupom: cupomAplicado || '',
-          token, ref_code: refValue
+          token, ref_code: refValue,
+          retirada_paraguai: retiradaWA,
+          total: totalWA.toFixed(2)
         })
       });
     } catch(e) { console.warn('Pedido não registrado:', e); }
 
-    // Abrir WhatsApp
-    const msg = 'Ol%C3%A1! Gostaria de fazer um pedido:%0A%0A' +
-      '*Itens:*%0A' + itensWA + '%0A%0A' +
-      '*Total: R$ ' + totalVal + '*%0A%0A' +
-      '*Dados do cliente:*%0A' +
-      (nome      ? 'Nome: '         + encodeURIComponent(nome)      + '%0A' : '') +
-      (email     ? 'Email: '        + encodeURIComponent(email)     + '%0A' : '') +
-      (telefone  ? 'Tel: '          + encodeURIComponent(telefone)  + '%0A' : '') +
-      (endereco  ? 'Endere%C3%A7o: '+ encodeURIComponent(endereco)           : '');
-    window.open('https://wa.me/595993234604?text=' + msg, '_blank');
+    abrirWhatsAppPedido(carrinho, totalProdutosWA, freteWA, totalWA, retiradaWA);
   }
 
     async function finalizar() {
@@ -894,6 +920,9 @@
       const data = await res.json();
 
       if (!res.ok) { mostrarErro(data.erro || 'Erro ao criar pedido.'); btn.disabled=false; btn.textContent='Finalizar Pedido'; return; }
+
+      // Abrir WhatsApp com resumo do pedido (PIX, Cripto e WhatsApp)
+      abrirWhatsAppPedido(carrinho, totalProdutosFinal, freteFinal, total, retiradaFinal);
 
       // limpar carrinho após pedido criado
       localStorage.removeItem('pep_carrinho');
