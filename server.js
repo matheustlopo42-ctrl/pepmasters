@@ -3269,16 +3269,6 @@ async function webhookNowpaymentsMembers(req, res) {
   }
 }
 
-// ─────────────────────────────────────────────
-//  404 FALLBACK (SPA)
-// ─────────────────────────────────────────────
-app.use((req, res) => {
-  if (req.path.startsWith('/api/') || req.path.startsWith('/webhook/')) {
-    return res.status(404).json({ erro: 'Rota não encontrada.' });
-  }
-  res.sendFile(path.join(__dirname, 'public', '404.html'));
-});
-
 // ═══════════════════════════════════════════════════════════
 //  PEPMASTERS CLUB — Endpoints
 // ═══════════════════════════════════════════════════════════
@@ -3915,6 +3905,16 @@ app.put('/api/admin/club/saque/:id', adminMiddleware, async (req, res) => {
     await pool.query('UPDATE club_saques SET status=$1, processado_em=NOW() WHERE id=$2', [status, req.params.id]);
     res.json({ ok: true });
   } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// ─────────────────────────────────────────────
+//  404 FALLBACK (SPA)
+// ─────────────────────────────────────────────
+app.use((req, res) => {
+  if (req.path.startsWith('/api/') || req.path.startsWith('/webhook/')) {
+    return res.status(404).json({ erro: 'Rota não encontrada.' });
+  }
+  res.sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
 // ─────────────────────────────────────────────
