@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Novo Pedido Manual — PEPMASTERS Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--dark:#1C0A00;--mid:#3D1A00}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:var(--dark);min-height:100vh;color:#fff}
+
+    /* SIDEBAR */
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:#110500;border-right:2px solid rgba(255,179,0,.15);padding:24px 0;display:flex;flex-direction:column;z-index:100}
+    .sidebar-logo{display:flex;align-items:center;gap:8px;padding:0 20px 24px;border-bottom:1px solid rgba(255,179,0,.1)}
+    .sidebar-logo img{height:32px;width:32px;object-fit:contain}
+    .sidebar-logo span{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .sidebar-badge{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,179,0,.5);padding:0 20px;margin-top:8px;margin-bottom:4px}
+    .sidebar a{display:block;padding:11px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.55);text-decoration:none;transition:all .2s;border-left:3px solid transparent}
+    .sidebar a:hover,.sidebar a.active{color:#fff;background:rgba(255,179,0,.08);border-left-color:var(--amber)}
+    .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid rgba(255,179,0,.1)}
+    .sidebar-footer a{font-size:.82rem;color:rgba(255,255,255,.3);text-decoration:none}
+    .sidebar-footer a:hover{color:var(--amber)}
+
+    /* MAIN */
+    .main{margin-left:220px;padding:32px;max-width:900px}
+    h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
+    .subtitle{font-size:.88rem;color:rgba(255,255,255,.4);margin-bottom:28px}
+
+    /* CARDS */
+    .card{background:rgba(255,255,255,.04);border-radius:14px;padding:24px;border:1px solid rgba(255,179,0,.12);margin-bottom:20px}
+    .card-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,179,0,.8);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .form-grid.thirds{grid-template-columns:1fr 1fr 1fr}
+    .form-grid.full{grid-template-columns:1fr}
+    .form-group{display:flex;flex-direction:column;gap:5px}
+    label{font-size:.73rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+    input,textarea,select{width:100%;padding:10px 13px;background:rgba(255,255,255,.07);border:1px solid rgba(255,179,0,.2);border-radius:8px;font-size:.9rem;color:#fff;font-family:'Barlow',sans-serif;outline:none;transition:border-color .2s}
+    input:focus,textarea:focus,select:focus{border-color:var(--orange)}
+    input::placeholder,textarea::placeholder{color:rgba(255,255,255,.25)}
+    select option{background:#1C0A00;color:#fff}
+    textarea{resize:vertical;min-height:70px}
+
+    /* BUSCA CLIENTE */
+    .search-wrap{position:relative}
+    .search-results{position:absolute;top:100%;left:0;right:0;background:#1a0a00;border:1px solid rgba(255,179,0,.25);border-radius:8px;margin-top:4px;z-index:50;display:none;max-height:200px;overflow-y:auto}
+    .search-results.open{display:block}
+    .search-item{padding:10px 14px;cursor:pointer;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.05);transition:background .15s}
+    .search-item:last-child{border:none}
+    .search-item:hover{background:rgba(255,179,0,.08)}
+    .search-item .item-nome{font-weight:600;color:#fff}
+    .search-item .item-sub{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:2px}
+
+    /* SPLIT PREVIEW */
+    .split-preview{background:rgba(255,179,0,.06);border:1px solid rgba(255,179,0,.2);border-radius:10px;padding:14px 18px;margin-top:4px;display:none}
+    .split-preview.show{display:block}
+    .split-preview .sp-title{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,179,0,.7);margin-bottom:10px}
+    .split-parts{display:flex;gap:10px;flex-wrap:wrap}
+    .split-part{background:rgba(255,255,255,.06);border-radius:8px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700}
+    .split-part span{display:block;font-size:.68rem;font-weight:400;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+
+    /* BUTTONS */
+    .btn-primary{padding:12px 28px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s}
+    .btn-primary:hover{opacity:.85}
+    .btn-primary:disabled{opacity:.4;cursor:not-allowed}
+    .btn-secondary{padding:12px 20px;background:none;border:1px solid rgba(255,179,0,.3);color:rgba(255,179,0,.8);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;border-radius:10px;cursor:pointer;transition:all .2s}
+    .btn-secondary:hover{border-color:var(--amber);color:var(--amber)}
+    .btn-wpp{padding:12px 20px;background:#25D366;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:8px;text-decoration:none;transition:opacity .2s}
+    .btn-wpp:hover{opacity:.85}
+
+    /* QR RESULT */
+    #resultado{display:none}
+    .result-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+    .result-id{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;color:var(--amber)}
+    .result-info{font-size:.88rem;color:rgba(255,255,255,.5)}
+    .qr-grid{display:grid;gap:16px}
+    .qr-card{background:rgba(255,255,255,.05);border-radius:14px;padding:20px;border:1px solid rgba(255,179,0,.12)}
+    .qr-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .qr-label{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;text-transform:uppercase;color:rgba(255,255,255,.7)}
+    .qr-valor{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:var(--amber)}
+    .qr-body{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+    .qr-img-wrap{background:#fff;border-radius:10px;padding:8px;flex-shrink:0}
+    .qr-img-wrap img{display:block;width:160px;height:160px;object-fit:contain}
+    .qr-img-placeholder{width:160px;height:160px;background:rgba(255,255,255,.05);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.78rem;color:rgba(255,255,255,.3);text-align:center;padding:16px}
+    .qr-actions{display:flex;flex-direction:column;gap:8px;flex:1;min-width:200px}
+    .copia-cola-wrap{background:rgba(0,0,0,.3);border-radius:8px;padding:10px 12px;font-size:.72rem;color:rgba(255,255,255,.5);word-break:break-all;max-height:80px;overflow-y:auto;margin-bottom:8px;font-family:monospace}
+    .btn-copy{padding:8px 16px;background:rgba(255,179,0,.12);border:1px solid rgba(255,179,0,.25);color:var(--amber);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em;border-radius:8px;cursor:pointer;transition:all .2s;width:100%}
+    .btn-copy:hover{background:rgba(255,179,0,.22)}
+    .btn-copy.copied{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.4);color:#4ade80}
+
+    /* ACTIONS BAR */
+    .actions-bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,179,0,.1)}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:24px;right:24px;background:#1a0800;color:#fff;padding:12px 20px;border-radius:10px;font-size:.88rem;border-left:4px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(10px);opacity:0;transition:all .3s;z-index:9999;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    #toast.error{border-left-color:var(--red)}
+
+    @media(max-width:768px){.sidebar{display:none}.main{margin-left:0;padding:20px}.form-grid,.form-grid.thirds{grid-template-columns:1fr}.qr-body{flex-direction:column}}
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo"><img src="Capturar.PNG" alt="Logo"/><span>PEPMASTERS</span></div>
+  <div class="sidebar-badge">Admin</div>
+  <a href="admin-dashboard.html">📊 Dashboard</a>
+  <a href="admin.html">📋 Pedidos</a>
+  <a href="admin-pedido-manual.html" class="active">➕ Novo Pedido</a>
+  <a href="admin-cupons.html">🏷️ Cupons</a>
+  <a href="admin-estoque.html">📦 Estoque</a>
+  <a href="admin-membros.html">👥 Membros</a>
+  <a href="admin-usuarios.html">👤 Usuários</a>
+  <div class="sidebar-footer"><a href="index.html">← Ver loja</a></div>
+</div>
+
+<div class="main">
+  <h1>➕ Novo Pedido Manual</h1>
+  <p class="subtitle">Crie pedidos para clientes via WhatsApp. O sistema gera os QR codes PIX automaticamente (máx. R$ 2.000/QR, até 3 por pedido).</p>
+
+  <!-- FORMULÁRIO -->
+  <div id="formSection">
+
+    <!-- Busca de cliente cadastrado -->
+    <div class="card">
+      <div class="card-title">🔍 Buscar Cliente Cadastrado <span style="font-size:.7rem;font-weight:400;color:rgba(255,255,255,.3);text-transform:none">(opcional)</span></div>
+      <div class="search-wrap">
+        <input type="text" id="buscaCliente" placeholder="Digite nome, email ou CPF..." autocomplete="off" oninput="buscarCliente(this.value)"/>
+        <div class="search-results" id="searchResults"></div>
+      </div>
+    </div>
+
+    <!-- Dados do cliente -->
+    <div class="card">
+      <div class="card-title">👤 Dados do Cliente</div>
+      <div class="form-grid" style="margin-bottom:14px">
+        <div class="form-group">
+          <label>Nome completo *</label>
+          <input type="text" id="f-nome" placeholder="João da Silva"/>
+        </div>
+        <div class="form-group">
+          <label>WhatsApp / Telefone</label>
+          <input type="text" id="f-telefone" placeholder="5511999999999" oninput="formatarFone(this)"/>
+        </div>
+      </div>
+      <div class="form-grid thirds">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="f-email" placeholder="cliente@email.com"/>
+        </div>
+        <div class="form-group">
+          <label>CPF</label>
+          <input type="text" id="f-cpf" placeholder="000.000.000-00" maxlength="14" oninput="formatarCpf(this)"/>
+        </div>
+        <div class="form-group">
+          <label>Endereço / Cidade</label>
+          <input type="text" id="f-endereco" placeholder="São Paulo, SP"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dados do pedido -->
+    <div class="card">
+      <div class="card-title">📦 Dados do Pedido</div>
+      <div class="form-grid" style="margin-bottom:14px">
+        <div class="form-group">
+          <label>Produto / Descrição *</label>
+          <input type="text" id="f-produto" placeholder="BPC-157 10mg x2 + TB-500 5mg"/>
+        </div>
+        <div class="form-group">
+          <label>Valor Total (R$) *</label>
+          <input type="number" id="f-total" placeholder="1500.00" min="1" max="6000" step="0.01" oninput="atualizarSplit()"/>
+        </div>
+      </div>
+      <div class="form-grid full" style="margin-bottom:14px">
+        <div class="form-group">
+          <label>Observação interna</label>
+          <textarea id="f-obs" placeholder="Ex: cliente viu no Instagram, cupom aplicado manualmente..."></textarea>
+        </div>
+      </div>
+
+      <!-- Preview do split -->
+      <div class="split-preview" id="splitPreview">
+        <div class="sp-title">📊 Split de QR codes</div>
+        <div class="split-parts" id="splitParts"></div>
+        <p style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:10px">⚠️ Os valores têm pequenas variações (R$ 0,03 por parte) para evitar bloqueio bancário em PIX múltiplos.</p>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button class="btn-primary" id="btnGerar" onclick="gerarPedido()">⚡ Gerar Pedido + QR Codes</button>
+      <button class="btn-secondary" onclick="limparForm()">🗑️ Limpar</button>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="resultado">
+    <div class="result-header">
+      <div>
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:4px">Pedido criado</div>
+        <div class="result-id" id="res-id">#—</div>
+      </div>
+      <div class="result-info" id="res-info"></div>
+    </div>
+
+    <div class="qr-grid" id="qrGrid"></div>
+
+    <div class="actions-bar" id="actionsBar"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const token = localStorage.getItem('pep_admin_token');
+if (!token) location.href = 'admin-login.html';
+
+// ── Busca de cliente ──────────────────────────────────────
+let buscaTimeout = null;
+
+function buscarCliente(q) {
+  clearTimeout(buscaTimeout);
+  const res = document.getElementById('searchResults');
+  if (q.length < 3) { res.classList.remove('open'); return; }
+  buscaTimeout = setTimeout(async () => {
+    try {
+      const r = await fetch('/api/admin/buscar-usuario?q=' + encodeURIComponent(q), {
+        headers: { Authorization: 'Basic ' + token }
+      });
+      const data = await r.json();
+      if (!data.length) { res.classList.remove('open'); return; }
+      res.innerHTML = data.map(u => `
+        <div class="search-item" onclick="preencherCliente(${JSON.stringify(u).replace(/"/g,'&quot;')})">
+          <div class="item-nome">${u.nome}</div>
+          <div class="item-sub">${u.email || ''} ${u.cpf ? '· ' + u.cpf : ''} ${u.telefone ? '· ' + u.telefone : ''}</div>
+        </div>
+      `).join('');
+      res.classList.add('open');
+    } catch {}
+  }, 300);
+}
+
+function preencherCliente(u) {
+  document.getElementById('f-nome').value     = u.nome || '';
+  document.getElementById('f-email').value    = u.email || '';
+  document.getElementById('f-cpf').value      = u.cpf || '';
+  document.getElementById('f-telefone').value = u.telefone || '';
+  document.getElementById('buscaCliente').value = u.nome;
+  document.getElementById('searchResults').classList.remove('open');
+  window._usuarioId = u.id;
+  showToast('Cliente ' + u.nome.split(' ')[0] + ' preenchido!');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap')) {
+    document.getElementById('searchResults').classList.remove('open');
+  }
+});
+
+// ── Formatação ────────────────────────────────────────────
+function formatarCpf(el) {
+  let v = el.value.replace(/\D/g,'');
+  if (v.length > 11) v = v.slice(0,11);
+  v = v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+  el.value = v;
+}
+
+function formatarFone(el) {
+  // Mantém sem máscara pesada p/ aceitar DDI internacional
+  el.value = el.value.replace(/[^\d+\s\-()]/g,'');
+}
+
+// ── Split preview ─────────────────────────────────────────
+function calcularSplit(total, n) {
+  if (n <= 1) return [parseFloat(total.toFixed(2))];
+  const base = Math.floor((total / n) * 100) / 100;
+  const vals = [];
+  let soma = 0;
+  for (let i = 0; i < n - 1; i++) {
+    const v = parseFloat((base + (i + 1) * 0.03).toFixed(2));
+    vals.push(v);
+    soma += v;
+  }
+  vals.push(parseFloat((total - soma).toFixed(2)));
+  return vals;
+}
+
+function fmt(v) { return 'R$ ' + parseFloat(v).toFixed(2).replace('.', ','); }
+
+function atualizarSplit() {
+  const total = parseFloat(document.getElementById('f-total').value);
+  const preview = document.getElementById('splitPreview');
+  const parts   = document.getElementById('splitParts');
+  if (!total || total <= 0) { preview.classList.remove('show'); return; }
+  const n = Math.ceil(total / 2000);
+  const vals = calcularSplit(total, n);
+  parts.innerHTML = vals.map((v, i) =>
+    `<div class="split-part"><span>QR ${i+1}</span>${fmt(v)}</div>`
+  ).join('');
+  preview.classList.toggle('show', n >= 1);
+}
+
+// ── Gerar pedido ──────────────────────────────────────────
+async function gerarPedido() {
+  const nome    = document.getElementById('f-nome').value.trim();
+  const total   = parseFloat(document.getElementById('f-total').value);
+  const produto = document.getElementById('f-produto').value.trim();
+
+  if (!nome) { showToast('Informe o nome do cliente.', true); return; }
+  if (!produto) { showToast('Informe o produto.', true); return; }
+  if (!total || total <= 0) { showToast('Informe o valor total.', true); return; }
+  if (total > 6000) { showToast('Valor máximo é R$ 6.000 (3 QRs de R$ 2.000).', true); return; }
+
+  const btn = document.getElementById('btnGerar');
+  btn.disabled = true;
+  btn.textContent = '⏳ Gerando...';
+
+  try {
+    const res = await fetch('/api/admin/pedido-manual', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + token },
+      body: JSON.stringify({
+        nome,
+        email:       document.getElementById('f-email').value.trim() || null,
+        telefone:    document.getElementById('f-telefone').value.trim() || null,
+        cpf:         document.getElementById('f-cpf').value.trim() || null,
+        endereco:    document.getElementById('f-endereco').value.trim() || null,
+        produto_nome: produto,
+        total,
+        observacao:  document.getElementById('f-obs').value.trim() || null,
+        usuario_id:  window._usuarioId || null,
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.erro || 'Erro ao gerar pedido.', true); return; }
+    mostrarResultado(data, nome, produto, total);
+  } catch (e) {
+    showToast('Erro de conexão.', true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⚡ Gerar Pedido + QR Codes';
+  }
+}
+
+// ── Mostrar resultado ─────────────────────────────────────
+function mostrarResultado(data, nome, produto, total) {
+  document.getElementById('formSection').style.display = 'none';
+  const res = document.getElementById('resultado');
+  res.style.display = 'block';
+
+  document.getElementById('res-id').textContent = '#' + data.pedido_id;
+  document.getElementById('res-info').innerHTML =
+    `<div><strong>${nome}</strong></div>` +
+    `<div style="margin-top:4px">${produto}</div>` +
+    `<div style="margin-top:4px;font-size:1.1rem;color:var(--amber);font-family:'Barlow Condensed',sans-serif;font-weight:900">${fmt(total)}</div>`;
+
+  // QR cards
+  const grid = document.getElementById('qrGrid');
+  grid.style.gridTemplateColumns = data.num_qrs === 1 ? '1fr' : data.num_qrs === 2 ? '1fr 1fr' : '1fr 1fr 1fr';
+  grid.innerHTML = '';
+
+  data.qrs.forEach(qr => {
+    const card = document.createElement('div');
+    card.className = 'qr-card';
+    const imgHtml = qr.qrcode_url
+      ? `<div class="qr-img-wrap"><img src="${qr.qrcode_url}" alt="QR Code ${qr.parte}"/></div>`
+      : `<div class="qr-img-placeholder">${qr.erro ? '⚠️ ' + qr.erro : 'QR não disponível'}</div>`;
+
+    const copiaHtml = qr.copia_cola ? `
+      <div class="copia-cola-wrap" id="cc-${qr.parte}">${qr.copia_cola}</div>
+      <button class="btn-copy" id="btn-copy-${qr.parte}" onclick="copiar('${qr.parte}', \`${qr.copia_cola.replace(/`/g,'\\`')}\`)">
+        📋 Copiar Copia e Cola
+      </button>
+    ` : '';
+
+    const dlHtml = qr.qrcode_url
+      ? `<a href="${qr.qrcode_url}" download="qr-pedido-${data.pedido_id}-parte${qr.parte}.png" class="btn-copy" style="text-align:center;text-decoration:none;display:block;margin-top:6px">⬇️ Baixar QR Code</a>`
+      : '';
+
+    card.innerHTML = `
+      <div class="qr-card-header">
+        <div class="qr-label">${data.num_qrs > 1 ? `PIX ${qr.parte} de ${data.num_qrs}` : 'QR Code PIX'}</div>
+        <div class="qr-valor">${fmt(qr.valor)}</div>
+      </div>
+      <div class="qr-body">
+        ${imgHtml}
+        <div class="qr-actions">
+          ${copiaHtml}
+          ${dlHtml}
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Botões de ação
+  const bar = document.getElementById('actionsBar');
+  bar.innerHTML = '';
+
+  if (data.whatsapp_link) {
+    const wppBtn = document.createElement('a');
+    wppBtn.className = 'btn-wpp';
+    wppBtn.href = data.whatsapp_link;
+    wppBtn.target = '_blank';
+    wppBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Enviar via WhatsApp`;
+    bar.appendChild(wppBtn);
+  }
+
+  const newBtn = document.createElement('button');
+  newBtn.className = 'btn-secondary';
+  newBtn.textContent = '➕ Novo Pedido';
+  newBtn.onclick = () => {
+    document.getElementById('formSection').style.display = 'block';
+    document.getElementById('resultado').style.display = 'none';
+    limparForm();
+  };
+  bar.appendChild(newBtn);
+
+  const verBtn = document.createElement('a');
+  verBtn.className = 'btn-secondary';
+  verBtn.href = 'admin.html';
+  verBtn.style.textDecoration = 'none';
+  verBtn.style.display = 'inline-flex';
+  verBtn.style.alignItems = 'center';
+  verBtn.textContent = '📋 Ver Pedidos';
+  bar.appendChild(verBtn);
+
+  res.scrollIntoView({ behavior: 'smooth' });
+  showToast(`✅ Pedido #${data.pedido_id} criado com ${data.num_qrs} QR code(s)!`);
+}
+
+// ── Copiar copia e cola ───────────────────────────────────
+async function copiar(parte, texto) {
+  try {
+    await navigator.clipboard.writeText(texto);
+    const btn = document.getElementById('btn-copy-' + parte);
+    btn.textContent = '✅ Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 Copiar Copia e Cola'; btn.classList.remove('copied'); }, 2500);
+  } catch {
+    showToast('Erro ao copiar.', true);
+  }
+}
+
+// ── Limpar ────────────────────────────────────────────────
+function limparForm() {
+  ['f-nome','f-email','f-telefone','f-cpf','f-endereco','f-produto','f-obs','buscaCliente'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-total').value = '';
+  document.getElementById('splitPreview').classList.remove('show');
+  window._usuarioId = null;
+}
+
+// ── Toast ─────────────────────────────────────────────────
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (isError ? ' error' : '');
+  setTimeout(() => { t.className = isError ? 'error' : ''; }, 3500);
+}
+</script>
+</body>
+</html>
