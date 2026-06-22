@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Fornecedor — PEPMASTERS Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:var(--cream);min-height:100vh;display:flex;flex-direction:column}
+    header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(255,179,0,.15)}
+    .logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+    .logo-wrap img{height:34px;width:34px;object-fit:contain}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.25rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .club-badge{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.65rem;letter-spacing:.08em;padding:2px 7px;border-radius:4px;text-transform:uppercase}
+    .back-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none}
+    .back-link:hover{color:var(--orange)}
+    main{flex:1;max-width:1100px;margin:0 auto;padding:32px 20px;width:100%}
+
+    /* PERFIL HEADER */
+    .perfil-header{background:linear-gradient(135deg,var(--dark),#2a0e00);border-radius:18px;padding:28px;display:flex;gap:22px;align-items:flex-start;margin-bottom:24px;color:#fff}
+    .perfil-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.2rem;color:#fff;flex-shrink:0;border:3px solid rgba(255,179,0,.3)}
+    .perfil-info{flex:1}
+    .perfil-nome{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;color:#fff;margin-bottom:4px}
+    .perfil-nivel{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 12px;border-radius:20px;margin-bottom:10px}
+    .nivel-bronze{background:rgba(205,127,50,.2);color:#cd7f32;border:1px solid rgba(205,127,50,.3)}
+    .nivel-prata{background:rgba(192,192,192,.15);color:#C0C0C0;border:1px solid rgba(192,192,192,.25)}
+    .nivel-ouro{background:rgba(255,215,0,.15);color:#FFD700;border:1px solid rgba(255,215,0,.25)}
+    .nivel-diamante{background:rgba(29,109,181,.15);color:#93c5fd;border:1px solid rgba(29,109,181,.25)}
+    .perfil-desc{font-size:.88rem;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:14px;max-width:600px}
+    .perfil-stats{display:flex;gap:20px;flex-wrap:wrap}
+    .stat{text-align:center}
+    .stat-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;color:var(--amber)}
+    .stat-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.4)}
+    .nota-stars{color:#FFB300;font-size:1.1rem}
+    .perfil-links{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+    .perfil-link{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:9px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;text-transform:uppercase;text-decoration:none;transition:opacity .2s}
+    .perfil-link:hover{opacity:.85}
+    .link-wpp{background:#25D366;color:#fff}
+    .link-insta{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff}
+
+    /* GRID */
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+    .card{background:#fff;border-radius:16px;border:1px solid #FFE5B0;box-shadow:0 2px 10px rgba(255,179,0,.07);padding:20px;margin-bottom:18px}
+    .card-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;text-transform:uppercase;color:var(--dark);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+
+    /* PRODUTOS */
+    .produtos-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .produto-card{background:var(--cream);border-radius:13px;border:1px solid #FFE5B0;overflow:hidden;transition:all .2s;cursor:pointer}
+    .produto-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(255,107,0,.1)}
+    .prod-img{height:130px;background:linear-gradient(135deg,#FFF8F0,#FFE5B0);display:flex;align-items:center;justify-content:center;font-size:2.5rem;overflow:hidden}
+    .prod-img img{width:100%;height:100%;object-fit:cover}
+    .prod-body{padding:12px}
+    .prod-nome{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;color:var(--dark);margin-bottom:4px}
+    .prod-preco{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;color:var(--dark)}
+    .btn-comprar{width:100%;padding:8px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;text-transform:uppercase;cursor:pointer;margin-top:8px;transition:opacity .2s}
+    .btn-comprar:hover{opacity:.85}
+
+    /* AVALIAÇÕES */
+    .aval-item{padding:12px 0;border-bottom:1px solid #FFE5B0}
+    .aval-item:last-child{border:none}
+    .aval-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+    .aval-stars{color:#FFB300;font-size:.95rem}
+    .aval-data{font-size:.7rem;color:var(--muted)}
+    .aval-cliente{font-size:.8rem;font-weight:600;color:var(--mid);margin-bottom:3px}
+    .aval-comentario{font-size:.83rem;color:var(--muted);line-height:1.6}
+    .aval-resposta{font-size:.78rem;color:var(--orange);margin-top:6px;padding-left:10px;border-left:2px solid var(--orange);line-height:1.5}
+
+    /* NOTA RESUMO */
+    .nota-resumo{text-align:center;padding:16px 0 10px}
+    .nota-big{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:3rem;color:var(--dark)}
+    .nota-stars-big{color:#FFB300;font-size:1.4rem;margin:4px 0}
+    .nota-total{font-size:.78rem;color:var(--muted)}
+
+    .empty{text-align:center;padding:28px;color:var(--muted);font-size:.85rem}
+    #toast{position:fixed;bottom:20px;right:20px;background:var(--dark);color:#fff;padding:10px 16px;border-radius:9px;font-size:.83rem;border-left:4px solid var(--amber);box-shadow:0 8px 24px rgba(0,0,0,.3);transform:translateY(10px);opacity:0;transition:all .3s;z-index:9999;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    footer{background:var(--dark);color:rgba(255,255,255,.38);text-align:center;padding:18px;font-size:.78rem;margin-top:auto}
+    footer a{color:rgba(255,179,0,.45);text-decoration:none;margin:0 6px}
+    @media(max-width:768px){.grid{grid-template-columns:1fr}.perfil-header{flex-direction:column}.produtos-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:420px){.produtos-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <a href="club-marketplace.html" class="logo-wrap">
+    <img src="Capturar.PNG" alt="Logo"/>
+    <span class="logo-text">PEPMASTERS</span>
+    <span class="club-badge">Club</span>
+  </a>
+  <a href="club-marketplace.html" class="back-link">← Marketplace</a>
+</header>
+
+<main id="mainContent">
+  <div class="empty">Carregando...</div>
+</main>
+
+<div id="toast"></div>
+<footer>
+  <a href="club-marketplace.html">Marketplace</a> ·
+  <a href="club-fornecedor-cadastro.html">Seja Fornecedor</a>
+</footer>
+
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
+<script>
+const nivelIcons = { bronze:'🥉', prata:'🥈', ouro:'🥇', diamante:'💎' };
+const params = new URLSearchParams(location.search);
+const fornId = params.get('id');
+
+function renderStars(n) {
+  const v = Math.round(parseFloat(n)||0);
+  return '★'.repeat(v) + '☆'.repeat(5-v);
+}
+function fmt(v) { return 'R$ ' + parseFloat(v).toFixed(2).replace('.',','); }
+
+async function carregar() {
+  const main = document.getElementById('mainContent');
+  if (!fornId) { main.innerHTML = '<div class="empty">Fornecedor não encontrado.</div>'; return; }
+  try {
+    const [fornRes, prodsRes, avalRes] = await Promise.all([
+      fetch('/api/club/fornecedores').then(r=>r.json()),
+      fetch('/api/club/produtos?fornecedor_id='+fornId).then(r=>r.json()),
+      fetch('/api/club/avaliacoes/'+fornId).then(r=>r.json()),
+    ]);
+    const forn = (Array.isArray(fornRes) ? fornRes : []).find(f=>f.id==fornId);
+    if (!forn) { main.innerHTML = '<div class="empty">Fornecedor não encontrado ou inativo.</div>'; return; }
+    const prods = Array.isArray(prodsRes) ? prodsRes : [];
+    const avals = avalRes.avaliacoes || [];
+    const media = parseFloat(avalRes.media||0);
+    const total = parseInt(avalRes.total||0);
+
+    document.title = forn.nome_loja + ' — PEPMASTERS Club';
+
+    main.innerHTML = `
+      <div class="perfil-header">
+        <div class="perfil-avatar">${forn.nome_loja[0].toUpperCase()}</div>
+        <div class="perfil-info">
+          <div class="perfil-nome">${forn.nome_loja}</div>
+          <span class="perfil-nivel nivel-${forn.nivel}">${nivelIcons[forn.nivel]||'🥉'} ${forn.nivel}</span>
+          <div class="perfil-desc">${forn.descricao||''}</div>
+          <div class="perfil-stats">
+            ${media>0 ? `<div class="stat"><div class="nota-stars">${renderStars(media)}</div><div class="stat-label">${media.toFixed(1)} (${total} aval.)</div></div>` : ''}
+            <div class="stat"><div class="stat-val">${forn.pedidos_ok||0}</div><div class="stat-label">Entregas</div></div>
+            <div class="stat"><div class="stat-val">${forn.total_produtos||0}</div><div class="stat-label">Produtos</div></div>
+            <div class="stat"><div class="stat-val">${forn.disputas||0}</div><div class="stat-label">Disputas</div></div>
+          </div>
+          <div class="perfil-links">
+            ${forn.whatsapp ? `<a href="https://wa.me/${forn.whatsapp.replace(/\D/g,'')}" target="_blank" class="perfil-link link-wpp">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              WhatsApp
+            </a>` : ''}
+            ${forn.instagram ? `<a href="https://instagram.com/${forn.instagram.replace('@','')}" target="_blank" class="perfil-link link-insta">📸 @${forn.instagram.replace('@','')}</a>` : ''}
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div>
+          <div class="card">
+            <div class="card-title">📦 Produtos (${prods.length})</div>
+            ${prods.length ? `<div class="produtos-grid">${prods.map(p=>`
+              <div class="produto-card" onclick="abrirProduto(${p.id})">
+                <div class="prod-img">${p.imagem_url?`<img src="${p.imagem_url}" alt="${p.nome}"/>`:'🧬'}</div>
+                <div class="prod-body">
+                  <div class="prod-nome">${p.nome}</div>
+                  <div class="prod-preco">${fmt(p.preco)}</div>
+                  <div style="font-size:.7rem;color:var(--muted)">${p.estoque} em estoque</div>
+                  <button class="btn-comprar" onclick="event.stopPropagation();location.href='club-produto.html?id=${p.id}'">Comprar</button>
+                </div>
+              </div>`).join('')}</div>`
+            : '<div class="empty">Nenhum produto cadastrado ainda.</div>'}
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title">⭐ Avaliações</div>
+            ${media>0 ? `<div class="nota-resumo">
+              <div class="nota-big">${media.toFixed(1)}</div>
+              <div class="nota-stars-big">${renderStars(media)}</div>
+              <div class="nota-total">${total} avaliação(ões)</div>
+            </div>` : ''}
+            ${avals.length ? avals.map(a=>`
+              <div class="aval-item">
+                <div class="aval-header">
+                  <span class="aval-stars">${renderStars(a.nota)}</span>
+                  <span class="aval-data">${new Date(a.criado_em).toLocaleDateString('pt-BR')}</span>
+                </div>
+                <div class="aval-cliente">${a.cliente_nome?.split(' ')[0]||'Cliente'}</div>
+                ${a.comentario?`<div class="aval-comentario">"${a.comentario}"</div>`:''}
+                ${a.resposta?`<div class="aval-resposta">↳ ${a.resposta}</div>`:''}
+              </div>`).join('')
+            : '<div class="empty">Sem avaliações ainda.</div>'}
+          </div>
+        </div>
+      </div>`;
+
+  } catch(e) {
+    main.innerHTML = '<div class="empty">Erro ao carregar. Tente novamente.</div>';
+  }
+}
+
+function abrirProduto(id) { location.href = 'club-produto.html?id=' + id; }
+
+carregar();
+</script>
+</body>
+</html>

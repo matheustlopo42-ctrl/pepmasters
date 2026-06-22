@@ -353,7 +353,7 @@ function renderFornecedores() {
     return;
   }
   el.innerHTML = todosForns.map(f => `
-    <div class="fornecedor-card" onclick="filtrarFornecedor(${f.id})" id="fc-${f.id}">
+    <div class="fornecedor-card" onclick="filtrarFornecedor(${f.id})" id="fc-${f.id}" ondblclick="location.href='club-fornecedor-perfil.html?id=${f.id}'">
       <div class="forn-avatar">${f.nome_loja[0].toUpperCase()}</div>
       <div class="forn-nome">${f.nome_loja}</div>
       <div class="forn-nivel nivel-${f.nivel}">${nivelIcons[f.nivel]||'🥉'} ${f.nivel}</div>
@@ -402,7 +402,7 @@ function renderProdutos() {
   }
   grid.innerHTML = lista.map(p => {
     const forn = todosForns.find(f=>f.id===p.fornecedor_id);
-    return `<div class="produto-card" onclick="abrirProduto(${p.id})">
+    return `<div class="produto-card" onclick="location.href='club-produto.html?id='+${p.id}">
       <div class="prod-img">${p.imagem_url?`<img src="${p.imagem_url}" alt="${p.nome}"/>`:'🧬'}</div>
       <div class="prod-body">
         <div class="prod-fornecedor">${nivelIcons[forn?.nivel||'bronze']||'🥉'} ${forn?.nome_loja||'—'}</div>
@@ -413,7 +413,7 @@ function renderProdutos() {
             <div class="prod-preco">R$ ${parseFloat(p.preco).toFixed(2).replace('.',',')}</div>
             <div style="font-size:.68rem;color:var(--muted)">${p.estoque} em estoque</div>
           </div>
-          <button class="btn-comprar" onclick="event.stopPropagation();abrirProduto(${p.id})">Comprar</button>
+          <button class="btn-comprar" onclick="event.stopPropagation();location.href='club-produto.html?id='+${p.id}">Comprar</button>
         </div>
       </div>
     </div>`;

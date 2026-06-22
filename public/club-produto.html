@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Produto — PEPMASTERS Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--amber:#FFB300;--red:#E8220A;--orange:#FF6B00;--cream:#FFF8F0;--warm-white:#FFFDF9;--dark:#1C0A00;--mid:#3D1A00;--muted:#7A4A2A;--border:#FFD580}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:var(--cream);min-height:100vh;display:flex;flex-direction:column}
+    header{background:var(--warm-white);border-bottom:3px solid var(--amber);padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(255,179,0,.15)}
+    .logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+    .logo-wrap img{height:34px;width:34px;object-fit:contain}
+    .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.25rem;background:linear-gradient(135deg,var(--red),var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .club-badge{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.65rem;letter-spacing:.08em;padding:2px 7px;border-radius:4px;text-transform:uppercase}
+    .back-link{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none}
+    .back-link:hover{color:var(--orange)}
+    main{flex:1;max-width:980px;margin:0 auto;padding:32px 20px;width:100%}
+
+    /* PRODUTO */
+    .prod-grid{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+    .prod-img-wrap{background:linear-gradient(135deg,#FFF8F0,#FFE5B0);border-radius:18px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:6rem;overflow:hidden;border:1px solid var(--border)}
+    .prod-img-wrap img{width:100%;height:100%;object-fit:cover}
+
+    /* COMPRA CARD */
+    .compra-card{background:#fff;border-radius:18px;border:1px solid #FFE5B0;box-shadow:0 4px 20px rgba(255,179,0,.1);padding:24px;position:sticky;top:84px}
+    .prod-nome{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;color:var(--dark);margin-bottom:6px;line-height:1.2}
+    .prod-preco{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.2rem;color:var(--dark);margin-bottom:4px}
+    .prod-estoque{font-size:.78rem;color:var(--muted);margin-bottom:18px}
+
+    /* FORNECEDOR MINI */
+    .forn-mini{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--cream);border-radius:11px;margin-bottom:18px;text-decoration:none;border:1px solid var(--border);transition:border-color .2s}
+    .forn-mini:hover{border-color:var(--orange)}
+    .forn-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;color:#fff;flex-shrink:0}
+    .forn-info-nome{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;color:var(--dark)}
+    .forn-info-sub{font-size:.72rem;color:var(--muted);margin-top:1px}
+    .nota-stars{color:#FFB300}
+
+    /* FORM */
+    label{display:block;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);margin-bottom:4px;margin-top:12px}
+    input,select{width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:10px;font-size:.9rem;font-family:'Barlow',sans-serif;color:var(--dark);background:var(--warm-white);outline:none;transition:border-color .2s}
+    input:focus,select:focus{border-color:var(--orange)}
+    input::placeholder{color:rgba(0,0,0,.25)}
+    .qty-wrap{display:flex;align-items:center;gap:10px}
+    .qty-btn{width:36px;height:36px;border-radius:9px;border:2px solid var(--border);background:#fff;font-size:1.2rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--mid);transition:all .2s;flex-shrink:0}
+    .qty-btn:hover{border-color:var(--orange);color:var(--orange)}
+    .qty-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;min-width:32px;text-align:center;color:var(--dark)}
+    .custodia-info{background:#FFF3E0;border:1px solid #FFD580;border-radius:10px;padding:10px 13px;font-size:.78rem;color:var(--mid);margin:14px 0;line-height:1.6}
+    .btn-comprar{width:100%;padding:14px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;border-radius:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 16px rgba(232,34,10,.28);transition:opacity .2s;margin-top:8px}
+    .btn-comprar:hover{opacity:.88}
+    .btn-comprar:disabled{opacity:.35;cursor:not-allowed}
+    .btn-share{width:100%;padding:10px;background:none;border:2px solid var(--border);border-radius:11px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;color:var(--mid);cursor:pointer;margin-top:8px;transition:all .2s}
+    .btn-share:hover{border-color:var(--orange);color:var(--orange)}
+
+    /* DESCRIÇÃO */
+    .desc-card{background:#fff;border-radius:16px;border:1px solid #FFE5B0;padding:22px;margin-top:0}
+    .desc-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;text-transform:uppercase;color:var(--dark);margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+    .desc-text{font-size:.9rem;color:var(--muted);line-height:1.8}
+
+    /* AVALIAÇÕES */
+    .aval-card{background:#fff;border-radius:16px;border:1px solid #FFE5B0;padding:22px;margin-top:18px}
+    .aval-item{padding:12px 0;border-bottom:1px solid #FFE5B0}
+    .aval-item:last-child{border:none}
+
+    /* MODAL RESULTADO */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;padding:16px}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#fff;border-radius:18px;padding:28px;max-width:480px;width:100%;text-align:center}
+    .modal-close-btn{margin-top:10px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:.85rem}
+
+    .empty{text-align:center;padding:28px;color:var(--muted);font-size:.85rem}
+    #toast{position:fixed;bottom:20px;right:20px;background:var(--dark);color:#fff;padding:10px 16px;border-radius:9px;font-size:.83rem;border-left:4px solid var(--amber);box-shadow:0 8px 24px rgba(0,0,0,.3);transform:translateY(10px);opacity:0;transition:all .3s;z-index:9999;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    #toast.error{border-left-color:var(--red)}
+    #toast.success{border-left-color:#22c55e}
+    footer{background:var(--dark);color:rgba(255,255,255,.38);text-align:center;padding:18px;font-size:.78rem;margin-top:auto}
+    footer a{color:rgba(255,179,0,.45);text-decoration:none;margin:0 6px}
+    @media(max-width:768px){.prod-grid{grid-template-columns:1fr}.compra-card{position:static}}
+  </style>
+</head>
+<body>
+<header>
+  <a href="club-marketplace.html" class="logo-wrap">
+    <img src="Capturar.PNG" alt="Logo"/>
+    <span class="logo-text">PEPMASTERS</span>
+    <span class="club-badge">Club</span>
+  </a>
+  <a href="club-marketplace.html" class="back-link">← Marketplace</a>
+</header>
+
+<main id="mainContent">
+  <div class="empty">Carregando...</div>
+</main>
+
+<!-- MODAL RESULTADO -->
+<div class="modal-overlay" id="modalResultado">
+  <div class="modal-box">
+    <div id="resIcone" style="font-size:3rem;margin-bottom:12px"></div>
+    <div id="resTitulo" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;color:var(--dark);margin-bottom:8px"></div>
+    <div id="resDesc" style="font-size:.86rem;color:var(--muted);margin-bottom:16px;line-height:1.7"></div>
+    <div id="resQr" style="margin-bottom:12px"></div>
+    <div id="resCopia" style="margin-bottom:14px"></div>
+    <a href="club-meus-pedidos.html" style="display:inline-block;padding:11px 22px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border-radius:10px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;text-transform:uppercase">Ver Meus Pedidos</a>
+    <br><button class="modal-close-btn" onclick="document.getElementById('modalResultado').classList.remove('open')">Continuar comprando</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+<footer>
+  <a href="club-marketplace.html">Marketplace</a> ·
+  <a href="club-meus-pedidos.html">Meus Pedidos</a>
+</footer>
+
+<script src="i18n.js"></script>
+<script src="i18n-init.js"></script>
+<script>
+const nivelIcons = { bronze:'🥉', prata:'🥈', ouro:'🥇', diamante:'💎' };
+const params  = new URLSearchParams(location.search);
+const prodId  = params.get('id');
+let prodAtual = null;
+let qtd = 1;
+
+function renderStars(n) { const v=Math.round(parseFloat(n)||0); return '★'.repeat(v)+'☆'.repeat(5-v); }
+function fmt(v) { return 'R$ ' + parseFloat(v).toFixed(2).replace('.',','); }
+
+async function carregar() {
+  const main = document.getElementById('mainContent');
+  if (!prodId) { main.innerHTML = '<div class="empty">Produto não encontrado.</div>'; return; }
+  try {
+    const [prodRes, fornRes, avalRes] = await Promise.all([
+      fetch('/api/club/produto/' + prodId).then(r => r.ok ? r.json() : null),
+      fetch('/api/club/fornecedores').then(r=>r.json()),
+      fetch('/api/club/avaliacoes/' + prodId).then(r=>r.json()).catch(()=>({avaliacoes:[],media:0,total:0})),
+    ]);
+    if (!prodRes) { main.innerHTML = '<div class="empty">Produto não encontrado ou indisponível.</div>'; return; }
+    prodAtual = prodRes;
+
+    const forns = Array.isArray(fornRes) ? fornRes : [];
+    const forn  = forns.find(f => f.id === prodRes.fornecedor_id);
+    const avals = avalRes.avaliacoes || [];
+    const media = parseFloat(avalRes.media || forn?.nota_media || 0);
+
+    document.title = prodRes.nome + ' — PEPMASTERS Club';
+
+    // Meta OG para compartilhamento
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', prodRes.nome + ' — PEPMASTERS Club');
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', prodRes.descricao || 'Compre com pagamento em custódia.');
+
+    main.innerHTML = `
+      <div class="prod-grid">
+        <!-- Imagem -->
+        <div>
+          <div class="prod-img-wrap">
+            ${prodRes.imagem_url ? `<img src="${prodRes.imagem_url}" alt="${prodRes.nome}"/>` : '🧬'}
+          </div>
+          <!-- Descrição (mobile: abaixo da imagem, desktop: coluna esquerda) -->
+          <div class="desc-card" style="margin-top:18px">
+            <div class="desc-title">📋 Descrição</div>
+            <div class="desc-text">${prodRes.descricao || 'Sem descrição disponível.'}</div>
+          </div>
+          <!-- Avaliações -->
+          ${forn ? `<div class="aval-card">
+            <div class="desc-title">⭐ Avaliações do Fornecedor ${media>0 ? `<span style="font-size:.85rem;font-weight:400;color:var(--muted)">${renderStars(media)} ${media.toFixed(1)}</span>` : ''}</div>
+            ${avals.length ? avals.map(a=>`
+              <div class="aval-item">
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+                  <span class="nota-stars">${renderStars(a.nota)}</span>
+                  <span style="font-size:.7rem;color:var(--muted)">${new Date(a.criado_em).toLocaleDateString('pt-BR')}</span>
+                </div>
+                <div style="font-size:.8rem;font-weight:600;color:var(--mid)">${a.cliente_nome?.split(' ')[0]||'Cliente'}</div>
+                ${a.comentario?`<div style="font-size:.82rem;color:var(--muted)">"${a.comentario}"</div>`:''}
+                ${a.resposta?`<div style="font-size:.77rem;color:var(--orange);margin-top:4px;padding-left:8px;border-left:2px solid var(--orange)">↳ ${a.resposta}</div>`:''}
+              </div>`).join('')
+            : '<div class="empty">Sem avaliações ainda.</div>'}
+          </div>` : ''}
+        </div>
+
+        <!-- Card de compra -->
+        <div class="compra-card">
+          <div class="prod-nome">${prodRes.nome}</div>
+          <div class="prod-preco">${fmt(prodRes.preco)}</div>
+          <div class="prod-estoque">${prodRes.estoque} unidades em estoque</div>
+
+          ${forn ? `<a href="club-fornecedor-perfil.html?id=${forn.id}" class="forn-mini">
+            <div class="forn-avatar">${forn.nome_loja[0].toUpperCase()}</div>
+            <div>
+              <div class="forn-info-nome">${nivelIcons[forn.nivel]||'🥉'} ${forn.nome_loja}</div>
+              <div class="forn-info-sub">${media>0?`<span class="nota-stars">${renderStars(media)}</span> ${media.toFixed(1)} · `:''}${forn.pedidos_ok||0} entregas</div>
+            </div>
+          </a>` : ''}
+
+          <label>Quantidade</label>
+          <div class="qty-wrap">
+            <button class="qty-btn" onclick="alterarQtd(-1)">−</button>
+            <span class="qty-val" id="qtdVal">1</span>
+            <button class="qty-btn" onclick="alterarQtd(1)">+</button>
+            <span id="totalPreco" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--muted);margin-left:6px"></span>
+          </div>
+
+          <label>Seu nome *</label>
+          <input type="text" id="f-nome" placeholder="Nome completo"/>
+          <label>Email</label>
+          <input type="email" id="f-email" placeholder="seu@email.com"/>
+          <label>WhatsApp</label>
+          <input type="text" id="f-telefone" placeholder="5511999999999"/>
+          <label>Endereço de entrega</label>
+          <input type="text" id="f-endereco" placeholder="Rua, nº, cidade, estado, CEP"/>
+          <label>Pagamento</label>
+          <select id="f-pagamento" onchange="toggleCripto()">
+            <option value="pix">PIX</option>
+            <option value="cripto">Cripto (USDT/USDC)</option>
+          </select>
+          <div id="criptoOpts" style="display:none">
+            <label>Token</label>
+            <select id="f-token">
+              <option value="USDTTRX">USDT — Tron TRC-20</option>
+              <option value="USDCPOLYGON">USDC — Polygon</option>
+              <option value="USDTETH">USDT — Ethereum</option>
+              <option value="USDCETH">USDC — Ethereum</option>
+              <option value="USDCSOLANA">USDC — Solana</option>
+            </select>
+          </div>
+
+          <div class="custodia-info">🔒 <strong>Pagamento protegido por custódia.</strong> O valor fica retido na Pepmasters e só é liberado após você receber o produto (ou 5 dias sem disputa). Taxa: 5%.</div>
+
+          <button class="btn-comprar" id="btnComprar" onclick="comprar()">Confirmar Pedido</button>
+          <button class="btn-share" onclick="compartilhar()">📤 Compartilhar Produto</button>
+        </div>
+      </div>`;
+
+    // Preencher nome se logado
+    const nome = localStorage.getItem('pep_nome');
+    if (nome) document.getElementById('f-nome').value = nome;
+
+  } catch(e) {
+    document.getElementById('mainContent').innerHTML = '<div class="empty">Erro ao carregar. Tente novamente.</div>';
+  }
+}
+
+function alterarQtd(delta) {
+  if (!prodAtual) return;
+  qtd = Math.max(1, Math.min(prodAtual.estoque, qtd + delta));
+  document.getElementById('qtdVal').textContent = qtd;
+  document.getElementById('totalPreco').textContent = qtd > 1 ? '= ' + fmt(prodAtual.preco * qtd) : '';
+}
+
+function toggleCripto() {
+  document.getElementById('criptoOpts').style.display = document.getElementById('f-pagamento').value === 'cripto' ? 'block' : 'none';
+}
+
+async function comprar() {
+  if (!prodAtual) return;
+  const nome = document.getElementById('f-nome').value.trim();
+  if (!nome) { showToast('Informe seu nome.', 'error'); return; }
+  const btn = document.getElementById('btnComprar');
+  btn.disabled = true; btn.textContent = '⏳ Processando...';
+  const pagamento = document.getElementById('f-pagamento').value;
+  try {
+    const res = await fetch('/api/club/pedido', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        produto_id:       prodAtual.id,
+        quantidade:       qtd,
+        nome_cliente:     nome,
+        email_cliente:    document.getElementById('f-email').value.trim() || null,
+        telefone_cliente: document.getElementById('f-telefone').value.trim() || null,
+        endereco:         document.getElementById('f-endereco').value.trim() || null,
+        pagamento,
+        crypto_token: pagamento === 'cripto' ? document.getElementById('f-token').value : null,
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.erro || 'Erro ao criar pedido.', 'error'); return; }
+    mostrarResultado(data, pagamento);
+  } catch { showToast('Erro de conexão.', 'error'); }
+  finally { btn.disabled = false; btn.textContent = 'Confirmar Pedido'; }
+}
+
+function mostrarResultado(data, pagamento) {
+  document.getElementById('resIcone').textContent = '✅';
+  document.getElementById('resTitulo').textContent = 'Pedido #' + data.pedido_id + ' criado!';
+  document.getElementById('resDesc').innerHTML =
+    `Total: <strong>${fmt(data.total)}</strong><br>` +
+    (pagamento === 'pix' ? '📲 Escaneie o QR code ou copie o código PIX abaixo.' : '🔐 Envie o valor para o endereço abaixo.');
+  const resQr    = document.getElementById('resQr');
+  const resCopia = document.getElementById('resCopia');
+  if (pagamento === 'pix') {
+    resQr.innerHTML = data.qrcode_url ? `<img src="${data.qrcode_url}" style="width:160px;height:160px;border-radius:10px;border:3px solid var(--amber)"/>` : '';
+    if (data.copia_cola) {
+      resCopia.innerHTML = `<div style="background:#f5f5f5;border-radius:8px;padding:8px;font-size:.7rem;font-family:monospace;word-break:break-all;margin-bottom:8px">${data.copia_cola}</div>
+        <button onclick="copiar('${data.copia_cola.replace(/'/g,"\\'")}',this)" style="padding:7px 16px;background:var(--amber);border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer">📋 Copiar PIX</button>`;
+    }
+  } else {
+    resQr.innerHTML = '';
+    resCopia.innerHTML = data.nowpay_address
+      ? `<div style="font-size:.72rem;font-family:monospace;word-break:break-all;background:#f5f5f5;padding:8px;border-radius:8px;margin-bottom:8px">${data.nowpay_address}</div>
+         <strong>${data.nowpay_amount} ${(data.nowpay_currency||'').toUpperCase()}</strong>`
+      : '';
+  }
+  document.getElementById('modalResultado').classList.add('open');
+}
+
+async function copiar(texto, btn) {
+  try { await navigator.clipboard.writeText(texto); btn.textContent = '✅ Copiado!'; setTimeout(()=>btn.textContent='📋 Copiar PIX', 2500); } catch {}
+}
+
+function compartilhar() {
+  const url = location.href;
+  if (navigator.share) {
+    navigator.share({ title: prodAtual?.nome || 'Produto PEPMASTERS Club', url });
+  } else {
+    navigator.clipboard.writeText(url).then(() => showToast('Link copiado!', 'success'));
+  }
+}
+
+function showToast(msg, tipo) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show' + (tipo === 'error' ? ' error' : tipo === 'success' ? ' success' : '');
+  setTimeout(() => t.className = '', 3500);
+}
+
+carregar();
+</script>
+</body>
+</html>
