@@ -20,12 +20,24 @@
     .btn-outline{border:2px solid var(--border);color:var(--mid);background:none}
     .btn-outline:hover{border-color:var(--orange);color:var(--orange)}
     .btn-solid{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;box-shadow:0 3px 10px rgba(232,34,10,.2)}
-    /* Fornecedor logado no header */
-    .forn-header-info{display:flex;align-items:center;gap:8px;padding:5px 12px;background:linear-gradient(135deg,rgba(255,179,0,.1),rgba(255,107,0,.08));border:1px solid rgba(255,179,0,.25);border-radius:10px;cursor:pointer;text-decoration:none;transition:all .2s}
+    /* HEADER AUTH DROPDOWN */
+    .auth-wrap{position:relative}
+    .auth-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border:2px solid var(--border);border-radius:9px;background:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;text-transform:uppercase;color:var(--mid);transition:all .2s;white-space:nowrap}
+    .auth-btn:hover{border-color:var(--orange);color:var(--orange)}
+    .auth-dropdown{display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:2px solid var(--border);border-radius:12px;min-width:200px;box-shadow:0 8px 24px rgba(255,107,0,.15);z-index:9999;overflow:hidden}
+    .auth-dropdown.open{display:block}
+    .auth-section{padding:8px 0;border-bottom:1px solid #FFE5B0}
+    .auth-section:last-child{border:none}
+    .auth-section-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px 14px 4px}
+    .auth-item{display:block;padding:9px 14px;font-size:.85rem;color:var(--mid);text-decoration:none;transition:background .15s;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:'Barlow',sans-serif}
+    .auth-item:hover{background:#FFF3E0;color:var(--orange)}
+    .auth-item.active-user{font-weight:600;color:var(--dark)}
+    /* Fornecedor logado */
+    .forn-header-info{display:flex;align-items:center;gap:7px;padding:5px 10px;background:linear-gradient(135deg,rgba(255,179,0,.1),rgba(255,107,0,.06));border:1px solid rgba(255,179,0,.22);border-radius:9px;cursor:pointer;text-decoration:none;transition:all .2s}
     .forn-header-info:hover{border-color:var(--amber)}
-    .forn-header-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.85rem;color:#fff;flex-shrink:0}
-    .forn-header-nome{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;color:var(--mid);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .forn-header-sub{font-size:.65rem;color:var(--muted)}
+    .forn-header-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.8rem;color:#fff;flex-shrink:0}
+    .forn-header-nome{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;color:var(--mid);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .forn-header-sub{font-size:.62rem;color:var(--muted)}
 
     /* HERO */
     .hero{background:linear-gradient(135deg,var(--dark),#2a0e00);padding:44px 24px;text-align:center;color:#fff}
@@ -130,11 +142,33 @@
     <span class="club-badge">Club</span>
   </a>
   <div class="header-right">
-    <!-- Área do fornecedor — aparece se logado -->
+    <!-- Fornecedor logado -->
     <div id="fornHeaderArea"></div>
-    <!-- Área do cliente -->
-    <a href="club-meus-pedidos.html" class="btn-sm btn-outline hide-mobile" data-i18n="club.myorders">Meus Pedidos</a>
-    <a href="club-fornecedor-cadastro.html" class="btn-sm btn-outline hide-mobile" data-i18n="club.besupplier">Seja Fornecedor</a>
+    <!-- Dropdown de acesso -->
+    <div class="auth-wrap" id="authWrap">
+      <button class="auth-btn" id="authBtn" onclick="toggleAuthDD()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="authBtnLabel" data-i18n="club.login.client">Entrar</span>
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <div class="auth-dropdown" id="authDropdown">
+        <!-- Seção cliente -->
+        <div class="auth-section">
+          <div class="auth-section-label" data-i18n="club.login.client">Cliente</div>
+          <div id="clienteArea">
+            <a href="club-meus-pedidos.html" class="auth-item" data-i18n="club.myorders">Meus Pedidos</a>
+            <a href="login.html?redirect=club-meus-pedidos.html" class="auth-item" data-i18n="nav.login">Fazer Login</a>
+            <a href="cadastro.html" class="auth-item" data-i18n="nav.register">Criar Conta</a>
+          </div>
+        </div>
+        <!-- Seção fornecedor -->
+        <div class="auth-section">
+          <div class="auth-section-label" data-i18n="club.supplier.panel">Fornecedor</div>
+          <a href="club-fornecedor-painel.html" class="auth-item" data-i18n="club.supplier.panel">Painel do Fornecedor</a>
+          <a href="club-fornecedor-cadastro.html" class="auth-item" data-i18n="club.besupplier">Seja um Fornecedor</a>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -251,11 +285,35 @@ let prodAtual     = null;
 let categoriaAtiva = '';
 let fornFiltro    = null;
 
-// ── Header fornecedor logado ──────────────────────────────
+// ── Header auth ───────────────────────────────────────────
+function toggleAuthDD() {
+  document.getElementById('authDropdown').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.auth-wrap')) document.getElementById('authDropdown')?.classList.remove('open');
+});
+
+// Detectar cliente logado
+(function() {
+  const token = localStorage.getItem('pep_token');
+  const nome  = localStorage.getItem('pep_nome');
+  if (token && nome) {
+    const clienteArea = document.getElementById('clienteArea');
+    if (clienteArea) {
+      clienteArea.innerHTML = `
+        <span class="auth-item active-user">👋 ${nome.split(' ')[0]}</span>
+        <a href="club-meus-pedidos.html" class="auth-item" data-i18n="club.myorders">Meus Pedidos</a>
+        <button class="auth-item" onclick="localStorage.removeItem('pep_token');localStorage.removeItem('pep_nome');location.reload()" data-i18n="club.logout">Sair</button>`;
+    }
+    document.getElementById('authBtnLabel').textContent = nome.split(' ')[0];
+  }
+})();
+
+// Detectar fornecedor logado
 (function() {
   const tk = localStorage.getItem('club_forn_token');
   const area = document.getElementById('fornHeaderArea');
-  if (!tk) return;
+  if (!tk || !area) return;
   fetch('/api/club/fornecedor/perfil', { headers: { Authorization: 'Bearer ' + tk } })
     .then(r => r.ok ? r.json() : null)
     .then(f => {
@@ -265,7 +323,7 @@ let fornFiltro    = null;
           <div class="forn-header-avatar">${f.nome_loja[0].toUpperCase()}</div>
           <div>
             <div class="forn-header-nome">${f.nome_loja}</div>
-            <div class="forn-header-sub">${nivelIcons[f.nivel]||'🥉'} ${f.nivel} · Painel →</div>
+            <div class="forn-header-sub">${nivelIcons[f.nivel]||'🥉'} Painel →</div>
           </div>
         </a>`;
     }).catch(()=>{});
