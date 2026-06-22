@@ -191,7 +191,7 @@ async function initDB() {
     const pedidosCols = [
       'usuario_id INT', 'nome TEXT', 'email TEXT', 'cpf TEXT', 'telefone TEXT',
       'cep TEXT', 'rua TEXT', 'numero TEXT', 'bairro TEXT', 'cidade TEXT', 'complemento TEXT',
-      'produto_id INT', 'produto_nome TEXT', 'preco_unitario NUMERIC(10,2)',
+      'produto_id TEXT', 'produto_nome TEXT', 'preco_unitario NUMERIC(10,2)',
       'desconto NUMERIC(10,2) DEFAULT 0', 'total NUMERIC(10,2)',
       'pagamento TEXT', 'cupom TEXT', 'status TEXT DEFAULT \'pix_pending\'',
       'pixgo_id TEXT', 'codigo_rastreio TEXT',
@@ -201,6 +201,8 @@ async function initDB() {
       const colName = col.split(' ')[0];
       await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS ${col}`).catch(() => {});
     }
+    // Converter produto_id de INT para TEXT (códigos de produto agora são alfanuméricos, ex: 'TB10', 'CGL5')
+    await client.query(`ALTER TABLE pep_pedidos ALTER COLUMN produto_id TYPE TEXT USING produto_id::TEXT`).catch(() => {});
 
     // Cupons — garantir colunas necessárias
     await client.query(`
@@ -1647,7 +1649,7 @@ app.get('/api/seed-pep-159357', async (req, res) => {
     const pedCols = [
       'usuario_id INT','nome TEXT','email TEXT','cpf TEXT','telefone TEXT',
       'cep TEXT','rua TEXT','numero TEXT','bairro TEXT','cidade TEXT','complemento TEXT',
-      'produto_id INT','produto_nome TEXT','preco_unitario NUMERIC(10,2)',
+      'produto_id TEXT','produto_nome TEXT','preco_unitario NUMERIC(10,2)',
       'desconto NUMERIC(10,2) DEFAULT 0','total NUMERIC(10,2)',
       'pagamento TEXT','cupom TEXT','pixgo_id TEXT','codigo_rastreio TEXT',
       'crypto_valor NUMERIC(18,6) DEFAULT 0','crypto_token TEXT'
