@@ -48,6 +48,7 @@
     .b-enviado{background:#1e3a5f;color:#60a5fa}
     .b-entregue{background:#3b0764;color:#c084fc}
     .b-cancelado{background:#450a0a;color:#f87171}
+    .b-parcial{background:#7c2d12;color:#fb923c}
     .input-rastreio{background:rgba(255,255,255,.06);border:1px solid rgba(255,179,0,.2);border-radius:6px;padding:5px 8px;color:#fff;font-size:.8rem;width:130px;font-family:'Barlow',sans-serif}
     .btn-save{padding:5px 12px;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:.04em;text-transform:uppercase}
     select.status-sel{background:rgba(255,255,255,.06);border:1px solid rgba(255,179,0,.2);border-radius:6px;padding:5px 8px;color:#fff;font-size:.8rem;font-family:'Barlow',sans-serif}
@@ -135,8 +136,8 @@
 
   let todos = [];
 
-  const badgeClass = { pago:'b-pago', pix_pending:'b-pending', enviado:'b-enviado', entregue:'b-entregue', cancelado:'b-cancelado' };
-  const statusLabel = { pago:'Pago', pix_pending:'Aguard. PIX', enviado:'Enviado', entregue:'Entregue', cancelado:'Cancelado' };
+  const badgeClass = { pago:'b-pago', pix_pending:'b-pending', enviado:'b-enviado', entregue:'b-entregue', cancelado:'b-cancelado', pagamento_parcial:'b-parcial' };
+  const statusLabel = { pago:'Pago', pix_pending:'Aguard. PIX', enviado:'Enviado', entregue:'Entregue', cancelado:'Cancelado', pagamento_parcial:'Pgto. Parcial' };
 
   async function carregar() {
     try {
@@ -170,7 +171,7 @@
           <td>${p.nome || '—'}</td>
           <td>${p.email || '—'}</td>
           <td>
-            ${(p.rua || p.cidade) ? `<button onclick='mostrarEndereco(${JSON.stringify({nome:p.nome,cep:p.cep,rua:p.rua,numero:p.numero,bairro:p.bairro,cidade:p.cidade,complemento:p.complemento,telefone:p.telefone,retirada:p.retirada_paraguai}).replace(/'/g,"&#39;")})' style="padding:4px 8px;background:#FFF3E8;border:1px solid #FFD580;border-radius:6px;cursor:pointer;font-size:.72rem;font-weight:700;color:#3D1A00">📍 Ver</button>` : p.endereco ? `<span style="font-size:.75rem;color:rgba(255,255,255,.7)">${p.endereco}</span>` : (p.retirada_paraguai ? '<span style="font-size:.72rem;color:#7A4A2A">📦 Retirada PY</span>' : '<span style="color:#ccc">—</span>')}
+            ${(p.rua || p.cidade) ? `<button onclick='mostrarEndereco(${JSON.stringify({nome:p.nome,cep:p.cep,rua:p.rua,numero:p.numero,bairro:p.bairro,cidade:p.cidade,complemento:p.complemento,telefone:p.telefone,retirada:p.retirada_paraguai}).replace(/'/g,"&#39;")})' style="padding:4px 8px;background:#FFF3E8;border:1px solid #FFD580;border-radius:6px;cursor:pointer;font-size:.72rem;font-weight:700;color:#3D1A00">📍 Ver</button>` : (p.retirada_paraguai ? '<span style="font-size:.72rem;color:#7A4A2A">📦 Retirada PY</span>' : '<span style="color:#ccc">—</span>')}
           </td>
           <td>${p.produto_nome || '—'}</td>
           <td>R$ ${parseFloat(p.total || 0).toFixed(2).replace('.',',')}</td>
@@ -181,7 +182,7 @@
           </td>
           <td>
             <select class="status-sel" onchange="salvarStatus(${p.id}, this.value)">
-              ${['pago','pix_pending','enviado','entregue','cancelado'].map(s =>
+              ${['pago','pix_pending','pagamento_parcial','enviado','entregue','cancelado'].map(s =>
                 '<option value="' + s + '"' + (p.status === s ? ' selected' : '') + '>' + (statusLabel[s] || s) + '</option>'
               ).join('')}
             </select>
@@ -301,28 +302,17 @@ function desmarcarTodos() {
 }
 
 function exportarCSV() {
-  var lista = selectedIds.length ? todos.filter(function(p){ return selectedIds.includes(p.id); }) : todos;
-  if (!lista.length) { showToast('Nenhum pedido para exportar.'); return; }
-  var rows = [['ID','Cliente','Email','Produto','Total','Aduana','Endereço','Telefone','CPF','Pagamento','Status','Rastreio','Data']];
-  lista.forEach(function(p) {
-    rows.push([
-      p.id,
-      p.nome || '',
-      p.email || '',
-      p.produto_nome || '',
-      parseFloat(p.total || 0).toFixed(2),
-      '',
-      p.endereco || [p.rua, p.numero, p.complemento, p.cidade, p.estado, p.cep].filter(Boolean).join(', ') || '',
-      p.telefone || '',
-      p.cpf || '',
-      p.pagamento || '',
-      p.status || '',
-      p.codigo_rastreio || '',
-      new Date(p.criado_em).toLocaleDateString('pt-BR')
-    ]);
+  if (!selectedIds.length) return;
+  var rows = [['ID','Email','Produto','Total','Pagamento','Status','Data']];
+  document.querySelectorAll('#tabelaPedidos tr[data-id]').forEach(function(tr) {
+    var id = parseInt(tr.getAttribute('data-id'));
+    if (!selectedIds.includes(id)) return;
+    var cells = tr.querySelectorAll('td');
+    // cells[0]=checkbox, [1]=id, [2]=email, [3]=produto, [4]=total, [5]=pagamento, [6]=status, [7]=data
+    rows.push([cells[1].textContent, cells[2].textContent, cells[3].textContent, cells[4].textContent, cells[5].textContent, cells[6].textContent, cells[7].textContent]);
   });
   var csv = rows.map(function(r){ return r.map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
-  var blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a'); a.href=url; a.download='pedidos_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
   URL.revokeObjectURL(url);
