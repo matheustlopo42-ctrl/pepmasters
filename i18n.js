@@ -767,5 +767,12 @@ window.PEPMASTERS_I18N = {
   "club.orders.title":   { en:"My Orders",                  pt:"Meus Pedidos",                     es:"Mis Pedidos",                      de:"Meine Bestellungen",              fr:"Mes Commandes" },
   "club.orders.sub":     { en:"Track your orders and open disputes if needed.", pt:"Acompanhe seus pedidos e abra disputas se necessário.", es:"Seguimiento de pedidos y disputas.", de:"Bestellungen verfolgen.", fr:"Suivez vos commandes." },
   "club.dispute.open":   { en:"⚠️ Open Dispute",            pt:"⚠️ Abrir Disputa",                 es:"⚠️ Abrir Disputa",                 de:"⚠️ Streit öffnen",                fr:"⚠️ Ouvrir un litige" },
+  "club.deliveries":    { en:"deliveries",          pt:"entregas",              es:"entregas",              de:"Lieferungen",           fr:"livraisons" },
+  "club.disputes":      { en:"disputes",            pt:"disputas",              es:"disputas",              de:"Streitigkeiten",        fr:"litiges" },
+  "club.viewprofile":   { en:"View profile →",      pt:"Ver perfil →",          es:"Ver perfil →",          de:"Profil ansehen →",      fr:"Voir profil →" },
+  "club.instock":       { en:"in stock",             pt:"em estoque",            es:"en stock",              de:"auf Lager",             fr:"en stock" },
+  "club.unitsinstock":  { en:"units in stock",       pt:"unidades em estoque",   es:"unidades en stock",     de:"Einheiten auf Lager",   fr:"unités en stock" },
+  "club.buy":           { en:"Buy",                  pt:"Comprar",               es:"Comprar",               de:"Kaufen",                fr:"Acheter" },
+  "club.comingsoon":    { en:"Coming soon!",         pt:"Em breve!",             es:"¡Próximamente!",        de:"Demnächst!",            fr:"Bientôt!" },
   "club.review.btn":     { en:"⭐ Rate",                     pt:"⭐ Avaliar",                        es:"⭐ Calificar",                      de:"⭐ Bewerten",                      fr:"⭐ Évaluer" }
 };

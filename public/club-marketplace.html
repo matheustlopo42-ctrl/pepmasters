@@ -277,6 +277,7 @@
 <script src="i18n-init.js"></script>
 <script>
 const nivelIcons = { bronze:'🥉', prata:'🥈', ouro:'🥇', diamante:'💎' };
+function t(key, fallback) { return (window.PEP_LANG && window.PEP_LANG.t(key)) || fallback || key; }
 let todosProdutos = [];
 let todosForns    = [];
 let prodAtual     = null;
@@ -359,9 +360,9 @@ function renderFornecedores() {
         <div class="forn-nome">${f.nome_loja}</div>
         <div class="forn-nivel nivel-${f.nivel}">${nivelIcons[f.nivel]||'🥉'} ${f.nivel}</div>
         ${parseFloat(f.nota_media||0)>0 ? `<div><span class="nota-stars">${renderStars(f.nota_media)}</span> <span style="font-size:.68rem;color:var(--muted)">${parseFloat(f.nota_media).toFixed(1)}</span></div>` : ''}
-        <div class="forn-stats">${f.pedidos_ok} entregas · ${f.disputas} disputas</div>
+        <div class="forn-stats">${f.pedidos_ok} ${t('club.deliveries','entregas')} · ${f.disputas} ${t('club.disputes','disputas')}</div>
       </div>
-      <a href="club-fornecedor-perfil.html?id=${f.id}" style="display:block;margin-top:8px;font-size:.68rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--orange);text-decoration:none;text-align:center">Ver perfil →</a>
+      <a href="club-fornecedor-perfil.html?id=${f.id}" style="display:block;margin-top:8px;font-size:.68rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--orange);text-decoration:none;text-align:center">${t('club.viewprofile','Ver perfil →')}</a>
     </div>`).join('');
 }
 
@@ -397,7 +398,7 @@ function renderProdutos() {
       ? `<div class="empty" style="grid-column:1/-1">🔍 Nenhum produto encontrado.</div>`
       : `<div style="grid-column:1/-1;text-align:center;padding:52px 20px;max-width:560px;margin:0 auto">
           <div style="font-size:3.5rem;margin-bottom:14px">🧬</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;color:var(--dark);margin-bottom:8px">Em breve!</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;color:var(--dark);margin-bottom:8px">${t('club.comingsoon','Em breve!')}</div>
           <p style="color:var(--muted);font-size:.88rem;line-height:1.7;margin-bottom:22px">O PEPMASTERS Club está sendo lançado. Em breve fornecedores verificados estarão listando seus produtos com pagamento em custódia e total segurança.</p>
           <a href="club-fornecedor-cadastro.html" style="padding:11px 22px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border-radius:10px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;text-transform:uppercase">🏪 Seja um Fornecedor</a>
         </div>`;
@@ -414,9 +415,9 @@ function renderProdutos() {
         <div class="prod-footer">
           <div>
             <div class="prod-preco">R$ ${parseFloat(p.preco).toFixed(2).replace('.',',')}</div>
-            <div style="font-size:.68rem;color:var(--muted)">${p.estoque} em estoque</div>
+            <div style="font-size:.68rem;color:var(--muted)">${p.estoque} ${t('club.instock','em estoque')}</div>
           </div>
-          <button class="btn-comprar" onclick="event.stopPropagation();location.href='club-produto.html?id='+${p.id}">Comprar</button>
+          <button class="btn-comprar" onclick="event.stopPropagation();location.href='club-produto.html?id='+${p.id}">${t('club.buy','Comprar')}</button>
         </div>
       </div>
     </div>`;
@@ -435,13 +436,13 @@ function abrirProduto(id) {
       <div class="modal-forn-nome">${nivelIcons[forn?.nivel||'bronze']} ${forn?.nome_loja||'—'}</div>
       <div class="modal-forn-stats">
         ${parseFloat(forn?.nota_media||0)>0?`<span class="nota-stars">${renderStars(forn.nota_media)}</span> ${parseFloat(forn.nota_media).toFixed(1)} · `:''}
-        ${forn?.pedidos_ok||0} entregas · ${forn?.disputas||0} disputas
+        ${forn?.pedidos_ok||0} ${t('club.deliveries','entregas')} · ${forn?.disputas||0} ${t('club.disputes','disputas')}
       </div>
     </div>`;
   document.getElementById('modalNome').textContent  = p.nome;
   document.getElementById('modalDesc').textContent  = p.descricao||'';
   document.getElementById('modalPreco').textContent = 'R$ ' + parseFloat(p.preco).toFixed(2).replace('.',',');
-  document.getElementById('modalEstoque').textContent = p.estoque + ' unidades em estoque';
+  document.getElementById('modalEstoque').textContent = p.estoque + ' ' + t('club.unitsinstock','unidades em estoque');
   document.getElementById('m-qtd').value = 1;
   document.getElementById('m-qtd').max   = p.estoque;
   atualizarTotal();
