@@ -119,11 +119,11 @@ async function carregar() {
   if (!fornId) { main.innerHTML = '<div class="empty">Fornecedor não encontrado.</div>'; return; }
   try {
     const [fornRes, prodsRes, avalRes] = await Promise.all([
-      fetch('/api/club/fornecedores').then(r=>r.json()),
+      fetch('/api/club/fornecedor/'+fornId).then(r=>r.ok?r.json():null),
       fetch('/api/club/produtos?fornecedor_id='+fornId).then(r=>r.json()),
       fetch('/api/club/avaliacoes/'+fornId).then(r=>r.json()),
     ]);
-    const forn = (Array.isArray(fornRes) ? fornRes : []).find(f=>f.id==fornId);
+    const forn = fornRes;
     if (!forn) { main.innerHTML = '<div class="empty">Fornecedor não encontrado ou inativo.</div>'; return; }
     const prods = Array.isArray(prodsRes) ? prodsRes : [];
     const avals = avalRes.avaliacoes || [];

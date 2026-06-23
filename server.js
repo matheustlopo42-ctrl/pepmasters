@@ -3418,6 +3418,22 @@ app.post('/api/club/fornecedor/login', rateLimit(10, 60000), async (req, res) =>
 
 // ── PAINEL DO FORNECEDOR ──────────────────────────────────
 
+// GET /api/club/fornecedor/:id — perfil público de um fornecedor
+app.get('/api/club/fornecedor/:id', async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT f.id, f.nome_loja, f.descricao, f.nivel, f.logo_url, f.whatsapp, f.instagram,
+             f.total_vendas, f.pedidos_ok, f.disputas, f.nota_media, f.total_avaliacoes,
+             COUNT(p.id) as total_produtos
+      FROM club_fornecedores f
+      LEFT JOIN club_produtos p ON p.fornecedor_id=f.id AND p.status='aprovado'
+      WHERE f.id=$1 AND f.status='ativo'
+      GROUP BY f.id`, [req.params.id]);
+    if (!r.rows.length) return res.status(404).json({ erro: 'Fornecedor não encontrado.' });
+    res.json(r.rows[0]);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
 // GET /api/club/fornecedor/perfil
 app.get('/api/club/fornecedor/perfil', clubFornecedorMiddleware, async (req, res) => {
   res.json(req.fornecedor);
