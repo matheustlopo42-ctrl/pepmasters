@@ -559,6 +559,12 @@ document.addEventListener('click', e => {
 });
 
 carregar();
+
+// Re-renderizar cards quando idioma mudar
+window.addEventListener('pep_lang_change', function() {
+  renderFornecedores();
+  renderProdutos();
+});
 </script>
 </body>
 </html>
