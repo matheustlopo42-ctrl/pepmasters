@@ -399,6 +399,26 @@ async function initDB() {
       )
     `).catch(()=>{});
 
+    // Avaliações
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS club_avaliacoes (
+        id            SERIAL PRIMARY KEY,
+        pedido_id     INT NOT NULL REFERENCES club_pedidos(id),
+        fornecedor_id INT NOT NULL REFERENCES club_fornecedores(id),
+        usuario_id    INT REFERENCES pep_usuarios(id),
+        nota          INT NOT NULL CHECK (nota >= 1 AND nota <= 5),
+        comentario    TEXT,
+        resposta      TEXT,
+        criado_em     TIMESTAMPTZ DEFAULT NOW()
+      )
+    `).catch(()=>{});
+    await client.query(`ALTER TABLE club_pedidos ADD COLUMN IF NOT EXISTS avaliado BOOLEAN DEFAULT FALSE`).catch(()=>{});
+    await client.query(`ALTER TABLE club_fornecedores ADD COLUMN IF NOT EXISTS nota_media NUMERIC(3,2) DEFAULT 0`).catch(()=>{});
+    await client.query(`ALTER TABLE club_fornecedores ADD COLUMN IF NOT EXISTS total_avaliacoes INT DEFAULT 0`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS observacao TEXT`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS quantidade INT DEFAULT 1`).catch(()=>{});
+    await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS endereco TEXT`).catch(()=>{});
+
 
 
     await client.query(`
@@ -3269,16 +3289,6 @@ async function webhookNowpaymentsMembers(req, res) {
   }
 }
 
-// ─────────────────────────────────────────────
-//  404 FALLBACK (SPA)
-// ─────────────────────────────────────────────
-app.use((req, res) => {
-  if (req.path.startsWith('/api/') || req.path.startsWith('/webhook/')) {
-    return res.status(404).json({ erro: 'Rota não encontrada.' });
-  }
-  res.sendFile(path.join(__dirname, 'public', '404.html'));
-});
-
 // ═══════════════════════════════════════════════════════════
 //  PEPMASTERS CLUB — Endpoints
 // ═══════════════════════════════════════════════════════════
@@ -3418,22 +3428,6 @@ app.post('/api/club/fornecedor/login', rateLimit(10, 60000), async (req, res) =>
 
 // ── PAINEL DO FORNECEDOR ──────────────────────────────────
 
-// GET /api/club/fornecedor/:id — perfil público de um fornecedor
-app.get('/api/club/fornecedor/:id', async (req, res) => {
-  try {
-    const r = await pool.query(`
-      SELECT f.id, f.nome_loja, f.descricao, f.nivel, f.logo_url, f.whatsapp, f.instagram,
-             f.total_vendas, f.pedidos_ok, f.disputas, f.nota_media, f.total_avaliacoes,
-             COUNT(p.id) as total_produtos
-      FROM club_fornecedores f
-      LEFT JOIN club_produtos p ON p.fornecedor_id=f.id AND p.status='aprovado'
-      WHERE f.id=$1 AND f.status='ativo'
-      GROUP BY f.id`, [req.params.id]);
-    if (!r.rows.length) return res.status(404).json({ erro: 'Fornecedor não encontrado.' });
-    res.json(r.rows[0]);
-  } catch(e) { res.status(500).json({ erro: e.message }); }
-});
-
 // GET /api/club/fornecedor/perfil
 app.get('/api/club/fornecedor/perfil', clubFornecedorMiddleware, async (req, res) => {
   res.json(req.fornecedor);
@@ -3539,20 +3533,7 @@ app.put('/api/club/fornecedor/pedido/:id/enviar', clubFornecedorMiddleware, asyn
     );
     if (!r.rows.length) return res.status(400).json({ erro: 'Pedido não encontrado ou já enviado.' });
     const p = r.rows[0];
-    // Notificar cliente por email se tiver
-    if (p.email_cliente) {
-      enviarEmail(p.email_cliente,
-        `📦 Seu pedido Club #${p.id} foi enviado!`,
-        `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
-          <h2 style="color:#FFB300">📦 Pedido enviado!</h2>
-          <p>Olá, ${p.nome_cliente?.split(' ')[0] || 'cliente'}!</p>
-          <p>Seu pedido <strong>#${p.id}</strong> de <strong>${p.produto_nome}</strong> foi enviado.</p>
-          ${codigo_rastreio ? `<p>Código de rastreio: <strong>${codigo_rastreio}</strong></p>` : ''}
-          <p>⏳ O pagamento será liberado para o fornecedor automaticamente em <strong>5 dias</strong> caso não haja disputa.</p>
-          <p>Se tiver algum problema, acesse <a href="${BASE_URL}/club/meus-pedidos.html">Meus Pedidos</a> e abra uma disputa.</p>
-        </div>`
-      ).catch(()=>{});
-    }
+    await notificarPedidoClubEnviado(p);
     res.json({ ok: true });
   } catch(e) { res.status(500).json({ erro: e.message }); }
 });
@@ -3744,14 +3725,8 @@ app.post('/webhook/club/pixgo', async (req, res) => {
     if (!external_id?.startsWith('club-')) return res.json({ ok: true });
     const pedidoId = parseInt(external_id.replace('club-', ''));
     if (status === 'paid' || status === 'completed') {
-      await pool.query('UPDATE club_pedidos SET status=\'pago\' WHERE id=$1 AND status=\'aguardando_pagamento\'', [pedidoId]);
-      const p = (await pool.query('SELECT * FROM club_pedidos WHERE id=$1', [pedidoId])).rows[0];
-      if (p?.email_cliente) {
-        enviarEmail(p.email_cliente, `✅ Pagamento confirmado — Club #${pedidoId}`,
-          `<p>Olá! Seu pagamento do pedido <strong>#${pedidoId}</strong> foi confirmado. Aguarde o envio do fornecedor.</p>`
-        ).catch(()=>{});
-      }
-      enviarWhatsApp(`✅ Club PIX confirmado! Pedido #${pedidoId} — R$ ${parseFloat(amount||0).toFixed(2)}`);
+      const upd = await pool.query(`UPDATE club_pedidos SET status='pago' WHERE id=$1 AND status='aguardando_pagamento' RETURNING *`, [pedidoId]);
+      if (upd.rows.length) await notificarPedidoClubPago(upd.rows[0]);
     }
     res.json({ ok: true });
   } catch(e) { console.error('[Club Webhook PIX]', e.message); res.json({ ok: true }); }
@@ -3821,34 +3796,12 @@ app.put('/api/admin/club/fornecedor/:id', adminMiddleware, async (req, res) => {
     if (status === 'ativo') {
       const f = await pool.query('SELECT f.*, u.email, u.nome FROM club_fornecedores f JOIN pep_usuarios u ON u.id=f.usuario_id WHERE f.id=$1', [req.params.id]);
       if (f.rows.length) {
-        const forn = f.rows[0];
-        enviarEmail(forn.email, '✅ Cadastro aprovado — PEPMASTERS Club',
-          `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
+        enviarEmail(f.rows[0].email, '✅ Cadastro aprovado — PEPMASTERS Club',
+          `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
             <h2 style="color:#FFB300">✅ Bem-vindo ao PEPMASTERS Club!</h2>
-            <p>Olá, <strong>${forn.nome.split(' ')[0]}</strong>!</p>
-            <p>Seu cadastro como fornecedor foi <strong>aprovado</strong>. Agora você pode cadastrar seus produtos e começar a vender!</p>
-            <p style="margin:16px 0"><strong>Próximos passos:</strong><br>
-            1. Acesse o painel abaixo<br>
-            2. Vá em 📦 Meus Produtos → + Novo Produto<br>
-            3. Aguarde a aprovação do produto (geralmente rápido)<br>
-            4. Seu produto aparece no marketplace!</p>
-            <a href="${BASE_URL}/club-fornecedor-painel.html" style="padding:12px 28px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px;display:inline-block;margin-top:4px;font-family:sans-serif;font-weight:700">Acessar Painel →</a>
-            <p style="margin-top:20px;font-size:.85rem;color:#888">Dúvidas? Entre em contato via WhatsApp.</p>
-          </div>`
-        ).catch(()=>{});
-        // Notificar admin também
-        enviarWhatsApp(`✅ Fornecedor aprovado: ${forn.nome_loja} (${forn.email})`);
-      }
-    }
-    // Notificar se rejeitado
-    if (status === 'rejeitado') {
-      const f = await pool.query('SELECT f.*, u.email, u.nome FROM club_fornecedores f JOIN pep_usuarios u ON u.id=f.usuario_id WHERE f.id=$1', [req.params.id]);
-      if (f.rows.length) {
-        enviarEmail(f.rows[0].email, 'Atualização do seu cadastro — PEPMASTERS Club',
-          `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
-            <h2 style="color:#E8220A">Cadastro não aprovado</h2>
-            <p>Olá, <strong>${f.rows[0].nome.split(' ')[0]}</strong>!</p>
-            <p>Infelizmente seu cadastro como fornecedor não foi aprovado neste momento. Entre em contato via WhatsApp para mais informações.</p>
+            <p>Olá, ${f.rows[0].nome.split(' ')[0]}!</p>
+            <p>Seu cadastro como fornecedor foi aprovado. Acesse o painel para cadastrar seus produtos:</p>
+            <a href="${BASE_URL}/club/fornecedor-painel.html" style="padding:12px 28px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px;display:inline-block;margin-top:12px">Acessar Painel →</a>
           </div>`
         ).catch(()=>{});
       }
@@ -3953,6 +3906,126 @@ app.put('/api/admin/club/saque/:id', adminMiddleware, async (req, res) => {
     await pool.query('UPDATE club_saques SET status=$1, processado_em=NOW() WHERE id=$2', [status, req.params.id]);
     res.json({ ok: true });
   } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+
+// ── ENDPOINT PÚBLICO: fornecedor por ID ──────────────────
+app.get('/api/club/fornecedor/:id', async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT f.id, f.nome_loja, f.descricao, f.nivel, f.logo_url, f.whatsapp, f.instagram,
+             f.total_vendas, f.pedidos_ok, f.disputas, f.nota_media, f.total_avaliacoes,
+             COUNT(p.id) as total_produtos
+      FROM club_fornecedores f
+      LEFT JOIN club_produtos p ON p.fornecedor_id=f.id AND p.status='aprovado'
+      WHERE f.id=$1 AND f.status='ativo'
+      GROUP BY f.id`, [req.params.id]);
+    if (!r.rows.length) return res.status(404).json({ erro: 'Fornecedor não encontrado.' });
+    res.json(r.rows[0]);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// ── NOTIFICAÇÕES CLUB ─────────────────────────────────────
+async function notificarPedidoClubPago(pedido) {
+  try {
+    enviarWhatsApp(`✅ Club PIX confirmado! Pedido #${pedido.id} — ${pedido.produto_nome} — ${pedido.nome_cliente} — R$ ${parseFloat(pedido.total).toFixed(2).replace('.',',')}`);
+    if (pedido.email_cliente) {
+      enviarEmail(pedido.email_cliente, `✅ Pagamento confirmado — Club #${pedido.id}`,
+        `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
+          <h2 style="color:#FFB300">✅ Pagamento confirmado!</h2>
+          <p>Olá, <strong>${(pedido.nome_cliente||'cliente').split(' ')[0]}</strong>!</p>
+          <p>Pedido <strong>#${pedido.id}</strong> — ${pedido.produto_nome}<br>Total: R$ ${parseFloat(pedido.total).toFixed(2).replace('.',',')}</p>
+          <p>O fornecedor foi notificado e enviará em breve.</p>
+        </div>`).catch(()=>{});
+    }
+    const fornR = await pool.query(`SELECT f.*, u.email FROM club_fornecedores f JOIN pep_usuarios u ON u.id=f.usuario_id WHERE f.id=$1`, [pedido.fornecedor_id]);
+    if (fornR.rows.length) {
+      enviarEmail(fornR.rows[0].email, `🛒 Novo pedido Club #${pedido.id}`,
+        `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
+          <h2 style="color:#FFB300">🛒 Novo pedido!</h2>
+          <p><strong>Pedido:</strong> #${pedido.id}<br><strong>Produto:</strong> ${pedido.produto_nome}<br>
+          <strong>Cliente:</strong> ${pedido.nome_cliente}<br><strong>Endereço:</strong> ${pedido.endereco||'—'}<br>
+          <strong>Repasse:</strong> R$ ${parseFloat(pedido.valor_fornecedor||0).toFixed(2).replace('.',',')}</p>
+          <a href="${BASE_URL}/club-fornecedor-painel.html" style="padding:11px 24px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px;display:inline-block;font-weight:700">Acessar Painel →</a>
+        </div>`).catch(()=>{});
+    }
+  } catch(e) { console.error('[Club notif pago]', e.message); }
+}
+
+async function notificarPedidoClubEnviado(pedido) {
+  try {
+    enviarWhatsApp(`📦 Club enviado! Pedido #${pedido.id} — ${pedido.nome_cliente}${pedido.codigo_rastreio?' — '+pedido.codigo_rastreio:''}`);
+    if (pedido.email_cliente) {
+      enviarEmail(pedido.email_cliente, `📦 Pedido Club #${pedido.id} enviado!`,
+        `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
+          <h2 style="color:#FFB300">📦 Pedido enviado!</h2>
+          <p>Olá, <strong>${(pedido.nome_cliente||'cliente').split(' ')[0]}</strong>!</p>
+          <p>Pedido <strong>#${pedido.id}</strong> — ${pedido.produto_nome} foi enviado.</p>
+          ${pedido.codigo_rastreio?`<p>Rastreio: <strong>${pedido.codigo_rastreio}</strong></p>`:''}
+          <p>⏳ Pagamento liberado em 5 dias sem disputa.</p>
+          <p>Após receber, avalie em <a href="${BASE_URL}/club-meus-pedidos.html">Meus Pedidos</a>. ⭐</p>
+        </div>`).catch(()=>{});
+    }
+  } catch(e) { console.error('[Club notif enviado]', e.message); }
+}
+
+// ── AVALIAÇÕES ────────────────────────────────────────────
+app.post('/api/club/avaliacao', clubClienteMiddleware, async (req, res) => {
+  const { pedido_id, nota, comentario } = req.body;
+  if (!pedido_id || !nota || nota<1 || nota>5) return res.status(400).json({ erro: 'Dados inválidos.' });
+  try {
+    const pedR = await pool.query(`SELECT * FROM club_pedidos WHERE id=$1 AND usuario_id=$2`, [pedido_id, req.usuario.id]);
+    if (!pedR.rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+    const p = pedR.rows[0];
+    if (!['enviado','concluido'].includes(p.status)) return res.status(400).json({ erro: 'Só é possível avaliar pedidos enviados ou concluídos.' });
+    if (p.avaliado) return res.status(400).json({ erro: 'Pedido já avaliado.' });
+    await pool.query(`INSERT INTO club_avaliacoes (pedido_id,fornecedor_id,usuario_id,nota,comentario) VALUES ($1,$2,$3,$4,$5)`,
+      [pedido_id, p.fornecedor_id, req.usuario.id, nota, comentario||null]);
+    await pool.query(`UPDATE club_pedidos SET avaliado=TRUE WHERE id=$1`, [pedido_id]);
+    const mediaR = await pool.query(`SELECT AVG(nota)::NUMERIC(3,2) as media, COUNT(*) as total FROM club_avaliacoes WHERE fornecedor_id=$1`, [p.fornecedor_id]);
+    await pool.query(`UPDATE club_fornecedores SET nota_media=$1, total_avaliacoes=$2 WHERE id=$3`, [mediaR.rows[0].media, mediaR.rows[0].total, p.fornecedor_id]);
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+app.get('/api/club/avaliacoes/:fornecedor_id', async (req, res) => {
+  try {
+    const r = await pool.query(
+      `SELECT a.nota, a.comentario, a.criado_em, a.resposta, u.nome as cliente_nome
+       FROM club_avaliacoes a LEFT JOIN pep_usuarios u ON u.id=a.usuario_id
+       WHERE a.fornecedor_id=$1 ORDER BY a.criado_em DESC LIMIT 50`, [req.params.fornecedor_id]);
+    const mediaR = await pool.query(`SELECT AVG(nota)::NUMERIC(3,2) as media, COUNT(*) as total FROM club_avaliacoes WHERE fornecedor_id=$1`, [req.params.fornecedor_id]);
+    res.json({ avaliacoes: r.rows, media: mediaR.rows[0].media||0, total: mediaR.rows[0].total||0 });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+app.get('/api/club/fornecedor/avaliacoes', clubFornecedorMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(
+      `SELECT a.*, u.nome as cliente_nome, p.produto_nome
+       FROM club_avaliacoes a LEFT JOIN pep_usuarios u ON u.id=a.usuario_id LEFT JOIN club_pedidos p ON p.id=a.pedido_id
+       WHERE a.fornecedor_id=$1 ORDER BY a.criado_em DESC`, [req.fornecedor.id]);
+    res.json(r.rows);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+app.put('/api/club/fornecedor/avaliacao/:id/responder', clubFornecedorMiddleware, async (req, res) => {
+  const { resposta } = req.body;
+  if (!resposta) return res.status(400).json({ erro: 'Informe a resposta.' });
+  try {
+    await pool.query(`UPDATE club_avaliacoes SET resposta=$1 WHERE id=$2 AND fornecedor_id=$3`, [resposta, req.params.id, req.fornecedor.id]);
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// ─────────────────────────────────────────────
+//  404 FALLBACK (SPA)
+// ─────────────────────────────────────────────
+app.use((req, res) => {
+  if (req.path.startsWith('/api/') || req.path.startsWith('/webhook/')) {
+    return res.status(404).json({ erro: 'Rota não encontrada.' });
+  }
+  res.sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
 // ─────────────────────────────────────────────
