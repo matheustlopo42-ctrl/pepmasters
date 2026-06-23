@@ -74,7 +74,6 @@
   <div class="sidebar-badge">Admin</div>
   <a href="admin-dashboard.html" class="nav-link">📊 Dashboard</a>
     <a href="admin.html" class="active">📋 Pedidos</a>
-  <a href="admin-pedido-manual.html">➕ Novo Pedido</a>
   <a href="admin-cupons.html">🏷️ Cupons</a>
   <a href="admin-membros.html">👥 Membros</a>
   <a href="admin-estoque.html">📦 Estoque</a>
@@ -171,7 +170,7 @@
           <td>${p.nome || '—'}</td>
           <td>${p.email || '—'}</td>
           <td>
-            ${(p.rua || p.cidade) ? `<button onclick='mostrarEndereco(${JSON.stringify({nome:p.nome,cep:p.cep,rua:p.rua,numero:p.numero,bairro:p.bairro,cidade:p.cidade,complemento:p.complemento,telefone:p.telefone,retirada:p.retirada_paraguai}).replace(/'/g,"&#39;")})' style="padding:4px 8px;background:#FFF3E8;border:1px solid #FFD580;border-radius:6px;cursor:pointer;font-size:.72rem;font-weight:700;color:#3D1A00">📍 Ver</button>` : (p.retirada_paraguai ? '<span style="font-size:.72rem;color:#7A4A2A">📦 Retirada PY</span>' : '<span style="color:#ccc">—</span>')}
+            ${(p.rua || p.cidade) ? `<button onclick='mostrarEndereco(${JSON.stringify({nome:p.nome,cep:p.cep,rua:p.rua,numero:p.numero,bairro:p.bairro,cidade:p.cidade,complemento:p.complemento,telefone:p.telefone,retirada:p.retirada_paraguai}).replace(/'/g,"&#39;")})' style="padding:4px 8px;background:#FFF3E8;border:1px solid #FFD580;border-radius:6px;cursor:pointer;font-size:.72rem;font-weight:700;color:#3D1A00">📍 Ver</button>` : p.endereco ? `<span style="font-size:.75rem;color:rgba(255,255,255,.7)">${p.endereco}</span>` : (p.retirada_paraguai ? '<span style="font-size:.72rem;color:#7A4A2A">📦 Retirada PY</span>' : '<span style="color:#ccc">—</span>')}
           </td>
           <td>${p.produto_nome || '—'}</td>
           <td>R$ ${parseFloat(p.total || 0).toFixed(2).replace('.',',')}</td>
@@ -302,17 +301,28 @@ function desmarcarTodos() {
 }
 
 function exportarCSV() {
-  if (!selectedIds.length) return;
-  var rows = [['ID','Email','Produto','Total','Pagamento','Status','Data']];
-  document.querySelectorAll('#tabelaPedidos tr[data-id]').forEach(function(tr) {
-    var id = parseInt(tr.getAttribute('data-id'));
-    if (!selectedIds.includes(id)) return;
-    var cells = tr.querySelectorAll('td');
-    // cells[0]=checkbox, [1]=id, [2]=email, [3]=produto, [4]=total, [5]=pagamento, [6]=status, [7]=data
-    rows.push([cells[1].textContent, cells[2].textContent, cells[3].textContent, cells[4].textContent, cells[5].textContent, cells[6].textContent, cells[7].textContent]);
+  var lista = selectedIds.length ? todos.filter(function(p){ return selectedIds.includes(p.id); }) : todos;
+  if (!lista.length) { showToast('Nenhum pedido para exportar.'); return; }
+  var rows = [['ID','Cliente','Email','Produto','Total','Aduana','Endereço','Telefone','CPF','Pagamento','Status','Rastreio','Data']];
+  lista.forEach(function(p) {
+    rows.push([
+      p.id,
+      p.nome || '',
+      p.email || '',
+      p.produto_nome || '',
+      parseFloat(p.total || 0).toFixed(2),
+      '',
+      p.endereco || [p.rua, p.numero, p.complemento, p.cidade, p.estado, p.cep].filter(Boolean).join(', ') || '',
+      p.telefone || '',
+      p.cpf || '',
+      p.pagamento || '',
+      p.status || '',
+      p.codigo_rastreio || '',
+      new Date(p.criado_em).toLocaleDateString('pt-BR')
+    ]);
   });
   var csv = rows.map(function(r){ return r.map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
-  var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  var blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a'); a.href=url; a.download='pedidos_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
   URL.revokeObjectURL(url);
