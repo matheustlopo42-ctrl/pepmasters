@@ -416,7 +416,7 @@ function validarItens(totalComAduana) {
 function renderItens() {
   const tbody = document.getElementById('itensBody');
   const totalProdutos = itensPedido.reduce((s,i) => s+i.preco*i.quantidade, 0);
-  const caixas  = parseInt(document.getElementById('f-caixas')?.value) || 0;
+  const caixas  = parseFloat(document.getElementById('f-caixas')?.value) || 0;
   const aduana  = caixas * FRETE_POR_CAIXA;
   const totalFinal = parseFloat((totalProdutos + aduana).toFixed(2));
 
@@ -498,7 +498,7 @@ async function gerarPedido() {
   if (!itensPedido.length) { showToast('Adicione pelo menos um produto.', true); return; }
 
   const totalProdutos = itensPedido.reduce((s,i) => s+i.preco*i.quantidade, 0);
-  const caixas  = parseInt(document.getElementById('f-caixas')?.value) || 0;
+  const caixas  = parseFloat(document.getElementById('f-caixas')?.value) || 0;
   const aduana  = caixas * FRETE_POR_CAIXA;
   const total   = parseFloat((totalProdutos + aduana).toFixed(2));
   const { erros } = validarItens(total);
