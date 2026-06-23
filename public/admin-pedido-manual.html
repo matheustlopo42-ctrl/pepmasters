@@ -21,7 +21,7 @@
     .main{margin-left:220px;padding:32px;max-width:900px}
     h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
     .subtitle{font-size:.82rem;color:rgba(255,255,255,.32);margin-bottom:22px}
-    .card{background:rgba(255,255,255,.04);border-radius:14px;padding:20px;border:1px solid rgba(255,179,0,.12);margin-bottom:16px}
+    .card{background:rgba(255,255,255,.04);border-radius:14px;padding:20px;border:1px solid rgba(255,179,0,.12);margin-bottom:16px;overflow:visible}
     .card-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.92rem;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,179,0,.8);margin-bottom:14px}
     .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
     .form-grid.thirds{grid-template-columns:1fr 1fr 1fr}
@@ -45,7 +45,7 @@
     .item-sub{font-size:.7rem;color:rgba(255,255,255,.36);margin-top:1px}
 
     /* SELETOR DE PRODUTOS */
-    .prod-search-wrap{position:relative;margin-bottom:10px}
+    .prod-search-wrap{position:relative;margin-bottom:10px;z-index:50}
     .prod-dropdown{position:absolute;top:100%;left:0;right:0;background:#1a0a00;border:1px solid rgba(255,179,0,.25);border-radius:8px;margin-top:3px;z-index:200;display:none;max-height:260px;overflow-y:auto}
     .prod-dropdown.open{display:block}
     .prod-opt{padding:9px 13px;cursor:pointer;font-size:.84rem;border-bottom:1px solid rgba(255,255,255,.05);transition:background .15s;display:flex;justify-content:space-between;align-items:center}
