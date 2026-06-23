@@ -361,8 +361,8 @@ function adicionarProduto(id) {
   const prod = todosProdutos.find(p => p.id === id);
   if (!prod) return;
   const existente = itensPedido.find(i => i.id === id);
-  if (existente) { existente.quantidade += 2; }
-  else { itensPedido.push({ id: prod.id, codigo: prod.codigo || '', nome: prod.nome, preco: parseFloat(prod.preco), quantidade: 2 }); }
+  if (existente) { existente.quantidade += 1; }
+  else { itensPedido.push({ id: prod.id, codigo: prod.codigo || '', nome: prod.nome, preco: parseFloat(prod.preco), quantidade: 1 }); }
   document.getElementById('prodDropdown').classList.remove('open');
   document.getElementById('prodBusca').value = '';
   renderItens();
@@ -373,9 +373,9 @@ function alterarQtd(id, delta) {
   if (!item) return;
   const nova = item.quantidade + delta;
   if (nova <= 0) { removerItem(id); return; }
-  item.quantidade = nova % 2 === 0 ? nova : nova + 1;
+  item.quantidade = nova;
   const prod = todosProdutos.find(p => p.id === id);
-  item.quantidade = Math.min(item.quantidade, prod ? (prod.estoque || 999) : 999, 10);
+  item.quantidade = Math.min(item.quantidade, prod ? (prod.estoque || 999) : 999, 50);
   renderItens();
 }
 
@@ -388,11 +388,11 @@ function removerItem(id) {
 function validarItens(totalComAduana) {
   const erros = [], avisos = [];
   itensPedido.forEach(item => {
-    if (item.quantidade % 2 !== 0) erros.push(`${item.nome}: quantidade ímpar (${item.quantidade}). Use pares.`);
+    if (item.quantidade % 2 !== 0) avisos.push(`${item.nome}: quantidade ímpar (${item.quantidade}). Verifique antes de enviar.`);
   });
   const totalAmpolas = itensPedido.reduce((s,i) => s+i.quantidade, 0);
   if (itensPedido.length > 0 && totalAmpolas % 10 !== 0)
-    avisos.push(`Total de ampolas (${totalAmpolas}) não é múltiplo de 10.`);
+    avisos.push(`Total de ampolas (${totalAmpolas}) — caixa incompleta. OK para admin.`);
   const familiaMap = {};
   itensPedido.forEach(item => {
     const fam = getFamilia(item.codigo);
@@ -453,9 +453,9 @@ function renderItens() {
       <td style="font-weight:600">${item.nome}${badgePar}${badgeFam}</td>
       <td style="text-align:center">
         <div class="qty-wrap" style="justify-content:center">
-          <button class="qty-btn" onclick="alterarQtd(${item.id},-2)">−</button>
+          <button class="qty-btn" onclick="alterarQtd(${item.id},-1)">−</button>
           <span class="qty-val">${item.quantidade}</span>
-          <button class="qty-btn" onclick="alterarQtd(${item.id},+2)">+</button>
+          <button class="qty-btn" onclick="alterarQtd(${item.id},+1)">+</button>
         </div>
       </td>
       <td style="text-align:right;color:rgba(255,255,255,.55)">${fmt(item.preco)}</td>
@@ -502,7 +502,9 @@ async function gerarPedido() {
   const aduana  = caixas * FRETE_POR_CAIXA;
   const total   = parseFloat((totalProdutos + aduana).toFixed(2));
   const { erros } = validarItens(total);
-  if (erros.length) { showToast('Corrija os erros antes de continuar.', true); return; }
+  // Admin pode prosseguir com avisos, apenas erros críticos bloqueiam
+  const errosCriticos = erros.filter(e => !e.includes('ímpar') && !e.includes('múltiplo'));
+  if (errosCriticos.length) { showToast('Corrija os erros antes de continuar.', true); return; }
 
   const rua  = document.getElementById('f-rua').value.trim();
   const num  = document.getElementById('f-numero').value.trim();
