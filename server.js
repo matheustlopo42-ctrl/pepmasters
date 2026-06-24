@@ -2703,6 +2703,77 @@ app.get('/api/admin/db-uso', adminMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
+// POST /api/admin/pedido-manual
+app.post('/api/admin/pedido-manual', adminMiddleware, async (req, res) => {
+  const { nome, email, telefone, cpf, endereco, produto_nome, total, observacao, usuario_id } = req.body;
+  if (!nome || !total || !produto_nome) return res.status(400).json({ erro: 'Nome, produto e total são obrigatórios.' });
+  const valorTotal = parseFloat(total);
+  if (isNaN(valorTotal) || valorTotal <= 0) return res.status(400).json({ erro: 'Valor inválido.' });
+  if (valorTotal > 6000) return res.status(400).json({ erro: 'Valor máximo é R$ 6.000 (3 QRs de R$ 2.000).' });
+  const numQrs = Math.ceil(valorTotal / 2000);
+  function splitValores(total, n) {
+    if (n <= 1) return [parseFloat(total.toFixed(2))];
+    const base = Math.floor((total / n) * 100) / 100;
+    const vals = []; let soma = 0;
+    for (let i = 0; i < n - 1; i++) { const v = parseFloat((base + (i+1)*0.03).toFixed(2)); vals.push(v); soma += v; }
+    vals.push(parseFloat((total - soma).toFixed(2)));
+    return vals;
+  }
+  const parcelas = splitValores(valorTotal, numQrs);
+  try {
+    const pedRow = await pool.query(
+      `INSERT INTO pep_pedidos (nome, email, telefone, cpf, endereco, produto_nome, produto_id, quantidade, total, pagamento, status, observacao, usuario_id, criado_em)
+       VALUES ($1,$2,$3,$4,$5,$6,'manual',1,$7,'pix','pix_pending',$8,$9,NOW()) RETURNING id`,
+      [nome, email||null, telefone||null, cpf||null, endereco||null, produto_nome, valorTotal, observacao||null, usuario_id||null]
+    );
+    const pedidoId = pedRow.rows[0].id;
+    const qrs = [];
+    let pixgoIds = [];
+    if (PIXGO_API_KEY) {
+      for (let i = 0; i < numQrs; i++) {
+        const valor = parcelas[i];
+        const extId = `pep-${pedidoId}-adm-${i+1}`;
+        try {
+          const pr = await fetch('https://pixgo.org/api/v1/payment/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-API-Key': PIXGO_API_KEY },
+            body: JSON.stringify({ amount: valor, description: `PEPMASTERS #${pedidoId}${numQrs>1?` (${i+1}/${numQrs})`:''}`, external_id: extId, webhook_url: BASE_URL + '/webhook/pixgo' })
+          });
+          const pd = await pr.json();
+          if (pd.success && pd.data) {
+            qrs.push({ parte: i+1, valor, qrcode_url: pd.data.qr_image_url||null, copia_cola: pd.data.qr_code||null });
+            pixgoIds.push(pd.data.payment_id||pd.data.id||extId);
+          } else { qrs.push({ parte: i+1, valor, erro: pd.message||'Erro PixGo' }); }
+        } catch(e) { qrs.push({ parte: i+1, valor, erro: e.message }); }
+      }
+      if (pixgoIds.length) await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixgoIds.join(','), pedidoId]);
+    } else {
+      for (let i = 0; i < numQrs; i++) qrs.push({ parte: i+1, valor: parcelas[i], qrcode_url: null, copia_cola: null, erro: 'PIXGO_API_KEY não configurado' });
+    }
+    enviarWhatsApp(`📋 Pedido manual #${pedidoId} — ${nome} — ${produto_nome} — R$ ${valorTotal.toFixed(2).replace('.',',')} — ${numQrs} QR(s)`);
+    res.json({
+      ok: true, pedido_id: pedidoId, total: valorTotal, num_qrs: numQrs, qrs,
+      whatsapp_link: telefone ? `https://wa.me/${telefone.replace(/\D/g,'')}?text=${encodeURIComponent(`Olá ${nome.split(' ')[0]}! Pedido PEPMASTERS #${pedidoId}.\n*Produto:* ${produto_nome}\n*Total: R$ ${valorTotal.toFixed(2).replace('.',',')}*\n${numQrs>1?`\n⚠️ Dividido em ${numQrs} PIX:\n${parcelas.map((v,i)=>`• PIX ${i+1}: R$ ${v.toFixed(2).replace('.',',')}`).join('\n')}\n\nPague *todos* para confirmar! ✅`:'\nEscaneie o QR code para confirmar! ✅'}`)}` : null
+    });
+  } catch(err) {
+    console.error('[Admin pedido manual]', err.message);
+    res.status(500).json({ erro: 'Erro ao criar pedido: ' + err.message });
+  }
+});
+
+// GET /api/admin/buscar-usuario
+app.get('/api/admin/buscar-usuario', adminMiddleware, async (req, res) => {
+  const q = (req.query.q || '').trim();
+  if (q.length < 3) return res.json([]);
+  try {
+    const r = await pool.query(
+      `SELECT id, nome, email, cpf, telefone FROM pep_usuarios WHERE nome ILIKE $1 OR email ILIKE $1 OR cpf ILIKE $1 LIMIT 10`,
+      [`%${q}%`]
+    );
+    res.json(r.rows);
+  } catch { res.json([]); }
+});
+
 // Deletar pedidos (admin)
 app.delete('/api/admin/pedidos', adminMiddleware, async (req, res) => {
   const { ids } = req.body;
