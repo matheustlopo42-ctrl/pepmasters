@@ -400,16 +400,15 @@ function showToast(msg) {
       if (res.ok) {
         showToast('✅ Pedido #' + editarId + ' atualizado!');
         fecharEditar();
-        carregarPedidos();
+        carregar();
       } else {
         const d = await res.json().catch(()=>({}));
         showToast('Erro: ' + (d.erro || 'Falha ao salvar.'));
       }
-    } catch(e) { 
-      // Se salvou mas houve erro na leitura da resposta, recarrega mesmo assim
+    } catch(e) {
       showToast('✅ Salvo!');
       fecharEditar();
-      carregarPedidos();
+      carregar();
     }
   }
 
