@@ -273,6 +273,7 @@ function renderPedido(p) {
 
     <div class="pedido-footer">
       ${podeDisputa ? `<button class="btn-sm btn-disputa" onclick="abrirDisputa(${p.id})">⚠️ Abrir Disputa</button>` : ''}
+      <a href="club-chat.html" class="btn-sm btn-outline" style="text-decoration:none">💬 Chat com Fornecedor</a>
       ${!p.avaliado && ['enviado','concluido'].includes(p.status) ? `<button class="btn-sm" style="background:#fef3c7;color:#92400e" onclick="abrirAvaliacao(${p.id}, '${p.produto_nome.replace(/'/g,"\\'")}')">⭐ Avaliar</button>` : ''}
       ${p.avaliado ? '<span style="font-size:.78rem;color:var(--muted)">⭐ Avaliado</span>' : ''}
       ${p.status === 'concluido' ? '<span style="font-size:.8rem;color:var(--muted)">✅ Pedido concluído. Obrigado!</span>' : ''}

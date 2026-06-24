@@ -91,6 +91,7 @@
   <a href="#" onclick="setTab('pedidos',this)">🛒 Pedidos</a>
   <a href="#" onclick="setTab('disputas',this)" id="linkDisputas">⚠️ Disputas</a>
   <a href="#" onclick="setTab('saques',this)">💸 Saques</a>
+  <a href="#" onclick="setTab('chats',this)">💬 Chats</a>
   <div class="sidebar-footer">
     <a href="admin-dashboard.html">← Admin Loja</a>
     <a href="club-marketplace.html">Ver Marketplace</a>
@@ -149,6 +150,24 @@
   </div>
 </div>
 
+  <!-- CHATS -->
+  <div id="tab-chats" class="tab-content">
+    <h1>💬 Chats do Club</h1>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Cliente</th><th>Fornecedor</th><th>Assunto</th><th>Msgs</th><th>Última mensagem</th><th>Ações</th></tr></thead>
+        <tbody id="tChats"><tr><td colspan="7"><div class="empty">Carregando...</div></td></tr></tbody>
+      </table>
+    </div>
+    <!-- Conversa selecionada -->
+    <div id="adminChatArea" style="display:none;margin-top:20px">
+      <div class="card">
+        <div class="card-title" id="adminChatTitulo">Conversa</div>
+        <div id="adminChatMsgs" style="max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:10px 0"></div>
+      </div>
+    </div>
+  </div>
+
 <!-- MODAL RESOLVER DISPUTA -->
 <div class="modal-overlay" id="modalDisputa">
   <div class="modal-box">
@@ -181,6 +200,7 @@ function setTab(tab, el) {
   document.getElementById('tab-'+tab).classList.add('active');
   if (el) el.classList.add('active');
   const loaders = { fornecedores:carregarFornecedores, produtos:carregarProdutos, pedidos:carregarPedidos, disputas:carregarDisputas, saques:carregarSaques };
+  const loaders = { fornecedores:carregarFornecedores, produtos:carregarProdutos, pedidos:carregarPedidos, disputas:carregarDisputas, saques:carregarSaques, chats:carregarChats };
   if (loaders[tab]) loaders[tab]();
 }
 
@@ -360,6 +380,44 @@ function showToast(msg, tipo) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.className='show'+(tipo==='error'?' error':tipo==='success'?' success':'');
   setTimeout(()=>t.className='',3500);
+}
+
+async function carregarChats() {
+  const tb = document.getElementById('tChats');
+  try {
+    const r = await fetch('/api/admin/club/chats', { headers:{ Authorization:'Basic '+token } });
+    const data = await r.json();
+    if (!data.length) { tb.innerHTML='<tr><td colspan="7"><div class="empty">Nenhum chat ainda.</div></td></tr>'; return; }
+    tb.innerHTML = data.map(c=>`<tr>
+      <td>#${c.id}</td>
+      <td>${c.cliente_nome||'—'}<br><span style="font-size:.7rem;color:rgba(255,255,255,.3)">${c.cliente_email||''}</span></td>
+      <td>${c.nome_loja}</td>
+      <td>${c.assunto||'—'}</td>
+      <td style="text-align:center">${c.total_msgs||0}</td>
+      <td style="font-size:.75rem;color:rgba(255,255,255,.35)">${new Date(c.ultima_msg_em).toLocaleString('pt-BR')}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick="adminVerChat(${c.id},'${(c.cliente_nome||'Cliente').replace(/'/g,"\'")}','${c.nome_loja.replace(/'/g,"\'")}')">Ver</button></td>
+    </tr>`).join('');
+  } catch { tb.innerHTML='<tr><td colspan="7"><div class="empty">Erro.</div></td></tr>'; }
+}
+
+async function adminVerChat(id, clienteNome, fornNome) {
+  document.getElementById('adminChatArea').style.display = 'block';
+  document.getElementById('adminChatTitulo').textContent = `${clienteNome} ↔ ${fornNome}`;
+  try {
+    const r = await fetch('/api/club/chat/'+id+'/mensagens');
+    const msgs = await r.json();
+    const el = document.getElementById('adminChatMsgs');
+    if (!msgs.length) { el.innerHTML='<div class="empty">Sem mensagens.</div>'; return; }
+    el.innerHTML = msgs.map(m=>`
+      <div style="display:flex;gap:8px;align-items:flex-end;${m.remetente==='fornecedor'?'flex-direction:row-reverse':''}">
+        <div style="width:24px;height:24px;border-radius:50%;background:${m.remetente==='fornecedor'?'linear-gradient(135deg,#E8220A,#FF6B00)':'rgba(255,255,255,.15)'};display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:#fff;flex-shrink:0">${(m.remetente_nome||'?')[0].toUpperCase()}</div>
+        <div style="max-width:60%;padding:8px 12px;border-radius:12px;font-size:.82rem;line-height:1.5;${m.remetente==='fornecedor'?'background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff':'background:rgba(255,255,255,.08);color:rgba(255,255,255,.8)'}">
+          <div style="font-size:.62rem;opacity:.6;margin-bottom:2px">${m.remetente_nome||m.remetente} · ${new Date(m.criado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>
+          ${m.texto}
+        </div>
+      </div>`).join('');
+    el.scrollTop = el.scrollHeight;
+  } catch {}
 }
 
 // Carregar inicial
