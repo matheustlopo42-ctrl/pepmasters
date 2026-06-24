@@ -48,8 +48,6 @@
     .b-enviado{background:#1e3a5f;color:#60a5fa}
     .b-entregue{background:#3b0764;color:#c084fc}
     .b-cancelado{background:#450a0a;color:#f87171}
-    .b-parcial{background:#7c2d12;color:#fb923c}
-    .b-sem-frete{background:#1e3a5f;color:#93c5fd}
     .input-rastreio{background:rgba(255,255,255,.06);border:1px solid rgba(255,179,0,.2);border-radius:6px;padding:5px 8px;color:#fff;font-size:.8rem;width:130px;font-family:'Barlow',sans-serif}
     .btn-save{padding:5px 12px;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:.04em;text-transform:uppercase}
     select.status-sel{background:rgba(255,255,255,.06);border:1px solid rgba(255,179,0,.2);border-radius:6px;padding:5px 8px;color:#fff;font-size:.8rem;font-family:'Barlow',sans-serif}
@@ -64,6 +62,20 @@
     #toast{position:fixed;bottom:24px;right:24px;background:var(--dark);color:#fff;padding:12px 20px;border-radius:10px;font-size:.88rem;border-left:4px solid var(--amber);box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(10px);opacity:0;transition:all .3s;z-index:999;pointer-events:none}
     #toast.show{transform:translateY(0);opacity:1}
     @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}}
+
+    /* Modal editar pedido */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#1a0800;border-radius:16px;padding:28px;max-width:520px;width:100%;border-top:3px solid var(--amber);max-height:90vh;overflow-y:auto}
+    .modal-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem;color:#fff;margin-bottom:18px}
+    .modal-form-group{margin-bottom:12px}
+    .modal-label{display:block;font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:4px}
+    .modal-input{width:100%;padding:9px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,179,0,.2);border-radius:8px;font-size:.88rem;color:#fff;font-family:'Barlow',sans-serif;outline:none;transition:border-color .2s}
+    .modal-input:focus{border-color:var(--orange)}
+    .modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .modal-actions{display:flex;gap:10px;margin-top:18px}
+    .btn-modal-cancel{flex:1;padding:10px;background:none;border:1px solid rgba(255,255,255,.15);border-radius:8px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;color:rgba(255,255,255,.5)}
+    .btn-modal-save{flex:2;padding:10px;background:linear-gradient(135deg,var(--red),var(--orange));border:none;border-radius:8px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;color:#fff;letter-spacing:.05em}
   </style>
 </head>
 <body>
@@ -137,8 +149,8 @@
 
   let todos = [];
 
-  const badgeClass = { pago:'b-pago', pix_pending:'b-pending', enviado:'b-enviado', entregue:'b-entregue', cancelado:'b-cancelado', pagamento_parcial:'b-parcial', sem_pagamento_frete:'b-sem-frete' };
-  const statusLabel = { pago:'Pago', pix_pending:'Aguard. PIX', enviado:'Enviado', entregue:'Entregue', cancelado:'Cancelado', pagamento_parcial:'Pgto. Parcial', sem_pagamento_frete:'Sem Pgto. Frete' };
+  const badgeClass = { pago:'b-pago', pix_pending:'b-pending', enviado:'b-enviado', entregue:'b-entregue', cancelado:'b-cancelado' };
+  const statusLabel = { pago:'Pago', pix_pending:'Aguard. PIX', enviado:'Enviado', entregue:'Entregue', cancelado:'Cancelado' };
 
   async function carregar() {
     try {
@@ -172,7 +184,7 @@
           <td>${p.nome || '—'}</td>
           <td>${p.email || '—'}</td>
           <td>
-            ${(p.rua || p.cidade) ? `<button onclick='mostrarEndereco(${JSON.stringify({nome:p.nome,cep:p.cep,rua:p.rua,numero:p.numero,bairro:p.bairro,cidade:p.cidade,complemento:p.complemento,telefone:p.telefone,retirada:p.retirada_paraguai}).replace(/'/g,"&#39;")})' style="padding:4px 8px;background:#FFF3E8;border:1px solid #FFD580;border-radius:6px;cursor:pointer;font-size:.72rem;font-weight:700;color:#3D1A00">📍 Ver</button>` : p.endereco ? `<span style="font-size:.75rem;color:rgba(255,255,255,.7)">${p.endereco.substring(0,40)}${p.endereco.length>40?'...':''}</span>` : (p.retirada_paraguai ? '<span style="font-size:.72rem;color:#7A4A2A">📦 Retirada PY</span>' : '<span style="color:#ccc">—</span>')}
+            ${(p.rua || p.cidade) ? `<button onclick='mostrarEndereco(${JSON.stringify({nome:p.nome,cep:p.cep,rua:p.rua,numero:p.numero,bairro:p.bairro,cidade:p.cidade,complemento:p.complemento,telefone:p.telefone,retirada:p.retirada_paraguai}).replace(/'/g,"&#39;")})' style="padding:4px 8px;background:#FFF3E8;border:1px solid #FFD580;border-radius:6px;cursor:pointer;font-size:.72rem;font-weight:700;color:#3D1A00">📍 Ver</button>` : (p.retirada_paraguai ? '<span style="font-size:.72rem;color:#7A4A2A">📦 Retirada PY</span>' : '<span style="color:#ccc">—</span>')}
           </td>
           <td>${p.produto_nome || '—'}</td>
           <td>R$ ${parseFloat(p.total || 0).toFixed(2).replace('.',',')}</td>
@@ -183,7 +195,7 @@
           </td>
           <td>
             <select class="status-sel" onchange="salvarStatus(${p.id}, this.value)">
-              ${['pago','pix_pending','pagamento_parcial','sem_pagamento_frete','enviado','entregue','cancelado'].map(s =>
+              ${['pago','pix_pending','enviado','entregue','cancelado'].map(s =>
                 '<option value="' + s + '"' + (p.status === s ? ' selected' : '') + '>' + (statusLabel[s] || s) + '</option>'
               ).join('')}
             </select>
@@ -197,6 +209,7 @@
           <td>
             <input class="input-rastreio" id="r-${p.id}" value="${p.codigo_rastreio || ''}" placeholder="Código" />
             <button class="btn-save" onclick="salvarRastreio(${p.id})">Salvar</button>
+            <button onclick="abrirEditar(${p.id})" style="padding:5px 10px;background:rgba(255,179,0,.1);border:1px solid rgba(255,179,0,.25);border-radius:6px;cursor:pointer;font-size:.75rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--amber);margin-left:4px">✏️</button>
           </td>
           <td>${dt}</td>
         </tr>
@@ -303,27 +316,17 @@ function desmarcarTodos() {
 }
 
 function exportarCSV() {
-  var lista = selectedIds.length ? todos.filter(function(p){ return selectedIds.includes(p.id); }) : todos;
-  if (!lista.length) { showToast('Nenhum pedido para exportar.'); return; }
-  var rows = [['ID','Cliente','Email','Produto','Total','Endereço','Telefone','CPF','Pagamento','Status','Rastreio','Data']];
-  lista.forEach(function(p) {
-    rows.push([
-      p.id,
-      p.nome || '',
-      p.email || '',
-      p.produto_nome || '',
-      parseFloat(p.total || 0).toFixed(2),
-      p.endereco || [p.rua, p.numero, p.complemento, p.cidade, p.estado, p.cep].filter(Boolean).join(', ') || '',
-      p.telefone || '',
-      p.cpf || '',
-      p.pagamento || '',
-      statusLabel[p.status] || p.status || '',
-      p.codigo_rastreio || '',
-      new Date(p.criado_em).toLocaleDateString('pt-BR')
-    ]);
+  if (!selectedIds.length) return;
+  var rows = [['ID','Email','Produto','Total','Pagamento','Status','Data']];
+  document.querySelectorAll('#tabelaPedidos tr[data-id]').forEach(function(tr) {
+    var id = parseInt(tr.getAttribute('data-id'));
+    if (!selectedIds.includes(id)) return;
+    var cells = tr.querySelectorAll('td');
+    // cells[0]=checkbox, [1]=id, [2]=email, [3]=produto, [4]=total, [5]=pagamento, [6]=status, [7]=data
+    rows.push([cells[1].textContent, cells[2].textContent, cells[3].textContent, cells[4].textContent, cells[5].textContent, cells[6].textContent, cells[7].textContent]);
   });
   var csv = rows.map(function(r){ return r.map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
-  var blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a'); a.href=url; a.download='pedidos_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
   URL.revokeObjectURL(url);
@@ -354,6 +357,58 @@ function showToast(msg) {
     setTimeout(() => t.classList.remove('show'), 3000);
   }
 
+
+  var editarId = null;
+
+  function abrirEditar(id) {
+    const p = todos.find(x => x.id === id);
+    if (!p) return;
+    editarId = id;
+    document.getElementById('editarPedidoId').textContent = '#' + id;
+    document.getElementById('edit-nome').value     = p.nome || '';
+    document.getElementById('edit-email').value    = p.email || '';
+    document.getElementById('edit-telefone').value = p.telefone || '';
+    document.getElementById('edit-produto').value  = p.produto_nome || '';
+    document.getElementById('edit-obs').value      = p.observacao || '';
+    // Montar endereço — campo único ou campos separados
+    const end = p.endereco || [p.rua, p.numero, p.complemento, p.cidade, p.estado, p.cep].filter(Boolean).join(', ');
+    document.getElementById('edit-endereco').value = end;
+    document.getElementById('modalEditar').classList.add('open');
+  }
+
+  function fecharEditar() {
+    document.getElementById('modalEditar').classList.remove('open');
+    editarId = null;
+  }
+
+  async function salvarEditar() {
+    if (!editarId) return;
+    const body = {
+      nome:         document.getElementById('edit-nome').value.trim(),
+      email:        document.getElementById('edit-email').value.trim(),
+      telefone:     document.getElementById('edit-telefone').value.trim(),
+      endereco:     document.getElementById('edit-endereco').value.trim(),
+      produto_nome: document.getElementById('edit-produto').value.trim(),
+      observacao:   document.getElementById('edit-obs').value.trim(),
+    };
+    try {
+      const res = await fetch('/api/admin/pedido/' + editarId + '/editar', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + token },
+        body: JSON.stringify(body)
+      });
+      const d = await res.json();
+      if (!res.ok) { showToast('Erro: ' + (d.erro || 'Falha ao salvar.')); return; }
+      showToast('✅ Pedido #' + editarId + ' atualizado!');
+      fecharEditar();
+      carregarPedidos();
+    } catch { showToast('Erro de conexão.'); }
+  }
+
+  document.addEventListener('click', function(e) {
+    if (e.target === document.getElementById('modalEditar')) fecharEditar();
+  });
+
   carregar();
 </script>
 
@@ -367,5 +422,42 @@ function showToast(msg) {
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
   </svg>
 </a>
+
+<!-- MODAL EDITAR PEDIDO -->
+<div class="modal-overlay" id="modalEditar">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Editar Pedido <span id="editarPedidoId" style="color:var(--amber)"></span></div>
+    <div class="modal-row">
+      <div class="modal-form-group">
+        <label class="modal-label">Nome</label>
+        <input type="text" class="modal-input" id="edit-nome" placeholder="Nome do cliente"/>
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label">Telefone / WhatsApp</label>
+        <input type="text" class="modal-input" id="edit-telefone" placeholder="5511999999999"/>
+      </div>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Email</label>
+      <input type="email" class="modal-input" id="edit-email" placeholder="email@exemplo.com"/>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Endereço completo</label>
+      <input type="text" class="modal-input" id="edit-endereco" placeholder="Rua, nº, complemento, cidade, estado, CEP"/>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Produto / Descrição</label>
+      <input type="text" class="modal-input" id="edit-produto" placeholder="Descrição do pedido"/>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Observação</label>
+      <input type="text" class="modal-input" id="edit-obs" placeholder="Observação interna"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="fecharEditar()">Cancelar</button>
+      <button class="btn-modal-save" onclick="salvarEditar()">💾 Salvar Alterações</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

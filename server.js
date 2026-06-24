@@ -2703,6 +2703,25 @@ app.get('/api/admin/db-uso', adminMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
+// PUT /api/admin/pedido/:id/editar
+app.put('/api/admin/pedido/:id/editar', adminMiddleware, async (req, res) => {
+  const { nome, email, telefone, endereco, produto_nome, observacao } = req.body;
+  try {
+    await pool.query(
+      `UPDATE pep_pedidos SET
+        nome        = COALESCE(NULLIF($1,''), nome),
+        email       = COALESCE(NULLIF($2,''), email),
+        telefone    = COALESCE(NULLIF($3,''), telefone),
+        endereco    = COALESCE(NULLIF($4,''), endereco),
+        produto_nome= COALESCE(NULLIF($5,''), produto_nome),
+        observacao  = COALESCE(NULLIF($6,''), observacao)
+       WHERE id=$7`,
+      [nome||'', email||'', telefone||'', endereco||'', produto_nome||'', observacao||'', req.params.id]
+    );
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
 // POST /api/admin/pedido-manual
 app.post('/api/admin/pedido-manual', adminMiddleware, async (req, res) => {
   const { nome, email, telefone, cpf, endereco, produto_nome, total, observacao, usuario_id } = req.body;
