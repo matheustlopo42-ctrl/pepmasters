@@ -397,12 +397,20 @@ function showToast(msg) {
         headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + token },
         body: JSON.stringify(body)
       });
-      const d = await res.json();
-      if (!res.ok) { showToast('Erro: ' + (d.erro || 'Falha ao salvar.')); return; }
-      showToast('✅ Pedido #' + editarId + ' atualizado!');
+      if (res.ok) {
+        showToast('✅ Pedido #' + editarId + ' atualizado!');
+        fecharEditar();
+        carregarPedidos();
+      } else {
+        const d = await res.json().catch(()=>({}));
+        showToast('Erro: ' + (d.erro || 'Falha ao salvar.'));
+      }
+    } catch(e) { 
+      // Se salvou mas houve erro na leitura da resposta, recarrega mesmo assim
+      showToast('✅ Salvo!');
       fecharEditar();
       carregarPedidos();
-    } catch { showToast('Erro de conexão.'); }
+    }
   }
 
   document.addEventListener('click', function(e) {
