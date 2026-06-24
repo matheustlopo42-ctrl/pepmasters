@@ -49,6 +49,7 @@
     .b-entregue{background:#3b0764;color:#c084fc}
     .b-cancelado{background:#450a0a;color:#f87171}
     .b-parcial{background:#7c2d12;color:#fb923c}
+    .b-sem-frete{background:#1e3a5f;color:#93c5fd}
     .input-rastreio{background:rgba(255,255,255,.06);border:1px solid rgba(255,179,0,.2);border-radius:6px;padding:5px 8px;color:#fff;font-size:.8rem;width:130px;font-family:'Barlow',sans-serif}
     .btn-save{padding:5px 12px;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:.04em;text-transform:uppercase}
     select.status-sel{background:rgba(255,255,255,.06);border:1px solid rgba(255,179,0,.2);border-radius:6px;padding:5px 8px;color:#fff;font-size:.8rem;font-family:'Barlow',sans-serif}
@@ -136,8 +137,8 @@
 
   let todos = [];
 
-  const badgeClass = { pago:'b-pago', pix_pending:'b-pending', enviado:'b-enviado', entregue:'b-entregue', cancelado:'b-cancelado', pagamento_parcial:'b-parcial' };
-  const statusLabel = { pago:'Pago', pix_pending:'Aguard. PIX', enviado:'Enviado', entregue:'Entregue', cancelado:'Cancelado', pagamento_parcial:'Pgto. Parcial' };
+  const badgeClass = { pago:'b-pago', pix_pending:'b-pending', enviado:'b-enviado', entregue:'b-entregue', cancelado:'b-cancelado', pagamento_parcial:'b-parcial', sem_pagamento_frete:'b-sem-frete' };
+  const statusLabel = { pago:'Pago', pix_pending:'Aguard. PIX', enviado:'Enviado', entregue:'Entregue', cancelado:'Cancelado', pagamento_parcial:'Pgto. Parcial', sem_pagamento_frete:'Sem Pgto. Frete' };
 
   async function carregar() {
     try {
@@ -182,7 +183,7 @@
           </td>
           <td>
             <select class="status-sel" onchange="salvarStatus(${p.id}, this.value)">
-              ${['pago','pix_pending','pagamento_parcial','enviado','entregue','cancelado'].map(s =>
+              ${['pago','pix_pending','pagamento_parcial','sem_pagamento_frete','enviado','entregue','cancelado'].map(s =>
                 '<option value="' + s + '"' + (p.status === s ? ' selected' : '') + '>' + (statusLabel[s] || s) + '</option>'
               ).join('')}
             </select>
