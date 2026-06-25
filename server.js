@@ -419,6 +419,21 @@ async function initDB() {
     await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS quantidade INT DEFAULT 1`).catch(()=>{});
     await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS endereco TEXT`).catch(()=>{});
 
+    // Itens do pedido (para Power BI e CSV expandido)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS pep_pedido_itens (
+        id          SERIAL PRIMARY KEY,
+        pedido_id   INT NOT NULL REFERENCES pep_pedidos(id) ON DELETE CASCADE,
+        codigo      TEXT,
+        nome        TEXT NOT NULL,
+        quantidade  INT NOT NULL DEFAULT 1,
+        preco_unit  NUMERIC(10,2),
+        subtotal    NUMERIC(10,2),
+        criado_em   TIMESTAMPTZ DEFAULT NOW()
+      )
+    `).catch(()=>{});
+    await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS aduana NUMERIC(10,2) DEFAULT 0`).catch(()=>{});
+
     // Chat do Club
     await client.query(`
       CREATE TABLE IF NOT EXISTS club_chats (
@@ -989,6 +1004,21 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
     // Registrar venda de afiliado se vier com ref_code
     if (ref_code) {
       registrarVendaAfiliado(ref_code, pedidoId, total).catch(() => {});
+    }
+
+    // Salvar itens do pedido na tabela pep_pedido_itens
+    for (const item of carrinho) {
+      const preco = parseFloat(item.preco) || 0;
+      const qtd   = parseInt(item.quantidade) || 1;
+      await client.query(
+        `INSERT INTO pep_pedido_itens (pedido_id, codigo, nome, quantidade, preco_unit, subtotal)
+         VALUES ($1,$2,$3,$4,$5,$6)`,
+        [pedidoId, String(item.id), item.nome, qtd, preco.toFixed(2), (preco*qtd).toFixed(2)]
+      ).catch(()=>{});
+    }
+    // Salvar aduana
+    if (freteTotal > 0) {
+      await client.query(`UPDATE pep_pedidos SET aduana=$1 WHERE id=$2`, [freteTotal.toFixed(2), pedidoId]).catch(()=>{});
     }
 
     // baixar estoque de cada item do carrinho
@@ -2728,6 +2758,116 @@ app.get('/api/admin/db-uso', adminMiddleware, async (req, res) => {
     const pct = Math.round((bytes / limite) * 100);
     res.json({ ...r.rows[0], pct, limite_gb: '1GB', usado: r.rows[0].tamanho });
   } catch (err) { res.status(500).json({ erro: err.message }); }
+});
+
+// POST /api/admin/pedido-manual
+app.post('/api/admin/pedido-manual', adminMiddleware, async (req, res) => {
+  const { nome, email, telefone, cpf, endereco, produto_nome, itens, total, aduana, observacao, usuario_id } = req.body;
+  if (!nome || !total || !produto_nome) return res.status(400).json({ erro: 'Nome, produto e total são obrigatórios.' });
+  const valorTotal = parseFloat(total);
+  if (isNaN(valorTotal) || valorTotal <= 0) return res.status(400).json({ erro: 'Valor inválido.' });
+  if (valorTotal > 6000) return res.status(400).json({ erro: 'Valor máximo é R$ 6.000.' });
+  const numQrs = Math.ceil(valorTotal / 2000);
+  function splitValores(total, n) {
+    if (n <= 1) return [parseFloat(total.toFixed(2))];
+    const base = Math.floor((total / n) * 100) / 100;
+    const vals = []; let soma = 0;
+    for (let i = 0; i < n - 1; i++) { const v = parseFloat((base + (i+1)*0.03).toFixed(2)); vals.push(v); soma += v; }
+    vals.push(parseFloat((total - soma).toFixed(2)));
+    return vals;
+  }
+  const parcelas = splitValores(valorTotal, numQrs);
+  try {
+    const pedRow = await pool.query(
+      `INSERT INTO pep_pedidos (nome, email, telefone, cpf, endereco, produto_nome, produto_id, quantidade, total, aduana, pagamento, status, observacao, usuario_id, criado_em)
+       VALUES ($1,$2,$3,$4,$5,$6,'manual',1,$7,$8,'pix','pix_pending',$9,$10,NOW()) RETURNING id`,
+      [nome, email||null, telefone||null, cpf||null, endereco||null, produto_nome, valorTotal, parseFloat(aduana||0), observacao||null, usuario_id||null]
+    );
+    const pedidoId = pedRow.rows[0].id;
+
+    // Salvar itens separados
+    if (itens && itens.length) {
+      for (const item of itens) {
+        await pool.query(
+          `INSERT INTO pep_pedido_itens (pedido_id, codigo, nome, quantidade, preco_unit, subtotal)
+           VALUES ($1,$2,$3,$4,$5,$6)`,
+          [pedidoId, item.codigo||null, item.nome, item.quantidade, parseFloat(item.preco||0).toFixed(2), (parseFloat(item.preco||0)*item.quantidade).toFixed(2)]
+        ).catch(()=>{});
+      }
+    }
+
+    const qrs = [];
+    let pixgoIds = [];
+    if (PIXGO_API_KEY) {
+      for (let i = 0; i < numQrs; i++) {
+        const valor = parcelas[i];
+        const extId = `pep-${pedidoId}-adm-${i+1}`;
+        try {
+          const pr = await fetch('https://pixgo.org/api/v1/payment/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-API-Key': PIXGO_API_KEY },
+            body: JSON.stringify({ amount: valor, description: `PEPMASTERS #${pedidoId}${numQrs>1?` (${i+1}/${numQrs})`:''}`, external_id: extId, webhook_url: BASE_URL + '/webhook/pixgo' })
+          });
+          const pd = await pr.json();
+          if (pd.success && pd.data) {
+            qrs.push({ parte: i+1, valor, qrcode_url: pd.data.qr_image_url||null, copia_cola: pd.data.qr_code||null });
+            pixgoIds.push(pd.data.payment_id||pd.data.id||extId);
+          } else { qrs.push({ parte: i+1, valor, erro: pd.message||'Erro PixGo' }); }
+        } catch(e) { qrs.push({ parte: i+1, valor, erro: e.message }); }
+      }
+      if (pixgoIds.length) await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixgoIds.join(','), pedidoId]);
+    } else {
+      for (let i = 0; i < numQrs; i++) qrs.push({ parte: i+1, valor: parcelas[i], qrcode_url: null, copia_cola: null, erro: 'PIXGO_API_KEY não configurado' });
+    }
+    enviarWhatsApp(`📋 Pedido manual #${pedidoId} — ${nome} — ${produto_nome} — R$ ${valorTotal.toFixed(2).replace('.',',')} — ${numQrs} QR(s)`);
+    res.json({
+      ok: true, pedido_id: pedidoId, total: valorTotal, num_qrs: numQrs, qrs,
+      whatsapp_link: telefone ? `https://wa.me/${telefone.replace(/\D/g,'')}?text=${encodeURIComponent(`Olá ${nome.split(' ')[0]}! Pedido PEPMASTERS #${pedidoId}.\n*Produto:* ${produto_nome}\n*Total: R$ ${valorTotal.toFixed(2).replace('.',',')}*\n${numQrs>1?`\n⚠️ Dividido em ${numQrs} PIX:\n${parcelas.map((v,i)=>`• PIX ${i+1}: R$ ${v.toFixed(2).replace('.',',')}`).join('\n')}\n\nPague *todos* para confirmar! ✅`:'\nEscaneie o QR code para confirmar! ✅'}`)}` : null
+    });
+  } catch(err) {
+    console.error('[Admin pedido manual]', err.message);
+    res.status(500).json({ erro: 'Erro ao criar pedido: ' + err.message });
+  }
+});
+
+// GET /api/admin/buscar-usuario
+app.get('/api/admin/buscar-usuario', adminMiddleware, async (req, res) => {
+  const q = (req.query.q || '').trim();
+  if (q.length < 3) return res.json([]);
+  try {
+    const r = await pool.query(
+      `SELECT id, nome, email, cpf, telefone FROM pep_usuarios WHERE nome ILIKE $1 OR email ILIKE $1 OR cpf ILIKE $1 LIMIT 10`,
+      [`%${q}%`]
+    );
+    res.json(r.rows);
+  } catch { res.json([]); }
+});
+
+// GET /api/admin/pedido/:id/itens — itens de um pedido
+app.get('/api/admin/pedido/:id/itens', adminMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query('SELECT * FROM pep_pedido_itens WHERE pedido_id=$1 ORDER BY id', [req.params.id]);
+    res.json(r.rows);
+  } catch(e) { res.status(500).json({ erro: e.message }); }
+});
+
+// PUT /api/admin/pedido/:id/editar
+app.put('/api/admin/pedido/:id/editar', adminMiddleware, async (req, res) => {
+  const { nome, email, telefone, endereco, produto_nome, observacao } = req.body;
+  try {
+    await pool.query(
+      `UPDATE pep_pedidos SET
+        nome        = COALESCE(NULLIF($1,''), nome),
+        email       = COALESCE(NULLIF($2,''), email),
+        telefone    = COALESCE(NULLIF($3,''), telefone),
+        endereco    = COALESCE(NULLIF($4,''), endereco),
+        produto_nome= COALESCE(NULLIF($5,''), produto_nome),
+        observacao  = COALESCE(NULLIF($6,''), observacao)
+       WHERE id=$7`,
+      [nome||'', email||'', telefone||'', endereco||'', produto_nome||'', observacao||'', req.params.id]
+    );
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ erro: e.message }); }
 });
 
 // Deletar pedidos (admin)

@@ -316,21 +316,51 @@ function desmarcarTodos() {
   document.getElementById('acoesBar').classList.remove('visivel');
 }
 
-function exportarCSV() {
+async function exportarCSV() {
   var lista = selectedIds.length ? todos.filter(function(p){ return selectedIds.includes(p.id); }) : todos;
   if (!lista.length) { showToast('Nenhum pedido para exportar.'); return; }
-  var rows = [['ID','Cliente','Email','Produto','Total','Endereço','Telefone','CPF','Pagamento','Status','Rastreio','Data']];
-  lista.forEach(function(p) {
-    rows.push([
-      p.id, p.nome||'', p.email||'', p.produto_nome||'',
-      parseFloat(p.total||0).toFixed(2),
-      p.endereco||[p.rua,p.numero,p.complemento,p.cidade,p.estado,p.cep].filter(Boolean).join(', ')||'',
-      p.telefone||'', p.cpf||'', p.pagamento||'',
-      statusLabel[p.status]||p.status||'',
-      p.codigo_rastreio||'',
-      new Date(p.criado_em).toLocaleDateString('pt-BR')
-    ]);
-  });
+  showToast('Gerando CSV...');
+  var rows = [['ID Pedido','Cliente','Email','CPF','Telefone','Endereço','Produto Código','Produto Nome','Quantidade','Preço Unit.','Subtotal Produto','Aduana','Total Pedido','Pagamento','Status','Rastreio','Data']];
+  for (var p of lista) {
+    var end = p.endereco||[p.rua,p.numero,p.complemento,p.cidade,p.estado,p.cep].filter(Boolean).join(', ')||'';
+    var data = new Date(p.criado_em).toLocaleDateString('pt-BR');
+    var status = statusLabel[p.status]||p.status||'';
+    // Buscar itens do pedido
+    try {
+      var r = await fetch('/api/admin/pedido/'+p.id+'/itens', { headers:{ Authorization:'Basic '+token } });
+      var itens = await r.json();
+      if (itens && itens.length) {
+        itens.forEach(function(item) {
+          rows.push([
+            p.id, p.nome||'', p.email||'', p.cpf||'', p.telefone||'', end,
+            item.codigo||'', item.nome||'', item.quantidade||1,
+            parseFloat(item.preco_unit||0).toFixed(2),
+            parseFloat(item.subtotal||0).toFixed(2),
+            parseFloat(p.aduana||0).toFixed(2),
+            parseFloat(p.total||0).toFixed(2),
+            p.pagamento||'', status, p.codigo_rastreio||'', data
+          ]);
+        });
+      } else {
+        // Sem itens — uma linha com produto_nome
+        rows.push([
+          p.id, p.nome||'', p.email||'', p.cpf||'', p.telefone||'', end,
+          '', p.produto_nome||'', '', '', '',
+          parseFloat(p.aduana||0).toFixed(2),
+          parseFloat(p.total||0).toFixed(2),
+          p.pagamento||'', status, p.codigo_rastreio||'', data
+        ]);
+      }
+    } catch {
+      rows.push([
+        p.id, p.nome||'', p.email||'', p.cpf||'', p.telefone||'', end,
+        '', p.produto_nome||'', '', '', '',
+        parseFloat(p.aduana||0).toFixed(2),
+        parseFloat(p.total||0).toFixed(2),
+        p.pagamento||'', status, p.codigo_rastreio||'', data
+      ]);
+    }
+  }
   var csv = rows.map(function(r){ return r.map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
   var blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
   var url = URL.createObjectURL(blob);

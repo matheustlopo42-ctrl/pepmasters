@@ -531,6 +531,8 @@ async function gerarPedido() {
         cpf:        document.getElementById('f-cpf').value.trim() || null,
         endereco:   enderecoCompleto || null,
         produto_nome, total,
+        aduana:     aduana,
+        itens:      itensPedido.map(i => ({ codigo: i.codigo, nome: i.nome, quantidade: i.quantidade, preco: i.preco })),
         observacao: document.getElementById('f-obs').value.trim() || null,
         usuario_id: window._usuarioId || null,
       })
