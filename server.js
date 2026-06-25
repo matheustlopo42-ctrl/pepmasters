@@ -1405,7 +1405,7 @@ app.get('/api/admin/pedidos', adminMiddleware, async (req, res) => {
 // PUT /api/admin/pedido/:id/status
 app.put('/api/admin/pedido/:id/status', adminMiddleware, async (req, res) => {
   const { status } = req.body;
-  const validos = ['pago','pix_pending','enviado','entregue','cancelado'];
+  const validos = ['pago','pix_pending','enviado','entregue','cancelado','pagamento_parcial','sem_pagamento_frete'];
   if (!validos.includes(status)) return res.status(400).json({ erro: 'Status inválido.' });
   try {
     const { rows } = await pool.query(
