@@ -4045,9 +4045,6 @@ app.put('/api/club/fornecedor/avaliacao/:id/responder', clubFornecedorMiddleware
   } catch(e) { res.status(500).json({ erro: e.message }); }
 });
 
-  } catch(e) { res.status(500).json({ erro: e.message }); }
-});
-
 // ── CHAT DO CLUB ──────────────────────────────────────────
 
 // POST /api/club/chat — criar ou buscar chat existente
