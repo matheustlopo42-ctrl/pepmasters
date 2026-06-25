@@ -419,48 +419,6 @@ async function initDB() {
     await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS quantidade INT DEFAULT 1`).catch(()=>{});
     await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS endereco TEXT`).catch(()=>{});
 
-    // Itens do pedido (para Power BI e CSV expandido)
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS pep_pedido_itens (
-        id          SERIAL PRIMARY KEY,
-        pedido_id   INT NOT NULL REFERENCES pep_pedidos(id) ON DELETE CASCADE,
-        codigo      TEXT,
-        nome        TEXT NOT NULL,
-        quantidade  INT NOT NULL DEFAULT 1,
-        preco_unit  NUMERIC(10,2),
-        subtotal    NUMERIC(10,2),
-        criado_em   TIMESTAMPTZ DEFAULT NOW()
-      )
-    `).catch(()=>{});
-    await client.query(`ALTER TABLE pep_pedidos ADD COLUMN IF NOT EXISTS aduana NUMERIC(10,2) DEFAULT 0`).catch(()=>{});
-
-    // Chat do Club
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS club_chats (
-        id            SERIAL PRIMARY KEY,
-        fornecedor_id INT NOT NULL REFERENCES club_fornecedores(id),
-        usuario_id    INT REFERENCES pep_usuarios(id),
-        pedido_id     INT REFERENCES club_pedidos(id),
-        assunto       TEXT,
-        status        TEXT DEFAULT 'aberto',
-        ultima_msg_em TIMESTAMPTZ DEFAULT NOW(),
-        criado_em     TIMESTAMPTZ DEFAULT NOW()
-      )
-    `).catch(()=>{});
-
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS club_mensagens (
-        id            SERIAL PRIMARY KEY,
-        chat_id       INT NOT NULL REFERENCES club_chats(id),
-        remetente     TEXT NOT NULL,
-        remetente_id  INT,
-        remetente_nome TEXT,
-        texto         TEXT NOT NULL,
-        lida          BOOLEAN DEFAULT FALSE,
-        criado_em     TIMESTAMPTZ DEFAULT NOW()
-      )
-    `).catch(()=>{});
-
 
 
     await client.query(`
@@ -1006,21 +964,6 @@ app.post('/api/pedido', rateLimit(10, 60000), async (req, res) => {
       registrarVendaAfiliado(ref_code, pedidoId, total).catch(() => {});
     }
 
-    // Salvar itens do pedido na tabela pep_pedido_itens
-    for (const item of carrinho) {
-      const preco = parseFloat(item.preco) || 0;
-      const qtd   = parseInt(item.quantidade) || 1;
-      await client.query(
-        `INSERT INTO pep_pedido_itens (pedido_id, codigo, nome, quantidade, preco_unit, subtotal)
-         VALUES ($1,$2,$3,$4,$5,$6)`,
-        [pedidoId, String(item.id), item.nome, qtd, preco.toFixed(2), (preco*qtd).toFixed(2)]
-      ).catch(()=>{});
-    }
-    // Salvar aduana
-    if (freteTotal > 0) {
-      await client.query(`UPDATE pep_pedidos SET aduana=$1 WHERE id=$2`, [freteTotal.toFixed(2), pedidoId]).catch(()=>{});
-    }
-
     // baixar estoque de cada item do carrinho
     for (const item of carrinho) {
       await client.query(
@@ -1405,7 +1348,7 @@ app.get('/api/admin/pedidos', adminMiddleware, async (req, res) => {
 // PUT /api/admin/pedido/:id/status
 app.put('/api/admin/pedido/:id/status', adminMiddleware, async (req, res) => {
   const { status } = req.body;
-  const validos = ['pago','pix_pending','enviado','entregue','cancelado','pagamento_parcial','sem_pagamento_frete'];
+  const validos = ['pago','pix_pending','enviado','entregue','cancelado'];
   if (!validos.includes(status)) return res.status(400).json({ erro: 'Status inválido.' });
   try {
     const { rows } = await pool.query(
@@ -2760,114 +2703,76 @@ app.get('/api/admin/db-uso', adminMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ erro: err.message }); }
 });
 
-// POST /api/admin/pedido-manual
-app.post('/api/admin/pedido-manual', adminMiddleware, async (req, res) => {
-  const { nome, email, telefone, cpf, endereco, produto_nome, itens, total, aduana, observacao, usuario_id } = req.body;
-  if (!nome || !total || !produto_nome) return res.status(400).json({ erro: 'Nome, produto e total são obrigatórios.' });
-  const valorTotal = parseFloat(total);
-  if (isNaN(valorTotal) || valorTotal <= 0) return res.status(400).json({ erro: 'Valor inválido.' });
-  if (valorTotal > 6000) return res.status(400).json({ erro: 'Valor máximo é R$ 6.000.' });
-  const numQrs = Math.ceil(valorTotal / 2000);
-  function splitValores(total, n) {
-    if (n <= 1) return [parseFloat(total.toFixed(2))];
-    const base = Math.floor((total / n) * 100) / 100;
-    const vals = []; let soma = 0;
-    for (let i = 0; i < n - 1; i++) { const v = parseFloat((base + (i+1)*0.03).toFixed(2)); vals.push(v); soma += v; }
-    vals.push(parseFloat((total - soma).toFixed(2)));
-    return vals;
+// GET /api/admin/relatorio/pedidos — endpoint para Power BI
+app.get('/api/admin/relatorio/pedidos', async (req, res) => {
+  const token = req.query.token;
+  if (!token || token !== process.env.ADMIN_RELATORIO_TOKEN) {
+    return res.status(401).json({ erro: 'Token inválido.' });
   }
-  const parcelas = splitValores(valorTotal, numQrs);
   try {
-    const pedRow = await pool.query(
-      `INSERT INTO pep_pedidos (nome, email, telefone, cpf, endereco, produto_nome, produto_id, quantidade, total, aduana, pagamento, status, observacao, usuario_id, criado_em)
-       VALUES ($1,$2,$3,$4,$5,$6,'manual',1,$7,$8,'pix','pix_pending',$9,$10,NOW()) RETURNING id`,
-      [nome, email||null, telefone||null, cpf||null, endereco||null, produto_nome, valorTotal, parseFloat(aduana||0), observacao||null, usuario_id||null]
-    );
-    const pedidoId = pedRow.rows[0].id;
+    // Pedidos com itens expandidos
+    const r = await pool.query(`
+      SELECT
+        p.id            AS pedido_id,
+        p.nome          AS cliente,
+        p.email,
+        p.cpf,
+        p.telefone,
+        COALESCE(p.endereco, CONCAT_WS(', ',
+          NULLIF(p.rua,''), NULLIF(p.numero,''),
+          NULLIF(p.complemento,''), NULLIF(p.cidade,''),
+          NULLIF(p.estado,''), NULLIF(p.cep,''))) AS endereco,
+        i.codigo        AS produto_codigo,
+        i.nome          AS produto_nome,
+        i.quantidade,
+        i.preco_unit,
+        i.subtotal      AS subtotal_produto,
+        COALESCE(p.aduana, 0)  AS aduana,
+        p.total         AS total_pedido,
+        p.pagamento,
+        p.status,
+        p.cupom,
+        p.codigo_rastreio AS rastreio,
+        p.criado_em     AS data
+      FROM pep_pedidos p
+      JOIN pep_pedido_itens i ON i.pedido_id = p.id
+      ORDER BY p.criado_em DESC
+    `);
 
-    // Salvar itens separados
-    if (itens && itens.length) {
-      for (const item of itens) {
-        await pool.query(
-          `INSERT INTO pep_pedido_itens (pedido_id, codigo, nome, quantidade, preco_unit, subtotal)
-           VALUES ($1,$2,$3,$4,$5,$6)`,
-          [pedidoId, item.codigo||null, item.nome, item.quantidade, parseFloat(item.preco||0).toFixed(2), (parseFloat(item.preco||0)*item.quantidade).toFixed(2)]
-        ).catch(()=>{});
-      }
-    }
+    // Pedidos sem itens (pedidos antigos)
+    const sem_itens = await pool.query(`
+      SELECT
+        p.id            AS pedido_id,
+        p.nome          AS cliente,
+        p.email,
+        p.cpf,
+        p.telefone,
+        COALESCE(p.endereco, CONCAT_WS(', ',
+          NULLIF(p.rua,''), NULLIF(p.numero,''),
+          NULLIF(p.complemento,''), NULLIF(p.cidade,''),
+          NULLIF(p.estado,''), NULLIF(p.cep,''))) AS endereco,
+        NULL            AS produto_codigo,
+        p.produto_nome,
+        NULL            AS quantidade,
+        NULL            AS preco_unit,
+        NULL            AS subtotal_produto,
+        COALESCE(p.aduana, 0)  AS aduana,
+        p.total         AS total_pedido,
+        p.pagamento,
+        p.status,
+        p.cupom,
+        p.codigo_rastreio AS rastreio,
+        p.criado_em     AS data
+      FROM pep_pedidos p
+      WHERE NOT EXISTS (SELECT 1 FROM pep_pedido_itens i WHERE i.pedido_id = p.id)
+      ORDER BY p.criado_em DESC
+    `);
 
-    const qrs = [];
-    let pixgoIds = [];
-    if (PIXGO_API_KEY) {
-      for (let i = 0; i < numQrs; i++) {
-        const valor = parcelas[i];
-        const extId = `pep-${pedidoId}-adm-${i+1}`;
-        try {
-          const pr = await fetch('https://pixgo.org/api/v1/payment/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-API-Key': PIXGO_API_KEY },
-            body: JSON.stringify({ amount: valor, description: `PEPMASTERS #${pedidoId}${numQrs>1?` (${i+1}/${numQrs})`:''}`, external_id: extId, webhook_url: BASE_URL + '/webhook/pixgo' })
-          });
-          const pd = await pr.json();
-          if (pd.success && pd.data) {
-            qrs.push({ parte: i+1, valor, qrcode_url: pd.data.qr_image_url||null, copia_cola: pd.data.qr_code||null });
-            pixgoIds.push(pd.data.payment_id||pd.data.id||extId);
-          } else { qrs.push({ parte: i+1, valor, erro: pd.message||'Erro PixGo' }); }
-        } catch(e) { qrs.push({ parte: i+1, valor, erro: e.message }); }
-      }
-      if (pixgoIds.length) await pool.query('UPDATE pep_pedidos SET pixgo_id=$1 WHERE id=$2', [pixgoIds.join(','), pedidoId]);
-    } else {
-      for (let i = 0; i < numQrs; i++) qrs.push({ parte: i+1, valor: parcelas[i], qrcode_url: null, copia_cola: null, erro: 'PIXGO_API_KEY não configurado' });
-    }
-    enviarWhatsApp(`📋 Pedido manual #${pedidoId} — ${nome} — ${produto_nome} — R$ ${valorTotal.toFixed(2).replace('.',',')} — ${numQrs} QR(s)`);
-    res.json({
-      ok: true, pedido_id: pedidoId, total: valorTotal, num_qrs: numQrs, qrs,
-      whatsapp_link: telefone ? `https://wa.me/${telefone.replace(/\D/g,'')}?text=${encodeURIComponent(`Olá ${nome.split(' ')[0]}! Pedido PEPMASTERS #${pedidoId}.\n*Produto:* ${produto_nome}\n*Total: R$ ${valorTotal.toFixed(2).replace('.',',')}*\n${numQrs>1?`\n⚠️ Dividido em ${numQrs} PIX:\n${parcelas.map((v,i)=>`• PIX ${i+1}: R$ ${v.toFixed(2).replace('.',',')}`).join('\n')}\n\nPague *todos* para confirmar! ✅`:'\nEscaneie o QR code para confirmar! ✅'}`)}` : null
-    });
-  } catch(err) {
-    console.error('[Admin pedido manual]', err.message);
-    res.status(500).json({ erro: 'Erro ao criar pedido: ' + err.message });
+    const todos = [...r.rows, ...sem_itens.rows];
+    res.json(todos);
+  } catch(e) {
+    res.status(500).json({ erro: e.message });
   }
-});
-
-// GET /api/admin/buscar-usuario
-app.get('/api/admin/buscar-usuario', adminMiddleware, async (req, res) => {
-  const q = (req.query.q || '').trim();
-  if (q.length < 3) return res.json([]);
-  try {
-    const r = await pool.query(
-      `SELECT id, nome, email, cpf, telefone FROM pep_usuarios WHERE nome ILIKE $1 OR email ILIKE $1 OR cpf ILIKE $1 LIMIT 10`,
-      [`%${q}%`]
-    );
-    res.json(r.rows);
-  } catch { res.json([]); }
-});
-
-// GET /api/admin/pedido/:id/itens — itens de um pedido
-app.get('/api/admin/pedido/:id/itens', adminMiddleware, async (req, res) => {
-  try {
-    const r = await pool.query('SELECT * FROM pep_pedido_itens WHERE pedido_id=$1 ORDER BY id', [req.params.id]);
-    res.json(r.rows);
-  } catch(e) { res.status(500).json({ erro: e.message }); }
-});
-
-// PUT /api/admin/pedido/:id/editar
-app.put('/api/admin/pedido/:id/editar', adminMiddleware, async (req, res) => {
-  const { nome, email, telefone, endereco, produto_nome, observacao } = req.body;
-  try {
-    await pool.query(
-      `UPDATE pep_pedidos SET
-        nome        = COALESCE(NULLIF($1,''), nome),
-        email       = COALESCE(NULLIF($2,''), email),
-        telefone    = COALESCE(NULLIF($3,''), telefone),
-        endereco    = COALESCE(NULLIF($4,''), endereco),
-        produto_nome= COALESCE(NULLIF($5,''), produto_nome),
-        observacao  = COALESCE(NULLIF($6,''), observacao)
-       WHERE id=$7`,
-      [nome||'', email||'', telefone||'', endereco||'', produto_nome||'', observacao||'', req.params.id]
-    );
-    res.json({ ok: true });
-  } catch(e) { res.status(500).json({ erro: e.message }); }
 });
 
 // Deletar pedidos (admin)
@@ -4182,169 +4087,6 @@ app.put('/api/club/fornecedor/avaliacao/:id/responder', clubFornecedorMiddleware
   try {
     await pool.query(`UPDATE club_avaliacoes SET resposta=$1 WHERE id=$2 AND fornecedor_id=$3`, [resposta, req.params.id, req.fornecedor.id]);
     res.json({ ok: true });
-  } catch(e) { res.status(500).json({ erro: e.message }); }
-});
-
-// ── CHAT DO CLUB ──────────────────────────────────────────
-
-// POST /api/club/chat — criar ou buscar chat existente
-app.post('/api/club/chat', clubClienteMiddleware, async (req, res) => {
-  const { fornecedor_id, pedido_id, assunto } = req.body;
-  if (!fornecedor_id) return res.status(400).json({ erro: 'fornecedor_id obrigatório.' });
-  try {
-    // Verificar se já existe chat entre esse usuário e fornecedor (mesmo pedido)
-    const exist = await pool.query(
-      `SELECT id FROM club_chats WHERE usuario_id=$1 AND fornecedor_id=$2 ${pedido_id ? 'AND pedido_id=$3' : 'AND pedido_id IS NULL'} AND status='aberto' LIMIT 1`,
-      pedido_id ? [req.usuario.id, fornecedor_id, pedido_id] : [req.usuario.id, fornecedor_id]
-    );
-    if (exist.rows.length) return res.json({ chat_id: exist.rows[0].id, existente: true });
-    const r = await pool.query(
-      `INSERT INTO club_chats (fornecedor_id, usuario_id, pedido_id, assunto) VALUES ($1,$2,$3,$4) RETURNING id`,
-      [fornecedor_id, req.usuario.id, pedido_id||null, assunto||null]
-    );
-    res.json({ chat_id: r.rows[0].id, existente: false });
-  } catch(e) { res.status(500).json({ erro: e.message }); }
-});
-
-// POST /api/club/chat/fornecedor — fornecedor inicia chat
-app.post('/api/club/chat/fornecedor', clubFornecedorMiddleware, async (req, res) => {
-  const { usuario_id, pedido_id, assunto } = req.body;
-  if (!usuario_id) return res.status(400).json({ erro: 'usuario_id obrigatório.' });
-  try {
-    const exist = await pool.query(
-      `SELECT id FROM club_chats WHERE usuario_id=$1 AND fornecedor_id=$2 ${pedido_id ? 'AND pedido_id=$3' : 'AND pedido_id IS NULL'} AND status='aberto' LIMIT 1`,
-      pedido_id ? [usuario_id, req.fornecedor.id, pedido_id] : [usuario_id, req.fornecedor.id]
-    );
-    if (exist.rows.length) return res.json({ chat_id: exist.rows[0].id, existente: true });
-    const r = await pool.query(
-      `INSERT INTO club_chats (fornecedor_id, usuario_id, pedido_id, assunto) VALUES ($1,$2,$3,$4) RETURNING id`,
-      [req.fornecedor.id, usuario_id, pedido_id||null, assunto||null]
-    );
-    res.json({ chat_id: r.rows[0].id, existente: false });
-  } catch(e) { res.status(500).json({ erro: e.message }); }
-});
-
-// GET /api/club/chats — listar chats do cliente
-app.get('/api/club/chats', clubClienteMiddleware, async (req, res) => {
-  try {
-    const r = await pool.query(`
-      SELECT c.*, f.nome_loja,
-        (SELECT COUNT(*) FROM club_mensagens m WHERE m.chat_id=c.id AND m.lida=FALSE AND m.remetente='fornecedor') as nao_lidas,
-        (SELECT texto FROM club_mensagens m WHERE m.chat_id=c.id ORDER BY m.criado_em DESC LIMIT 1) as ultima_msg
-      FROM club_chats c
-      JOIN club_fornecedores f ON f.id=c.fornecedor_id
-      WHERE c.usuario_id=$1
-      ORDER BY c.ultima_msg_em DESC`, [req.usuario.id]);
-    res.json(r.rows);
-  } catch(e) { res.status(500).json({ erro: e.message }); }
-});
-
-// GET /api/club/fornecedor/chats — listar chats do fornecedor
-app.get('/api/club/fornecedor/chats', clubFornecedorMiddleware, async (req, res) => {
-  try {
-    const r = await pool.query(`
-      SELECT c.*, u.nome as cliente_nome, u.email as cliente_email,
-        (SELECT COUNT(*) FROM club_mensagens m WHERE m.chat_id=c.id AND m.lida=FALSE AND m.remetente='cliente') as nao_lidas,
-        (SELECT texto FROM club_mensagens m WHERE m.chat_id=c.id ORDER BY m.criado_em DESC LIMIT 1) as ultima_msg
-      FROM club_chats c
-      JOIN pep_usuarios u ON u.id=c.usuario_id
-      WHERE c.fornecedor_id=$1
-      ORDER BY c.ultima_msg_em DESC`, [req.fornecedor.id]);
-    res.json(r.rows);
-  } catch(e) { res.status(500).json({ erro: e.message }); }
-});
-
-// GET /api/club/chat/:id/mensagens
-app.get('/api/club/chat/:id/mensagens', async (req, res) => {
-  try {
-    const r = await pool.query(
-      `SELECT * FROM club_mensagens WHERE chat_id=$1 ORDER BY criado_em ASC`,
-      [req.params.id]
-    );
-    res.json(r.rows);
-  } catch(e) { res.status(500).json({ erro: e.message }); }
-});
-
-// POST /api/club/chat/:id/mensagem — cliente envia mensagem
-app.post('/api/club/chat/:id/mensagem', clubClienteMiddleware, async (req, res) => {
-  const { texto } = req.body;
-  if (!texto?.trim()) return res.status(400).json({ erro: 'Mensagem vazia.' });
-  try {
-    const chat = await pool.query('SELECT * FROM club_chats WHERE id=$1 AND usuario_id=$2', [req.params.id, req.usuario.id]);
-    if (!chat.rows.length) return res.status(403).json({ erro: 'Chat não encontrado.' });
-    const c = chat.rows[0];
-    await pool.query(
-      `INSERT INTO club_mensagens (chat_id, remetente, remetente_id, remetente_nome, texto) VALUES ($1,'cliente',$2,$3,$4)`,
-      [req.params.id, req.usuario.id, req.usuario.nome, texto.trim()]
-    );
-    await pool.query(`UPDATE club_chats SET ultima_msg_em=NOW() WHERE id=$1`, [req.params.id]);
-    // Notificar fornecedor por email
-    const fornR = await pool.query(`SELECT f.*, u.email FROM club_fornecedores f JOIN pep_usuarios u ON u.id=f.usuario_id WHERE f.id=$1`, [c.fornecedor_id]);
-    if (fornR.rows.length) {
-      enviarEmail(fornR.rows[0].email,
-        `💬 Nova mensagem no Club — ${req.usuario.nome}`,
-        `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
-          <h2 style="color:#FFB300">💬 Nova mensagem</h2>
-          <p><strong>${req.usuario.nome}</strong> enviou uma mensagem:</p>
-          <div style="background:#f5f5f5;border-radius:8px;padding:14px;margin:12px 0;font-size:.95rem">"${texto.trim()}"</div>
-          <a href="${BASE_URL}/club-fornecedor-painel.html" style="padding:11px 24px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px;display:inline-block;font-weight:700">Ver conversa →</a>
-        </div>`).catch(()=>{});
-    }
-    res.json({ ok: true });
-  } catch(e) { res.status(500).json({ erro: e.message }); }
-});
-
-// POST /api/club/chat/:id/mensagem/fornecedor — fornecedor envia mensagem
-app.post('/api/club/chat/:id/mensagem/fornecedor', clubFornecedorMiddleware, async (req, res) => {
-  const { texto } = req.body;
-  if (!texto?.trim()) return res.status(400).json({ erro: 'Mensagem vazia.' });
-  try {
-    const chat = await pool.query('SELECT * FROM club_chats WHERE id=$1 AND fornecedor_id=$2', [req.params.id, req.fornecedor.id]);
-    if (!chat.rows.length) return res.status(403).json({ erro: 'Chat não encontrado.' });
-    const c = chat.rows[0];
-    await pool.query(
-      `INSERT INTO club_mensagens (chat_id, remetente, remetente_id, remetente_nome, texto) VALUES ($1,'fornecedor',$2,$3,$4)`,
-      [req.params.id, req.fornecedor.id, req.fornecedor.nome_loja, texto.trim()]
-    );
-    await pool.query(`UPDATE club_chats SET ultima_msg_em=NOW() WHERE id=$1`, [req.params.id]);
-    // Notificar cliente por email
-    if (c.usuario_id) {
-      const uR = await pool.query('SELECT email, nome FROM pep_usuarios WHERE id=$1', [c.usuario_id]);
-      if (uR.rows.length) {
-        enviarEmail(uR.rows[0].email,
-          `💬 Nova mensagem de ${req.fornecedor.nome_loja}`,
-          `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
-            <h2 style="color:#FFB300">💬 Nova mensagem</h2>
-            <p><strong>${req.fornecedor.nome_loja}</strong> enviou uma mensagem:</p>
-            <div style="background:#f5f5f5;border-radius:8px;padding:14px;margin:12px 0;font-size:.95rem">"${texto.trim()}"</div>
-            <a href="${BASE_URL}/club-meus-pedidos.html" style="padding:11px 24px;background:linear-gradient(135deg,#E8220A,#FF6B00);color:#fff;text-decoration:none;border-radius:10px;display:inline-block;font-weight:700">Ver conversa →</a>
-          </div>`).catch(()=>{});
-      }
-    }
-    res.json({ ok: true });
-  } catch(e) { res.status(500).json({ erro: e.message }); }
-});
-
-// PUT /api/club/chat/:id/lida — marcar mensagens como lidas
-app.put('/api/club/chat/:id/lida', async (req, res) => {
-  const { remetente } = req.body;
-  try {
-    await pool.query(`UPDATE club_mensagens SET lida=TRUE WHERE chat_id=$1 AND remetente=$2`, [req.params.id, remetente]);
-    res.json({ ok: true });
-  } catch(e) { res.status(500).json({ erro: e.message }); }
-});
-
-// GET /api/admin/club/chats — admin vê todos os chats
-app.get('/api/admin/club/chats', adminMiddleware, async (req, res) => {
-  try {
-    const r = await pool.query(`
-      SELECT c.*, f.nome_loja, u.nome as cliente_nome, u.email as cliente_email,
-        (SELECT COUNT(*) FROM club_mensagens m WHERE m.chat_id=c.id) as total_msgs
-      FROM club_chats c
-      JOIN club_fornecedores f ON f.id=c.fornecedor_id
-      LEFT JOIN pep_usuarios u ON u.id=c.usuario_id
-      ORDER BY c.ultima_msg_em DESC LIMIT 200`);
-    res.json(r.rows);
   } catch(e) { res.status(500).json({ erro: e.message }); }
 });
 
