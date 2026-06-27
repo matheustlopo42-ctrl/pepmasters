@@ -4223,10 +4223,6 @@ app.put('/api/club/fornecedor/avaliacao/:id/responder', clubFornecedorMiddleware
   } catch(e) { res.status(500).json({ erro: e.message }); }
 });
 
-    res.json({ ok: true });
-  } catch(e) { res.status(500).json({ erro: e.message }); }
-});
-
 // ── CHAT DO CLUB ──────────────────────────────────────────
 app.post('/api/club/chat', clubClienteMiddleware, async (req, res) => {
   const { fornecedor_id, pedido_id, assunto } = req.body;
